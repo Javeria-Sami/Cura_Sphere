@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using CuraSphere.Application.DTOs;
 using CuraSphere.Application.Interfaces;
 
+using CuraSphere.Application.Common;
+using CuraSphere.Api.Filters;
+
 namespace CuraSphere.Api.Controllers;
 
 [ApiController]
@@ -26,6 +29,7 @@ public class ClinicalServicesController : ControllerBase
     }
 
     [HttpGet("surgery/schedules")]
+    [RequireModule(ModuleId.Surgery)]
     public async Task<IActionResult> GetSurgerySchedules([FromQuery] string? search)
     {
         var list = await _clinicalServices.GetSurgicalScheduleAsync(search);
@@ -33,6 +37,7 @@ public class ClinicalServicesController : ControllerBase
     }
 
     [HttpGet("icu/vitals")]
+    [RequireModule(ModuleId.Icu)]
     public async Task<IActionResult> GetIcuVitals([FromQuery] string? search)
     {
         var list = await _clinicalServices.GetIcuVitalsAsync(search);

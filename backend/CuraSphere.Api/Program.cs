@@ -35,6 +35,12 @@ jwtSettings.Validate();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.AddSingleton(jwtSettings);
 
+// 2.5. Strongly-typed Edition Configuration & Module Service
+var editionSettings = new EditionSettings();
+builder.Configuration.GetSection(EditionSettings.SectionName).Bind(editionSettings);
+builder.Services.Configure<EditionSettings>(builder.Configuration.GetSection(EditionSettings.SectionName));
+builder.Services.AddSingleton<IEditionService, EditionService>();
+
 // 3. Register Dependency Injection Services
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();

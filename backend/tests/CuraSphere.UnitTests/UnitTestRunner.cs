@@ -8,6 +8,7 @@ using CuraSphere.Domain.Entities;
 using CuraSphere.Infrastructure.Services;
 using CuraSphere.Infrastructure.Services.Clinical;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CuraSphere.UnitTests;
@@ -420,6 +421,103 @@ public class UnitTestRunner
         catch (Exception ex)
         {
             Console.WriteLine($"  [ERROR] DB connection string validation test threw: {ex.Message}");
+            failed++;
+        }
+
+        // =========================================================================
+        // EDITION CONFIGURATION & NAVIGATION FOUNDATIONS UNIT TESTS (SESSION 4)
+        // =========================================================================
+
+        // Test 15: Edition Configuration - Parsing and safe fallback to Hospital Edition
+        try
+        {
+            var hospitalSettings = new EditionSettings { CurrentEdition = "Hospital" };
+            Assert(hospitalSettings.GetEditionType() == EditionType.Hospital, "EditionSettings correctly parses 'Hospital'");
+
+            var clinicSettings = new EditionSettings { CurrentEdition = "Clinic" };
+            Assert(clinicSettings.GetEditionType() == EditionType.Clinic, "EditionSettings correctly parses 'Clinic'");
+
+            var unknownSettings = new EditionSettings { CurrentEdition = "UnknownEditionName" };
+            Assert(unknownSettings.GetEditionType() == EditionType.Hospital, "EditionSettings safely defaults to Hospital for unknown edition");
+
+            var nullSettings = new EditionSettings { CurrentEdition = null! };
+            Assert(nullSettings.GetEditionType() == EditionType.Hospital, "EditionSettings safely defaults to Hospital for null edition string");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] EditionSettings parsing test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 16: Edition Service - Hospital Edition enables all capabilities
+        try
+        {
+            var options = Options.Create(new EditionSettings { CurrentEdition = "Hospital" });
+            var editionService = new EditionService(options);
+
+            Assert(editionService.CurrentEdition == EditionType.Hospital, "EditionService identifies as Hospital Edition");
+            Assert(editionService.IsModuleEnabled(ModuleId.Dashboard), "Hospital Edition enables Dashboard");
+            Assert(editionService.IsModuleEnabled(ModuleId.Patients), "Hospital Edition enables Patients");
+            Assert(editionService.IsModuleEnabled(ModuleId.Opd), "Hospital Edition enables OPD");
+            Assert(editionService.IsModuleEnabled(ModuleId.Ipd), "Hospital Edition enables IPD");
+            Assert(editionService.IsModuleEnabled(ModuleId.Emergency), "Hospital Edition enables Emergency");
+            Assert(editionService.IsModuleEnabled(ModuleId.Surgery), "Hospital Edition enables Surgery");
+            Assert(editionService.IsModuleEnabled(ModuleId.Icu), "Hospital Edition enables ICU");
+            Assert(editionService.GetDisabledModules().Count == 0, "Hospital Edition has zero disabled modules");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Hospital EditionService test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 17: Edition Service - Clinic Edition disables hospital-only modules
+        try
+        {
+            var options = Options.Create(new EditionSettings { CurrentEdition = "Clinic" });
+            var editionService = new EditionService(options);
+
+            Assert(editionService.CurrentEdition == EditionType.Clinic, "EditionService identifies as Clinic Edition");
+            // Shared capabilities enabled
+            Assert(editionService.IsModuleEnabled(ModuleId.Dashboard), "Clinic Edition enables Dashboard");
+            Assert(editionService.IsModuleEnabled(ModuleId.Patients), "Clinic Edition enables Patients");
+            Assert(editionService.IsModuleEnabled(ModuleId.Appointments), "Clinic Edition enables Appointments");
+            Assert(editionService.IsModuleEnabled(ModuleId.Opd), "Clinic Edition enables OPD");
+            Assert(editionService.IsModuleEnabled(ModuleId.Emr), "Clinic Edition enables EMR");
+            Assert(editionService.IsModuleEnabled(ModuleId.Billing), "Clinic Edition enables Billing");
+
+            // Hospital-only capabilities disabled
+            Assert(!editionService.IsModuleEnabled(ModuleId.Ipd), "Clinic Edition strictly disables IPD Wards");
+            Assert(!editionService.IsModuleEnabled(ModuleId.Emergency), "Clinic Edition strictly disables Emergency Triage");
+            Assert(!editionService.IsModuleEnabled(ModuleId.Surgery), "Clinic Edition strictly disables Surgery OT");
+            Assert(!editionService.IsModuleEnabled(ModuleId.Icu), "Clinic Edition strictly disables ICU Telemetry");
+
+            var disabled = editionService.GetDisabledModules();
+            Assert(disabled.Contains(ModuleId.Ipd) && disabled.Contains(ModuleId.Emergency), "Clinic disabled list contains IPD and Emergency");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Clinic EditionService test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 18: Backend Enforcement - RequireModule gate blocks disabled modules
+        try
+        {
+            var clinicOptions = Options.Create(new EditionSettings { CurrentEdition = "Clinic" });
+            var clinicEditionService = new EditionService(clinicOptions);
+
+            bool ipdAllowedInClinic = clinicEditionService.IsModuleEnabled(ModuleId.Ipd);
+            bool emergencyAllowedInClinic = clinicEditionService.IsModuleEnabled(ModuleId.Emergency);
+            bool opdAllowedInClinic = clinicEditionService.IsModuleEnabled(ModuleId.Opd);
+
+            Assert(!ipdAllowedInClinic, "RequireModule(Ipd) correctly identifies IPD as forbidden in Clinic Edition");
+            Assert(!emergencyAllowedInClinic, "RequireModule(Emergency) correctly identifies Emergency as forbidden in Clinic Edition");
+            Assert(opdAllowedInClinic, "RequireModule(Opd) allows OPD in Clinic Edition");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] RequireModule gate test threw: {ex.Message}");
             failed++;
         }
 

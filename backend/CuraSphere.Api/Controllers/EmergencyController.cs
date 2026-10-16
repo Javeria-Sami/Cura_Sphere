@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using CuraSphere.Application.DTOs;
 using CuraSphere.Application.Interfaces;
 
+using CuraSphere.Application.Common;
+using CuraSphere.Api.Filters;
+
 namespace CuraSphere.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+[RequireModule(ModuleId.Emergency)]
 public class EmergencyController : ControllerBase
 {
     private readonly IEmergencyService _emergencyService;

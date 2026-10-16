@@ -5,6 +5,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
+import { useEditionStore } from "../../stores/editionStore";
 import api from "../../lib/api";
 
 
@@ -37,6 +38,7 @@ export default function TopNavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuthStore();
+  const currentEdition = useEditionStore((state) => state.currentEdition);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,6 +84,19 @@ export default function TopNavBar() {
             </span>
           </span>
         ))}
+      </div>
+
+      {/* Edition Indicator Badge */}
+      <div className="hidden md:flex items-center">
+        <span
+          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${
+            currentEdition === "Clinic"
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+              : "bg-primary-50 text-primary-700 border border-primary-200"
+          }`}
+        >
+          {currentEdition} Edition
+        </span>
       </div>
 
       {/* Search */}
