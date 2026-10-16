@@ -1,0 +1,64 @@
+# CURASPHERE CLINIC EDITION — FEATURE REUSE & SEPARATION MATRIX
+**Document ID:** `FEAT-CE-002`  
+**Version:** 1.0.0  
+**Status:** Approved Feature Specification  
+
+---
+
+## 1. Feature Classification Framework
+
+Every functional module across CuraSphere HMS is audited and mapped to one of five definitive architectural disposition categories for the Clinic Edition:
+
+1. **`[REUSE]` — Reuse Without Changes:** Mature platform capabilities that serve Clinic requirements as-is.
+2. **`[EXTEND]` — Extend Existing Implementation:** Core services/entities that need non-breaking additions (e.g., adding slot conflict prevention, line items, or organization scoping).
+3. **`[BUILD-NEW]` — Build New Clinic Module:** Features specific to outpatient clinics not present in the existing hospital codebase.
+4. **`[EXCLUDE]` — Exclude from Clinic Edition:** Hospital-only capabilities (inpatient, emergency, ICU, surgery OT) filtered out of Clinic Edition navigation and API surface.
+5. **`[INVESTIGATE]` — Requires Further Investigation:** Modules with implementation ambiguities or third-party dependencies.
+
+---
+
+## 2. Comprehensive Master Feature Matrix
+
+| Functional Area | Existing Component / Path | Classification | Target Scope in Clinic Edition | Hospital Edition Scope | Enterprise Edition Scope |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Authentication & Session** | [`LoginPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/auth/pages/LoginPage.tsx), [`AuthController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/AuthController.cs) | **`[EXTEND]`** | Strip backdoor credentials; add `org_id` and `edition` claims to JWT. | Preserved with full hospital roles. | Multi-tenant SSO / SAML integration. |
+| **RBAC & Authorization** | [`ProtectedRoute.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/routes/ProtectedRoute.tsx), [`HasPermissionAttribute.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Middleware/HasPermissionAttribute.cs) | **`[EXTEND]`** | Remove client-side `!user` bypass; add clinic role permissions. | Full hospital permission catalog. | Cross-facility permission inheritance. |
+| **Patient Demographics** | [`PatientRegistration.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/patients/components/PatientRegistration.tsx), [`PatientController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/PatientController.cs) | **`[REUSE]`** | Reused entirely: MRN generation, demographics, duplicate check, audit log. | Complete patient master record. | Enterprise cross-facility global MRN. |
+| **Patient Walk-In Intake** | *New modal component* | **`[BUILD-NEW]`** | Fast-track 3-field intake modal (Name, Phone, Age/Gender) for walk-in patients. | N/A (Standard intake). | Central queue triage intake. |
+| **Doctor Profiles** | [`DoctorsPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/doctors/pages/DoctorsPage.tsx), [`Doctor.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Domain/Entities/HR.cs) | **`[EXTEND]`** | Connect mock UI to backend API; add consultation fee and qualification fields. | Hospital staff credentialing. | Multi-clinic clinician floating roster. |
+| **Doctor Schedules & Slots** | *New entity & controller* | **`[BUILD-NEW]`** | Weekly shift timetable, slot generation (15/30 min intervals), max quotas. | Department shifts & on-call roster. | Shared provider network availability. |
+| **Appointment Calendar** | [`AppointmentsPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/appointments/pages/AppointmentsPage.tsx), [`AppointmentController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/AppointmentController.cs) | **`[EXTEND]`** | Wire frontend form to backend; add slot selection & double-booking prevention. | Department appointments & visits. | Multi-branch booking portal. |
+| **Reception Waiting Queue** | [`OPDPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/opd/pages/OPDPage.tsx), [`OpdController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/OpdController.cs) | **`[EXTEND]`** | Fix status update model binding bug; real-time queue display (Waiting, Consulting). | Full hospital OPD floor queue. | Central multi-department calling kiosk. |
+| **Consultation & EMR** | [`EMRPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/emr/pages/EMRPage.tsx), [`EmrEncounter.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Domain/Entities/Clinical.cs) | **`[BUILD-NEW]`** | Build backend `EmrController` & `EmrService`; doctor workspace (SOAP + Rx + Followup). | Ward rounds, operative notes, nursing notes. | Longitudinal longitudinal health record. |
+| **Prescriptions (Rx)** | *New entity & UI component* | **`[BUILD-NEW]`** | Structured prescription itemization (drug, dose, frequency, duration, print layout). | Inpatient medication administration (MAR). | Formulary restrictions & e-prescribing. |
+| **Consultation Billing** | [`BillingPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/billing/pages/BillingPage.tsx), [`FinancialController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/FinancialController.cs) | **`[EXTEND]`** | Add `InvoiceItem` support; connect form to API; generate printable thermal receipt. | Inpatient discharge bills, surgery packages. | Consolidated billing & ledger export. |
+| **Payment Cashier** | [`PaymentsPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/payments/pages/PaymentsPage.tsx), [`PaymentRecord.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Domain/Entities/Financial.cs) | **`[REUSE]`** | Cash/Card payment collection, ledger auditing. | Multi-tier cashier shifts. | Multi-currency online gateway. |
+| **Clinic Dashboard** | [`DashboardPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/dashboard/pages/DashboardPage.tsx) | **`[BUILD-NEW]`** | Dedicated Clinic KPI view (Today Appts, Waiting, In-Consultation, Revenue Billed/Paid). | Hospital census, bed occupancy %, ER triage. | Enterprise executive multi-facility KPI. |
+| **Clinic Settings** | *New entity & view* | **`[BUILD-NEW]`** | Clinic profile (Name, address, timings, consultation types, receipt header/footer). | Hospital multi-block facilities. | Enterprise tenant provisioning. |
+| **Inpatient (IPD) Wards** | [`IPDPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/ipd/pages/IPDPage.tsx), [`IpdController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/IpdController.cs) | **`[EXCLUDE]`** | Suppressed from navigation & routes. | Full bed allocation and ward nursing. | Multi-hospital bed pooling. |
+| **Emergency Room (ER)** | [`EmergencyPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/emergency/pages/EmergencyPage.tsx), [`EmergencyController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/EmergencyController.cs) | **`[EXCLUDE]`** | Suppressed from navigation & routes. | Triage P1/P2/P3, trauma care. | Trauma network coordination. |
+| **Surgery OT** | [`SurgeryPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/surgery/pages/SurgeryPage.tsx), [`ClinicalServicesController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/ClinicalServicesController.cs) | **`[EXCLUDE]`** | Suppressed from navigation & routes. | Operating room schedules, anesthesia. | Surgical center resource allocation. |
+| **ICU Telemetry** | [`ICUPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/icu/pages/ICUPage.tsx), [`ClinicalServicesController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/ClinicalServicesController.cs) | **`[EXCLUDE]`** | Suppressed from navigation & routes. | Live telemetry vitals, alarms. | Tele-ICU central monitoring. |
+| **Diagnostics (Lab/Rad)** | [`LaboratoryPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/laboratory/pages/LaboratoryPage.tsx), `RadiologyPage.tsx` | **`[INVESTIGATE]`** | Optional referral orders; suppressed initially unless requested. | Full in-house lab & radiology PACS. | Reference lab network integration. |
+| **Pharmacy Stock** | [`PharmacyPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/pharmacy/pages/PharmacyPage.tsx) | **`[INVESTIGATE]`** | Optional in-clinic dispensary stock; excluded from initial MVP. | Full hospital formulary inventory. | Central distribution warehouse. |
+| **Document Management** | [`DocumentController.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Api/Controllers/DocumentController.cs) | **`[REUSE]`** | Attach diagnostic test reports and scans to patient records. | Complete patient digital dossier. | Secure medical document repository. |
+| **Audit Logs** | [`AuditLogsPage.tsx`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/frontend/src/features/audit/pages/AuditLogsPage.tsx), [`AuditLog.cs`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/backend/CuraSphere.Domain/Entities/AuditLog.cs) | **`[REUSE]`** | Full HIPAA/regulatory audit trail of logins, updates, cancellations. | Enterprise compliance auditing. | Cross-tenant regulatory export. |
+
+---
+
+## 3. Summary of Clinic Edition Deliverable Scope
+
+### Included in Immediate Clinic Scope:
+- **Clinic Dashboard:** Outpatient KPIs, live waiting counter, daily revenue tally.
+- **Reception Workspace:** Fast-track patient intake, daily token issuing, queue monitor.
+- **Appointment Management:** Doctor schedule calendar, 15/30-min time slot picker, double-booking prevention.
+- **Doctor Directory & Schedules:** Working hours configuration, consultation fees, specialties.
+- **Consultation Workspace (EMR):** Subjective/Objective notes, vital signs, ICD diagnoses, prescription builder, follow-up scheduling.
+- **Billing & Thermal Receipts:** Itemized consultation bills, multiple payment methods, printable 80mm thermal receipts.
+- **Clinic Configuration:** Clinic identity, address, contact, tax/registration details.
+
+### Explicitly Excluded from Immediate Clinic Scope:
+- Inpatient ward beds, transfers, discharges.
+- Emergency trauma triage (P1/P2/P3) and crash cart tracking.
+- Surgical suites, post-op telemetry, anesthesia charts.
+- Intensive Care Unit (ICU) real-time vital telemetry streams.
