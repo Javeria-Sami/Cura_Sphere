@@ -4,24 +4,38 @@ using CuraSphere.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CuraSphere.Application.Common;
 using CuraSphere.Application.Interfaces;
 using CuraSphere.Infrastructure.Services;
-using Microsoft.OpenApi;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.AspNetCore.HttpOverrides;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register DB Context with PostgreSQL
+// 1. Database Connection Configuration & Validation
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Security Configuration Error: ConnectionStrings:DefaultConnection is required and cannot be empty.");
+}
+
 builder.Services.AddDbContext<CuraSphereDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
+        connectionString,
         b => b.MigrationsAssembly("CuraSphere.Infrastructure")
     )
 );
 
-// Register Dependency Injection Services
+// 2. Strongly-typed JWT Settings Configuration & Strict Startup Validation
+var jwtSettings = new JwtSettings();
+builder.Configuration.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
+jwtSettings.Validate();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+builder.Services.AddSingleton(jwtSettings);
+
+// 3. Register Dependency Injection Services
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ILookupService, LookupService>();
@@ -37,9 +51,8 @@ builder.Services.AddScoped<IClinicalServicesService, ClinicalServicesService>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
 builder.Services.AddScoped<IRealTimeNotificationService, RealTimeNotificationService>();
 
-// Configure JWT Authentication
-var secret = builder.Configuration["JwtSettings:Secret"] ?? "CuraSphereHMS_Secure_Authentication_Secret_Key_2026_DoubleStrong!";
-var key = Encoding.UTF8.GetBytes(secret);
+// 4. Configure Secure JWT Bearer Authentication
+var key = Encoding.UTF8.GetBytes(jwtSettings.Secret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -48,17 +61,44 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "CuraSphereApi",
-        ValidAudience = builder.Configuration["JwtSettings:Audience"] ?? "CuraSphereClient",
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ClockSkew = TimeSpan.Zero
     };
+});
+
+// 5. CORS Configuration (Explicit origins, disallowing arbitrary production origins)
+var allowedOriginsConfig = builder.Configuration["Cors:AllowedOrigins"];
+var allowedOrigins = !string.IsNullOrWhiteSpace(allowedOriginsConfig)
+    ? allowedOriginsConfig.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    : new[] { "http://localhost:3000", "http://localhost:5173" };
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CuraSphereCorsPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+// 6. Reverse Proxy Forwarded Headers Support
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 builder.Services.AddControllers();
@@ -69,67 +109,97 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-app.UseMiddleware<CuraSphere.Api.Middleware.RequestLoggingMiddleware>();
-app.MapHealthChecks("/health");
-app.MapHub<CuraSphere.Api.Hubs.HospitalHub>("/hubs/hospital");
-app.MapHub<CuraSphere.Api.Hubs.NotificationHub>("/hubs/notifications");
-app.MapHub<CuraSphere.Api.Hubs.TelemetryHub>("/hubs/telemetry");
+// Forwarded headers for reverse proxies (must run early in pipeline)
+app.UseForwardedHeaders();
 
-// Automatically apply migrations and seed data on startup
+// Request logging middleware (sanitized, never logs tokens or credentials)
+app.UseMiddleware<CuraSphere.Api.Middleware.RequestLoggingMiddleware>();
+
+// Health checks endpoint
+app.MapHealthChecks("/health");
+
+// SignalR Realtime Hubs
+app.MapHub<CuraSphere.Api.Hubs.HospitalHub>("/hubs/hospital").RequireCors("CuraSphereCorsPolicy");
+app.MapHub<CuraSphere.Api.Hubs.NotificationHub>("/hubs/notifications").RequireCors("CuraSphereCorsPolicy");
+app.MapHub<CuraSphere.Api.Hubs.TelemetryHub>("/hubs/telemetry").RequireCors("CuraSphereCorsPolicy");
+
+// 7. Database Initialization and Controlled Seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<CuraSphereDbContext>();
+
     try
     {
-        var context = services.GetRequiredService<CuraSphereDbContext>();
-        
-        // Apply pending database migrations and ensure missing tables are created
-        app.Logger.LogInformation("Applying database migrations and table creation...");
-        try
+        var canConnect = await context.Database.CanConnectAsync();
+        if (!canConnect)
         {
-            await context.Database.MigrateAsync();
+            logger.LogWarning("Unable to connect to PostgreSQL database during startup check. Connection will be retried on incoming requests.");
         }
-        catch (Exception ex)
+        else
         {
-            app.Logger.LogWarning(ex, "MigrateAsync warning, ensuring tables via database creator...");
-        }
+            // In Development or when explicit environment flag is set, apply EF migrations
+            var autoMigrate = app.Environment.IsDevelopment() ||
+                string.Equals(builder.Configuration["Database:ApplyMigrationsOnStartup"], "true", StringComparison.OrdinalIgnoreCase);
 
-        try
-        {
-            var databaseCreator = context.Database.GetService<IRelationalDatabaseCreator>();
-            if (databaseCreator != null)
+            if (autoMigrate)
             {
-                await databaseCreator.CreateTablesAsync();
+                logger.LogInformation("Applying database migrations...");
+                await context.Database.MigrateAsync();
             }
+
+            // Seed lookup tables; only seed dev admin if running in Development
+            logger.LogInformation("Seeding database lookups...");
+            await DbContextSeed.SeedAsync(context, isDevelopment: app.Environment.IsDevelopment());
+            logger.LogInformation("Database initialization completed successfully.");
         }
-        catch
-        {
-            // Tables already exist or partially created
-        }
-        
-        // Seed initial lookups and default data
-        app.Logger.LogInformation("Seeding database...");
-        await DbContextSeed.SeedAsync(context);
-        
-        app.Logger.LogInformation("Database migration and seeding completed successfully.");
     }
     catch (Exception ex)
     {
-        app.Logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        logger.LogError(ex, "An error occurred during database migration or seed startup check.");
+        if (!app.Environment.IsDevelopment())
+        {
+            throw;
+        }
     }
 }
 
+// 8. Environment-specific Exception Handling and Swagger Exposure
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    // Hide internal exception details and stack traces in production
+    app.UseExceptionHandler(exceptionHandlerApp =>
+    {
+        exceptionHandlerApp.Run(async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/problem+json";
+            await context.Response.WriteAsJsonAsync(new
+            {
+                type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                title = "An internal server error occurred.",
+                status = 500,
+                instance = context.Request.Path.Value
+            });
+        });
+    });
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
+
+// 9. Apply CORS Policy before Auth
+app.UseCors("CuraSphereCorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers().RequireCors("CuraSphereCorsPolicy");
 
 app.Run();

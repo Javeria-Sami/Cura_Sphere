@@ -7,15 +7,15 @@ services:
     container_name: curasphere-postgres
     restart: always
     environment:
-      POSTGRES_DB: curasphere_hms_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: curasphere_secure_db_pass_2026
+      POSTGRES_DB: ${POSTGRES_DB:-curasphere_hms_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d curasphere_hms_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-curasphere_hms_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,9 +28,14 @@ services:
     container_name: curasphere-api-server
     restart: always
     environment:
-      - ConnectionStrings__DefaultConnection=Host=postgres-db;Database=curasphere_hms_db;Username=postgres;Password=curasphere_secure_db_pass_2026;Port=5432
-      - JwtSettings__Secret=CuraSphereHMS_Secure_Authentication_Secret_Key_2026_DoubleStrong!
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres-db;Database=${POSTGRES_DB:-curasphere_hms_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD};Port=5432
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=${JWT_ISSUER:-CuraSphereApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-CuraSphereClient}
+      - JwtSettings__ExpiryInMinutes=${JWT_EXPIRY_MINUTES:-60}
+      - Cors__AllowedOrigins=${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      - Database__ApplyMigrationsOnStartup=${APPLY_MIGRATIONS:-false}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
     ports:
       - "5000:5000"
     depends_on:

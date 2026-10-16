@@ -17,15 +17,16 @@ export default function ProtectedRoute({ children, requiredPermission }: Protect
     return <Navigate to="/login" replace />;
   }
 
-  // Super Administrator / Admin role bypass check: grants full access to all hospital sections
-  const isSuperAdmin =
-    !user ||
-    user.username?.toLowerCase() === "admin" ||
-    user.roleName?.toLowerCase().includes("admin") ||
-    user.roleName?.toLowerCase().includes("super") ||
-    permissions.includes("AllAccess") ||
-    permissions.includes("SystemAdmin") ||
-    permissions.includes("*");
+  // Super Administrator / Admin role check: grants full access to all hospital sections
+  const isSuperAdmin = Boolean(
+    user &&
+      (user.username?.toLowerCase() === "admin" ||
+        user.roleName?.toLowerCase().includes("admin") ||
+        user.roleName?.toLowerCase().includes("super") ||
+        permissions.includes("AllAccess") ||
+        permissions.includes("SystemAdmin") ||
+        permissions.includes("*"))
+  );
 
   if (requiredPermission && !isSuperAdmin && !permissions.includes(requiredPermission)) {
     return (

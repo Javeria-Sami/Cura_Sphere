@@ -1,6 +1,8 @@
+using CuraSphere.Application.Common;
 using CuraSphere.Application.Interfaces;
 using CuraSphere.Domain.Entities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -12,28 +14,46 @@ namespace CuraSphere.Infrastructure.Services;
 
 public class JwtProvider : IJwtProvider
 {
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
+
+    public JwtProvider(IOptions<JwtSettings> jwtOptions)
+    {
+        _jwtSettings = jwtOptions?.Value ?? throw new ArgumentNullException(nameof(jwtOptions));
+        _jwtSettings.Validate();
+    }
 
     public JwtProvider(IConfiguration configuration)
     {
-        _configuration = configuration;
+        _jwtSettings = new JwtSettings
+        {
+            Secret = configuration["JwtSettings:Secret"] ?? string.Empty,
+            Issuer = configuration["JwtSettings:Issuer"] ?? "CuraSphereApi",
+            Audience = configuration["JwtSettings:Audience"] ?? "CuraSphereClient",
+            ExpiryInMinutes = int.TryParse(configuration["JwtSettings:ExpiryInMinutes"], out var exp) ? exp : 60
+        };
+        _jwtSettings.Validate();
+    }
+
+    public JwtProvider(JwtSettings jwtSettings)
+    {
+        _jwtSettings = jwtSettings ?? throw new ArgumentNullException(nameof(jwtSettings));
+        _jwtSettings.Validate();
     }
 
     public string GenerateToken(UserAccount user, List<string> permissions, Guid sessionId)
     {
-        var secret = _configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured.");
-        var issuer = _configuration["JwtSettings:Issuer"] ?? "CuraSphereApi";
-        var audience = _configuration["JwtSettings:Audience"] ?? "CuraSphereClient";
-        var expiryMinutes = double.Parse(_configuration["JwtSettings:ExpiryInMinutes"] ?? "60");
+        ArgumentNullException.ThrowIfNull(user);
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var roleName = user.Role?.RoleName ?? "Staff";
 
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
             new(JwtRegisteredClaimNames.UniqueName, user.Username),
-            new(ClaimTypes.Role, user.Role.RoleName),
+            new(ClaimTypes.Role, roleName),
             new("SessionId", sessionId.ToString())
         };
 
@@ -43,16 +63,22 @@ public class JwtProvider : IJwtProvider
         }
 
         // Add permissions as custom claims
-        foreach (var permission in permissions)
+        if (permissions != null)
         {
-            claims.Add(new Claim("permission", permission));
+            foreach (var permission in permissions)
+            {
+                if (!string.IsNullOrWhiteSpace(permission))
+                {
+                    claims.Add(new Claim("permission", permission));
+                }
+            }
         }
 
         var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
+            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryInMinutes),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

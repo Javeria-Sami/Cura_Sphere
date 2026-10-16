@@ -76,7 +76,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const permissions = useAuthStore((state) => state.permissions);
   const user = useAuthStore((state) => state.user);
 
-  const userRole = user?.roleName || "Super Administrator";
+  const userRole = user?.roleName || "Guest";
 
   const isAllowed = (item: NavItem) => {
     // Super Administrator & Hospital Administrator see everything

@@ -8,7 +8,11 @@ namespace CuraSphere.Infrastructure.Persistence.Seed;
 
 public static class DbContextSeed
 {
-    public static async Task SeedAsync(CuraSphereDbContext context)
+    /// <summary>
+    /// Seeds essential baseline lookups, and optionally seeds initial local development accounts.
+    /// In production (isDevelopment: false), default administrator accounts are never seeded with static passwords.
+    /// </summary>
+    public static async Task SeedAsync(CuraSphereDbContext context, bool isDevelopment = false)
     {
         // 1. Seed Blood Groups
         if (!context.BloodGroups.Any())
@@ -159,21 +163,21 @@ public static class DbContextSeed
             }
         }
 
-        // 9. Seed Default Super Administrator Employee & User Account
-        var adminUser = context.UserAccounts.FirstOrDefault(u => u.Username == "admin");
-        if (adminUser == null)
+        // 9. Development-only Seed: Initial Development Administrator Account
+        // In Production, administrator accounts must NOT be created with static passwords on startup.
+        if (isDevelopment && !context.UserAccounts.Any())
         {
             var adminDept = context.Departments.FirstOrDefault(d => d.DepartmentCode == "OPD");
             
             var adminEmployee = new Employee
             {
                 EmployeeCode = "EMP00001",
-                FirstName = "System",
+                FirstName = "Development",
                 LastName = "Administrator",
                 Gender = "Male",
                 DateOfBirth = new DateTime(1985, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 PhoneNumber = "+923000000000",
-                Email = "admin@curasphere.com",
+                Email = "devadmin@curasphere.local",
                 HireDate = DateTime.UtcNow,
                 Designation = "System Administrator",
                 DepartmentId = adminDept?.DepartmentId ?? 1,
@@ -202,7 +206,7 @@ public static class DbContextSeed
 
             var adminRole = context.Roles.FirstOrDefault(r => r.RoleName == "Super Administrator");
 
-            adminUser = new UserAccount
+            var adminUser = new UserAccount
             {
                 Username = "admin",
                 EmployeeId = adminEmployee.EmployeeId,
@@ -211,20 +215,11 @@ public static class DbContextSeed
                 FailedLoginAttempts = 0
             };
 
-            // Hash password using PasswordHasher
+            var devPassword = Environment.GetEnvironmentVariable("DEV_ADMIN_INITIAL_PASSWORD") ?? "Admin123!";
             var hasher = new PasswordHasher<UserAccount>();
-            adminUser.PasswordHash = hasher.HashPassword(adminUser, "Admin123!");
+            adminUser.PasswordHash = hasher.HashPassword(adminUser, devPassword);
 
             context.UserAccounts.Add(adminUser);
-            await context.SaveChangesAsync();
-        }
-        else
-        {
-            // Reset to Active and correct password in case it got locked/mismatched during testing
-            adminUser.AccountStatus = "Active";
-            adminUser.FailedLoginAttempts = 0;
-            var hasher = new PasswordHasher<UserAccount>();
-            adminUser.PasswordHash = hasher.HashPassword(adminUser, "Admin123!");
             await context.SaveChangesAsync();
         }
     }

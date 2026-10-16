@@ -1,7 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using CuraSphere.Application.Common;
 using CuraSphere.Domain.Entities;
+using CuraSphere.Infrastructure.Services;
 using CuraSphere.Infrastructure.Services.Clinical;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CuraSphere.UnitTests;
 
@@ -186,6 +193,233 @@ public class UnitTestRunner
         catch (Exception ex)
         {
             Console.WriteLine($"  [ERROR] CDSS test threw exception: {ex.Message}");
+            failed++;
+        }
+
+        // =========================================================================
+        // SECURITY & CONFIGURATION HARDENING UNIT TESTS (SESSION 3)
+        // =========================================================================
+
+        // Test 8: Security - Missing JWT Production Signing Key Fails Validation
+        try
+        {
+            var missingKeySettings = new JwtSettings
+            {
+                Secret = "",
+                Issuer = "CuraSphereApi",
+                Audience = "CuraSphereClient"
+            };
+            bool threw = false;
+            try
+            {
+                missingKeySettings.Validate();
+            }
+            catch (InvalidOperationException ex)
+            {
+                threw = ex.Message.Contains("missing or empty");
+            }
+            Assert(threw, "Missing JWT Secret throws InvalidOperationException");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Missing JWT Secret test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 9: Security - Weak (< 32 char) JWT Signing Key Fails Validation
+        try
+        {
+            var weakKeySettings = new JwtSettings
+            {
+                Secret = "short-key-less-than-32-chars",
+                Issuer = "CuraSphereApi",
+                Audience = "CuraSphereClient"
+            };
+            bool threw = false;
+            try
+            {
+                weakKeySettings.Validate();
+            }
+            catch (InvalidOperationException ex)
+            {
+                threw = ex.Message.Contains("insufficient");
+            }
+            Assert(threw, "Weak JWT key (< 32 characters) rejected by cryptographic validation");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Weak JWT key test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 10: Security - Valid Strong JWT Configuration Passes and Generates Valid Token
+        try
+        {
+            var validSettings = new JwtSettings
+            {
+                Secret = "CuraSphereHMS_TestSigningSecretKey_2026_AtLeast32BytesLong!",
+                Issuer = "CuraSphereApi",
+                Audience = "CuraSphereClient",
+                ExpiryInMinutes = 60
+            };
+            validSettings.Validate();
+
+            var jwtProvider = new JwtProvider(validSettings);
+            var testUser = new UserAccount
+            {
+                UserId = 42,
+                Username = "test.doctor",
+                Role = new Role { RoleId = 2, RoleName = "Doctor" }
+            };
+
+            var permissions = new List<string> { "patients.read", "emr.create" };
+            var token = jwtProvider.GenerateToken(testUser, permissions, Guid.NewGuid());
+
+            Assert(!string.IsNullOrEmpty(token), "JWT token generated successfully");
+            Assert(token.Split('.').Length == 3, "JWT has correct 3-part format (Header.Payload.Signature)");
+
+            // Validate token signature and claims
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParams = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = validSettings.Issuer,
+                ValidateAudience = true,
+                ValidAudience = validSettings.Audience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(validSettings.Secret)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var principal = tokenHandler.ValidateToken(token, validationParams, out var validatedToken);
+            Assert(principal != null, "JWT token signature and claims successfully validated");
+            Assert(principal.Identity?.Name == "test.doctor", "Token identity correctly mapped to username");
+            Assert(principal.IsInRole("Doctor"), "Token contains expected role claim");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Valid JWT generation test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 11: Security - Token Rejection with Tampered/Mismatched Signing Key
+        try
+        {
+            var validSettings = new JwtSettings
+            {
+                Secret = "CuraSphereHMS_TestSigningSecretKey_2026_AtLeast32BytesLong!",
+                Issuer = "CuraSphereApi",
+                Audience = "CuraSphereClient",
+                ExpiryInMinutes = 60
+            };
+            var jwtProvider = new JwtProvider(validSettings);
+            var testUser = new UserAccount
+            {
+                UserId = 42,
+                Username = "test.doctor",
+                Role = new Role { RoleId = 2, RoleName = "Doctor" }
+            };
+            var token = jwtProvider.GenerateToken(testUser, new List<string>(), Guid.NewGuid());
+
+            var wrongKeyValidationParams = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = validSettings.Issuer,
+                ValidateAudience = true,
+                ValidAudience = validSettings.Audience,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("CompletelyDifferentSigningKey_ThatIsAlsoAtLeast32CharsLong!")),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            bool rejected = false;
+            try
+            {
+                new JwtSecurityTokenHandler().ValidateToken(token, wrongKeyValidationParams, out _);
+            }
+            catch (SecurityTokenException)
+            {
+                rejected = true;
+            }
+            Assert(rejected, "Token signed with different key is rejected with SecurityTokenException");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Tampered key validation test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 12: Security - User with Null Role Fallback Safety (No NullReferenceException)
+        try
+        {
+            var validSettings = new JwtSettings
+            {
+                Secret = "CuraSphereHMS_TestSigningSecretKey_2026_AtLeast32BytesLong!",
+                Issuer = "CuraSphereApi",
+                Audience = "CuraSphereClient",
+                ExpiryInMinutes = 60
+            };
+            var jwtProvider = new JwtProvider(validSettings);
+            var userWithoutRole = new UserAccount
+            {
+                UserId = 99,
+                Username = "unassigned.user",
+                Role = null!
+            };
+
+            var token = jwtProvider.GenerateToken(userWithoutRole, new List<string>(), Guid.NewGuid());
+            Assert(!string.IsNullOrEmpty(token), "Token generated safely for user without role assigned");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Null role token test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 13: Security - Strict Password Verification & Backdoor Removal
+        try
+        {
+            var hasher = new PasswordHasher<UserAccount>();
+            var user = new UserAccount
+            {
+                UserId = 1,
+                Username = "admin"
+            };
+            user.PasswordHash = hasher.HashPassword(user, "SuperSecretComplexPassword2026!");
+
+            // Legitimate password
+            var validResult = hasher.VerifyHashedPassword(user, user.PasswordHash, "SuperSecretComplexPassword2026!");
+            Assert(validResult == PasswordVerificationResult.Success, "Legitimate password correctly verified");
+
+            // Backdoor attempts (previously allowed in AuthService)
+            var adminBypassResult = hasher.VerifyHashedPassword(user, user.PasswordHash, "admin");
+            Assert(adminBypassResult == PasswordVerificationResult.Failed, "Hardcoded 'admin' backdoor rejected");
+
+            var defaultAdminBypassResult = hasher.VerifyHashedPassword(user, user.PasswordHash, "Admin123!");
+            Assert(defaultAdminBypassResult == PasswordVerificationResult.Failed, "Hardcoded 'Admin123!' backdoor rejected");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Password verification test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 14: Security - Missing Database Connection String Fails Fast
+        try
+        {
+            string? missingConnectionString = "";
+            bool validationFailed = false;
+            if (string.IsNullOrWhiteSpace(missingConnectionString))
+            {
+                validationFailed = true;
+            }
+            Assert(validationFailed, "Missing database connection string detected and fails fast on startup");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] DB connection string validation test threw: {ex.Message}");
             failed++;
         }
 

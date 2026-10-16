@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "latest",
-    "@tanstack/react-query": "latest",
     "@microsoft/signalr": "^8.0.7",
+    "@tanstack/react-query": "latest",
     "axios": "^1.19.0",
     "lucide-react": "latest",
     "react": "latest",
@@ -33,8 +33,10 @@
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
     "autoprefixer": "^10.5.4",
+    "eslint": "^9.39.5",
     "tailwindcss": "latest",
     "typescript": "latest",
+    "typescript-eslint": "^8.71.2",
     "vite": "latest",
     "vitest": "latest"
   }
