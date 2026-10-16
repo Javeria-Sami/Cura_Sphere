@@ -1,0 +1,626 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere — Hospital Management System
+Section 5 — System Functional Requirements
+Part 5.10 — Inventory and Medical Store Management System (INV)
+
+5.10.10 Functional Requirement INV-FR-006
+Warehouse Management
+
+Requirement ID
+INV-FR-006
+Requirement Name
+Warehouse Management
+
+Description
+The system shall support the management of one or more warehouses and storage locations throughout the hospital.
+Each warehouse shall maintain independent inventory records while remaining synchronized with the centralized Inventory Management System.
+The warehouse structure shall support:
+Central Warehouse
+Pharmacy Store
+Laboratory Store
+Operation Theatre Store
+Emergency Store
+ICU Store
+Departmental Stores
+Satellite Warehouses
+
+Actors
+Store Manager
+Inventory Officer
+Warehouse Supervisor
+System Administrator
+
+Preconditions
+Warehouse must exist.
+User must have warehouse permissions.
+
+Trigger
+Inventory is received, transferred, issued, adjusted, or counted.
+
+Warehouse Structure
+Hospital Inventory
+        │
+        ▼
+Central Warehouse
+        │
+ ┌──────┼────────────┐
+ ▼      ▼            ▼
+Pharmacy Laboratory Surgery
+Store     Store      Store
+ │          │          │
+ ▼          ▼          ▼
+Department Inventory
+
+Main Flow
+Warehouse Created
+        │
+        ▼
+Storage Locations Configured
+        │
+        ▼
+Inventory Assigned
+        │
+        ▼
+Stock Available
+        │
+        ▼
+Daily Operations
+
+Business Rules
+INV-BR-020
+Each warehouse shall possess a unique Warehouse ID.
+INV-BR-021
+Every inventory transaction shall reference a warehouse.
+INV-BR-022
+Warehouse deletion shall not be permitted when inventory exists.
+
+Acceptance Criteria
+Multiple warehouses supported.
+Warehouse inventory maintained independently.
+Audit trail maintained.
+
+5.10.11 Functional Requirement INV-FR-007
+Stock Issue Management
+
+Requirement ID
+INV-FR-007
+Requirement Name
+Issue Inventory to Departments
+
+Description
+The system shall manage inventory issued from warehouse locations to hospital departments.
+Departments include:
+Pharmacy
+Laboratory
+Radiology
+Emergency
+ICU
+OT
+Wards
+OPD
+Administration
+
+Workflow
+Department Request
+        │
+        ▼
+Stock Available?
+     │          │
+    Yes         No
+     │          │
+Issue Stock   Notify Shortage
+     │
+     ▼
+Inventory Reduced
+     │
+     ▼
+Department Inventory Increased
+
+Data Recorded
+Issue ID
+Department
+Item
+Quantity
+Warehouse
+Receiver
+Issuer
+Date
+Time
+
+Business Rules
+Inventory cannot be issued if insufficient stock exists.
+
+Acceptance Criteria
+Department inventory updated automatically.
+
+5.10.12 Functional Requirement INV-FR-008
+Stock Transfer Management
+
+Requirement ID
+INV-FR-008
+
+Description
+The system shall support inventory transfers between warehouses and departments.
+
+Transfer Workflow
+Source Warehouse
+        │
+        ▼
+Transfer Request
+        │
+        ▼
+Approval
+        │
+        ▼
+Dispatch
+        │
+        ▼
+Receive
+        │
+        ▼
+Destination Inventory Updated
+
+Business Rules
+Source inventory decreases.
+Destination inventory increases.
+Transfer history maintained.
+
+Acceptance Criteria
+Inventory synchronized between locations.
+
+5.10.13 Functional Requirement INV-FR-009
+Stock Return Management
+
+Requirement ID
+INV-FR-009
+
+Description
+Departments shall return unused inventory to warehouse locations when appropriate.
+Returns may occur because of:
+Excess issue
+Wrong issue
+Department closure
+Unused consumables
+Transfer correction
+
+Workflow
+Return Request
+      │
+      ▼
+Inspection
+      │
+      ▼
+Approved
+      │
+      ▼
+Warehouse Inventory Updated
+
+Business Rules
+Returned items must pass quality inspection before restocking.
+
+Acceptance Criteria
+Inventory updated after return approval.
+
+5.10.14 Functional Requirement INV-FR-010
+Stock Adjustment Management
+
+Requirement ID
+INV-FR-010
+
+Description
+Authorized users shall perform inventory adjustments when discrepancies occur.
+Reasons include:
+Physical count difference
+Damaged items
+Expired items
+Lost inventory
+Theft
+Correction
+
+Workflow
+Adjustment Request
+        │
+        ▼
+Manager Approval
+        │
+        ▼
+Inventory Updated
+        │
+        ▼
+Audit Generated
+
+Business Rules
+Manual adjustments require authorization.
+
+Acceptance Criteria
+Every adjustment recorded.
+
+5.10.15 Functional Requirement INV-FR-011
+Inventory Consumption Tracking
+
+Requirement ID
+INV-FR-011
+
+Description
+The system shall automatically record inventory consumption when items are used during patient care.
+
+Consumption Sources
+Pharmacy Dispensing
+Laboratory Tests
+Surgical Procedures
+Radiology Procedures
+Nursing Care
+ICU
+Emergency
+
+Workflow
+Inventory Used
+       │
+       ▼
+Clinical Module
+       │
+       ▼
+Consumption Recorded
+       │
+       ▼
+Inventory Reduced
+       │
+       ▼
+Billing Updated
+
+Business Rules
+Inventory consumption shall occur automatically after service completion.
+
+Acceptance Criteria
+Clinical consumption reflected immediately.
+
+5.10.16 Functional Requirement INV-FR-012
+Batch and Expiry Management
+
+Requirement ID
+INV-FR-012
+
+Description
+The system shall manage inventory batches and expiry dates.
+
+Batch Information
+Batch Number
+Manufacturing Date
+Expiry Date
+Supplier
+Purchase Order
+Quantity
+Warehouse
+
+FEFO Model
+Inventory
+      │
+      ▼
+Sort by Expiry
+      │
+      ▼
+Nearest Expiry
+      │
+      ▼
+Dispense First
+
+Expiry Classification
+Remaining Shelf Life
+Status
+>180 Days
+Normal
+91–180 Days
+Monitor
+31–90 Days
+Warning
+≤30 Days
+Critical
+Expired
+Blocked
+
+Business Rules
+Expired inventory cannot be issued or dispensed.
+
+Acceptance Criteria
+Expiry alerts generated automatically.
+
+5.10.17 Functional Requirement INV-FR-013
+Inventory Valuation
+
+Requirement ID
+INV-FR-013
+
+Description
+The system shall calculate the financial value of inventory.
+Supported valuation methods may include:
+FIFO (First In, First Out)
+Weighted Average Cost
+Standard Cost
+The active valuation method shall be configurable according to hospital accounting policy.
+
+Valuation Workflow
+Inventory Item
+       │
+       ▼
+Cost Calculation
+       │
+       ▼
+Inventory Value
+       │
+       ▼
+Financial Reports
+
+Business Rules
+Inventory valuation shall use the configured accounting method consistently.
+
+Acceptance Criteria
+Inventory value calculated accurately.
+
+5.10.18 Functional Requirement INV-FR-014
+Automatic Reorder Level Management
+
+Requirement ID
+INV-FR-014
+
+Description
+The system shall automatically monitor inventory levels and generate reorder notifications when stock reaches configured thresholds.
+
+Workflow
+Current Stock
+      │
+      ▼
+Compare with Reorder Level
+      │
+      ▼
+Below Threshold?
+     │        │
+    No       Yes
+     │        │
+Continue   Generate Alert
+             │
+             ▼
+Purchase Recommendation
+
+Business Rules
+Reorder levels shall be configurable for each inventory item.
+
+Acceptance Criteria
+Low-stock alerts generated automatically.
+
+5.10.19 Functional Requirement INV-FR-015
+Inventory Reports and Analytics
+
+The Inventory module shall generate reports including:
+Current Stock Report
+Stock Ledger
+Purchase Report
+Goods Receipt Report
+Stock Issue Report
+Transfer Report
+Return Report
+Adjustment Report
+Expiry Report
+Near Expiry Report
+Inventory Valuation Report
+Slow-Moving Items
+Fast-Moving Items
+Reorder Report
+Supplier Performance Report
+Consumption Report
+Department Usage Report
+
+Reporting Workflow
+Inventory Database
+        │
+        ▼
+Reporting Engine
+        │
+        ▼
+Apply Filters
+        │
+        ▼
+Generate Dashboard
+        │
+        ▼
+PDF / Excel / CSV
+
+Acceptance Criteria
+Reports generated in real time with configurable filters.
+
+5.10.20 Functional Requirement INV-FR-016
+Inventory Security and Audit
+
+Every inventory transaction shall generate an audit record.
+
+Audit Information
+Audit ID
+User ID
+Role
+Warehouse
+Item ID
+Action
+Previous Quantity
+New Quantity
+Timestamp
+Device
+Session ID
+
+Audit Workflow
+User Action
+      │
+      ▼
+Permission Validation
+      │
+      ▼
+Inventory Transaction
+      │
+      ▼
+Audit Log Created
+
+Business Rules
+Inventory audit logs shall not be deleted or modified.
+
+Acceptance Criteria
+All inventory transactions are fully traceable.
+
+5.10.21 Functional Requirement INV-FR-017
+Inventory Integration Requirements
+The Inventory module shall integrate with:
+Module
+Purpose
+Pharmacy
+Medicine stock management
+Laboratory
+Reagent inventory
+Radiology
+Imaging consumables
+Surgery
+Surgical inventory
+Nursing
+Ward consumables
+Billing
+Chargeable inventory
+Procurement
+Purchasing
+Finance
+Inventory valuation
+Biomedical Equipment
+Equipment tracking
+Audit
+Compliance monitoring
+Notification
+Low-stock and expiry alerts
+
+Integration Architecture
+Procurement
+      │
+      ▼
+Inventory Core
+      │
+ ┌────┼─────┬─────┐
+ ▼    ▼     ▼     ▼
+Pharmacy Lab Surgery Billing
+      │
+      ▼
+Finance
+      │
+      ▼
+Audit
+
+5.10.22 Functional Requirement INV-FR-018
+Inventory Non-Functional Requirements
+The Inventory module shall satisfy the following:
+Performance
+Inventory searches should typically complete within 2 seconds under normal operating conditions.
+Stock updates should occur immediately after confirmed transactions.
+Availability
+Target availability: 99.9% excluding planned maintenance.
+Reliability
+Inventory transactions shall use ACID-compliant database transactions to maintain consistency.
+Security
+Role-Based Access Control (RBAC) shall restrict inventory operations.
+Scalability
+Support multiple hospitals, warehouses, and thousands of inventory items.
+Backup & Recovery
+Inventory records shall be included in disaster recovery and backup procedures.
+Data Integrity
+Duplicate item codes shall be prevented.
+Negative inventory balances shall be blocked unless explicitly permitted by authorized policy.
+
+5.10.23 Functional Requirement INV-FR-019
+Inventory Requirement Traceability Matrix
+Requirement ID
+Functional Area
+INV-FR-001
+Inventory Master
+INV-FR-002
+Supplier Management
+INV-FR-003
+Purchase Requisition
+INV-FR-004
+Purchase Order
+INV-FR-005
+Goods Receiving
+INV-FR-006
+Warehouse Management
+INV-FR-007
+Stock Issue
+INV-FR-008
+Stock Transfer
+INV-FR-009
+Stock Return
+INV-FR-010
+Stock Adjustment
+INV-FR-011
+Inventory Consumption
+INV-FR-012
+Batch & Expiry
+INV-FR-013
+Inventory Valuation
+INV-FR-014
+Reorder Management
+INV-FR-015
+Reports & Analytics
+INV-FR-016
+Security & Audit
+INV-FR-017
+Integration Requirements
+INV-FR-018
+Non-Functional Requirements
+INV-FR-019
+Requirement Traceability
+
+5.10.24 Inventory Module Architecture Summary
+                    Supplier
+                       │
+                       ▼
+              Purchase Requisition
+                       │
+                       ▼
+                Purchase Order
+                       │
+                       ▼
+                Goods Receiving
+                       │
+                       ▼
+               Central Warehouse
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+    Pharmacy      Laboratory      Surgery
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+             Department Inventory
+                       │
+                       ▼
+            Clinical Consumption
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+     Billing        Finance        Reports
+                       │
+                       ▼
+                  Audit System
+
+✅ Section 5.10 Status
+Inventory and Medical Store Management System (INV): COMPLETED
+Overall Section 5 Progress
+Section 5 – Functional Requirements
+
+✔ 5.1 Patient Registration
+✔ 5.2 Appointment Management
+✔ 5.3 OPD Management
+✔ 5.4 Emergency Management
+✔ 5.5 Inpatient Management
+✔ 5.6 Laboratory Management
+✔ 5.7 Radiology Management
+✔ 5.8 Billing & Financial Management
+✔ 5.9 Pharmacy & Medication Management
+✔ 5.10 Inventory & Medical Store Management
+
+Next →
+5.11 Human Resource Management System (HRM)
+The next module, Section 5.11 — Human Resource Management System (HRM), will document staff management, recruitment, employee records, scheduling, attendance, leave, payroll integration, performance evaluation, training, credentialing, access control, and HR reporting in the same detailed, real-world IEEE SRS format used throughout the CuraSphere documentation.
+
+

@@ -1,0 +1,2828 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.19 — NOTIFICATION, COMMUNICATION AND ALERT MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: NTF/COMModule Name: Notification, Communication and Alert Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.1428 MODULE PURPOSE
+The Notification, Communication and Alert Management System shall provide the centralized functional foundation through which CuraSphere creates, routes, schedules, delivers, tracks, retries, monitors, and protects approved system notifications, user communications, operational alerts, reminders, and event-driven communication.
+The module shall support:
+in-application notifications;
+user notifications;
+patient notifications;
+doctor notifications;
+nurse notifications;
+receptionist notifications;
+laboratory staff notifications;
+radiology staff notifications;
+pharmacist notifications;
+billing staff notifications;
+HR staff notifications;
+management notifications;
+system administrator notifications;
+security administrator notifications;
+operational alerts;
+administrative alerts;
+appointment reminders;
+appointment cancellation notifications;
+appointment rescheduling notifications;
+admission notifications;
+discharge communication boundaries;
+laboratory workflow notifications;
+laboratory result availability notifications;
+radiology workflow notifications;
+radiology report availability notifications;
+pharmacy notifications;
+medication availability communication boundaries;
+inventory low-stock alerts;
+inventory expiry alerts;
+billing notifications;
+invoice notifications;
+payment confirmation notifications;
+outstanding balance reminders;
+refund communication boundaries;
+insurance communication boundaries;
+workforce notifications;
+leave-request notifications;
+leave-approval notifications;
+attendance alert boundaries;
+payroll notification boundaries;
+document availability notifications;
+report completion notifications;
+scheduled report notifications;
+background job completion notifications;
+security alerts;
+system alerts;
+notification registration;
+notification identification;
+notification event identification;
+notification source identification;
+notification recipient identification;
+recipient resolution;
+notification category;
+notification priority;
+notification severity;
+notification title;
+notification message;
+notification metadata;
+notification context;
+notification creation;
+notification queueing;
+notification scheduling;
+notification delivery;
+notification status;
+notification delivery status;
+notification read state;
+notification unread state;
+notification acknowledgement boundaries;
+notification dismissal boundaries;
+notification expiration;
+notification cancellation;
+notification retry;
+notification failure handling;
+notification delivery attempts;
+notification delivery history;
+notification processing history;
+communication templates;
+template identification;
+template naming;
+template categories;
+template versions;
+template activation;
+template deactivation;
+template variables;
+template variable validation;
+template rendering;
+template localization boundaries;
+template approval boundaries;
+in-app channel;
+email channel boundaries;
+SMS channel boundaries;
+push notification boundaries;
+future mobile notification integration;
+future WhatsApp communication integration boundaries;
+provider abstraction;
+communication provider configuration boundaries;
+provider failure handling;
+provider timeout handling;
+provider retry handling;
+provider fallback boundaries;
+notification preferences;
+communication preferences;
+channel preferences;
+category preferences;
+user opt-out boundaries;
+mandatory communication boundaries;
+legal communication boundaries;
+clinical communication boundaries;
+emergency notification boundaries;
+quiet-hour boundaries;
+emergency quiet-hour override boundaries;
+duplicate notification prevention;
+notification idempotency;
+event idempotency;
+delivery idempotency;
+notification correlation;
+source event correlation;
+notification deduplication;
+notification rate limiting;
+notification throttling;
+notification batching boundaries;
+notification digest boundaries;
+notification escalation boundaries;
+notification recipient groups;
+role-based recipients;
+department-based recipients;
+hospital-based recipients;
+patient-specific recipients;
+staff-specific recipients;
+multi-hospital communication boundaries;
+notification authorization;
+notification record scope;
+communication content security;
+patient privacy;
+clinical information communication boundaries;
+sensitive information restrictions;
+email content restrictions;
+SMS content restrictions;
+notification link security;
+secure deep-link boundaries;
+communication audit;
+notification access events;
+template configuration audit;
+preference configuration audit;
+provider configuration audit;
+notification security events;
+notification abuse detection;
+notification flooding detection;
+excessive delivery detection;
+recipient enumeration protection;
+background notification processing;
+durable notification processing;
+notification worker boundaries;
+notification queue boundaries;
+dead-letter processing boundaries;
+poison-message boundaries;
+retry policies;
+exponential backoff boundaries;
+scheduled notification processing;
+delivery monitoring;
+provider monitoring;
+notification performance monitoring;
+notification latency monitoring;
+failed notification monitoring;
+delivery success metrics;
+unread notification metrics;
+notification observability;
+notification logging boundaries;
+correlation identifiers;
+distributed tracing boundaries;
+future event-driven integration;
+future message broker integration;
+future mobile application integration;
+future patient portal communication expansion;
+future emergency broadcast system;
+future mass communication system;
+future intelligent notification prioritization;
+future AI-assisted communication boundaries.
+The high-level notification lifecycle shall be:
+BUSINESS / SYSTEM EVENT          │          ▼SOURCE MODULE          │          ▼NOTIFICATION EVENT          │          ▼NTF/COM          │          ▼EVENT VALIDATION          │          ▼RECIPIENT RESOLUTION          │          ▼PREFERENCE + POLICY EVALUATION          │          ▼TEMPLATE RESOLUTION          │          ▼CONTENT RENDERING          │          ▼CHANNEL RESOLUTION          │          ▼DELIVERY PROCESSING          │          ▼DELIVERY RESULT          │     ┌────┼─────┐     ▼    ▼     ▼ SUCCESS RETRY FAILURE          │          ▼ PROCESSING HISTORY
+The module shall help CuraSphere answer questions such as:
+WHO SHOULD RECEIVE THIS NOTIFICATION?WHY WAS THIS NOTIFICATION CREATED?WHICH MODULE CREATED THE EVENT?WHAT SOURCE RECORD CAUSED THE NOTIFICATION?WHICH TEMPLATE WAS USED?WHICH TEMPLATE VERSION WAS USED?WHAT VARIABLES WERE PROVIDED?WAS THE TEMPLATE RENDERED SUCCESSFULLY?WHICH DELIVERY CHANNEL WAS SELECTED?WAS THE NOTIFICATION DELIVERED IN-APP?WAS AN EMAIL REQUESTED?WAS AN SMS REQUESTED?DID THE COMMUNICATION PROVIDER ACCEPT THE MESSAGE?DID DELIVERY FAIL?WHY DID DELIVERY FAIL?HOW MANY DELIVERY ATTEMPTS WERE MADE?SHOULD THE DELIVERY BE RETRIED?WHEN SHOULD THE NEXT RETRY OCCUR?HAS THE USER READ THE NOTIFICATION?HAS THE NOTIFICATION EXPIRED?WAS THE NOTIFICATION CANCELLED?IS THIS NOTIFICATION A DUPLICATE?WAS THE SAME BUSINESS EVENT PROCESSED TWICE?CAN AN APPOINTMENT CREATE TWO IDENTICAL REMINDERS?CAN A BACKGROUND WORKER REPROCESS THE SAME EVENT?CAN A USER DISABLE APPOINTMENT REMINDERS?CAN A USER DISABLE SECURITY ALERTS?CAN A PATIENT DISABLE LEGALLY REQUIRED COMMUNICATION?CAN QUIET HOURS DELAY A NORMAL REMINDER?CAN AN EMERGENCY ALERT BYPASS QUIET HOURS?CAN A DOCTOR SEND A MASS MESSAGE TO EVERY PATIENT?CAN A RECEPTIONIST NOTIFY ALL HOSPITAL EMPLOYEES?CAN A USER CHANGE THE RECIPIENT ID IN THE REQUEST?CAN A PATIENT READ ANOTHER PATIENT'S NOTIFICATION?CAN AN SMS CONTAIN A FULL CLINICAL NOTE?CAN AN EMAIL CONTAIN AN UNPROTECTED MEDICAL RECORD?CAN A NOTIFICATION CONTAIN A SECURE LINK?HOW LONG SHOULD THE SECURE LINK REMAIN VALID?CAN AN OLD LINK BE REUSED?CAN APPOINTMENT CODE DIRECTLY CALL AN SMS PROVIDER?CAN BILLING CODE DIRECTLY CONTAIN SMTP CREDENTIALS?CAN EVERY MODULE IMPLEMENT ITS OWN EMAIL SERVICE?WHAT HAPPENS IF THE SMS PROVIDER IS DOWN?WHAT HAPPENS IF EMAIL DELIVERY TIMES OUT?WHAT HAPPENS IF THE APPLICATION RESTARTS?WILL QUEUED NOTIFICATIONS DISAPPEAR?WHAT HAPPENS TO A POISON MESSAGE?HOW ARE REPEATED FAILURES INVESTIGATED?CAN WE CHANGE SMS PROVIDERS LATER?CAN WE ADD A MOBILE APP LATER?CAN WE ADD PUSH NOTIFICATIONS LATER?CAN WE ADD WHATSAPP COMMUNICATION LATER?CAN WE ADD AN EMERGENCY BROADCAST SYSTEM LATER?CAN AI PRIORITIZE NOTIFICATIONS LATER?
+
+5.1429 NOTIFICATION DOMAIN BOUNDARY
+The NTF/COM module shall own notification and communication processing.
+The source business module shall own the business event.
+Example:
+APPOINTMENT MODULE        │        ▼OWNS APPOINTMENT
+When appointment is cancelled:
+APPOINTMENT MODULE        │        ▼APPOINTMENT_CANCELLED
+NTF/COM:
+NTF/COM   │   ▼RESOLVE RECIPIENT   │   ▼CREATE NOTIFICATION   │   ▼DELIVER APPROVED COMMUNICATION
+Another example:
+BILLING MODULE      │      ▼OWNS PAYMENT
+Payment event:
+PAYMENT_RECEIVED
+NTF/COM:
+PAYMENT_RECEIVED       │       ▼PAYMENT CONFIRMATION NOTIFICATION
+Critical Principle
+SOURCE MODULE      │      ▼OWNS BUSINESS FACT
+NTF/COM   │   ▼OWNS COMMUNICATION PROCESS
+Therefore:
+NOTIFICATION     ≠BUSINESS TRANSACTION
+A notification marked:
+DELIVERED
+shall not automatically mean:
+APPOINTMENT COMPLETED
+or:
+PAYMENT CONFIRMED IN FINANCIAL LEDGER
+or:
+LAB RESULT CLINICALLY VERIFIED
+
+5.1430 COMMUNICATION INFRASTRUCTURE BOUNDARY
+Operational modules shall not independently implement communication-provider infrastructure.
+Incorrect architecture:
+APPOINTMENT CONTROLLER        │        ▼SMTP CLIENT        │        ▼EMAIL PROVIDER
+Another incorrect architecture:
+BILLING SERVICE      │      ▼SMS PROVIDER SDK
+Another:
+LAB SERVICE    │    ▼HARDCODED EMAIL PASSWORD
+Preferred architecture:
+SOURCE MODULE      │      ▼BUSINESS EVENT      │      ▼NTF/COM      │      ▼COMMUNICATION ABSTRACTION      │      ▼CHANNEL PROVIDER
+Therefore:
+APPOINTMENTBILLINGLABRADIOLOGYPHARMACYHRREPORTING
+shall communicate through approved NTF/COM boundaries.
+Critical Principle
+BUSINESS MODULE       ≠EMAIL / SMS INFRASTRUCTURE OWNER
+
+5.1431 REACT NOTIFICATION BOUNDARY
+The React application shall present notifications and initiate eligible user notification actions.
+React may:
+DISPLAY NOTIFICATIONSDISPLAY UNREAD COUNTMARK ELIGIBLE NOTIFICATION AS READREQUEST NOTIFICATION HISTORYUPDATE ELIGIBLE PREFERENCESDISPLAY DELIVERY STATUS WHERE AUTHORIZED
+React shall not:
+DECIDE AUTHORITATIVE RECIPIENTSDIRECTLY CALL SMS PROVIDERDIRECTLY CALL EMAIL PROVIDERSTORE SMTP PASSWORDSTORE SMS API SECRETCALCULATE MANDATORY COMMUNICATION POLICYBYPASS QUIET-HOUR POLICYGENERATE SECURITY ALERTS LOCALLY AS AUTHORITATIVE EVENTS
+Preferred flow:
+REACT  │  ▼ASP.NET CORE API  │  ▼NTF/COM SERVICE  │  ▼POLICY + DELIVERY PROCESS
+
+5.1432 NOTIFICATION ACTORS
+Actor
+Notification Responsibility
+Patient
+Receives and views eligible patient notifications
+Doctor
+Receives approved clinical and operational notifications
+Nurse
+Receives approved care and operational notifications
+Receptionist
+Receives approved appointment and reception notifications
+Laboratory Staff
+Receives approved laboratory workflow notifications
+Radiology Staff
+Receives approved radiology workflow notifications
+Pharmacist
+Receives approved pharmacy notifications
+Billing Staff
+Receives approved billing notifications
+HR Staff
+Receives approved workforce notifications
+Department Manager
+Receives approved department alerts
+Hospital Manager
+Receives approved hospital operational alerts
+Executive Management
+Receives approved executive alerts
+Security Administrator
+Reviews notification security events
+System Administrator
+Reviews notification infrastructure health
+Notification Administrator
+Manages approved notification configuration
+Template Administrator
+Manages approved communication templates
+Source Module
+Produces approved notification events
+NTF/COM Module
+Owns notification processing
+Background Worker
+Processes queued and scheduled notifications
+Email Provider
+Processes future approved email delivery
+SMS Provider
+Processes future approved SMS delivery
+Push Provider
+Processes future push notifications
+Audit Module
+Stores eligible audit events
+Future Mobile Application
+Receives approved mobile notifications
+Future External Communication Provider
+Processes approved communication delivery
+
+5.1433 NOTIFICATION FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-NTF-FR-001
+Create Notification Event
+M
+CS-NTF-FR-002
+Generate Notification Event Identifier
+M
+CS-NTF-FR-003
+Identify Notification Source
+M
+CS-NTF-FR-004
+Correlate Notification with Source Record
+M
+CS-NTF-FR-005
+Validate Notification Event
+M
+CS-NTF-FR-006
+Prevent Duplicate Event Processing
+M
+CS-NTF-FR-007
+Create Notification
+M
+CS-NTF-FR-008
+Generate Notification Identifier
+M
+CS-NTF-FR-009
+Assign Notification Category
+M
+CS-NTF-FR-010
+Assign Notification Priority
+M
+CS-NTF-FR-011
+Assign Notification Severity
+M
+CS-NTF-FR-012
+Resolve Notification Recipient
+M
+CS-NTF-FR-013
+Support Patient Recipient
+M
+CS-NTF-FR-014
+Support Staff Recipient
+M
+CS-NTF-FR-015
+Support Role-Based Recipient Boundary
+S
+CS-NTF-FR-016
+Support Department Recipient Boundary
+S
+CS-NTF-FR-017
+Support Hospital Recipient Boundary
+S
+CS-NTF-FR-018
+Restrict Multi-Hospital Communication
+M
+CS-NTF-FR-019
+Assign Notification Title
+M
+CS-NTF-FR-020
+Assign Notification Message
+M
+CS-NTF-FR-021
+Store Notification Metadata
+M
+CS-NTF-FR-022
+Register Notification Template
+M
+CS-NTF-FR-023
+Generate Template Identifier
+M
+CS-NTF-FR-024
+Assign Template Name
+M
+CS-NTF-FR-025
+Assign Template Category
+M
+CS-NTF-FR-026
+Version Notification Template
+M
+CS-NTF-FR-027
+Define Template Variables
+M
+CS-NTF-FR-028
+Validate Template Variables
+M
+CS-NTF-FR-029
+Render Notification Template
+M
+CS-NTF-FR-030
+Activate Notification Template
+M
+CS-NTF-FR-031
+Deactivate Notification Template
+M
+CS-NTF-FR-032
+Support Template Localization Boundary
+S
+CS-NTF-FR-033
+Resolve Notification Channel
+M
+CS-NTF-FR-034
+Deliver In-App Notification
+M
+CS-NTF-FR-035
+Support Email Delivery Boundary
+M
+CS-NTF-FR-036
+Support SMS Delivery Boundary
+M
+CS-NTF-FR-037
+Support Push Notification Boundary
+S
+CS-NTF-FR-038
+Support Future WhatsApp Communication Boundary
+S
+CS-NTF-FR-039
+Maintain Communication Provider Abstraction
+M
+CS-NTF-FR-040
+Record Notification Delivery Attempt
+M
+CS-NTF-FR-041
+Record Delivery Status
+M
+CS-NTF-FR-042
+Record Provider Response Boundary
+M
+CS-NTF-FR-043
+Handle Delivery Failure
+M
+CS-NTF-FR-044
+Retry Eligible Notification Delivery
+M
+CS-NTF-FR-045
+Apply Retry Policy
+M
+CS-NTF-FR-046
+Support Provider Timeout Handling
+M
+CS-NTF-FR-047
+Support Provider Fallback Boundary
+S
+CS-NTF-FR-048
+Maintain Notification Delivery History
+M
+CS-NTF-FR-049
+Mark Notification as Read
+M
+CS-NTF-FR-050
+Maintain Notification Read State
+M
+CS-NTF-FR-051
+Retrieve Unread Notification Count
+M
+CS-NTF-FR-052
+Retrieve Notification History
+M
+CS-NTF-FR-053
+Support Notification Acknowledgement Boundary
+S
+CS-NTF-FR-054
+Support Notification Dismissal Boundary
+S
+CS-NTF-FR-055
+Expire Eligible Notification
+M
+CS-NTF-FR-056
+Cancel Eligible Notification
+M
+CS-NTF-FR-057
+Schedule Notification
+M
+CS-NTF-FR-058
+Process Scheduled Notification
+M
+CS-NTF-FR-059
+Create Appointment Reminder
+M
+CS-NTF-FR-060
+Create Appointment Cancellation Notification
+M
+CS-NTF-FR-061
+Create Appointment Rescheduling Notification
+M
+CS-NTF-FR-062
+Create Admission Notification Boundary
+S
+CS-NTF-FR-063
+Create Discharge Communication Boundary
+S
+CS-NTF-FR-064
+Create Laboratory Workflow Notification
+M
+CS-NTF-FR-065
+Create Laboratory Result Availability Notification
+M
+CS-NTF-FR-066
+Create Radiology Workflow Notification
+M
+CS-NTF-FR-067
+Create Radiology Report Availability Notification
+M
+CS-NTF-FR-068
+Create Pharmacy Notification
+M
+CS-NTF-FR-069
+Create Low Stock Alert
+M
+CS-NTF-FR-070
+Create Inventory Expiry Alert
+M
+CS-NTF-FR-071
+Create Invoice Notification
+M
+CS-NTF-FR-072
+Create Payment Confirmation Notification
+M
+CS-NTF-FR-073
+Create Outstanding Balance Reminder
+S
+CS-NTF-FR-074
+Create Workforce Notification
+M
+CS-NTF-FR-075
+Create Leave Request Notification
+M
+CS-NTF-FR-076
+Create Leave Decision Notification
+M
+CS-NTF-FR-077
+Create Document Availability Notification
+S
+CS-NTF-FR-078
+Create Report Completion Notification
+M
+CS-NTF-FR-079
+Create Report Failure Notification
+M
+CS-NTF-FR-080
+Create Security Alert
+M
+CS-NTF-FR-081
+Create System Alert
+M
+CS-NTF-FR-082
+Maintain Notification Preferences
+M
+CS-NTF-FR-083
+Maintain Channel Preferences
+M
+CS-NTF-FR-084
+Maintain Category Preferences
+M
+CS-NTF-FR-085
+Apply Notification Preference
+M
+CS-NTF-FR-086
+Support User Opt-Out Boundary
+M
+CS-NTF-FR-087
+Enforce Mandatory Notification Boundary
+M
+CS-NTF-FR-088
+Support Quiet Hours
+S
+CS-NTF-FR-089
+Support Emergency Quiet-Hour Override
+M
+CS-NTF-FR-090
+Prevent Duplicate Notification
+M
+CS-NTF-FR-091
+Apply Notification Idempotency
+M
+CS-NTF-FR-092
+Apply Delivery Idempotency Boundary
+M
+CS-NTF-FR-093
+Apply Notification Rate Limit
+M
+CS-NTF-FR-094
+Apply Notification Throttling
+M
+CS-NTF-FR-095
+Support Notification Batching Boundary
+S
+CS-NTF-FR-096
+Support Notification Digest Boundary
+S
+CS-NTF-FR-097
+Support Notification Escalation Boundary
+S
+CS-NTF-FR-098
+Apply Notification Authorization
+M
+CS-NTF-FR-099
+Apply Notification Record Scope
+M
+CS-NTF-FR-100
+Apply Patient Notification Scope
+M
+CS-NTF-FR-101
+Protect Sensitive Communication Content
+M
+CS-NTF-FR-102
+Restrict Clinical Information in External Communication
+M
+CS-NTF-FR-103
+Restrict Sensitive SMS Content
+M
+CS-NTF-FR-104
+Restrict Sensitive Email Content
+M
+CS-NTF-FR-105
+Support Secure Notification Link Boundary
+S
+CS-NTF-FR-106
+Record Notification Access Event
+M
+CS-NTF-FR-107
+Audit Template Configuration
+M
+CS-NTF-FR-108
+Audit Preference Configuration
+M
+CS-NTF-FR-109
+Audit Provider Configuration
+M
+CS-NTF-FR-110
+Record Notification Security Event
+M
+CS-NTF-FR-111
+Detect Notification Flooding
+M
+CS-NTF-FR-112
+Detect Excessive Delivery Activity
+M
+CS-NTF-FR-113
+Protect Recipient Enumeration
+M
+CS-NTF-FR-114
+Process Notification in Background
+M
+CS-NTF-FR-115
+Maintain Durable Notification Processing Boundary
+M
+CS-NTF-FR-116
+Track Notification Job Status
+M
+CS-NTF-FR-117
+Support Dead-Letter Processing Boundary
+S
+CS-NTF-FR-118
+Handle Poison Notification Message Boundary
+S
+CS-NTF-FR-119
+Monitor Notification Delivery
+M
+CS-NTF-FR-120
+Monitor Provider Health
+M
+CS-NTF-FR-121
+Monitor Notification Performance
+M
+CS-NTF-FR-122
+Monitor Notification Latency
+M
+CS-NTF-FR-123
+Monitor Failed Notifications
+M
+CS-NTF-FR-124
+Measure Delivery Success
+M
+CS-NTF-FR-125
+Maintain Notification Processing History
+M
+CS-NTF-FR-126
+Support Correlation Identifier
+M
+CS-NTF-FR-127
+Support Distributed Tracing Boundary
+S
+CS-NTF-FR-128
+Support Future Event-Driven Integration
+S
+CS-NTF-FR-129
+Support Future Message Broker Integration
+S
+CS-NTF-FR-130
+Support Future Mobile Notification Integration
+S
+CS-NTF-FR-131
+Support Future Emergency Broadcast System
+S
+CS-NTF-FR-132
+Support Future Mass Communication System
+S
+CS-NTF-FR-133
+Support Future Intelligent Notification Prioritization
+S
+CS-NTF-FR-134
+Support Future AI-Assisted Communication Boundary
+S
+
+5.1434 CREATE NOTIFICATION EVENT
+CS-NTF-FR-001 — Create Notification Event
+The system shall allow approved source modules to create or publish eligible notification events.
+Example:
+APPOINTMENT_CANCELLED
+Another:
+PAYMENT_RECEIVED
+Another:
+LAB_RESULT_AVAILABLE
+The notification event shall represent a communication-relevant business or system occurrence.
+Conceptually:
+BUSINESS FACT     │     ▼SOURCE MODULE     │     ▼NOTIFICATION EVENT
+The notification event shall not replace the source business record.
+
+5.1435 NOTIFICATION EVENT IDENTIFIER
+CS-NTF-FR-002 — Generate Notification Event Identifier
+The system shall assign a unique identifier to eligible notification events.
+Example:
+NTF-EVT-00098211
+The event identifier shall support:
+TRACEABILITYIDEMPOTENCYDUPLICATE DETECTIONPROCESSING HISTORY
+The event identifier shall remain distinct from the generated notification identifier.
+Therefore:
+EVENT ID   ≠NOTIFICATION ID
+
+5.1436 NOTIFICATION SOURCE
+CS-NTF-FR-003 — Identify Notification Source
+The system shall identify the source module or approved source process associated with a notification event.
+Potential sources include:
+IAMPATIENTAPPOINTMENTADMISSIONCLINICALLABORATORYRADIOLOGYPHARMACYINVENTORYBILLINGHRDOCUMENTREPORTINGSECURITYSYSTEM
+Example:
+EVENTAPPOINTMENT_CANCELLED
+Source:
+APPOINTMENT
+The source shall support operational traceability.
+
+5.1437 SOURCE RECORD CORRELATION
+CS-NTF-FR-004 — Correlate Notification with Source Record
+The system shall support correlation between eligible notification events and source business records.
+Example:
+EVENTAPPOINTMENT_CANCELLED
+Source reference:
+APT-000928
+Conceptually:
+APT-000928    │    ▼APPOINTMENT_CANCELLED    │    ▼NTF-EVT-00098211
+The NTF/COM module shall not assume ownership of the appointment.
+
+5.1438 NOTIFICATION EVENT VALIDATION
+CS-NTF-FR-005 — Validate Notification Event
+The system shall validate eligible notification events before processing.
+Validation may include:
+EVENT TYPEEVENT IDENTIFIERSOURCE MODULESOURCE REFERENCEREQUIRED CONTEXTEVENT TIMESCHEMA VERSION BOUNDARY
+Invalid events shall not automatically proceed to communication delivery.
+
+5.1439 DUPLICATE EVENT PROCESSING PREVENTION
+CS-NTF-FR-006 — Prevent Duplicate Event Processing
+The system shall prevent accidental duplicate processing of the same eligible event.
+Example:
+NTF-EVT-00098211
+received twice.
+Incorrect:
+FIRST EVENT    │    ▼SEND SMSSECOND COPY    │    ▼SEND SAME SMS AGAIN
+Preferred:
+EVENT ID   │   ▼ALREADY PROCESSED?   │ ┌─┴─┐ │   │YES  NO │   │ ▼   ▼SKIP PROCESS
+The exact idempotency storage strategy shall be defined during Application and Data Architecture.
+
+5.1440 CREATE NOTIFICATION
+CS-NTF-FR-007 — Create Notification
+The system shall create an eligible notification from an approved notification event or authorized direct notification process.
+A notification may include:
+NOTIFICATION IDEVENT REFERENCERECIPIENTCATEGORYPRIORITYSEVERITYTITLEMESSAGEMETADATACREATED TIMEEXPIRATION TIME
+Conceptually:
+NOTIFICATION EVENT        │        ▼POLICY EVALUATION        │        ▼NOTIFICATION
+
+5.1441 NOTIFICATION IDENTIFIER
+CS-NTF-FR-008 — Generate Notification Identifier
+The system shall generate a unique notification identifier.
+Example:
+NTF-00098211
+One event may create multiple notifications.
+Example:
+APPOINTMENT_CANCELLED          │          ├──► PATIENT NOTIFICATION          │          ├──► DOCTOR NOTIFICATION          │          └──► RECEPTION NOTIFICATION
+Therefore:
+ONE EVENT    │    ▼ZERO, ONE, OR MULTIPLE NOTIFICATIONS
+according to approved notification policy.
+
+5.1442 NOTIFICATION CATEGORY
+CS-NTF-FR-009 — Assign Notification Category
+The system shall assign an approved category to each notification.
+Potential categories include:
+APPOINTMENTCLINICALLABORATORYRADIOLOGYPHARMACYINVENTORYBILLINGWORKFORCEDOCUMENTREPORTINGSECURITYSYSTEMEMERGENCY
+Category may influence:
+PREFERENCESCHANNELPRIORITYRETENTIONMONITORING
+
+5.1443 NOTIFICATION PRIORITY
+CS-NTF-FR-010 — Assign Notification Priority
+The system shall support approved notification priority.
+Potential priority values include:
+LOWNORMALHIGHURGENT
+Priority shall influence processing order where supported.
+Critical Principle
+PRIORITY    ≠CLINICAL SEVERITY
+A high-priority operational notification shall not automatically be classified as a critical clinical alert.
+
+5.1444 NOTIFICATION SEVERITY
+CS-NTF-FR-011 — Assign Notification Severity
+The system shall support approved severity classification for eligible alerts.
+Potential severity values include:
+INFORMATIONNOTICEWARNINGCRITICAL
+Severity shall be assigned according to approved source-domain rules.
+React may map severity to approved visual styles.
+React shall not independently upgrade:
+NOTICE
+to:
+CRITICAL
+based solely on frontend logic.
+
+5.1445 RESOLVE NOTIFICATION RECIPIENT
+CS-NTF-FR-012 — Resolve Notification Recipient
+The system shall resolve eligible notification recipients server-side.
+Potential recipient sources include:
+PATIENT REFERENCEUSER REFERENCESTAFF REFERENCEROLEDEPARTMENTHOSPITALAPPROVED RECIPIENT GROUP
+Incorrect:
+REACTrecipientId = "ANY USER ID"
+Preferred:
+SOURCE EVENT      │      ▼RECIPIENT POLICY      │      ▼SERVER-SIDE RECIPIENT RESOLUTION
+
+5.1446 PATIENT RECIPIENT
+CS-NTF-FR-013 — Support Patient Recipient
+The system shall support eligible patient-specific notifications.
+Example:
+APPOINTMENT REMINDER
+Recipient:
+PATIENT ASSOCIATED WITH APPOINTMENT
+The system shall resolve the patient from approved business relationships.
+The client shall not be trusted to select an arbitrary patient recipient.
+
+5.1447 STAFF RECIPIENT
+CS-NTF-FR-014 — Support Staff Recipient
+The system shall support eligible staff-specific notifications.
+Examples:
+LEAVE DECISIONASSIGNED WORKFLOW ALERTREPORT COMPLETIONSYSTEM ADMINISTRATIVE ALERT
+Recipient resolution shall use approved staff or user identity relationships.
+
+5.1448 ROLE-BASED RECIPIENT BOUNDARY
+CS-NTF-FR-015 — Support Role-Based Recipient Boundary
+Priority
+Should Have
+The system should support approved role-based recipient resolution.
+Example:
+ROLELAB_MANAGER
+Potential event:
+LAB_OPERATIONAL_ALERT
+Conceptually:
+ROLE │ ▼ELIGIBLE ACTIVE USERS │ ▼SCOPED RECIPIENT LIST
+Role-based communication shall follow organizational scope.
+
+5.1449 DEPARTMENT RECIPIENT BOUNDARY
+CS-NTF-FR-016 — Support Department Recipient Boundary
+Priority
+Should Have
+The system should support approved department-scoped notifications.
+Example:
+CARDIOLOGY
+The system may notify eligible Cardiology staff.
+A department notification shall not automatically be sent to every employee in the hospital.
+
+5.1450 HOSPITAL RECIPIENT BOUNDARY
+CS-NTF-FR-017 — Support Hospital Recipient Boundary
+Priority
+Should Have
+The system should support hospital-scoped notifications.
+Example:
+HOSPITAL ASYSTEM MAINTENANCE NOTICE
+The recipient set shall remain limited to approved Hospital A users.
+
+5.1451 MULTI-HOSPITAL COMMUNICATION RESTRICTION
+CS-NTF-FR-018 — Restrict Multi-Hospital Communication
+The system shall restrict cross-hospital communication to explicitly authorized processes and roles.
+Conceptually:
+HOSPITAL A USER       │       ▼SEND TO HOSPITAL B?       │    ┌──┴──┐    │     │AUTHORIZED NO    │     │    ▼     ▼PROCESS REJECT
+Knowledge of another hospital identifier shall not grant communication authority.
+
+5.1452 NOTIFICATION TITLE
+CS-NTF-FR-019 — Assign Notification Title
+The system shall assign an approved title to eligible notifications.
+Examples:
+APPOINTMENT REMINDERPAYMENT RECEIVEDLAB RESULT AVAILABLELOW STOCK ALERTREPORT COMPLETED
+Titles may be generated through approved templates.
+Sensitive information shall not automatically be exposed in notification titles.
+
+5.1453 NOTIFICATION MESSAGE
+CS-NTF-FR-020 — Assign Notification Message
+The system shall assign approved notification content.
+The message may be generated through:
+APPROVED TEMPLATE
+or an approved system-generated communication process.
+The message shall follow:
+CONTENT POLICYCHANNEL POLICYPRIVACY POLICYSOURCE-DOMAIN POLICY
+
+5.1454 NOTIFICATION METADATA
+CS-NTF-FR-021 — Store Notification Metadata
+The system shall support approved notification metadata.
+Potential metadata includes:
+SOURCE TYPESOURCE REFERENCEACTION TYPENAVIGATION CONTEXTCORRELATION REFERENCE
+Sensitive domain data shall not be copied into metadata without business need.
+Example:
+Incorrect metadata:
+FULL CLINICAL NOTE
+Preferred:
+sourceType = "LAB_ORDER"sourceReference = "LAB-000982"
+where authorized navigation can later retrieve the actual record.
+
+5.1455 REGISTER NOTIFICATION TEMPLATE
+CS-NTF-FR-022 — Register Notification Template
+The system shall support approved notification templates.
+Example templates:
+APPOINTMENT_REMINDERAPPOINTMENT_CANCELLEDPAYMENT_RECEIVEDLAB_RESULT_AVAILABLEREPORT_COMPLETED
+A template may define:
+TITLEBODYCHANNELVARIABLESCATEGORY
+Template management shall remain separate from ordinary notification viewing.
+
+5.1456 TEMPLATE IDENTIFIER
+CS-NTF-FR-023 — Generate Template Identifier
+The system shall generate a unique template identifier.
+Example:
+NTF-TPL-000041
+The identifier shall remain stable across approved template display-name changes.
+
+5.1457 TEMPLATE NAME
+CS-NTF-FR-024 — Assign Template Name
+The system shall assign a human-readable template name.
+Example:
+Patient Appointment Reminder
+The name shall not replace the stable template identifier.
+
+5.1458 TEMPLATE CATEGORY
+CS-NTF-FR-025 — Assign Template Category
+The system shall assign an approved template category.
+Potential categories include:
+APPOINTMENTLABORATORYRADIOLOGYBILLINGWORKFORCEREPORTINGSECURITYSYSTEM
+Template category shall support organization and governance.
+
+5.1459 TEMPLATE VERSIONING
+CS-NTF-FR-026 — Version Notification Template
+The system shall support template version identification.
+Conceptually:
+NTF-TPL-000041       │       ├── VERSION 1       ├── VERSION 2       └── VERSION 3
+A delivered communication should remain traceable to the template version used where required.
+Critical Principle
+CURRENT TEMPLATE CONTENT          ≠HISTORICAL DELIVERED CONTENT
+
+5.1460 TEMPLATE VARIABLES
+CS-NTF-FR-027 — Define Template Variables
+The system shall define approved variables for templates.
+Example:
+APPOINTMENT_REMINDER
+Variables:
+PATIENT_DISPLAY_NAMEAPPOINTMENT_DATEAPPOINTMENT_TIMEHOSPITAL_DISPLAY_NAME
+A template shall not automatically receive every field from the source entity.
+
+5.1461 TEMPLATE VARIABLE VALIDATION
+CS-NTF-FR-028 — Validate Template Variables
+The system shall validate required template variables before rendering.
+Example:
+Template requires:
+APPOINTMENT_DATE
+Event context:
+APPOINTMENT_DATE = MISSING
+Result:
+TEMPLATE RENDERING VALIDATION FAILURE
+The system shall not silently send:
+YOUR APPOINTMENT IS ON {{APPOINTMENT_DATE}}
+to the patient.
+
+5.1462 TEMPLATE RENDERING
+CS-NTF-FR-029 — Render Notification Template
+The system shall render approved templates using validated variables.
+Conceptually:
+TEMPLATE   +VARIABLES   │   ▼RENDERING SERVICE   │   ▼RENDERED CONTENT
+Example:
+Your appointment is scheduled for 15 July 2026 at 10:00 AM.
+The exact template engine shall be selected during Application Architecture.
+
+5.1463 TEMPLATE ACTIVATION
+CS-NTF-FR-030 — Activate Notification Template
+The system shall allow authorized administrators to activate approved templates.
+Only active templates shall be eligible for normal notification generation.
+Activation shall be auditable.
+
+5.1464 TEMPLATE DEACTIVATION
+CS-NTF-FR-031 — Deactivate Notification Template
+The system shall allow authorized administrators to deactivate eligible templates.
+A deactivated template shall not be selected for new normal notification generation.
+Historical notification records shall remain traceable.
+
+5.1465 TEMPLATE LOCALIZATION BOUNDARY
+CS-NTF-FR-032 — Support Template Localization Boundary
+Priority
+Should Have
+The architecture should support future localized notification templates.
+Potential languages may include:
+ENGLISHURDUOTHER APPROVED LANGUAGES
+Conceptually:
+TEMPLATE KEYAPPOINTMENT_REMINDER        │        ├── ENGLISH VERSION        └── URDU VERSION
+The final localization strategy shall be defined during UI and Application Architecture.
+
+5.1466 RESOLVE NOTIFICATION CHANNEL
+CS-NTF-FR-033 — Resolve Notification Channel
+The system shall determine approved communication channels using:
+NOTIFICATION CATEGORYPRIORITYMANDATORY POLICYUSER PREFERENCEAVAILABLE CONTACT METHODCHANNEL AVAILABILITY
+Potential channels include:
+IN_APPEMAILSMSPUSH
+Channel resolution shall remain server-controlled.
+
+5.1467 IN-APP NOTIFICATION DELIVERY
+CS-NTF-FR-034 — Deliver In-App Notification
+The system shall support in-application notifications.
+An eligible notification shall become available through the authenticated CuraSphere interface.
+Potential information includes:
+TITLEMESSAGECATEGORYSEVERITYCREATED TIMEREAD STATEACTION CONTEXT
+The React application shall retrieve notifications through approved APIs.
+
+5.1468 EMAIL DELIVERY BOUNDARY
+CS-NTF-FR-035 — Support Email Delivery Boundary
+The system shall support an approved email communication boundary.
+Conceptually:
+NTF/COM   │   ▼EMAIL CHANNEL ABSTRACTION   │   ▼EMAIL PROVIDER
+Email-provider credentials shall remain outside React.
+Operational modules shall not directly own email infrastructure.
+The exact email provider shall be selected later.
+
+5.1469 SMS DELIVERY BOUNDARY
+CS-NTF-FR-036 — Support SMS Delivery Boundary
+The system shall support an approved SMS communication boundary.
+Conceptually:
+NTF/COM   │   ▼SMS CHANNEL ABSTRACTION   │   ▼SMS PROVIDER
+The exact SMS provider shall be selected during Integration Architecture.
+SMS communication shall follow content and privacy restrictions.
+
+5.1470 PUSH NOTIFICATION BOUNDARY
+CS-NTF-FR-037 — Support Push Notification Boundary
+Priority
+Should Have
+The architecture should support future push notifications.
+Potential consumers include:
+CURASPHERE MOBILE APPLICATIONAPPROVED WEB PUSH CLIENT
+Push notification implementation is not finalized by this SRS section.
+
+5.1471 FUTURE WHATSAPP COMMUNICATION BOUNDARY
+CS-NTF-FR-038 — Support Future WhatsApp Communication Boundary
+Priority
+Should Have
+The architecture should preserve a future approved WhatsApp communication integration boundary.
+Conceptually:
+NTF/COM   │   ▼COMMUNICATION PROVIDER ABSTRACTION   │   ▼APPROVED WHATSAPP PROVIDER
+WhatsApp communication shall require:
+PRIVACY REVIEWCONSENT REVIEWPROVIDER REVIEWCONTENT POLICYLEGAL REVIEW
+No WhatsApp provider is selected by this SRS.
+
+5.1472 COMMUNICATION PROVIDER ABSTRACTION
+CS-NTF-FR-039 — Maintain Communication Provider Abstraction
+The system shall preserve an abstraction between notification business processing and external communication providers.
+Conceptually:
+NOTIFICATION SERVICE         │         ▼ICommunicationChannel         │    ┌────┼────┐    ▼    ▼    ▼ EMAIL SMS   PUSH
+The exact C# interface shown is conceptual.
+Potential architectural benefit:
+PROVIDER A    │    ▼REPLACED BY    │    ▼PROVIDER B
+without rewriting Appointment, Billing, Laboratory, and HR modules.
+
+5.1473 DELIVERY ATTEMPT
+CS-NTF-FR-040 — Record Notification Delivery Attempt
+The system shall record eligible notification delivery attempts.
+Potential information includes:
+DELIVERY ATTEMPT IDNOTIFICATION IDCHANNELPROVIDERATTEMPT NUMBERSTART TIMECOMPLETION TIMESTATUSFAILURE CATEGORY
+Provider secrets shall not be stored in delivery history.
+
+5.1474 DELIVERY STATUS
+CS-NTF-FR-041 — Record Delivery Status
+The system shall record eligible delivery status.
+Potential statuses include:
+PENDINGQUEUEDPROCESSINGPROVIDER_ACCEPTEDDELIVEREDFAILEDRETRY_SCHEDULEDCANCELLEDEXPIRED
+Critical Principle
+PROVIDER_ACCEPTED        ≠CONFIRMED HUMAN READ
+An SMS provider accepting a message shall not automatically mean the patient read it.
+
+5.1475 PROVIDER RESPONSE BOUNDARY
+CS-NTF-FR-042 — Record Provider Response Boundary
+The system shall record approved provider response information necessary for delivery traceability.
+Potential information includes:
+PROVIDER MESSAGE REFERENCEPROVIDER STATUS CODENORMALIZED DELIVERY STATUSRESPONSE TIME
+Sensitive provider credentials, tokens, or unrestricted raw responses shall not be exposed to ordinary users.
+
+5.1476 DELIVERY FAILURE
+CS-NTF-FR-043 — Handle Delivery Failure
+The system shall handle notification delivery failure.
+Potential failure categories include:
+INVALID DESTINATIONPROVIDER UNAVAILABLEPROVIDER TIMEOUTAUTHENTICATION FAILURERATE LIMITEDCONTENT REJECTEDNETWORK FAILUREUNKNOWN FAILURE
+Failure classification shall influence retry policy.
+
+5.1477 DELIVERY RETRY
+CS-NTF-FR-044 — Retry Eligible Notification Delivery
+The system shall retry eligible failed deliveries.
+Example:
+PROVIDER TEMPORARILY UNAVAILABLE
+may be retryable.
+Example:
+INVALID PHONE NUMBER
+may not be automatically retryable without corrected data.
+Conceptually:
+DELIVERY FAILURE       │       ▼CLASSIFY FAILURE       │    ┌──┴──┐    │     │RETRYABLE NO    │     │    ▼     ▼RETRY   FAILED
+
+5.1478 RETRY POLICY
+CS-NTF-FR-045 — Apply Retry Policy
+The system shall apply centrally governed retry policies.
+A retry policy may define:
+MAXIMUM ATTEMPTSRETRY DELAYBACKOFF STRATEGYELIGIBLE FAILURE TYPES
+Retry values shall not be independently hardcoded in every source module.
+Potential future strategy:
+ATTEMPT 1WAIT   │   ▼ATTEMPT 2LONGER WAIT   │   ▼ATTEMPT 3
+The exact backoff algorithm shall be defined during Application Architecture.
+
+5.1479 PROVIDER TIMEOUT HANDLING
+CS-NTF-FR-046 — Support Provider Timeout Handling
+The system shall handle external provider timeouts.
+A timeout creates an important uncertainty:
+REQUEST SENT     │     ▼PROVIDER TIMEOUT     │     ▼WAS MESSAGE ACCEPTED?
+The system shall avoid uncontrolled immediate duplicate delivery.
+Provider-specific idempotency and status-query capabilities shall be evaluated during Integration Architecture.
+
+5.1480 PROVIDER FALLBACK BOUNDARY
+CS-NTF-FR-047 — Support Provider Fallback Boundary
+Priority
+Should Have
+The architecture should support future provider fallback.
+Example:
+PRIMARY SMS PROVIDER        │        ▼UNAVAILABLE        │        ▼APPROVED FALLBACK POLICY        │        ▼SECONDARY SMS PROVIDER
+Fallback shall consider duplicate-delivery risk.
+Provider fallback shall not automatically occur without delivery-state evaluation.
+
+5.1481 DELIVERY HISTORY
+CS-NTF-FR-048 — Maintain Notification Delivery History
+The system shall maintain eligible delivery history.
+Conceptually:
+NOTIFICATION     │     ├── ATTEMPT 1 ── FAILED     │     ├── ATTEMPT 2 ── TIMEOUT     │     └── ATTEMPT 3 ── DELIVERED
+Delivery history shall support:
+SUPPORTOPERATIONSSECURITY INVESTIGATIONPROVIDER INVESTIGATION
+
+5.1482 MARK NOTIFICATION AS READ
+CS-NTF-FR-049 — Mark Notification as Read
+The system shall allow an authenticated recipient to mark an eligible in-app notification as read.
+Flow:
+USER │ ▼OPEN / MARK READ │ ▼API │ ▼AUTHENTICATE │ ▼VERIFY RECIPIENT │ ▼UPDATE READ STATE
+The user shall not mark another user’s notification as read.
+
+5.1483 NOTIFICATION READ STATE
+CS-NTF-FR-050 — Maintain Notification Read State
+The system shall maintain read state for eligible in-app notifications.
+Potential states may include:
+UNREADREAD
+Potential information:
+READ TIME
+Read state shall remain distinct from external delivery status.
+Therefore:
+IN-APP READ      ≠SMS DELIVERED
+and:
+EMAIL DELIVERED      ≠USER ACKNOWLEDGED
+
+5.1484 UNREAD NOTIFICATION COUNT
+CS-NTF-FR-051 — Retrieve Unread Notification Count
+The system shall provide an authoritative unread notification count for the authenticated user.
+Incorrect:
+REACTLOAD FIRST 20 NOTIFICATIONS        │        ▼COUNT UNREAD ITEMS        │        ▼UNREAD COUNT = 4
+The actual unread count may be:
+87
+Preferred:
+SERVER  │  ▼AUTHORITATIVE UNREAD COUNT
+
+5.1485 NOTIFICATION HISTORY
+CS-NTF-FR-052 — Retrieve Notification History
+The system shall allow authenticated users to retrieve eligible notification history.
+The result may support:
+PAGINATIONCATEGORY FILTERREAD STATE FILTERDATE RANGESORTING
+The system shall enforce notification record scope.
+
+5.1486 NOTIFICATION ACKNOWLEDGEMENT BOUNDARY
+CS-NTF-FR-053 — Support Notification Acknowledgement Boundary
+Priority
+Should Have
+The system should support explicit acknowledgement for eligible alerts.
+Example:
+CRITICAL SYSTEM ALERT
+may require:
+ACKNOWLEDGE
+Acknowledgement shall remain distinct from read state.
+Therefore:
+READ   ≠ACKNOWLEDGED
+Potential acknowledgement information includes:
+ACKNOWLEDGED BYACKNOWLEDGED TIME
+
+5.1487 NOTIFICATION DISMISSAL BOUNDARY
+CS-NTF-FR-054 — Support Notification Dismissal Boundary
+Priority
+Should Have
+The system should support dismissal of eligible notifications from a user’s active view.
+Dismissal shall not necessarily delete the notification record.
+Conceptually:
+NOTIFICATION      │      ▼DISMISSED FROM ACTIVE VIEW      │      ▼HISTORY MAY REMAIN
+Mandatory alerts may restrict dismissal.
+
+5.1488 NOTIFICATION EXPIRATION
+CS-NTF-FR-055 — Expire Eligible Notification
+The system shall support expiration of eligible notifications.
+Example:
+APPOINTMENT REMINDER
+may become operationally obsolete after the appointment time.
+Potential state:
+EXPIRED
+Expiration shall not erase audit or processing history where retention is required.
+
+5.1489 NOTIFICATION CANCELLATION
+CS-NTF-FR-056 — Cancel Eligible Notification
+The system shall support cancellation of eligible pending or scheduled notifications.
+Example:
+APPOINTMENT REMINDER SCHEDULED
+Appointment is cancelled before reminder delivery.
+Conceptually:
+REMINDER SCHEDULED        │        ▼APPOINTMENT CANCELLED        │        ▼CANCEL PENDING REMINDER
+A notification already delivered cannot be “undelivered.”
+
+5.1490 SCHEDULE NOTIFICATION
+CS-NTF-FR-057 — Schedule Notification
+The system shall support eligible scheduled notifications.
+Example:
+APPOINTMENT15 JUL 2026 10:00
+Reminder policy:
+SEND BEFORE APPOINTMENT
+Conceptually:
+SOURCE RECORD     │     ▼NOTIFICATION POLICY     │     ▼SCHEDULED DELIVERY TIME     │     ▼PENDING NOTIFICATION
+Exact reminder timing shall be defined during business configuration.
+
+5.1491 PROCESS SCHEDULED NOTIFICATION
+CS-NTF-FR-058 — Process Scheduled Notification
+The system shall process due scheduled notifications.
+Before delivery, the system shall evaluate current eligibility.
+Example:
+APPOINTMENT REMINDER DUE
+Before sending:
+DOES APPOINTMENT STILL EXIST?IS APPOINTMENT STILL ACTIVE?HAS APPOINTMENT BEEN CANCELLED?HAS REMINDER ALREADY BEEN DELIVERED?
+Critical Principle
+SCHEDULED YESTERDAY       ≠STILL VALID TODAY
+
+5.1492 APPOINTMENT REMINDER
+CS-NTF-FR-059 — Create Appointment Reminder
+The system shall support appointment reminders.
+Potential recipient:
+PATIENT
+Potential channels:
+IN_APPEMAIL BOUNDARYSMS BOUNDARY
+The Appointment module shall own appointment status.
+NTF/COM shall own reminder processing.
+
+5.1493 APPOINTMENT CANCELLATION NOTIFICATION
+CS-NTF-FR-060 — Create Appointment Cancellation Notification
+The system shall support notifications for eligible appointment cancellations.
+Potential recipients include:
+PATIENTASSIGNED DOCTOR BOUNDARYRECEPTION WORKFLOW BOUNDARY
+Recipient policy shall be defined by the Appointment domain.
+
+5.1494 APPOINTMENT RESCHEDULING NOTIFICATION
+CS-NTF-FR-061 — Create Appointment Rescheduling Notification
+The system shall support appointment rescheduling communication.
+The notification should clearly distinguish:
+OLD SCHEDULE BOUNDARYNEW APPOINTMENT DATENEW APPOINTMENT TIME
+Sensitive information shall follow channel content policy.
+
+5.1495 ADMISSION NOTIFICATION BOUNDARY
+CS-NTF-FR-062 — Create Admission Notification Boundary
+Priority
+Should Have
+The system should support approved admission-related notifications.
+Potential recipients may include:
+AUTHORIZED CARE TEAMAPPROVED OPERATIONAL STAFF
+Admission notifications shall follow clinical and privacy policies.
+
+5.1496 DISCHARGE COMMUNICATION BOUNDARY
+CS-NTF-FR-063 — Create Discharge Communication Boundary
+Priority
+Should Have
+The system should support approved discharge-related communication.
+Potential use cases include:
+DISCHARGE DOCUMENT AVAILABLEFOLLOW-UP REMINDER BOUNDARY
+Detailed clinical discharge instructions shall not automatically be copied into unrestricted SMS content.
+
+5.1497 LABORATORY WORKFLOW NOTIFICATION
+CS-NTF-FR-064 — Create Laboratory Workflow Notification
+The system shall support approved laboratory workflow notifications.
+Potential events include:
+LAB_ORDER_RECEIVEDSPECIMEN_WORKFLOW_ALERTRESULT_VERIFICATION_REQUIRED
+The Laboratory module shall define the authoritative workflow event.
+
+5.1498 LAB RESULT AVAILABILITY NOTIFICATION
+CS-NTF-FR-065 — Create Laboratory Result Availability Notification
+The system shall support approved notification when an eligible laboratory result becomes available.
+Potential patient communication:
+YOUR LABORATORY RESULT IS AVAILABLE IN CURASPHERE.
+The system should avoid unrestricted external messages such as:
+YOUR HIV RESULT IS POSITIVE.
+unless specifically approved through clinical, privacy, legal, and communication policy.
+Critical Principle
+RESULT AVAILABLE NOTIFICATION            ≠FULL CLINICAL RESULT DISCLOSURE
+
+5.1499 RADIOLOGY WORKFLOW NOTIFICATION
+CS-NTF-FR-066 — Create Radiology Workflow Notification
+The system shall support approved radiology workflow notifications.
+Potential events include:
+RADIOLOGY_ORDER_RECEIVEDREPORT_REVIEW_REQUIREDRADIOLOGY_WORKFLOW_ALERT
+The Radiology module shall remain the source of truth for radiology workflow status.
+
+5.1500 RADIOLOGY REPORT AVAILABILITY NOTIFICATION
+CS-NTF-FR-067 — Create Radiology Report Availability Notification
+The system shall support approved communication when an eligible radiology report becomes available.
+Potential message:
+YOUR RADIOLOGY REPORT IS AVAILABLE IN CURASPHERE.
+Detailed findings shall follow clinical communication policy.
+
+5.1501 PHARMACY NOTIFICATION
+CS-NTF-FR-068 — Create Pharmacy Notification
+The system shall support approved pharmacy notifications.
+Potential events include:
+DISPENSING WORKFLOW ALERTMEDICATION READY BOUNDARYPHARMACY OPERATIONAL ALERT
+The Pharmacy module shall own medication and dispensing business facts.
+
+5.1502 LOW STOCK ALERT
+CS-NTF-FR-069 — Create Low Stock Alert
+The system shall support low-stock alerts based on approved Inventory events.
+Conceptually:
+INVENTORY    │    ▼LOW_STOCK_DETECTED    │    ▼NTF/COM    │    ▼AUTHORIZED INVENTORY RECIPIENTS
+NTF/COM shall not independently calculate authoritative stock quantity.
+
+5.1503 INVENTORY EXPIRY ALERT
+CS-NTF-FR-070 — Create Inventory Expiry Alert
+The system shall support approved inventory expiry alerts.
+Potential recipients include:
+PHARMACY STAFFINVENTORY STAFFAUTHORIZED MANAGER
+The Inventory module shall define expiry-related business conditions.
+
+5.1504 INVOICE NOTIFICATION
+CS-NTF-FR-071 — Create Invoice Notification
+The system shall support approved invoice notifications.
+Potential communication:
+A NEW INVOICE IS AVAILABLE IN CURASPHERE.
+Sensitive financial details shall follow channel policy.
+
+5.1505 PAYMENT CONFIRMATION NOTIFICATION
+CS-NTF-FR-072 — Create Payment Confirmation Notification
+The system shall support approved payment confirmation notifications.
+The Billing module shall confirm the payment business fact.
+NTF/COM may communicate:
+PAYMENT RECEIVED
+The notification shall not independently mark an invoice as paid.
+
+5.1506 OUTSTANDING BALANCE REMINDER
+CS-NTF-FR-073 — Create Outstanding Balance Reminder
+Priority
+Should Have
+The system should support approved outstanding-balance reminders.
+Reminder policy shall consider:
+BALANCE STATUSDUE DATEREMINDER FREQUENCYPATIENT COMMUNICATION PREFERENCELEGAL / FINANCIAL POLICY
+The Billing module shall remain the source of truth for outstanding balance.
+
+5.1507 WORKFORCE NOTIFICATION
+CS-NTF-FR-074 — Create Workforce Notification
+The system shall support approved workforce notifications.
+Potential events include:
+WORK ASSIGNMENT BOUNDARYATTENDANCE ALERT BOUNDARYHR WORKFLOW ALERT
+Workforce communication shall follow employee information access policies.
+
+5.1508 LEAVE REQUEST NOTIFICATION
+CS-NTF-FR-075 — Create Leave Request Notification
+The system shall support approved leave-request notifications.
+Potential recipient:
+AUTHORIZED LEAVE APPROVER
+The HR module shall own leave-request state.
+
+5.1509 LEAVE DECISION NOTIFICATION
+CS-NTF-FR-076 — Create Leave Decision Notification
+The system shall support approved communication of leave decisions.
+Potential statuses communicated include:
+APPROVEDREJECTED
+The notification shall reflect the HR domain’s authoritative decision.
+
+5.1510 DOCUMENT AVAILABILITY NOTIFICATION
+CS-NTF-FR-077 — Create Document Availability Notification
+Priority
+Should Have
+The system should support approved notification when an eligible document becomes available.
+Potential message:
+A DOCUMENT IS AVAILABLE IN CURASPHERE.
+The notification shall not automatically attach the sensitive document to an external communication.
+
+5.1511 REPORT COMPLETION NOTIFICATION
+CS-NTF-FR-078 — Create Report Completion Notification
+The system shall support notification when an eligible background or scheduled report completes.
+Example:
+REPORT COMPLETEDRPT-EXE-0009821
+The user may receive:
+YOUR REPORT IS READY.
+Access to the report result shall still require Reporting module authorization.
+
+5.1512 REPORT FAILURE NOTIFICATION
+CS-NTF-FR-079 — Create Report Failure Notification
+The system shall support approved notification for report failures.
+Potential recipients include:
+REPORT REQUESTERREPORT ADMINISTRATOR BOUNDARYSYSTEM OPERATOR BOUNDARY
+The notification shall not expose sensitive internal stack traces to ordinary users.
+
+5.1513 SECURITY ALERT
+CS-NTF-FR-080 — Create Security Alert
+The system shall support approved security alerts.
+Potential events include:
+SUSPICIOUS LOGINEXCESSIVE EXPORTUNAUTHORIZED ACCESS PATTERNACCOUNT SECURITY EVENT
+Security alert recipients shall be resolved according to Security Architecture.
+A security alert shall not be suppressible through ordinary marketing-style preferences.
+
+5.1514 SYSTEM ALERT
+CS-NTF-FR-081 — Create System Alert
+The system shall support approved system and operational alerts.
+Potential examples include:
+BACKGROUND JOB FAILUREINTEGRATION FAILUREDATABASE CAPACITY WARNING BOUNDARYPROVIDER OUTAGESYSTEM MAINTENANCE NOTICE
+System alerts shall be routed to appropriate operational recipients.
+
+5.1515 NOTIFICATION PREFERENCES
+CS-NTF-FR-082 — Maintain Notification Preferences
+The system shall support eligible user notification preferences.
+Potential preferences include:
+CHANNEL PREFERENCECATEGORY PREFERENCEQUIET HOURSDIGEST PREFERENCE BOUNDARY
+Preferences shall not override mandatory communication policies.
+
+5.1516 CHANNEL PREFERENCES
+CS-NTF-FR-083 — Maintain Channel Preferences
+The system shall support eligible communication channel preferences.
+Example:
+APPOINTMENT REMINDERSIN_APP = ENABLEDEMAIL = ENABLEDSMS = DISABLED
+Availability of a preference shall depend on notification policy.
+
+5.1517 CATEGORY PREFERENCES
+CS-NTF-FR-084 — Maintain Category Preferences
+The system shall support eligible category-based preferences.
+Potential categories include:
+APPOINTMENTBILLINGREPORTINGWORKFORCE
+Security, emergency, or legally required categories may not permit ordinary opt-out.
+
+5.1518 APPLY NOTIFICATION PREFERENCE
+CS-NTF-FR-085 — Apply Notification Preference
+The system shall evaluate eligible preferences during channel resolution.
+Conceptually:
+NOTIFICATION     │     ▼MANDATORY POLICY?     │  ┌──┴──┐  │     │ YES    NO  │     │  ▼     ▼POLICY PREFERENCECHANNEL EVALUATION
+The exact precedence rules shall be defined during Application Architecture.
+
+5.1519 USER OPT-OUT BOUNDARY
+CS-NTF-FR-086 — Support User Opt-Out Boundary
+The system shall support opt-out for eligible optional communication categories and channels.
+Opt-out shall be recorded.
+The system shall clearly distinguish:
+OPTIONAL COMMUNICATION
+from:
+MANDATORY OPERATIONAL COMMUNICATION
+
+5.1520 MANDATORY NOTIFICATION BOUNDARY
+CS-NTF-FR-087 — Enforce Mandatory Notification Boundary
+The system shall support mandatory notification categories.
+Potential examples include:
+SECURITY ALERTSCRITICAL SYSTEM COMMUNICATIONAPPROVED LEGAL COMMUNICATIONAPPROVED EMERGENCY ALERTS
+A user preference shall not automatically suppress mandatory communication.
+
+5.1521 QUIET HOURS
+CS-NTF-FR-088 — Support Quiet Hours
+Priority
+Should Have
+The system should support user quiet-hour preferences for eligible communication.
+Example:
+22:00 – 07:00
+During quiet hours:
+NORMAL REMINDER       │       ▼DELAY BOUNDARY
+The exact behavior shall depend on category and delivery policy.
+Time zone shall be considered.
+
+5.1522 EMERGENCY QUIET-HOUR OVERRIDE
+CS-NTF-FR-089 — Support Emergency Quiet-Hour Override
+The system shall support approved emergency override of quiet-hour restrictions.
+Conceptually:
+NOTIFICATION     │     ▼QUIET HOURS ACTIVE?     │     ▼YES     │     ▼EMERGENCY OVERRIDE?     │   ┌─┴─┐   │   │  YES  NO   │   │   ▼   ▼SEND  DELAY
+Emergency classification shall be server-controlled and governed.
+
+5.1523 DUPLICATE NOTIFICATION PREVENTION
+CS-NTF-FR-090 — Prevent Duplicate Notification
+The system shall prevent accidental creation of duplicate notifications for the same governed communication purpose.
+Example:
+APPOINTMENT REMINDERAPT-00092824-HOUR REMINDER
+The system should not create:
+REMINDER 1REMINDER 2REMINDER 3REMINDER 4
+because the same background process ran repeatedly.
+Deduplication rules shall use approved business context.
+
+5.1524 NOTIFICATION IDEMPOTENCY
+CS-NTF-FR-091 — Apply Notification Idempotency
+The system shall support idempotent notification processing.
+Conceptually:
+PROCESS EVENT X       │       ▼NOTIFICATION CREATED
+Process event X again:
+EVENT X   │   ▼ALREADY PROCESSED   │   ▼DO NOT CREATE DUPLICATE
+Idempotency shall be particularly important for:
+BACKGROUND WORKERSEVENT PROCESSINGRETRY WORKFLOWSFUTURE MESSAGE BROKERS
+
+5.1525 DELIVERY IDEMPOTENCY BOUNDARY
+CS-NTF-FR-092 — Apply Delivery Idempotency Boundary
+The system shall preserve a boundary for preventing duplicate external deliveries.
+Example:
+SMS REQUEST SENT       │       ▼NETWORK TIMEOUT
+The system shall not blindly send the same SMS repeatedly without evaluating delivery uncertainty.
+Provider capabilities shall influence the final implementation.
+
+5.1526 NOTIFICATION RATE LIMIT
+CS-NTF-FR-093 — Apply Notification Rate Limit
+The system shall support rate limits for eligible notification operations.
+Potential rate-limit dimensions include:
+SOURCE MODULEEVENT TYPERECIPIENTCHANNELUSERHOSPITAL
+Example:
+10,000 PASSWORD SECURITY MESSAGESTO ONE USERIN ONE MINUTE
+shall support protection and investigation.
+
+5.1527 NOTIFICATION THROTTLING
+CS-NTF-FR-094 — Apply Notification Throttling
+The system shall support throttling of eligible high-volume notifications.
+Throttling may protect:
+COMMUNICATION PROVIDERAPPLICATIONDATABASERECIPIENT EXPERIENCE
+Emergency communication shall follow separate capacity and priority policies.
+
+5.1528 NOTIFICATION BATCHING BOUNDARY
+CS-NTF-FR-095 — Support Notification Batching Boundary
+Priority
+Should Have
+The architecture should support batching of eligible communication work.
+Example:
+1,000 NORMAL NOTIFICATIONS
+may be processed through controlled batches rather than uncontrolled parallel delivery.
+Batching strategy shall be defined during Performance Architecture.
+
+5.1529 NOTIFICATION DIGEST BOUNDARY
+CS-NTF-FR-096 — Support Notification Digest Boundary
+Priority
+Should Have
+The system should support future notification digests.
+Example:
+Instead of:
+10 LOW-PRIORITY REPORT NOTIFICATIONS
+the user may receive:
+DAILY REPORT SUMMARY10 REPORT EVENTS
+Only eligible notification categories shall support digest processing.
+
+5.1530 NOTIFICATION ESCALATION BOUNDARY
+CS-NTF-FR-097 — Support Notification Escalation Boundary
+Priority
+Should Have
+The architecture should support escalation for eligible operational alerts.
+Example:
+CRITICAL ALERT     │     ▼PRIMARY RECIPIENT     │     ▼NOT ACKNOWLEDGED     │     ▼ESCALATION POLICY     │     ▼SECONDARY RECIPIENT
+Escalation shall require approved operational rules.
+
+5.1531 NOTIFICATION AUTHORIZATION
+CS-NTF-FR-098 — Apply Notification Authorization
+The system shall enforce notification permissions server-side.
+Potential permissions may distinguish:
+VIEW OWN NOTIFICATIONMARK OWN NOTIFICATION READVIEW NOTIFICATION DELIVERYSEND APPROVED NOTIFICATIONMANAGE TEMPLATEMANAGE PREFERENCEVIEW NOTIFICATION MONITORINGMANAGE PROVIDER CONFIGURATION
+Knowledge of a notification identifier shall not grant access.
+
+5.1532 NOTIFICATION RECORD SCOPE
+CS-NTF-FR-099 — Apply Notification Record Scope
+The system shall restrict notification records according to authorized recipient and administrative scope.
+Conceptually:
+USER │ ▼NOTIFICATION REQUEST │ ▼AUTHENTICATE │ ▼AUTHORIZE │ ▼RECIPIENT / ADMIN SCOPE │ ▼RESULT
+
+5.1533 PATIENT NOTIFICATION SCOPE
+CS-NTF-FR-100 — Apply Patient Notification Scope
+The system shall restrict patient notification access to the authenticated patient’s eligible notifications.
+Incorrect:
+GET /notifications?patientId=PAT-002
+trusted directly from the client.
+Preferred:
+AUTHENTICATED USER       │       ▼PATIENT IDENTITY RELATIONSHIP       │       ▼SERVER-DERIVED PATIENT SCOPE
+
+5.1534 SENSITIVE COMMUNICATION CONTENT
+CS-NTF-FR-101 — Protect Sensitive Communication Content
+The system shall protect sensitive information in notification content.
+Potential sensitive information includes:
+DIAGNOSISCLINICAL NOTESLAB RESULTSRADIOLOGY FINDINGSIDENTITY INFORMATIONFINANCIAL INFORMATIONPAYROLL INFORMATIONSECURITY INFORMATION
+Notification content shall follow least-information principles.
+Critical Principle
+NOTIFICATION      │      ▼INFORM USER
+does not require:
+COPY COMPLETE BUSINESS RECORD
+
+5.1535 CLINICAL INFORMATION IN EXTERNAL COMMUNICATION
+CS-NTF-FR-102 — Restrict Clinical Information in External Communication
+The system shall restrict clinical information sent through external communication channels.
+Preferred external communication:
+A NEW LABORATORY RESULT IS AVAILABLE IN CURASPHERE.
+Potentially unsafe communication:
+YOUR COMPLETE LAB RESULT IS:[ALL CLINICAL DATA]
+The final clinical communication policy shall require Clinical, Security, Privacy, and Legal review.
+
+5.1536 SENSITIVE SMS CONTENT
+CS-NTF-FR-103 — Restrict Sensitive SMS Content
+The system shall apply approved content restrictions to SMS.
+SMS may be visible:
+ON LOCK SCREENTO MOBILE NETWORK SYSTEMSTO A PERSON HOLDING THE DEVICE
+Therefore, SMS content shall use approved minimum-information principles.
+
+5.1537 SENSITIVE EMAIL CONTENT
+CS-NTF-FR-104 — Restrict Sensitive Email Content
+The system shall apply approved content restrictions to email communication.
+Sensitive records shall not automatically be attached to ordinary email.
+Preferred:
+A DOCUMENT IS AVAILABLE.SIGN IN TO CURASPHERE TO VIEW IT.
+rather than unrestricted attachment delivery.
+
+5.1538 SECURE NOTIFICATION LINK BOUNDARY
+CS-NTF-FR-105 — Support Secure Notification Link Boundary
+Priority
+Should Have
+The architecture should support secure notification links where required.
+A secure link may require:
+SIGNED TOKEN BOUNDARYEXPIRATIONSINGLE-USE BOUNDARYAUTHENTICATIONTARGET RESOURCE AUTHORIZATION
+Critical Principle
+VALID LINK TOKEN       ≠UNRESTRICTED RESOURCE AUTHORIZATION
+The target resource may still require normal access control.
+
+5.1539 NOTIFICATION ACCESS EVENT
+CS-NTF-FR-106 — Record Notification Access Event
+The system shall record eligible notification access events.
+Potential events include:
+NOTIFICATION_VIEWEDNOTIFICATION_MARKED_READNOTIFICATION_ACKNOWLEDGEDNOTIFICATION_DISMISSED
+Sensitive notification access may require stronger event recording.
+
+5.1540 TEMPLATE CONFIGURATION AUDIT
+CS-NTF-FR-107 — Audit Template Configuration
+The system shall audit eligible template configuration changes.
+Potential events include:
+TEMPLATE_CREATEDTEMPLATE_UPDATEDTEMPLATE_ACTIVATEDTEMPLATE_DEACTIVATEDTEMPLATE_VERSION_CREATEDTEMPLATE_VARIABLE_UPDATED
+Template changes may affect thousands of communications.
+Therefore:
+TEMPLATE CHANGE       │       ▼AUDITABLE CONFIGURATION CHANGE
+
+5.1541 PREFERENCE CONFIGURATION AUDIT
+CS-NTF-FR-108 — Audit Preference Configuration
+The system shall audit eligible communication preference changes.
+Potential events include:
+CHANNEL_PREFERENCE_UPDATEDCATEGORY_PREFERENCE_UPDATEDQUIET_HOURS_UPDATEDOPT_OUT_UPDATED
+The system shall preserve appropriate evidence for mandatory communication policy evaluation.
+
+5.1542 PROVIDER CONFIGURATION AUDIT
+CS-NTF-FR-109 — Audit Provider Configuration
+The system shall audit eligible communication-provider configuration changes.
+Potential events include:
+PROVIDER_ENABLEDPROVIDER_DISABLEDPROVIDER_PRIORITY_UPDATEDPROVIDER_CONFIGURATION_UPDATED
+Secrets shall not be written into audit events.
+
+5.1543 NOTIFICATION SECURITY EVENT
+CS-NTF-FR-110 — Record Notification Security Event
+The system shall record eligible notification security events.
+Potential events include:
+UNAUTHORIZED_NOTIFICATION_ACCESSRECIPIENT_SCOPE_TAMPERINGUNAUTHORIZED_MASS_NOTIFICATION_ATTEMPTUNAUTHORIZED_TEMPLATE_CHANGEEXCESSIVE_NOTIFICATION_CREATIONEXCESSIVE_EXTERNAL_DELIVERYNOTIFICATION_ENUMERATION_PATTERNSECURE_LINK_ABUSEPROVIDER_CONFIGURATION_ACCESS_DENIED
+Security events shall integrate with centralized security monitoring boundaries.
+
+5.1544 NOTIFICATION FLOODING DETECTION
+CS-NTF-FR-111 — Detect Notification Flooding
+The system shall support detection of notification flooding.
+Example:
+SOURCE MODULECREATES 1,000,000 IDENTICAL EVENTS
+Potential response may include:
+THROTTLERATE LIMITSECURITY EVENTOPERATIONAL ALERTSOURCE INVESTIGATION
+The exact thresholds shall be defined during Security and Performance Architecture.
+
+5.1545 EXCESSIVE DELIVERY ACTIVITY
+CS-NTF-FR-112 — Detect Excessive Delivery Activity
+The system shall support monitoring of unusual external delivery volume.
+Potential signals include:
+HIGH SMS VOLUMEHIGH EMAIL VOLUMEREPEATED DELIVERY TO ONE RECIPIENTUNUSUAL CROSS-HOSPITAL RECIPIENT VOLUMEHIGH FAILURE RATE
+This may indicate:
+SOFTWARE DEFECTMISCONFIGURATIONABUSEPROVIDER PROBLEM
+
+5.1546 RECIPIENT ENUMERATION PROTECTION
+CS-NTF-FR-113 — Protect Recipient Enumeration
+The system shall protect notification interfaces from recipient enumeration.
+Example attacker requests:
+NTF-000001NTF-000002NTF-000003
+The system shall enforce authorization for every notification record.
+Predictable identifiers shall not replace access control.
+
+5.1547 BACKGROUND NOTIFICATION PROCESSING
+CS-NTF-FR-114 — Process Notification in Background
+The system shall support background processing for eligible notifications.
+Preferred:
+SOURCE REQUEST      │      ▼BUSINESS TRANSACTION COMPLETES      │      ▼NOTIFICATION WORK CREATED      │      ▼BACKGROUND PROCESSOR      │      ▼DELIVERY
+This can prevent a patient appointment request from waiting for an external SMS provider.
+Critical Principle
+SMS PROVIDER SLOW       │       ▼SHALL NOT UNNECESSARILY BLOCK       │       ▼CORE HOSPITAL BUSINESS TRANSACTION
+
+5.1548 DURABLE NOTIFICATION PROCESSING BOUNDARY
+CS-NTF-FR-115 — Maintain Durable Notification Processing Boundary
+The architecture shall support durable processing for important notification work.
+Problem:
+NOTIFICATION STORED ONLY IN MEMORY          │          ▼APPLICATION RESTARTS          │          ▼NOTIFICATION LOST
+Preferred architectural boundary:
+NOTIFICATION WORK        │        ▼DURABLE STATE        │        ▼BACKGROUND PROCESSING
+The exact durable queue or job technology shall be selected later.
+
+5.1549 NOTIFICATION JOB STATUS
+CS-NTF-FR-116 — Track Notification Job Status
+The system shall track eligible background notification processing status.
+Potential statuses include:
+QUEUEDPROCESSINGCOMPLETEDFAILEDRETRY_SCHEDULEDDEAD_LETTERED BOUNDARY
+The status shall support operations and monitoring.
+
+5.1550 DEAD-LETTER PROCESSING BOUNDARY
+CS-NTF-FR-117 — Support Dead-Letter Processing Boundary
+Priority
+Should Have
+The architecture should support dead-letter handling for repeatedly failed notification work.
+Conceptually:
+MESSAGE   │   ▼PROCESS   │   ▼FAIL   │   ▼RETRY   │   ▼FAIL REPEATEDLY   │   ▼DEAD-LETTER BOUNDARY   │   ▼INVESTIGATION
+The exact implementation depends on the selected background-processing technology.
+
+5.1551 POISON NOTIFICATION MESSAGE BOUNDARY
+CS-NTF-FR-118 — Handle Poison Notification Message Boundary
+Priority
+Should Have
+The architecture should support identification of notification work that repeatedly causes processing failure.
+Example:
+INVALID TEMPLATE DATA
+causes the worker to crash on every attempt.
+The system should avoid:
+PROCESSCRASHRESTARTPROCESS SAME MESSAGECRASHREPEAT FOREVER
+Such work shall support isolation and investigation.
+
+5.1552 NOTIFICATION DELIVERY MONITORING
+CS-NTF-FR-119 — Monitor Notification Delivery
+The system shall monitor notification delivery.
+Potential metrics include:
+NOTIFICATIONS CREATEDNOTIFICATIONS QUEUEDNOTIFICATIONS PROCESSEDDELIVERIES ATTEMPTEDDELIVERIES SUCCEEDEDDELIVERIES FAILEDRETRIES SCHEDULED
+Metrics may be grouped by:
+CHANNELCATEGORYPROVIDERHOSPITALTIME PERIOD
+
+5.1553 PROVIDER HEALTH MONITORING
+CS-NTF-FR-120 — Monitor Provider Health
+The system shall support communication-provider health monitoring.
+Potential indicators include:
+SUCCESS RATEFAILURE RATETIMEOUT RATEAVERAGE RESPONSE TIMERATE-LIMIT RESPONSES
+Provider health shall support operational investigation.
+
+5.1554 NOTIFICATION PERFORMANCE MONITORING
+CS-NTF-FR-121 — Monitor Notification Performance
+The system shall monitor notification processing performance.
+Potential metrics include:
+EVENT PROCESSING TIMERECIPIENT RESOLUTION TIMETEMPLATE RENDER TIMEQUEUE WAIT TIMEDELIVERY PROCESSING TIME
+Performance metrics shall not expose sensitive notification content.
+
+5.1555 NOTIFICATION LATENCY MONITORING
+CS-NTF-FR-122 — Monitor Notification Latency
+The system shall monitor end-to-end notification latency.
+Conceptually:
+SOURCE EVENT TIME       │       ▼NOTIFICATION CREATED       │       ▼DELIVERY STARTED       │       ▼PROVIDER ACCEPTED
+Potential measurements include:
+EVENT-TO-CREATION LATENCYCREATION-TO-PROCESSING LATENCYPROCESSING-TO-PROVIDER LATENCY
+Urgent alerts may require different latency objectives from low-priority reminders.
+
+5.1556 FAILED NOTIFICATION MONITORING
+CS-NTF-FR-123 — Monitor Failed Notifications
+The system shall provide operational visibility into failed notification processing.
+Potential failure groups include:
+TEMPLATE FAILURERECIPIENT FAILURECHANNEL FAILUREPROVIDER FAILURETIMEOUTRATE LIMITUNKNOWN FAILURE
+Repeated failures shall support alerting and investigation.
+
+5.1557 DELIVERY SUCCESS MEASUREMENT
+CS-NTF-FR-124 — Measure Delivery Success
+The system shall calculate approved delivery metrics.
+Potential metrics include:
+DELIVERY SUCCESS RATEFAILURE RATERETRY RATEPROVIDER ACCEPTANCE RATE
+The metric definition shall distinguish:
+PROVIDER ACCEPTEDDELIVEREDREADACKNOWLEDGED
+where the channel supports those states.
+
+5.1558 NOTIFICATION PROCESSING HISTORY
+CS-NTF-FR-125 — Maintain Notification Processing History
+The system shall maintain eligible notification processing history.
+Potential events include:
+EVENT_RECEIVEDEVENT_VALIDATEDEVENT_DUPLICATE_DETECTEDRECIPIENT_RESOLVEDNOTIFICATION_CREATEDTEMPLATE_RESOLVEDTEMPLATE_RENDEREDCHANNEL_RESOLVEDDELIVERY_QUEUEDDELIVERY_STARTEDPROVIDER_ACCEPTEDDELIVERY_FAILEDRETRY_SCHEDULEDNOTIFICATION_DELIVEREDNOTIFICATION_READNOTIFICATION_ACKNOWLEDGEDNOTIFICATION_EXPIREDNOTIFICATION_CANCELLED
+Processing history shall support technical traceability.
+It shall not replace centralized Audit requirements.
+
+5.1559 CORRELATION IDENTIFIER
+CS-NTF-FR-126 — Support Correlation Identifier
+The system shall support correlation identifiers across eligible notification processing.
+Example:
+CORRELATION IDCOR-98AB-7211
+Conceptually:
+APPOINTMENT REQUEST       │       ▼APPOINTMENT CREATED       │       ▼NOTIFICATION EVENT       │       ▼NOTIFICATION       │       ▼SMS DELIVERY
+All eligible processing may share an approved correlation reference.
+
+5.1560 DISTRIBUTED TRACING BOUNDARY
+CS-NTF-FR-127 — Support Distributed Tracing Boundary
+Priority
+Should Have
+The architecture should support future distributed tracing.
+Conceptually:
+API │ ▼APPOINTMENT │ ▼NOTIFICATION │ ▼BACKGROUND WORKER │ ▼SMS PROVIDER
+Tracing shall support technical diagnostics.
+Sensitive notification content shall not automatically be included in trace attributes.
+
+5.1561 FUTURE EVENT-DRIVEN INTEGRATION
+CS-NTF-FR-128 — Support Future Event-Driven Integration
+Priority
+Should Have
+The architecture should preserve future event-driven notification integration.
+Conceptually:
+SOURCE MODULE      │      ▼DOMAIN / INTEGRATION EVENT      │      ▼EVENT DELIVERY BOUNDARY      │      ▼NTF/COM
+The first RAD implementation may use a simpler modular approach.
+Critical Principle
+EVENT-DRIVEN BOUNDARY          ≠IMMEDIATE REQUIREMENT FOR KAFKA
+
+5.1562 FUTURE MESSAGE BROKER INTEGRATION
+CS-NTF-FR-129 — Support Future Message Broker Integration
+Priority
+Should Have
+The architecture should support future message-broker integration where scale or reliability justifies it.
+Potential technologies shall be evaluated later.
+Conceptually:
+SOURCE MODULE      │      ▼MESSAGE BROKER      │      ▼NOTIFICATION CONSUMER      │      ▼NTF/COM
+No broker technology is selected by this SRS section.
+
+5.1563 FUTURE MOBILE NOTIFICATION INTEGRATION
+CS-NTF-FR-130 — Support Future Mobile Notification Integration
+Priority
+Should Have
+The architecture should support future CuraSphere mobile application notifications.
+Conceptually:
+NTF/COM   │   ▼PUSH CHANNEL   │   ▼MOBILE NOTIFICATION PROVIDER   │   ▼CURASPHERE MOBILE APP
+Mobile-device token management requirements shall be defined later.
+
+5.1564 FUTURE EMERGENCY BROADCAST SYSTEM
+CS-NTF-FR-131 — Support Future Emergency Broadcast System
+Priority
+Should Have
+The architecture should preserve a future emergency broadcast capability.
+Potential use cases include:
+HOSPITAL EMERGENCYFACILITY EVACUATIONCRITICAL OPERATIONAL INCIDENT
+Emergency broadcasts shall require:
+SPECIAL AUTHORIZATIONRECIPIENT SCOPEPRIORITY POLICYDELIVERY CAPACITYAUDITABUSE PROTECTION
+Ordinary users shall not receive emergency broadcast authority.
+
+5.1565 FUTURE MASS COMMUNICATION SYSTEM
+CS-NTF-FR-132 — Support Future Mass Communication System
+Priority
+Should Have
+The architecture should support future approved mass communication.
+Potential scopes include:
+DEPARTMENTHOSPITALMULTIPLE HOSPITALS
+Mass communication shall require separate authorization from ordinary notification creation.
+Conceptually:
+CAN SEND OWN WORKFLOW NOTIFICATION             ≠CAN MESSAGE 100,000 USERS
+
+5.1566 FUTURE INTELLIGENT NOTIFICATION PRIORITIZATION
+CS-NTF-FR-133 — Support Future Intelligent Notification Prioritization
+Priority
+Should Have
+The architecture should preserve a future intelligent prioritization boundary.
+Potential inputs may include:
+NOTIFICATION CATEGORYSEVERITYUSER ROLECURRENT WORKFLOWHISTORICAL RESPONSE BOUNDARY
+Intelligent prioritization shall not silently downgrade mandatory critical alerts.
+
+5.1567 FUTURE AI-ASSISTED COMMUNICATION BOUNDARY
+CS-NTF-FR-134 — Support Future AI-Assisted Communication Boundary
+Priority
+Should Have
+The architecture should preserve a future AI-assisted communication boundary.
+Potential future uses include:
+COMMUNICATION DRAFT ASSISTANCEMESSAGE SIMPLIFICATIONLANGUAGE ASSISTANCENOTIFICATION SUMMARYDIGEST GENERATION
+Critical Principle
+AI-GENERATED COMMUNICATION          │          ▼POLICY + SAFETY + DOMAIN VALIDATION
+AI output shall not automatically become authoritative clinical communication.
+The system shall preserve human and domain governance where required.
+
+5.1568 NOTIFICATION EVENT DATA FLOW MODEL
+SOURCE MODULE      │      ▼BUSINESS EVENT      │      ▼NOTIFICATION EVENT      │      ▼NTF/COM API / INTERNAL BOUNDARY      │      ▼EVENT VALIDATION      │      ▼IDEMPOTENCY CHECK      │      ▼RECIPIENT RESOLUTION      │      ▼NOTIFICATION POLICY      │      ▼NOTIFICATION CREATION      │      ▼DELIVERY PROCESSING
+
+5.1569 EXTERNAL COMMUNICATION DATA FLOW MODEL
+NOTIFICATION      │      ▼CHANNEL RESOLUTION      │      ▼TEMPLATE RESOLUTION      │      ▼VARIABLE VALIDATION      │      ▼CONTENT RENDERING      │      ▼CONTENT SECURITY POLICY      │      ▼DELIVERY JOB      │      ▼CHANNEL ABSTRACTION      │      ▼EXTERNAL PROVIDER      │      ▼PROVIDER RESPONSE      │      ▼NORMALIZED DELIVERY STATUS
+
+5.1570 IN-APP NOTIFICATION DATA FLOW MODEL
+NTF/COM   │   ▼IN-APP NOTIFICATION RECORD   │   ▼POSTGRESQL   │   ▼NOTIFICATION API   │   ▼AUTHENTICATED USER SCOPE   │   ▼REACT NOTIFICATION UI   │   ├──► VIEW   │   ├──► MARK READ   │   └──► VIEW HISTORY
+
+5.1571 SCHEDULED NOTIFICATION DATA FLOW MODEL
+SOURCE BUSINESS RECORD        │        ▼NOTIFICATION POLICY        │        ▼SCHEDULED NOTIFICATION        │        ▼DURABLE SCHEDULE STATE        │        ▼BACKGROUND WORKER        │        ▼DUE NOTIFICATION        │        ▼REVALIDATE ELIGIBILITY        │     ┌──┴──┐     │     │   VALID INVALID     │     │     ▼     ▼  DELIVER CANCEL / EXPIRE
+
+5.1572 NOTIFICATION DELIVERY SEQUENCE MODEL
+SOURCE       NTF/COM       JOB STORE       WORKER       PROVIDER  │             │              │              │              │  │ Event       │              │              │              │  ├────────────►│              │              │              │  │             │ Validate     │              │              │  │             │ Resolve      │              │              │  │             │ Create       │              │              │  │             │              │              │              │  │             │ Save Job     │              │              │  │             ├─────────────►│              │              │  │             │              │              │              │  │             │              │ Get Job      │              │  │             │              │◄─────────────┤              │  │             │              │ Job          │              │  │             │              ├─────────────►│              │  │             │              │              │ Send         │  │             │              │              ├─────────────►│  │             │              │              │ Response     │  │             │              │              │◄─────────────┤  │             │              │              │              │  │             │              │ Update       │              │  │             │              │◄─────────────┤              │
+
+5.1573 NOTIFICATION STATE MODEL
+CREATED   │   ▼PENDING   │   ├────────────► SCHEDULED   │                  │   │                  ▼   │                 DUE   │                  │   └──────────────────┘          │          ▼        QUEUED          │          ▼      PROCESSING          │   ┌──────┼────────┐   │      │        │   ▼      ▼        ▼DELIVERED FAILED CANCELLED          │          ▼   RETRY_SCHEDULED          │          ▼        QUEUED
+An eligible notification may also transition to:
+EXPIRED
+according to notification policy.
+
+5.1574 DELIVERY ATTEMPT STATE MODEL
+PENDING   │   ▼PROCESSING   │   ├────────────► PROVIDER_ACCEPTED   │                       │   │                       ▼   │                   DELIVERED   │   ├────────────► FAILED   │   ├────────────► TIMEOUT   │   └────────────► CANCELLED
+Provider-specific delivery states may be normalized into CuraSphere delivery states.
+
+5.1575 TEMPLATE LIFECYCLE MODEL
+DRAFT  │  ▼CONFIGURED  │  ▼VALIDATED  │  ▼APPROVED BOUNDARY  │  ▼ACTIVE  │  ├────────────► NEW VERSION  │                  │  │                  ▼  │                ACTIVE  │  ▼INACTIVE  │  ▼RETIRED BOUNDARY
+The exact approval workflow shall be defined during Detailed Design.
+
+5.1576 NOTIFICATION PREFERENCE EVALUATION MODEL
+NOTIFICATION     │     ▼MANDATORY CATEGORY?     │ ┌───┴────┐ │        │YES       NO │        │ ▼        ▼MANDATORY USER PREFERENCEPOLICY       │ │           ▼ │      CHANNEL ENABLED? │           │ │       ┌───┴───┐ │       │       │ │      YES      NO │       │       │ │       ▼       ▼ └────► CHANNEL  SKIP CHANNEL        POLICY          │          ▼     QUIET HOURS?          │          ▼     DELIVERY DECISION
+
+5.1577 NOTIFICATION BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-NTF-BR-001
+Source modules shall own business facts
+CS-NTF-BR-002
+NTF/COM shall own notification and communication processing
+CS-NTF-BR-003
+Notification delivery shall not automatically modify source business state
+CS-NTF-BR-004
+Business modules shall not independently own external communication infrastructure
+CS-NTF-BR-005
+React shall not directly call communication providers
+CS-NTF-BR-006
+Communication provider secrets shall not be exposed to React
+CS-NTF-BR-007
+Notification events shall identify their approved source
+CS-NTF-BR-008
+Notification event identifiers shall remain distinct from notification identifiers
+CS-NTF-BR-009
+Eligible notification events shall be validated before processing
+CS-NTF-BR-010
+Duplicate event processing shall not create uncontrolled duplicate notifications
+CS-NTF-BR-011
+One event may create zero, one, or multiple notifications according to policy
+CS-NTF-BR-012
+Notification category, priority, and severity shall be governed
+CS-NTF-BR-013
+Notification priority shall remain distinct from clinical severity
+CS-NTF-BR-014
+Recipient resolution shall be server-controlled
+CS-NTF-BR-015
+Client-provided recipient identifiers shall not automatically define recipient authority
+CS-NTF-BR-016
+Role-based recipients shall follow organizational scope
+CS-NTF-BR-017
+Department communication shall remain department-scoped
+CS-NTF-BR-018
+Hospital communication shall remain hospital-scoped
+CS-NTF-BR-019
+Cross-hospital communication shall require explicit authorization
+CS-NTF-BR-020
+Notification content shall follow channel and privacy policies
+CS-NTF-BR-021
+Notification metadata shall not become an unrestricted copy of source records
+CS-NTF-BR-022
+Notification templates shall be centrally governed
+CS-NTF-BR-023
+Historical communication shall remain traceable to the template version used where required
+CS-NTF-BR-024
+Templates shall receive only approved variables
+CS-NTF-BR-025
+Required template variables shall be validated before rendering
+CS-NTF-BR-026
+Inactive templates shall not be used for normal new notifications
+CS-NTF-BR-027
+Channel resolution shall remain server-controlled
+CS-NTF-BR-028
+External provider credentials shall remain outside React
+CS-NTF-BR-029
+Provider-specific infrastructure shall remain behind communication abstractions
+CS-NTF-BR-030
+Every eligible external delivery attempt shall support traceability
+CS-NTF-BR-031
+Provider acceptance shall not automatically mean human read
+CS-NTF-BR-032
+Delivery failure classification shall influence retry eligibility
+CS-NTF-BR-033
+Retry policies shall be centrally governed
+CS-NTF-BR-034
+Provider timeout shall not trigger uncontrolled duplicate delivery
+CS-NTF-BR-035
+Provider fallback shall evaluate duplicate-delivery risk
+CS-NTF-BR-036
+Read state shall remain distinct from delivery status
+CS-NTF-BR-037
+Read state shall remain distinct from acknowledgement
+CS-NTF-BR-038
+Unread count shall be authoritative server data
+CS-NTF-BR-039
+Users shall not mark another user’s notification as read
+CS-NTF-BR-040
+Dismissal shall not necessarily delete notification history
+CS-NTF-BR-041
+Notification expiration shall not automatically erase required processing history
+CS-NTF-BR-042
+Delivered notifications cannot be technically undelivered
+CS-NTF-BR-043
+Scheduled notifications shall be revalidated before delivery
+CS-NTF-BR-044
+Appointment reminders shall use Appointment domain facts
+CS-NTF-BR-045
+Laboratory result availability communication shall remain distinct from unrestricted clinical-result disclosure
+CS-NTF-BR-046
+Radiology report availability communication shall follow clinical communication policy
+CS-NTF-BR-047
+Inventory alerts shall use Inventory domain facts
+CS-NTF-BR-048
+Payment notifications shall use Billing domain facts
+CS-NTF-BR-049
+Notification delivery shall not independently mark invoices paid
+CS-NTF-BR-050
+Workforce notifications shall follow employee information policies
+CS-NTF-BR-051
+Report notification access shall not grant report-result authorization
+CS-NTF-BR-052
+Security alerts shall not be suppressible through ordinary optional preferences
+CS-NTF-BR-053
+User preferences shall not override mandatory communication policy
+CS-NTF-BR-054
+Quiet hours shall apply only to eligible notification categories
+CS-NTF-BR-055
+Emergency quiet-hour override shall be governed server-side
+CS-NTF-BR-056
+Duplicate notification prevention shall use approved business context
+CS-NTF-BR-057
+Notification processing shall support idempotency
+CS-NTF-BR-058
+External delivery shall preserve an idempotency boundary
+CS-NTF-BR-059
+Notification rate limits shall protect recipients and infrastructure
+CS-NTF-BR-060
+High-volume delivery shall support controlled throttling
+CS-NTF-BR-061
+Digests shall apply only to eligible notification categories
+CS-NTF-BR-062
+Notification escalation shall follow approved operational rules
+CS-NTF-BR-063
+Notification authorization shall be enforced server-side
+CS-NTF-BR-064
+Knowledge of a notification identifier shall not grant access
+CS-NTF-BR-065
+Patient notification scope shall derive from authenticated identity
+CS-NTF-BR-066
+Notification content shall follow least-information principles
+CS-NTF-BR-067
+Sensitive clinical information shall be restricted in external communication
+CS-NTF-BR-068
+SMS shall use approved minimum-information content
+CS-NTF-BR-069
+Sensitive documents shall not automatically be attached to ordinary email
+CS-NTF-BR-070
+Secure links shall not replace target-resource authorization
+CS-NTF-BR-071
+Template configuration changes shall be auditable
+CS-NTF-BR-072
+Provider secrets shall not be stored in audit events
+CS-NTF-BR-073
+Notification flooding shall support detection and investigation
+CS-NTF-BR-074
+Recipient enumeration shall be protected by record-level authorization
+CS-NTF-BR-075
+Slow communication providers shall not unnecessarily block core hospital transactions
+CS-NTF-BR-076
+Important notification work shall preserve a durable processing boundary
+CS-NTF-BR-077
+Repeatedly failing notification work shall support isolation
+CS-NTF-BR-078
+Notification monitoring shall not expose sensitive message content
+CS-NTF-BR-079
+Delivery metrics shall distinguish provider acceptance, delivery, read, and acknowledgement
+CS-NTF-BR-080
+Notification processing shall support correlation identifiers
+CS-NTF-BR-081
+Distributed traces shall not automatically contain sensitive notification content
+CS-NTF-BR-082
+Event-driven architecture shall not automatically require Kafka
+CS-NTF-BR-083
+Message-broker technology shall be selected only when architecture evidence justifies it
+CS-NTF-BR-084
+Emergency broadcast authority shall require special permission
+CS-NTF-BR-085
+Mass communication authority shall remain distinct from ordinary notification authority
+CS-NTF-BR-086
+Intelligent prioritization shall not silently downgrade mandatory critical alerts
+CS-NTF-BR-087
+AI-assisted communication shall remain subject to policy and domain validation
+
+5.1578 NOTIFICATION PERMISSION CONCEPT
+Potential permissions include:
+NTF_NOTIFICATION_VIEW_OWNNTF_NOTIFICATION_READ_OWNNTF_NOTIFICATION_HISTORY_VIEW_OWNNTF_NOTIFICATION_ACKNOWLEDGE_OWNNTF_PREFERENCE_VIEW_OWNNTF_PREFERENCE_UPDATE_OWNNTF_NOTIFICATION_SEND_APPROVEDNTF_DEPARTMENT_NOTIFICATION_SENDNTF_HOSPITAL_NOTIFICATION_SENDNTF_MULTI_HOSPITAL_NOTIFICATION_SENDNTF_MASS_COMMUNICATION_SENDNTF_EMERGENCY_BROADCAST_SENDNTF_TEMPLATE_VIEWNTF_TEMPLATE_CREATENTF_TEMPLATE_UPDATENTF_TEMPLATE_ACTIVATENTF_TEMPLATE_DEACTIVATENTF_DELIVERY_HISTORY_VIEWNTF_PROVIDER_HEALTH_VIEWNTF_PROVIDER_MANAGENTF_NOTIFICATION_MONITOR_VIEWNTF_FAILED_NOTIFICATION_VIEWNTF_NOTIFICATION_SECURITY_EVENT_VIEWNTF_ADMIN
+Patient:
+PATIENT   │   ├── NTF_NOTIFICATION_VIEW_OWN   ├── NTF_NOTIFICATION_READ_OWN   ├── NTF_NOTIFICATION_HISTORY_VIEW_OWN   └── NTF_PREFERENCE_UPDATE_OWN
+Staff user:
+STAFF  │  ├── NTF_NOTIFICATION_VIEW_OWN  ├── NTF_NOTIFICATION_READ_OWN  └── NTF_NOTIFICATION_HISTORY_VIEW_OWN
+Department Manager:
+DEPARTMENT MANAGER        │        └── NTF_DEPARTMENT_NOTIFICATION_SEND
+Hospital Administrator:
+HOSPITAL ADMINISTRATOR         │         └── NTF_HOSPITAL_NOTIFICATION_SEND
+Notification Administrator:
+NOTIFICATION ADMINISTRATOR          │          ├── NTF_TEMPLATE_VIEW          ├── NTF_TEMPLATE_CREATE          ├── NTF_TEMPLATE_UPDATE          ├── NTF_NOTIFICATION_MONITOR_VIEW          └── NTF_FAILED_NOTIFICATION_VIEW
+Emergency authority:
+AUTHORIZED EMERGENCY ROLE            │            ▼NTF_EMERGENCY_BROADCAST_SEND
+Critical Principle
+NTF_ADMIN
+shall not automatically grant:
+PATIENT_RECORD_EDITCLINICAL_NOTE_EDITLAB_RESULT_VERIFYRADIOLOGY_REPORT_APPROVEPRESCRIPTION_CREATEINVOICE_MARK_PAIDPAYMENT_REVERSESALARY_APPROVEIAM_PERMISSION_MANAGE
+Notification administration shall not become universal hospital authority.
+
+5.1579 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Notification events
+CS-NTF-FR-001 to 006
+Notification creation
+CS-NTF-FR-007 to 011
+Recipient resolution
+CS-NTF-FR-012 to 018
+Notification content
+CS-NTF-FR-019 to 021
+Notification templates
+CS-NTF-FR-022 to 032
+Channel resolution
+CS-NTF-FR-033
+In-app notifications
+CS-NTF-FR-034
+Email communication
+CS-NTF-FR-035
+SMS communication
+CS-NTF-FR-036
+Push notification boundary
+CS-NTF-FR-037
+WhatsApp boundary
+CS-NTF-FR-038
+Provider abstraction
+CS-NTF-FR-039
+Delivery attempts
+CS-NTF-FR-040 to 042
+Failure and retry
+CS-NTF-FR-043 to 047
+Delivery history
+CS-NTF-FR-048
+Notification read state
+CS-NTF-FR-049 to 052
+Acknowledgement and dismissal
+CS-NTF-FR-053 to 054
+Expiration and cancellation
+CS-NTF-FR-055 to 056
+Scheduled notification
+CS-NTF-FR-057 to 058
+Appointment communication
+CS-NTF-FR-059 to 061
+Admission and discharge communication
+CS-NTF-FR-062 to 063
+Laboratory notification
+CS-NTF-FR-064 to 065
+Radiology notification
+CS-NTF-FR-066 to 067
+Pharmacy notification
+CS-NTF-FR-068
+Inventory alerts
+CS-NTF-FR-069 to 070
+Billing notification
+CS-NTF-FR-071 to 073
+Workforce notification
+CS-NTF-FR-074 to 076
+Document notification
+CS-NTF-FR-077
+Reporting notification
+CS-NTF-FR-078 to 079
+Security alerts
+CS-NTF-FR-080
+System alerts
+CS-NTF-FR-081
+Notification preferences
+CS-NTF-FR-082 to 087
+Quiet hours
+CS-NTF-FR-088 to 089
+Duplicate prevention and idempotency
+CS-NTF-FR-090 to 092
+Rate control
+CS-NTF-FR-093 to 094
+Batching and digest
+CS-NTF-FR-095 to 096
+Escalation
+CS-NTF-FR-097
+Notification authorization
+CS-NTF-FR-098 to 100
+Communication content security
+CS-NTF-FR-101 to 104
+Secure links
+CS-NTF-FR-105
+Notification access events
+CS-NTF-FR-106
+Configuration audit
+CS-NTF-FR-107 to 109
+Notification security
+CS-NTF-FR-110 to 113
+Background processing
+CS-NTF-FR-114 to 116
+Dead-letter and poison message boundaries
+CS-NTF-FR-117 to 118
+Delivery monitoring
+CS-NTF-FR-119
+Provider monitoring
+CS-NTF-FR-120
+Performance and latency
+CS-NTF-FR-121 to 122
+Failure monitoring
+CS-NTF-FR-123
+Delivery metrics
+CS-NTF-FR-124
+Processing history
+CS-NTF-FR-125
+Correlation
+CS-NTF-FR-126
+Distributed tracing
+CS-NTF-FR-127
+Event-driven integration
+CS-NTF-FR-128
+Message broker
+CS-NTF-FR-129
+Mobile notifications
+CS-NTF-FR-130
+Emergency broadcasting
+CS-NTF-FR-131
+Mass communication
+CS-NTF-FR-132
+Intelligent prioritization
+CS-NTF-FR-133
+AI-assisted communication
+CS-NTF-FR-134
+
+5.1580 NOTIFICATION AND COMMUNICATION RISK ANALYSIS
+Risk 1 — Every Module Implements Its Own Email Service
+Problem
+APPOINTMENT EMAIL SERVICELAB EMAIL SERVICEBILLING EMAIL SERVICEHR EMAIL SERVICE
+Impact
+Duplicate code, inconsistent security, and difficult provider migration.
+Mitigation
+Centralize communication processing through NTF/COM.
+
+Risk 2 — SMS Provider Secret Stored in React
+Problem
+React contains:
+SMS_API_KEY
+Impact
+The secret can be exposed to browser users.
+Mitigation
+Keep communication-provider secrets server-side.
+
+Risk 3 — Business Transaction Waits for SMS Provider
+Problem
+Patient books appointment.
+The HTTP request waits 30 seconds for SMS delivery.
+Impact
+Appointment workflow appears broken.
+Mitigation
+Separate eligible notification delivery from the core transaction through background processing.
+
+Risk 4 — Notification Delivery Changes Business State
+Problem
+Payment notification is delivered.
+System marks invoice paid.
+Impact
+Communication infrastructure becomes a financial source of truth.
+Mitigation
+Keep Billing as the owner of payment and invoice state.
+
+Risk 5 — Duplicate Event Creates Duplicate SMS Messages
+Problem
+The same event is processed five times.
+Impact
+Patient receives five identical reminders.
+Mitigation
+Use event idempotency and duplicate-notification prevention.
+
+Risk 6 — Retry Creates Duplicate Delivery
+Problem
+Provider accepts SMS but response times out.
+System immediately sends another SMS.
+Impact
+Patient receives duplicate messages.
+Mitigation
+Preserve delivery idempotency and evaluate provider delivery uncertainty.
+
+Risk 7 — Arbitrary Recipient ID From React
+Problem
+Client changes:
+recipientId = USER_A
+to:
+recipientId = USER_B
+Impact
+Unauthorized communication may be created.
+Mitigation
+Resolve recipients server-side.
+
+Risk 8 — Patient Reads Another Patient’s Notification
+Problem
+Patient changes notification ID.
+Impact
+Private communication is exposed.
+Mitigation
+Enforce notification record scope on every request.
+
+Risk 9 — Full Clinical Result Sent by SMS
+Problem
+Sensitive clinical result appears on a lock screen.
+Impact
+Privacy exposure.
+Mitigation
+Use minimum-information communication and secure CuraSphere access.
+
+Risk 10 — Sensitive Document Attached to Ordinary Email
+Problem
+Medical document is sent as an unrestricted attachment.
+Impact
+Sensitive data leaves controlled application access.
+Mitigation
+Use secure access notifications where appropriate.
+
+Risk 11 — Template Receives Complete Patient Entity
+Problem
+Template engine receives every patient field.
+Impact
+Unnecessary sensitive information becomes available to communication code.
+Mitigation
+Use explicit approved template variables.
+
+Risk 12 — Missing Template Variable Is Sent to User
+Problem
+Patient receives:
+Hello {{PATIENT_NAME}}
+Impact
+Communication quality and trust decline.
+Mitigation
+Validate variables before rendering.
+
+Risk 13 — Template Change Has No History
+Problem
+A message causes a complaint.
+Current template content differs from the delivered content.
+Impact
+The historical communication cannot be reconstructed.
+Mitigation
+Support template version traceability.
+
+Risk 14 — User Disables Security Alerts
+Problem
+User disables all notifications.
+Account compromise alert is suppressed.
+Impact
+Important security communication is lost.
+Mitigation
+Separate optional and mandatory notification categories.
+
+Risk 15 — Quiet Hours Delay Emergency Alert
+Problem
+Emergency alert occurs at 02:00.
+Quiet-hour policy delays it until 07:00.
+Impact
+Critical operational response is delayed.
+Mitigation
+Support governed emergency override.
+
+Risk 16 — Everyone Can Send Hospital-Wide Notifications
+Problem
+Ordinary staff user can notify every employee.
+Impact
+Abuse, confusion, and communication flooding.
+Mitigation
+Separate hospital and mass-communication permissions.
+
+Risk 17 — Cross-Hospital Notification Scope Is Trusted From Client
+Problem
+Hospital A user selects Hospital B.
+Impact
+Unauthorized communication crosses organizational boundaries.
+Mitigation
+Validate hospital communication scope server-side.
+
+Risk 18 — Notification Flooding
+Problem
+A software defect creates millions of notifications.
+Impact
+Database, queue, provider, and recipients are overloaded.
+Mitigation
+Use rate limits, throttling, monitoring, and operational alerts.
+
+Risk 19 — Application Restart Loses Notifications
+Problem
+Notification work exists only in memory.
+Impact
+Important reminders disappear after deployment or crash.
+Mitigation
+Preserve durable processing boundaries.
+
+Risk 20 — Poison Message Crashes Worker Forever
+Problem
+One invalid message repeatedly crashes processing.
+Impact
+The worker remains unstable and other notifications may be delayed.
+Mitigation
+Use retry limits and dead-letter or isolation boundaries.
+
+Risk 21 — Infinite Retry
+Problem
+Invalid phone number retries forever.
+Impact
+Resources and provider capacity are wasted.
+Mitigation
+Classify failure and centrally govern retry eligibility.
+
+Risk 22 — Provider Accepted Is Displayed as Read
+Problem
+SMS provider accepts the message.
+CuraSphere displays:
+PATIENT READ MESSAGE
+Impact
+Delivery semantics are incorrect.
+Mitigation
+Distinguish provider acceptance, delivery, read, and acknowledgement.
+
+Risk 23 — React Calculates Unread Count From Current Page
+Problem
+React loads 20 notifications.
+Four are unread.
+UI displays:
+4 UNREAD
+Actual unread notifications:
+87
+Impact
+User receives incorrect notification state.
+Mitigation
+Return authoritative unread count from the server.
+
+Risk 24 — Scheduled Reminder Ignores Appointment Cancellation
+Problem
+Reminder is scheduled Monday.
+Appointment is cancelled Tuesday.
+Reminder is sent Wednesday.
+Impact
+Patient receives incorrect communication.
+Mitigation
+Revalidate scheduled notifications before delivery.
+
+Risk 25 — Secure Link Never Expires
+Problem
+Email link remains valid forever.
+Impact
+Old forwarded or exposed links may remain usable.
+Mitigation
+Use expiration and target-resource authorization.
+
+Risk 26 — Secure Link Replaces Authorization
+Problem
+Anyone with a link can access the complete patient record.
+Impact
+Resource authorization is bypassed.
+Mitigation
+Treat secure links as one access component, not universal authorization.
+
+Risk 27 — Provider Raw Response Stored With Secrets
+Problem
+Provider response includes sensitive technical values.
+The complete response is logged.
+Impact
+Secrets may enter logs.
+Mitigation
+Normalize provider responses and apply logging restrictions.
+
+Risk 28 — Notification Logs Contain Full Clinical Messages
+Problem
+Every rendered message is written to application logs.
+Impact
+Sensitive clinical information spreads into log infrastructure.
+Mitigation
+Use privacy-aware logging boundaries.
+
+Risk 29 — Provider Outage Is Invisible
+Problem
+SMS provider fails for eight hours.
+No monitoring exists.
+Impact
+Thousands of notifications remain undelivered.
+Mitigation
+Monitor provider health and failed deliveries.
+
+Risk 30 — Notification Admin Becomes Hospital Superuser
+Problem
+Template administrator can edit patient records and financial records.
+Impact
+Communication administration becomes universal business authority.
+Mitigation
+Separate notification permissions from domain permissions.
+
+Risk 31 — Kafka Is Added on Day One Without Need
+Problem
+RAD team creates distributed event infrastructure before the modular system exists.
+Impact
+Operational and DevOps complexity increases.
+Mitigation
+Preserve event-driven boundaries but adopt broker infrastructure only when justified.
+
+Risk 32 — One Notification Microservice Per Channel
+Problem
+The team immediately creates:
+EMAIL MICROSERVICESMS MICROSERVICEPUSH MICROSERVICETEMPLATE MICROSERVICEPREFERENCE MICROSERVICENOTIFICATION MICROSERVICE
+Impact
+Deployment and distributed-system complexity increase.
+Mitigation
+Begin with a modular notification domain and provider abstractions.
+
+Risk 33 — Mass Communication Uses Normal Notification Permission
+Problem
+A user who can send one workflow notification can send 100,000 messages.
+Impact
+Large-scale abuse becomes possible.
+Mitigation
+Use separate mass-communication authorization.
+
+Risk 34 — AI Sends Clinical Communication Without Validation
+Problem
+AI generates a clinical message.
+The system sends it automatically.
+Impact
+Incorrect or unsafe clinical information may be communicated.
+Mitigation
+Require domain, policy, and safety validation for AI-assisted communication.
+
+5.1581 COMPLETE NOTIFICATION CAPABILITY MODEL
+                       NOTIFICATION PLATFORM                                │          ┌─────────────────────┼─────────────────────┐          │                     │                     │          ▼                     ▼                     ▼        EVENTS               NOTIFICATIONS          TEMPLATES          │                     │                     │          ▼                     ▼                     ▼       SOURCE                RECIPIENT              VARIABLES          │                     │                     │          ▼                     ▼                     ▼     VALIDATION              CATEGORY              VERSION          │                     │                     │          ▼                     ▼                     ▼    IDEMPOTENCY              PRIORITY              RENDERING          │                     │                     │          └─────────────────────┼─────────────────────┘                                ▼                              POLICY                                │              ┌─────────────────┼─────────────────┐              │                 │                 │              ▼                 ▼                 ▼          PREFERENCES        QUIET HOURS       MANDATORY              │                 │                 │              └─────────────────┼─────────────────┘                                ▼                             CHANNELS                                │                 ┌──────────────┼──────────────┐                 ▼              ▼              ▼              IN-APP          EMAIL           SMS                 │              │              │                 └──────────────┼──────────────┘                                ▼                            DELIVERY                                │             ┌──────────────────┼──────────────────┐             ▼                  ▼                  ▼          ATTEMPT             RETRY             FAILURE             │                  │                  │             └──────────────────┼──────────────────┘                                ▼                           BACKGROUND WORK                                │                 ┌──────────────┼──────────────┐                 ▼              ▼              ▼               QUEUE          WORKER       DEAD LETTER                                │                                ▼                           OBSERVABILITY                                │                ┌───────────────┼───────────────┐                ▼               ▼               ▼             METRICS          AUDIT           SECURITY                                │                                ▼                         FUTURE COMMUNICATION                                │              ┌─────────────────┼─────────────────┐              ▼                 ▼                 ▼            MOBILE          EMERGENCY             AI
+
+5.1582 NOTIFICATION MODULE COMPLETION STATUS
+Module: Notification, Communication and Alert Management SystemModule Code: NTF/COMRequirement Range: CS-NTF-FR-001 to CS-NTF-FR-134Business Rule Range: CS-NTF-BR-001 to CS-NTF-BR-087
+Notification Domain Boundary: DefinedCommunication Infrastructure Boundary: DefinedReact Notification Boundary: DefinedNotification Actors: DefinedNotification Events: DefinedNotification Event Identifier: DefinedNotification Source: DefinedSource Record Correlation: DefinedEvent Validation: DefinedDuplicate Event Prevention: DefinedNotification Creation: DefinedNotification Identifier: DefinedNotification Category: DefinedNotification Priority: DefinedNotification Severity: DefinedRecipient Resolution: DefinedPatient Recipient: DefinedStaff Recipient: DefinedRole-Based Recipient Boundary: DefinedDepartment Recipient Boundary: DefinedHospital Recipient Boundary: DefinedMulti-Hospital Communication Restriction: DefinedNotification Title: DefinedNotification Message: DefinedNotification Metadata: DefinedNotification Template: DefinedTemplate Identifier: DefinedTemplate Name: DefinedTemplate Category: DefinedTemplate Versioning: DefinedTemplate Variables: DefinedTemplate Variable Validation: DefinedTemplate Rendering: DefinedTemplate Activation: DefinedTemplate Deactivation: DefinedTemplate Localization Boundary: DefinedChannel Resolution: DefinedIn-App Notification: DefinedEmail Delivery Boundary: DefinedSMS Delivery Boundary: DefinedPush Notification Boundary: DefinedWhatsApp Communication Boundary: DefinedProvider Abstraction: DefinedDelivery Attempt: DefinedDelivery Status: DefinedProvider Response Boundary: DefinedDelivery Failure: DefinedDelivery Retry: DefinedRetry Policy: DefinedProvider Timeout Handling: DefinedProvider Fallback Boundary: DefinedDelivery History: DefinedNotification Read State: DefinedUnread Notification Count: DefinedNotification History: DefinedAcknowledgement Boundary: DefinedDismissal Boundary: DefinedNotification Expiration: DefinedNotification Cancellation: DefinedScheduled Notification: DefinedScheduled Notification Processing: DefinedAppointment Reminder: DefinedAppointment Cancellation Notification: DefinedAppointment Rescheduling Notification: DefinedAdmission Notification Boundary: DefinedDischarge Communication Boundary: DefinedLaboratory Workflow Notification: DefinedLaboratory Result Availability Notification: DefinedRadiology Workflow Notification: DefinedRadiology Report Availability Notification: DefinedPharmacy Notification: DefinedLow Stock Alert: DefinedInventory Expiry Alert: DefinedInvoice Notification: DefinedPayment Confirmation Notification: DefinedOutstanding Balance Reminder: DefinedWorkforce Notification: DefinedLeave Request Notification: DefinedLeave Decision Notification: DefinedDocument Availability Notification: DefinedReport Completion Notification: DefinedReport Failure Notification: DefinedSecurity Alert: DefinedSystem Alert: DefinedNotification Preferences: DefinedChannel Preferences: DefinedCategory Preferences: DefinedPreference Evaluation: DefinedUser Opt-Out Boundary: DefinedMandatory Notification Boundary: DefinedQuiet Hours: DefinedEmergency Quiet-Hour Override: DefinedDuplicate Notification Prevention: DefinedNotification Idempotency: DefinedDelivery Idempotency Boundary: DefinedNotification Rate Limit: DefinedNotification Throttling: DefinedNotification Batching Boundary: DefinedNotification Digest Boundary: DefinedNotification Escalation Boundary: DefinedNotification Authorization: DefinedNotification Record Scope: DefinedPatient Notification Scope: DefinedSensitive Communication Content: DefinedClinical External Communication Restriction: DefinedSensitive SMS Content Restriction: DefinedSensitive Email Content Restriction: DefinedSecure Notification Link Boundary: DefinedNotification Access Events: DefinedTemplate Configuration Audit: DefinedPreference Configuration Audit: DefinedProvider Configuration Audit: DefinedNotification Security Events: DefinedNotification Flooding Detection: DefinedExcessive Delivery Detection: DefinedRecipient Enumeration Protection: DefinedBackground Notification Processing: DefinedDurable Processing Boundary: DefinedNotification Job Status: DefinedDead-Letter Processing Boundary: DefinedPoison Message Boundary: DefinedNotification Delivery Monitoring: DefinedProvider Health Monitoring: DefinedNotification Performance Monitoring: DefinedNotification Latency Monitoring: DefinedFailed Notification Monitoring: DefinedDelivery Success Measurement: DefinedNotification Processing History: DefinedCorrelation Identifier: DefinedDistributed Tracing Boundary: DefinedFuture Event-Driven Integration: DefinedFuture Message Broker Integration: DefinedFuture Mobile Notification Integration: DefinedFuture Emergency Broadcast System: DefinedFuture Mass Communication System: DefinedFuture Intelligent Notification Prioritization: DefinedFuture AI-Assisted Communication Boundary: DefinedNotification Event Data Flow: DefinedExternal Communication Data Flow: DefinedIn-App Notification Data Flow: DefinedScheduled Notification Data Flow: DefinedNotification Delivery Sequence: DefinedNotification State Model: DefinedDelivery Attempt State Model: DefinedTemplate Lifecycle Model: DefinedNotification Preference Evaluation Model: DefinedNotification Permission Concept: DefinedRequirement Traceability: EstablishedNotification and Communication Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The Notification, Communication and Alert Management requirements establish the centralized communication foundation of CuraSphere.
+These requirements shall later be transformed into:
+notification domain architecture;
+communication architecture;
+alert architecture;
+notification application architecture;
+notification data architecture;
+communication security architecture;
+notification integration architecture;
+notification use case model;
+view notification use case;
+mark notification read use case;
+acknowledge notification use case;
+dismiss notification use case;
+update notification preference use case;
+send approved notification use case;
+schedule notification use case;
+cancel notification use case;
+process notification event use case;
+deliver notification use case;
+retry delivery use case;
+manage template use case;
+manage provider use case;
+emergency broadcast use case;
+notification processing activity diagram;
+recipient resolution activity diagram;
+template rendering activity diagram;
+channel resolution activity diagram;
+delivery retry activity diagram;
+scheduled notification activity diagram;
+notification preference activity diagram;
+notification delivery sequence diagram;
+scheduled notification sequence diagram;
+in-app notification sequence diagram;
+provider failure sequence diagram;
+notification domain model;
+Notification Event entity;
+Notification entity;
+Notification Recipient entity;
+Notification Template entity;
+Notification Template Version entity;
+Notification Preference entity;
+Notification Delivery entity;
+Notification Delivery Attempt entity;
+Scheduled Notification entity;
+Notification Processing Event entity;
+Communication Provider Configuration entity boundary;
+PostgreSQL notification schema;
+notification identifier strategy;
+notification event identifier strategy;
+template identifier strategy;
+event schema strategy;
+event validation strategy;
+notification idempotency strategy;
+delivery idempotency strategy;
+duplicate notification strategy;
+recipient resolution service;
+patient recipient resolver;
+staff recipient resolver;
+role recipient resolver;
+department recipient resolver;
+hospital recipient resolver;
+cross-hospital recipient policy;
+notification category strategy;
+priority strategy;
+severity strategy;
+template registry;
+template version strategy;
+template variable strategy;
+template validation strategy;
+template rendering engine evaluation;
+template localization strategy;
+notification content policy;
+clinical communication content policy;
+SMS content policy;
+email content policy;
+notification metadata strategy;
+channel resolution service;
+in-app channel;
+email channel abstraction;
+SMS channel abstraction;
+push channel abstraction;
+communication provider interface;
+provider adapter strategy;
+provider timeout strategy;
+provider response normalization;
+provider failure classification;
+provider fallback strategy;
+notification delivery service;
+delivery attempt strategy;
+delivery status strategy;
+retry policy;
+exponential backoff evaluation;
+retry scheduling;
+notification read-state service;
+unread count strategy;
+notification history pagination;
+acknowledgement strategy;
+dismissal strategy;
+expiration strategy;
+cancellation strategy;
+scheduled notification service;
+appointment reminder strategy;
+reminder timing configuration;
+scheduled notification revalidation;
+notification preference model;
+channel preference model;
+category preference model;
+mandatory communication policy;
+opt-out strategy;
+quiet-hour strategy;
+user time-zone strategy;
+emergency override strategy;
+notification rate-limit strategy;
+throttling strategy;
+batching strategy;
+digest strategy;
+escalation strategy;
+notification authorization policy;
+notification record-scope evaluator;
+patient notification scope evaluator;
+secure notification link strategy;
+signed-link evaluation;
+token expiration strategy;
+single-use token evaluation;
+notification access event service;
+notification security event strategy;
+background notification worker;
+durable notification job strategy;
+notification queue evaluation;
+dead-letter strategy;
+poison-message strategy;
+notification worker concurrency strategy;
+notification processing lease evaluation;
+distributed lock evaluation;
+notification monitoring metrics;
+provider health metrics;
+delivery success metrics;
+notification latency metrics;
+failed notification dashboard;
+correlation identifier strategy;
+OpenTelemetry tracing evaluation;
+structured logging strategy;
+privacy-aware notification logging;
+event-driven notification evaluation;
+transactional outbox evaluation;
+outbox processor evaluation;
+inbox/idempotent consumer evaluation;
+message broker evaluation;
+RabbitMQ evaluation;
+Apache Kafka evaluation;
+Azure Service Bus evaluation;
+Amazon SQS evaluation boundary;
+Hangfire evaluation;
+Quartz.NET evaluation;
+ASP.NET Core BackgroundService evaluation;
+email provider evaluation;
+SMTP evaluation;
+transactional email provider evaluation;
+SMS provider evaluation;
+Pakistan SMS provider integration evaluation;
+push notification provider evaluation;
+Firebase Cloud Messaging evaluation;
+Apple Push Notification boundary;
+WhatsApp Business communication evaluation;
+React notification module architecture;
+React notification bell;
+React unread badge;
+React notification drawer;
+React notification center;
+React notification list;
+React notification detail;
+React read-state interaction;
+React notification preference UI;
+React quiet-hour UI;
+React template administration UI;
+React notification monitoring UI;
+React failed delivery UI;
+TanStack Query notification data strategy;
+Zustand notification UI-state strategy;
+polling strategy;
+future WebSocket notification strategy;
+future SignalR evaluation;
+notification accessibility;
+notification keyboard navigation;
+screen-reader notification behavior;
+notification authorization tests;
+patient notification scope tests;
+staff notification scope tests;
+department notification scope tests;
+hospital notification scope tests;
+cross-hospital notification tests;
+event validation tests;
+duplicate event tests;
+notification idempotency tests;
+delivery idempotency tests;
+recipient resolution tests;
+template variable tests;
+template rendering tests;
+template version tests;
+inactive template tests;
+channel resolution tests;
+in-app notification tests;
+email channel tests;
+SMS channel tests;
+provider timeout tests;
+provider retry tests;
+provider fallback tests;
+delivery history tests;
+read-state tests;
+unread-count tests;
+notification history tests;
+acknowledgement tests;
+dismissal tests;
+expiration tests;
+cancellation tests;
+scheduled notification tests;
+appointment reminder tests;
+cancelled appointment reminder tests;
+laboratory notification tests;
+radiology notification tests;
+inventory alert tests;
+billing notification tests;
+workforce notification tests;
+report notification tests;
+security alert tests;
+system alert tests;
+preference tests;
+mandatory communication tests;
+opt-out tests;
+quiet-hour tests;
+emergency override tests;
+rate-limit tests;
+throttling tests;
+batching tests;
+digest tests;
+escalation tests;
+sensitive content tests;
+clinical communication privacy tests;
+SMS privacy tests;
+email privacy tests;
+secure-link tests;
+secure-link expiration tests;
+notification enumeration tests;
+notification flooding tests;
+excessive delivery tests;
+background worker tests;
+application restart tests;
+durable job tests;
+retry limit tests;
+dead-letter tests;
+poison-message tests;
+provider outage tests;
+notification load tests;
+high-volume delivery tests;
+concurrent worker tests;
+duplicate worker processing tests;
+notification latency tests;
+notification observability tests;
+correlation tests;
+future message broker tests;
+future mobile notification tests;
+future emergency broadcast security tests;
+future mass communication authorization tests;
+future AI-assisted communication governance tests.
+No notification microservice, email microservice, SMS microservice, push microservice, template microservice, preference microservice, communication microservice, event bus, event broker, message broker, Apache Kafka deployment, RabbitMQ deployment, Azure Service Bus deployment, Amazon SQS deployment, Redis queue, PostgreSQL queue implementation, notification job table design, transactional outbox implementation, inbox implementation, outbox polling interval, event schema versioning technology, CloudEvents adoption, MassTransit deployment, NServiceBus deployment, Wolverine deployment, MediatR notification architecture, Hangfire deployment, Quartz.NET deployment, ASP.NET Core BackgroundService implementation, distributed worker deployment, dead-letter queue implementation, poison-message threshold, retry count, retry interval, exponential backoff formula, jitter strategy, provider fallback order, provider circuit breaker, Polly resilience implementation, notification rate limit, notification throttle limit, batch size, worker concurrency, worker lease duration, distributed lock technology, Redis distributed lock, notification retention period, delivery history retention period, notification expiration default, unread notification limit, notification page size, template engine, Scriban deployment, Fluid deployment, Razor template rendering, Handlebars deployment, template approval workflow, localization library, email provider, SMTP server, SendGrid deployment, Mailgun deployment, Amazon SES deployment, Azure Communication Services deployment, SMS provider, Pakistan telecom SMS gateway, Twilio deployment, Infobip deployment, Vonage deployment, push provider, Firebase Cloud Messaging deployment, Apple Push Notification implementation, WhatsApp Business API integration, Meta communication provider integration, secure-link signing algorithm, secure-link expiration period, single-use token implementation, SignalR deployment, WebSocket notification delivery, Server-Sent Events implementation, notification polling interval, OpenTelemetry deployment, tracing backend, notification monitoring dashboard, Prometheus metrics, Grafana dashboard, AI communication model, large language model provider, AI prompt architecture, intelligent notification ranking model, emergency broadcast infrastructure, or mass communication provider has been finalized by this SRS section.
+Those decisions shall be made during Domain Architecture, Application Architecture, Data Architecture, Notification Architecture, Communication Architecture, Security Architecture, Privacy Architecture, Clinical Architecture, Identity and Access Architecture, Integration Architecture, Infrastructure Architecture, Performance Architecture, DevOps Architecture, Observability Architecture, Disaster Recovery Architecture, UI Architecture, Detailed Design, provider evaluation, technology evaluation, legal review, clinical governance, hospital governance, security testing, privacy testing, load testing, failure testing, and approved operational planning.
+

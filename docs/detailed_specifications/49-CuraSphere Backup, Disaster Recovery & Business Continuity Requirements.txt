@@ -1,0 +1,374 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.18 - Backup, Disaster Recovery & Business Continuity Requirements (NFR-11)
+
+6.18 Backup, Disaster Recovery & Business Continuity Requirements
+
+6.18.1 Introduction
+Healthcare organizations operate continuously and cannot afford prolonged service interruptions or data loss. Patient safety, clinical operations, financial transactions, laboratory services, and emergency care depend on the continuous availability and integrity of hospital information systems.
+The CuraSphere Hospital Management System shall implement a comprehensive Backup, Disaster Recovery (DR), and Business Continuity (BC) framework to ensure that critical hospital services remain available during planned maintenance, hardware failures, cyber incidents, natural disasters, software failures, power outages, and human errors.
+The system shall support enterprise-grade recovery capabilities to minimize operational disruption while protecting patient information and business-critical data.
+
+6.18.2 Purpose
+The purpose of this section is to define the backup policies, disaster recovery architecture, recovery objectives, continuity planning, testing procedures, and operational requirements necessary to ensure uninterrupted healthcare services.
+
+6.18.3 Objectives
+The Backup, Disaster Recovery, and Business Continuity framework shall:
+Protect critical healthcare information.
+Minimize downtime.
+Minimize data loss.
+Ensure rapid recovery after disasters.
+Maintain essential hospital operations.
+Protect system configurations.
+Support regulatory compliance.
+Ensure business resilience.
+Improve operational reliability.
+Protect organizational reputation.
+
+6.18.4 Scope
+These requirements apply to:
+Patient Database
+Electronic Medical Records (EMR)
+Laboratory Information
+Radiology Metadata
+Pharmacy Records
+Billing Records
+HR Records
+Inventory Database
+Audit Logs
+Configuration Files
+API Configuration
+Security Certificates
+Application Source Configuration
+Document Repository
+
+6.18.5 Backup Architecture
+                    CuraSphere
+                         │
+         ┌───────────────┼───────────────┐
+         ▼               ▼               ▼
+   PostgreSQL DB   File Repository   Configuration
+         │               │               │
+         └───────────────┼───────────────┘
+                         ▼
+                  Backup Server
+                         │
+             ┌───────────┼────────────┐
+             ▼           ▼            ▼
+       Local Backup  Offsite Backup  Cloud Backup
+                         │
+                         ▼
+               Disaster Recovery Site
+
+6.18.6 Backup Strategy
+CuraSphere shall implement a multi-layer backup strategy.
+Backup Levels
+Level
+Description
+Full Backup
+Complete system backup
+Incremental Backup
+Changes since previous backup
+Differential Backup
+Changes since last full backup
+Snapshot Backup
+Instant system state
+Configuration Backup
+Application configuration
+Transaction Log Backup
+Database recovery logs
+Archive Backup
+Long-term retention
+
+6.18.7 Backup Schedule
+The backup schedule shall be configurable according to organizational requirements.
+Backup Type
+Frequency
+Default Retention
+Transaction Log
+Every 15 minutes
+7 Days
+Incremental
+Every 6 Hours
+30 Days
+Differential
+Daily
+60 Days
+Full Backup
+Weekly
+12 Months
+Archive Backup
+Monthly
+7 Years (or per policy)
+
+6.18.8 Backup Components
+The following components shall be included in scheduled backups:
+PostgreSQL Database
+Medical Images Metadata
+Laboratory Reports
+Uploaded Documents
+Configuration Files
+Audit Logs
+Security Certificates
+User Profiles
+System Settings
+Notification Templates
+API Keys (stored securely)
+Integration Configurations
+
+6.18.9 Backup Workflow
+Scheduled Backup
+        │
+        ▼
+Identify Changed Data
+        │
+        ▼
+Encrypt Backup
+        │
+        ▼
+Compress Backup
+        │
+        ▼
+Store Local Copy
+        │
+        ▼
+Replicate Offsite
+        │
+        ▼
+Verify Backup Integrity
+
+6.18.10 Backup Security Requirements
+All backups shall be protected using enterprise security controls.
+Security Controls
+AES-256 encryption for backup files.
+Role-based access to backup repositories.
+Multi-factor authentication for backup administrators.
+Immutable backup storage where supported.
+Digital integrity verification.
+Secure key management.
+Encrypted transmission during replication.
+
+6.18.11 Backup Validation
+Backups shall be periodically verified to ensure they can be restored successfully.
+Validation Activities
+Integrity Verification
+Restore Testing
+Checksum Validation
+Database Consistency Check
+File Completeness Check
+Configuration Verification
+
+Validation Workflow
+Backup Completed
+        │
+        ▼
+Integrity Check
+        │
+        ▼
+Restore Test
+        │
+        ▼
+Validation Successful?
+      │             │
+     Yes            No
+      │             │
+Archive       Alert Administrator
+
+6.18.12 Disaster Recovery (DR)
+The Disaster Recovery framework shall enable restoration of critical hospital services following major incidents.
+
+Disaster Categories
+Hardware Failure
+Database Corruption
+Cybersecurity Incident
+Ransomware Attack
+Fire
+Flood
+Earthquake
+Network Failure
+Power Failure
+Human Error
+
+6.18.13 Disaster Recovery Architecture
+           Primary Data Center
+                  │
+          Continuous Replication
+                  │
+                  ▼
+       Disaster Recovery Site
+                  │
+       ┌──────────┼──────────┐
+       ▼          ▼          ▼
+ Database     Application   Storage
+ Servers        Servers
+                  │
+                  ▼
+         Hospital Operations Resume
+
+6.18.14 Recovery Objectives
+Objective
+Target
+Recovery Time Objective (RTO)
+≤ 4 Hours
+Recovery Point Objective (RPO)
+≤ 15 Minutes
+Critical Clinical Systems
+Highest Priority
+Financial Systems
+High Priority
+Reporting Systems
+Medium Priority
+
+6.18.15 Disaster Recovery Workflow
+Disaster Detected
+        │
+        ▼
+Incident Classification
+        │
+        ▼
+Activate DR Plan
+        │
+        ▼
+Switch to DR Environment
+        │
+        ▼
+Restore Database
+        │
+        ▼
+Restore Applications
+        │
+        ▼
+Verify Services
+        │
+        ▼
+Resume Hospital Operations
+
+6.18.16 Business Continuity Planning (BCP)
+Business Continuity Planning shall ensure that essential hospital operations continue even when information systems experience partial or complete outages.
+
+Critical Business Functions
+Emergency Department
+Patient Registration
+Inpatient Management
+Pharmacy
+Laboratory
+Radiology
+Billing
+ICU Operations
+Operating Theatre Scheduling
+
+Business Continuity Measures
+Manual emergency procedures.
+Offline patient registration forms.
+Emergency contact lists.
+Alternative communication channels.
+Emergency staffing plans.
+Temporary paper-based workflows.
+Prioritized service restoration.
+
+6.18.17 Business Continuity Workflow
+System Failure
+      │
+      ▼
+Activate Continuity Plan
+      │
+      ▼
+Critical Departments Continue
+      │
+      ▼
+Restore IT Services
+      │
+      ▼
+Resume Normal Operations
+
+6.18.18 Recovery Testing
+Recovery procedures shall be tested periodically.
+Test Types
+Backup Restore Test
+Disaster Recovery Drill
+Failover Test
+Database Recovery Test
+Configuration Recovery Test
+Infrastructure Recovery Test
+Business Continuity Exercise
+
+6.18.19 Business Rules
+Rule ID
+Rule
+NFR-BCP-001
+Every backup shall be encrypted before storage.
+NFR-BCP-002
+Full backups shall be retained according to organizational policy.
+NFR-BCP-003
+Disaster recovery drills shall be conducted periodically.
+NFR-BCP-004
+Recovery procedures shall be documented and reviewed regularly.
+NFR-BCP-005
+Backup integrity shall be verified after every backup operation.
+NFR-BCP-006
+Critical systems shall receive restoration priority during disaster recovery.
+NFR-BCP-007
+Offsite backups shall be geographically separated from the primary data center.
+
+6.18.20 Risk Assessment
+Risk
+Impact
+Mitigation
+Database Corruption
+High
+Replication + Backups
+Ransomware
+Critical
+Immutable encrypted backups
+Hardware Failure
+High
+High Availability Cluster
+Human Error
+Medium
+Restore Procedures
+Fire/Flood
+Critical
+Offsite Disaster Recovery Site
+Power Failure
+High
+UPS + Generator
+
+6.18.21 Acceptance Criteria
+The Backup and Disaster Recovery solution shall be accepted when:
+All scheduled backups complete successfully.
+Backup integrity validation passes.
+Recovery objectives (RTO and RPO) are achieved during testing.
+Disaster recovery drills demonstrate successful restoration of critical services.
+Business continuity procedures allow essential hospital functions to continue during major outages.
+Backup data remains encrypted and access-controlled throughout its lifecycle.
+
+6.18.22 Requirement Traceability Matrix
+Requirement ID
+Description
+NFR-BCP-001
+Backup Strategy
+NFR-BCP-002
+Backup Scheduling
+NFR-BCP-003
+Backup Security
+NFR-BCP-004
+Backup Validation
+NFR-BCP-005
+Disaster Recovery
+NFR-BCP-006
+Recovery Objectives
+NFR-BCP-007
+Business Continuity
+NFR-BCP-008
+Recovery Testing
+NFR-BCP-009
+Risk Management
+NFR-BCP-010
+Acceptance Criteria
+
+6.18.23 Section Summary
+The Backup, Disaster Recovery, and Business Continuity framework provides a comprehensive strategy for protecting CuraSphere against data loss and operational disruption. Through layered backups, secure offsite replication, disaster recovery planning, validated recovery procedures, and continuity measures, the system supports resilient healthcare operations and safeguards critical patient and organizational information.
+
+
+

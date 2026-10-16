@@ -1,0 +1,448 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.14 - System Administration and Configuration Management System (ADM)
+
+5.14.1 Introduction
+The System Administration and Configuration Management System (ADM) provides centralized administration, configuration, monitoring, and governance for the CuraSphere Hospital Management System.
+This module enables authorized administrators to configure hospital settings, departments, users, permissions, workflows, system parameters, localization, integrations, and operational policies without modifying application source code.
+The Administration module acts as the control center of CuraSphere and is responsible for maintaining system consistency, availability, security, and operational governance.
+
+Administration Module Scope
+The Administration System shall manage:
+Hospital Profile
+Branch Management
+Department Management
+User Management
+Role Management
+Permission Management
+Organization Structure
+Master Data Configuration
+Lookup Tables
+Workflow Configuration
+System Parameters
+Numbering Sequences
+Localization
+Language Management
+Currency Management
+Time Zone Configuration
+Notification Configuration
+Backup Configuration
+Maintenance Mode
+License Management
+System Monitoring
+Configuration Audit
+
+High-Level Administration Workflow
+System Administrator
+         │
+         ▼
+Authentication
+         │
+         ▼
+Administration Portal
+         │
+ ┌───────┼──────────────────────┐
+ ▼       ▼                      ▼
+Users  Configuration      Monitoring
+         │                      │
+         ▼                      ▼
+ Database Configuration    System Health
+         │                      │
+         └──────────────┬───────┘
+                        ▼
+                   Audit Logs
+
+5.14.2 Objectives
+The Administration module shall:
+Centralize system configuration.
+Manage users and permissions.
+Configure hospital settings.
+Support multiple hospital branches.
+Configure workflows.
+Maintain master data.
+Manage localization.
+Monitor system health.
+Configure integrations.
+Maintain configuration history.
+Improve administrative efficiency.
+Support system maintenance.
+Reduce manual configuration.
+Ensure configuration consistency.
+Maintain administrative audit trails.
+
+5.14.3 Actors
+Actor
+Description
+System Administrator
+Complete system administration
+Hospital Administrator
+Hospital configuration
+IT Administrator
+Technical administration
+Database Administrator
+Database configuration
+Security Administrator
+Access administration
+Branch Administrator
+Branch configuration
+CuraSphere System
+Automatic configuration processing
+
+5.14.4 High-Level Administration Architecture
+              Administrator
+                    │
+                    ▼
+         Administration Dashboard
+                    │
+     ┌──────────────┼───────────────┐
+     ▼              ▼               ▼
+User Mgmt      Configuration     Monitoring
+     │              │               │
+     └──────────────┼───────────────┘
+                    ▼
+           Configuration Database
+                    │
+                    ▼
+               Audit System
+
+5.14.5 Functional Requirement ADM-FR-001
+Hospital Profile Management
+
+Requirement ID
+ADM-FR-001
+Requirement Name
+Hospital Profile Configuration
+
+Description
+The system shall maintain the master profile of the hospital.
+
+Hospital Information
+The system shall maintain:
+Hospital Name
+Logo
+Registration Number
+Tax Registration
+Address
+Contact Information
+Email
+Website
+Operating Hours
+Emergency Contact
+Accreditation Information
+
+Workflow
+Administrator
+      │
+      ▼
+Edit Hospital Profile
+      │
+      ▼
+Validate Information
+      │
+      ▼
+Save Configuration
+      │
+      ▼
+Audit Created
+
+Business Rules
+Hospital registration information shall be editable only by authorized administrators.
+
+Acceptance Criteria
+Hospital profile updated successfully.
+
+5.14.6 Functional Requirement ADM-FR-002
+Branch Management
+
+Requirement ID
+ADM-FR-002
+
+Description
+The system shall support multiple hospital branches operating under a centralized environment.
+
+Branch Information
+Branch ID
+Branch Name
+Address
+Contact Number
+Manager
+Status
+Time Zone
+Currency
+Tax Configuration
+
+Workflow
+Create Branch
+      │
+      ▼
+Configure Details
+      │
+      ▼
+Save
+      │
+      ▼
+Branch Available
+
+Business Rules
+Each branch shall have a unique Branch ID.
+
+Acceptance Criteria
+Multiple branches supported.
+
+5.14.7 Functional Requirement ADM-FR-003
+Department Management
+
+Requirement ID
+ADM-FR-003
+
+Description
+The system shall manage hospital departments.
+
+Departments
+OPD
+Emergency
+IPD
+ICU
+Surgery
+Laboratory
+Radiology
+Pharmacy
+Billing
+HR
+Finance
+Administration
+
+Business Rules
+Department codes shall be unique.
+
+Acceptance Criteria
+Departments configurable.
+
+5.14.8 Functional Requirement ADM-FR-004
+User Management
+
+Requirement ID
+ADM-FR-004
+
+Description
+The system shall manage user accounts for every authorized individual.
+
+User Information
+User ID
+Username
+Employee ID
+Role
+Department
+Status
+Email
+Phone
+Last Login
+
+Workflow
+Create User
+      │
+      ▼
+Assign Role
+      │
+      ▼
+Generate Credentials
+      │
+      ▼
+Activate Account
+
+Business Rules
+Inactive users shall not access the system.
+
+Acceptance Criteria
+User accounts managed successfully.
+
+5.14.9 Functional Requirement ADM-FR-005
+Role Management
+
+Requirement ID
+ADM-FR-005
+
+Description
+The system shall manage organizational roles.
+
+Sample Roles
+Doctor
+Nurse
+Pharmacist
+Laboratory Technician
+Receptionist
+HR Officer
+Billing Officer
+Finance Manager
+Administrator
+
+Workflow
+Create Role
+      │
+      ▼
+Assign Permissions
+      │
+      ▼
+Save Role
+
+Business Rules
+Role names shall be unique.
+
+Acceptance Criteria
+Roles configurable.
+
+5.14.10 Functional Requirement ADM-FR-006
+Permission Management
+
+Requirement ID
+ADM-FR-006
+
+Description
+The system shall implement granular permission management using Role-Based Access Control (RBAC).
+
+Permission Categories
+View
+Create
+Update
+Delete
+Approve
+Print
+Export
+Configure
+
+Workflow
+Role Selected
+      │
+      ▼
+Assign Permissions
+      │
+      ▼
+Save Configuration
+      │
+      ▼
+Permission Applied
+
+Business Rules
+Permissions shall inherit according to the configured RBAC model.
+
+Acceptance Criteria
+Permission assignments enforced.
+
+5.14.11 Functional Requirement ADM-FR-007
+Master Data Management
+
+Requirement ID
+ADM-FR-007
+
+Description
+The system shall manage configurable master data used throughout CuraSphere.
+
+Master Data Examples
+Blood Groups
+Nationalities
+Religions
+Marital Status
+Patient Categories
+Appointment Types
+Payment Methods
+Insurance Providers
+Diagnosis Codes
+Procedure Codes
+Laboratory Test Categories
+Radiology Modalities
+
+Business Rules
+Master data modifications shall be audited.
+
+Acceptance Criteria
+Master data configurable without code changes.
+
+5.14.12 Functional Requirement ADM-FR-008
+Workflow Configuration
+
+Requirement ID
+ADM-FR-008
+
+Description
+The system shall allow administrators to configure approval workflows across modules.
+
+Supported Workflows
+Leave Approval
+Discount Approval
+Refund Approval
+Purchase Approval
+User Registration Approval
+Inventory Adjustment Approval
+Laboratory Verification
+Radiology Verification
+
+Workflow Model
+Request
+    │
+    ▼
+Level 1 Approval
+    │
+    ▼
+Level 2 Approval
+    │
+    ▼
+Completed
+
+Acceptance Criteria
+Workflow configuration available.
+
+5.14.13 Functional Requirement ADM-FR-009
+Localization Management
+
+Requirement ID
+ADM-FR-009
+
+Description
+The system shall support localization settings.
+
+Configurable Settings
+Language
+Date Format
+Time Format
+Currency
+Number Format
+Time Zone
+
+Acceptance Criteria
+Localization configurable.
+
+5.14.14 Functional Requirement ADM-FR-010
+Numbering Sequence Management
+
+Requirement ID
+ADM-FR-010
+
+Description
+The system shall manage automatic numbering sequences.
+
+Examples
+Patient ID
+Appointment ID
+Invoice Number
+Receipt Number
+Laboratory Number
+Prescription Number
+Employee ID
+
+Workflow
+Generate Sequence
+       │
+       ▼
+Assign Number
+       │
+       ▼
+Store Number
+
+Business Rules
+Sequence numbers shall be unique.
+
+Acceptance Criteria
+Automatic numbering supported.
+
+

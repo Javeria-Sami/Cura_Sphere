@@ -1,0 +1,1693 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.10 — HUMAN RESOURCES, STAFF, DUTY ROSTER AND WORKFORCE MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: HRM/WFMModule Name: Human Resources, Staff, Duty Roster and Workforce Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.496 MODULE PURPOSE
+The Human Resources, Staff, Duty Roster and Workforce Management System shall manage the controlled administrative and operational lifecycle of hospital staff.
+The module shall support:
+employee identity management;
+staff profile management;
+employee number generation;
+employment information;
+department assignment;
+designation assignment;
+staff category management;
+doctor workforce context;
+nurse workforce context;
+non-clinical staff context;
+professional credential records;
+credential expiry monitoring;
+employment status management;
+staff transfer history;
+shift definition;
+shift scheduling;
+duty roster creation;
+duty roster approval;
+staff shift assignment;
+shift conflict validation;
+attendance recording;
+attendance correction;
+leave type management;
+leave request;
+leave approval;
+leave rejection;
+staff availability;
+workforce history;
+HR document metadata;
+workforce search;
+workforce reporting;
+HR audit events.
+The high-level workforce lifecycle shall be:
+PERSON   │   ▼EMPLOYEE REGISTRATION   │   ▼STAFF PROFILE   │   ▼EMPLOYMENT RECORD   │   ▼DEPARTMENT ASSIGNMENT   │   ▼DESIGNATION ASSIGNMENT   │   ▼PROFESSIONAL CREDENTIALS   │   ▼ACTIVE EMPLOYMENT   │   ▼DUTY ROSTER   │   ▼SHIFT ASSIGNMENT   │   ▼ATTENDANCE   │   ├───────────────┐   │               │   ▼               ▼LEAVE          DUTY HISTORY   │               │   ▼               ▼APPROVAL       WORKFORCE RECORD   │   └───────┬───────┘           ▼    STAFF AVAILABILITY
+The module shall preserve workforce traceability for:
+WHO IS THE EMPLOYEE?        ↓WHAT IS THE EMPLOYEE NUMBER?        ↓WHAT IS THE EMPLOYMENT STATUS?        ↓WHICH DEPARTMENT?        ↓WHICH DESIGNATION?        ↓WHAT PROFESSIONAL CREDENTIALS?        ↓WHICH SHIFT?        ↓WHICH DUTY ROSTER?        ↓WAS THE EMPLOYEE PRESENT?        ↓WAS THE EMPLOYEE ON APPROVED LEAVE?        ↓WHAT IS THE CURRENT AVAILABILITY?        ↓WHAT CHANGED IN THE EMPLOYEE HISTORY?
+
+5.497 HUMAN RESOURCES DOMAIN BOUNDARY
+The HRM/WFM module shall own administrative workforce information and hospital workforce scheduling.
+It shall not own:
+patient clinical records;
+diagnosis;
+treatment plans;
+prescriptions;
+laboratory results;
+radiology reports;
+patient billing;
+medication stock;
+general ledger accounting.
+Conceptually:
+HUMAN RESOURCES       │       ▼MANAGE EMPLOYMENT       │       ▼WORKFORCE MANAGEMENT       │       ▼MANAGE DUTY AVAILABILITY       │       ├────────────► DOCTOR WORKFORCE       │       ├────────────► NURSING WORKFORCE       │       ├────────────► LABORATORY STAFF       │       ├────────────► RADIOLOGY STAFF       │       ├────────────► PHARMACY STAFF       │       ├────────────► ADMINISTRATIVE STAFF       │       └────────────► SUPPORT STAFF
+The Doctor Management or Clinical module may answer:
+Which doctor treated the patient?
+The HR module answers:
+What is the doctor’s employment and organizational context?
+The Appointment module may answer:
+Which doctor is booked for an appointment?
+The Workforce module answers:
+Is the staff member assigned to an applicable duty schedule?
+The Authentication module may answer:
+Which user account is signed in?
+The HR module answers:
+Which employee or staff record is associated with that account?
+Therefore:
+USER ACCOUNT      ≠EMPLOYEE      ≠CLINICAL PRACTITIONER PROFILE      ≠SHIFT ASSIGNMENT
+
+5.498 CRITICAL WORKFORCE ARCHITECTURE CONCEPT
+CuraSphere shall distinguish:
+PERSON
+USER ACCOUNT
+EMPLOYEE
+EMPLOYMENT RECORD
+DEPARTMENT ASSIGNMENT
+DESIGNATION ASSIGNMENT
+PROFESSIONAL CREDENTIAL
+SHIFT
+DUTY ROSTER
+SHIFT ASSIGNMENT
+ATTENDANCE RECORD
+LEAVE REQUEST
+STAFF AVAILABILITY
+These concepts shall not be collapsed into one staff table.
+Weak architecture:
+staffnameemailpasswordroledepartmentdesignationshiftattendanceleave_status
+This design cannot reliably answer:
+WHEN DID THE EMPLOYEE JOIN?WAS THE EMPLOYEE TRANSFERRED?WHAT WAS THE PREVIOUS DEPARTMENT?WHAT WAS THE PREVIOUS DESIGNATION?WHICH ROSTER ASSIGNED THE SHIFT?WHO APPROVED THE ROSTER?WAS THE EMPLOYEE ON LEAVE?WHEN DID THE CREDENTIAL EXPIRE?WHY IS THE EMPLOYEE UNAVAILABLE?
+A stronger conceptual architecture is:
+PERSON   │   ▼EMPLOYEE   │   ├────────────► EMPLOYMENT RECORD   │   ├────────────► DEPARTMENT ASSIGNMENT   │   ├────────────► DESIGNATION ASSIGNMENT   │   ├────────────► PROFESSIONAL CREDENTIAL   │   ├────────────► SHIFT ASSIGNMENT   │   ├────────────► ATTENDANCE   │   └────────────► LEAVE
+
+5.499 HRM/WFM ACTORS
+Actor
+Responsibility
+HR Officer
+Manages eligible staff and employment information
+HR Manager
+Reviews and approves controlled HR activities
+Hospital Administrator
+Manages approved organizational configuration
+Department Head
+Reviews departmental workforce requirements
+Duty Roster Manager
+Creates and manages eligible duty rosters
+Shift Supervisor
+Reviews applicable shift assignments
+Doctor
+Views eligible personal workforce information
+Nurse
+Views eligible personal duty information
+Pharmacist
+Views eligible workforce assignments
+Laboratory Staff
+Views eligible workforce assignments
+Radiology Staff
+Views eligible workforce assignments
+Administrative Staff
+Uses applicable employee self-service functions
+Employee
+Views eligible personal HR and duty information
+System Administrator
+Manages technical system configuration
+Authentication Module
+Provides user identity context
+Appointment Module
+Consumes eligible staff availability context
+Clinical Modules
+Consume eligible practitioner workforce context
+Notification Module
+Sends eligible workforce notifications
+CuraSphere System
+Enforces workforce rules, state, and authorization
+
+5.500 HRM/WFM FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-HRM-FR-001
+Maintain Employee Master
+M
+CS-HRM-FR-002
+Create Employee
+M
+CS-HRM-FR-003
+Generate Employee Number
+M
+CS-HRM-FR-004
+Update Employee Profile
+M
+CS-HRM-FR-005
+View Employee Profile
+M
+CS-HRM-FR-006
+Search Employees
+M
+CS-HRM-FR-007
+Maintain Staff Category
+M
+CS-HRM-FR-008
+Maintain Designation
+M
+CS-HRM-FR-009
+Create Employment Record
+M
+CS-HRM-FR-010
+Record Employment Type
+M
+CS-HRM-FR-011
+Record Joining Date
+M
+CS-HRM-FR-012
+Maintain Employment Status
+M
+CS-HRM-FR-013
+Change Employment Status
+M
+CS-HRM-FR-014
+Preserve Employment History
+M
+CS-HRM-FR-015
+Assign Employee to Department
+M
+CS-HRM-FR-016
+Transfer Employee Between Departments
+M
+CS-HRM-FR-017
+Preserve Department Assignment History
+M
+CS-HRM-FR-018
+Assign Employee Designation
+M
+CS-HRM-FR-019
+Change Employee Designation
+M
+CS-HRM-FR-020
+Preserve Designation History
+M
+CS-HRM-FR-021
+Record Professional Credential
+M
+CS-HRM-FR-022
+Update Professional Credential
+M
+CS-HRM-FR-023
+Record Credential Validity
+M
+CS-HRM-FR-024
+Identify Expiring Credential
+M
+CS-HRM-FR-025
+Identify Expired Credential
+M
+CS-HRM-FR-026
+Maintain Shift Definition
+M
+CS-HRM-FR-027
+Create Shift
+M
+CS-HRM-FR-028
+Update Shift
+M
+CS-HRM-FR-029
+Activate or Deactivate Shift
+M
+CS-WFM-FR-001
+Create Duty Roster
+M
+CS-WFM-FR-002
+Generate Duty Roster Identifier
+M
+CS-WFM-FR-003
+Define Roster Period
+M
+CS-WFM-FR-004
+Associate Roster With Department
+M
+CS-WFM-FR-005
+Add Staff Shift Assignment
+M
+CS-WFM-FR-006
+Validate Staff Employment Eligibility
+M
+CS-WFM-FR-007
+Validate Shift Assignment Conflict
+M
+CS-WFM-FR-008
+Validate Leave Conflict
+M
+CS-WFM-FR-009
+Submit Duty Roster
+M
+CS-WFM-FR-010
+Review Duty Roster
+M
+CS-WFM-FR-011
+Approve Duty Roster
+M
+CS-WFM-FR-012
+Reject Duty Roster
+M
+CS-WFM-FR-013
+Publish Duty Roster
+M
+CS-WFM-FR-014
+Track Duty Roster Status
+M
+CS-WFM-FR-015
+View Personal Duty Schedule
+M
+CS-WFM-FR-016
+View Department Duty Schedule
+M
+CS-WFM-FR-017
+Amend Eligible Duty Assignment
+M
+CS-WFM-FR-018
+Preserve Duty Assignment History
+M
+CS-HRM-FR-030
+Record Attendance
+M
+CS-HRM-FR-031
+Record Check-In
+M
+CS-HRM-FR-032
+Record Check-Out
+M
+CS-HRM-FR-033
+Calculate Attendance Context
+M
+CS-HRM-FR-034
+Identify Late Attendance
+S
+CS-HRM-FR-035
+Identify Missing Attendance
+M
+CS-HRM-FR-036
+Request Attendance Correction
+M
+CS-HRM-FR-037
+Review Attendance Correction
+M
+CS-HRM-FR-038
+Approve Attendance Correction
+M
+CS-HRM-FR-039
+Reject Attendance Correction
+M
+CS-HRM-FR-040
+Preserve Attendance Correction History
+M
+CS-HRM-FR-041
+Maintain Leave Type
+M
+CS-HRM-FR-042
+Create Leave Request
+M
+CS-HRM-FR-043
+Generate Leave Request Identifier
+M
+CS-HRM-FR-044
+Validate Leave Date Range
+M
+CS-HRM-FR-045
+Validate Leave Eligibility
+M
+CS-HRM-FR-046
+Submit Leave Request
+M
+CS-HRM-FR-047
+Review Leave Request
+M
+CS-HRM-FR-048
+Approve Leave Request
+M
+CS-HRM-FR-049
+Reject Leave Request
+M
+CS-HRM-FR-050
+Cancel Eligible Leave Request
+M
+CS-HRM-FR-051
+Track Leave Request Status
+M
+CS-HRM-FR-052
+Determine Staff Availability
+M
+CS-HRM-FR-053
+Expose Eligible Availability Context
+M
+CS-HRM-FR-054
+Prevent Invalid Workforce State Transition
+M
+CS-HRM-FR-055
+Maintain HR Document Metadata
+S
+CS-HRM-FR-056
+Search Workforce Records
+M
+CS-HRM-FR-057
+Record HR Audit Events
+M
+CS-HRM-FR-058
+Support Workforce Reporting Read Models
+M
+CS-HRM-FR-059
+Support Notification Integration
+S
+CS-HRM-FR-060
+Support Future Payroll Integration Boundary
+S
+
+5.501 EMPLOYEE MASTER
+CS-HRM-FR-001 — Maintain Employee Master
+Description
+The system shall maintain a controlled master record for each eligible hospital employee.
+Priority
+Must Have
+Conceptual Employee Model
+EMPLOYEE   │   ├── Employee ID   ├── Employee Number   ├── Person Reference   ├── Staff Category   ├── Employment Status   ├── Primary Department Context   ├── Current Designation Context   └── Active Workforce Context
+Critical Principle
+The employee master shall not unnecessarily duplicate all person identity information.
+Conceptually:
+PERSON  │  ▼EMPLOYEE
+A person may contain general identity information.
+The employee record contains workforce identity.
+Example:
+PERSONPER-000821
+EMPLOYEEEMP-000421
+The two identities shall remain distinguishable.
+Business Rules
+CS-HRM-BR-001
+Each employee shall have a unique internal employee identity.
+CS-HRM-BR-002
+Each active employee number shall be unique within the applicable hospital scope.
+CS-HRM-BR-003
+A user account shall not automatically be treated as an employee record.
+
+5.502 CREATE EMPLOYEE
+CS-HRM-FR-002 — Create Employee
+The system shall allow authorized HR users to create an eligible employee record.
+Main Flow
+AUTHORIZED HR USER        │        ▼OPEN EMPLOYEE MANAGEMENT        │        ▼CREATE EMPLOYEE        │        ▼SEARCH / CREATE PERSON CONTEXT        │        ▼ENTER EMPLOYMENT INFORMATION        │        ▼SELECT STAFF CATEGORY        │        ▼ASSIGN DEPARTMENT        │        ▼ASSIGN DESIGNATION        │        ▼VALIDATE        │        ▼CREATE EMPLOYEE        │        ▼AUDIT EVENT
+Preconditions
+User is authenticated.
+User has employee creation permission.
+Required person information is available.
+Duplicate employee validation has been performed.
+Required employment information is valid.
+Postconditions
+Employee identity exists.
+Employee number exists.
+Initial employment context exists.
+Applicable organizational assignment exists.
+Audit event is recorded.
+
+5.503 EMPLOYEE NUMBER
+CS-HRM-FR-003 — Generate Employee Number
+The system shall generate or assign a unique employee number according to approved hospital configuration.
+Example:
+EMP-000421
+Possible future format:
+CS-HR-2026-000421
+The exact employee number format shall be defined during Master Data Architecture.
+The database shall maintain authoritative uniqueness.
+Do not depend only on:
+if (!employees.includes(employeeNumber)) {    // create employee}
+The PostgreSQL persistence model shall enforce applicable uniqueness.
+
+5.504 UPDATE EMPLOYEE PROFILE
+CS-HRM-FR-004 — Update Employee Profile
+The system shall allow authorized users to update eligible employee profile information.
+Editable information may depend on permission.
+Examples may include:
+employee administrative contact context;
+staff category;
+approved employment metadata;
+emergency administrative contact context;
+workforce configuration information.
+Historical workforce events shall not be silently rewritten.
+Example:
+OLD DEPARTMENTEmergency
+Employee transferred to:
+Cardiology
+Incorrect:
+employee.department = "Cardiology"
+with no history.
+Required concept:
+EMERGENCY ASSIGNMENT      │      ▼ENDED      │      ▼CARDIOLOGY ASSIGNMENT      │      ▼ACTIVE
+
+5.505 VIEW EMPLOYEE PROFILE
+CS-HRM-FR-005 — View Employee Profile
+Authorized users shall be able to view eligible employee information.
+The employee profile may include:
+EMPLOYEE NUMBEREMPLOYEE NAMESTAFF CATEGORYEMPLOYMENT STATUSCURRENT DEPARTMENTCURRENT DESIGNATIONJOINING DATEPROFESSIONAL CREDENTIAL SUMMARYCURRENT DUTY CONTEXTLEAVE CONTEXTATTENDANCE SUMMARY
+Information visibility shall depend on authorization.
+A department supervisor shall not automatically receive unrestricted access to all HR information.
+
+5.506 SEARCH EMPLOYEES
+CS-HRM-FR-006 — Search Employees
+Authorized users shall be able to search eligible employee records.
+Search criteria may include:
+employee number;
+employee name;
+staff category;
+department;
+designation;
+employment status;
+credential context.
+Search results shall respect authorization scope.
+
+5.507 STAFF CATEGORY
+CS-HRM-FR-007 — Maintain Staff Category
+The system shall maintain controlled staff categories.
+Potential categories may include:
+DOCTORNURSEPHARMACISTLABORATORY STAFFRADIOLOGY STAFFADMINISTRATIVE STAFFFINANCE STAFFHR STAFFIT STAFFSUPPORT STAFFOTHER APPROVED CATEGORY
+Important Architecture Principle
+Staff category shall not automatically equal application role.
+Example:
+STAFF CATEGORYDOCTOR
+does not necessarily mean:
+APPLICATION ROLESYSTEM ADMINISTRATOR
+Therefore:
+STAFF CATEGORY       ≠SECURITY ROLE
+Security roles shall remain controlled by the Authentication and Authorization architecture.
+
+5.508 DESIGNATION MASTER
+CS-HRM-FR-008 — Maintain Designation
+The system shall maintain controlled employee designations.
+Examples:
+CONSULTANTMEDICAL OFFICERHEAD NURSESTAFF NURSESENIOR PHARMACISTLABORATORY TECHNOLOGISTHR OFFICERACCOUNTANTSYSTEM ADMINISTRATOR
+A designation may be associated with applicable staff categories or organizational rules.
+The final designation hierarchy shall be defined during Organization Master Data Design.
+
+5.509 EMPLOYMENT RECORD
+CS-HRM-FR-009 — Create Employment Record
+The system shall maintain applicable employment information for an employee.
+Conceptual Employment Record
+EMPLOYMENT RECORD        │        ├── Employment Record ID        ├── Employee        ├── Employment Type        ├── Joining Date        ├── Effective Date        ├── End Date        ├── Employment Status        └── Employment Context
+Critical Principle
+The employee identity and employment lifecycle shall remain distinguishable.
+Conceptually:
+EMPLOYEEWHO IS THE WORKFORCE MEMBER?
+EMPLOYMENT RECORDWHAT IS THE EMPLOYMENT RELATIONSHIP?
+
+5.510 EMPLOYMENT TYPE
+CS-HRM-FR-010 — Record Employment Type
+The system shall record applicable employment type.
+Potential types may include:
+PERMANENTCONTRACTTEMPORARYPART-TIMEVISITINGTRAINEEINTERNOTHER APPROVED TYPE
+The exact vocabulary shall be configurable according to hospital HR policy.
+
+5.511 JOINING DATE
+CS-HRM-FR-011 — Record Joining Date
+The system shall record the applicable employee joining date.
+Example:
+JOINING DATE2026-07-14
+The system shall validate applicable date rules.
+A joining date shall not be inferred from:
+USER ACCOUNT CREATED AT
+because:
+ACCOUNT CREATION DATE          ≠EMPLOYEE JOINING DATE
+
+5.512 EMPLOYMENT STATUS
+CS-HRM-FR-012 — Maintain Employment Status
+The system shall maintain controlled employment statuses.
+Potential statuses may include:
+PENDING_ONBOARDINGACTIVEON_LEAVESUSPENDEDINACTIVERESIGNEDTERMINATEDRETIRED
+The final vocabulary shall be defined during HR Domain Architecture.
+
+CS-HRM-FR-013 — Change Employment Status
+The system shall allow authorized HR users to change an employee’s employment status through an approved workflow.
+Example:
+ACTIVE  │  ▼RESIGNED
+The status change may require:
+EFFECTIVE DATEREASONAUTHORIZED BY
+Business Rule
+CS-HRM-BR-004
+Employment status changes shall be backend authorized.
+
+5.513 EMPLOYMENT HISTORY
+CS-HRM-FR-014 — Preserve Employment History
+The system shall preserve applicable employment history.
+Example:
+EMPLOYEEEMP-421────────────────────────────2023-01-01ACTIVE2025-05-10ON_LEAVE2025-06-01ACTIVE2026-07-01RESIGNED
+The system shall be able to answer:
+WHAT WAS THE EMPLOYEE STATUSON A PARTICULAR DATE?
+where required by approved business rules.
+
+5.514 DEPARTMENT ASSIGNMENT
+CS-HRM-FR-015 — Assign Employee to Department
+The system shall allow authorized HR users to assign an eligible employee to a hospital department.
+Conceptual Model
+DEPARTMENT ASSIGNMENT         │         ├── Assignment ID         ├── Employee         ├── Department         ├── Effective From         ├── Effective To         ├── Assignment Type         └── Status
+Example:
+EMPLOYEEEMP-421
+assigned to:
+DEPARTMENTEmergency
+effective:
+2026-07-14
+
+5.515 EMPLOYEE DEPARTMENT TRANSFER
+CS-HRM-FR-016 — Transfer Employee Between Departments
+The system shall support controlled employee transfer between eligible departments.
+Main Flow
+CURRENT DEPARTMENT        │        ▼CREATE TRANSFER ACTION        │        ▼SELECT DESTINATION DEPARTMENT        │        ▼ENTER EFFECTIVE DATE        │        ▼VALIDATE EMPLOYEE        │        ▼VALIDATE DEPARTMENT        │        ▼VALIDATE AUTHORIZATION        │        ▼END CURRENT ASSIGNMENT        │        ▼CREATE NEW ASSIGNMENT        │        ▼AUDIT EVENT
+Example:
+EMERGENCY    │    ▼TRANSFER    │    ▼CARDIOLOGY
+The system shall not silently overwrite organizational history.
+
+5.516 DEPARTMENT ASSIGNMENT HISTORY
+CS-HRM-FR-017 — Preserve Department Assignment History
+The system shall preserve applicable department assignment history.
+Example:
+EMP-4212023 → 2024GENERAL MEDICINE2024 → 2026EMERGENCY2026 → CURRENTCARDIOLOGY
+This supports:
+WORKFORCE HISTORYDEPARTMENT REPORTINGAUDITHISTORICAL OPERATIONAL CONTEXT
+
+5.517 DESIGNATION ASSIGNMENT
+CS-HRM-FR-018 — Assign Employee Designation
+The system shall allow authorized HR users to assign an eligible designation to an employee.
+Conceptually:
+EMPLOYEE    │    ▼DESIGNATION ASSIGNMENT    │    ▼DESIGNATION
+Example:
+EMPLOYEEEMP-421
+DESIGNATIONMedical Officer
+
+5.518 CHANGE EMPLOYEE DESIGNATION
+CS-HRM-FR-019 — Change Employee Designation
+The system shall support controlled designation changes.
+Example:
+MEDICAL OFFICER       │       ▼SENIOR MEDICAL OFFICER
+The change may require:
+EFFECTIVE DATECHANGE REASONAUTHORIZATION CONTEXT
+
+5.519 DESIGNATION HISTORY
+CS-HRM-FR-020 — Preserve Designation History
+The system shall preserve applicable designation assignment history.
+Incorrect:
+employee.designation = "Consultant"
+with no historical context.
+Required:
+MEDICAL OFFICER2023 → 2025
+SENIOR MEDICAL OFFICER2025 → 2026
+CONSULTANT2026 → CURRENT
+
+5.520 PROFESSIONAL CREDENTIAL
+CS-HRM-FR-021 — Record Professional Credential
+Description
+The system shall allow authorized users to record applicable professional credentials for eligible hospital staff.
+Priority
+Must Have
+Potential credentials may include:
+MEDICAL REGISTRATIONNURSING REGISTRATIONPHARMACY REGISTRATIONPROFESSIONAL LICENSECERTIFICATIONSPECIALTY CREDENTIALOTHER APPROVED CREDENTIAL
+Conceptual Model
+PROFESSIONAL CREDENTIAL          │          ├── Credential ID          ├── Employee          ├── Credential Type          ├── Credential Number          ├── Issuing Authority          ├── Issue Date          ├── Expiry Date          ├── Verification Context          └── Status
+Scope Statement
+This SRS defines credential record management.
+It does not claim automatic verification with any external medical council or regulatory body.
+External verification shall require an approved integration.
+
+5.521 UPDATE PROFESSIONAL CREDENTIAL
+CS-HRM-FR-022 — Update Professional Credential
+The system shall allow authorized users to update eligible credential information.
+Applicable changes shall be audited.
+Historical credential information shall be preserved where required.
+
+5.522 CREDENTIAL VALIDITY
+CS-HRM-FR-023 — Record Credential Validity
+The system shall record applicable credential validity dates.
+Example:
+ISSUE DATE2024-01-01EXPIRY DATE2026-12-31
+Validation may include:
+EXPIRY REQUIRED?ISSUE DATE VALID?EXPIRY AFTER ISSUE DATE?CREDENTIAL NUMBER REQUIRED?ISSUING AUTHORITY REQUIRED?
+
+5.523 EXPIRING CREDENTIAL
+CS-HRM-FR-024 — Identify Expiring Credential
+The system shall identify credentials approaching expiry according to approved monitoring rules.
+Example:
+CURRENT DATE14 JUL 2026CREDENTIAL EXPIRY31 JUL 2026MONITORING WINDOW30 DAYS
+Result:
+EXPIRING SOON
+Potential monitoring periods may include:
+30 DAYS60 DAYS90 DAYS
+The exact configuration shall be defined during HR Administration Design.
+
+5.524 EXPIRED CREDENTIAL
+CS-HRM-FR-025 — Identify Expired Credential
+The system shall identify expired professional credentials.
+Conceptually:
+CURRENT DATE      │      ▼COMPARE WITH EXPIRY      │      ▼EXPIRED?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼EXPIRED  VALID BY DATE RULE
+Important Boundary
+The system shall not automatically terminate an employee because a credential expires.
+Conceptually:
+CREDENTIAL EXPIRED       │       ▼WORKFORCE / COMPLIANCE RULE       │       ▼RESTRICTION OR REVIEW
+The exact clinical duty restriction policy shall be defined during Compliance and Clinical Workforce Architecture.
+
+5.525 SHIFT DEFINITION
+CS-HRM-FR-026 — Maintain Shift Definition
+The system shall maintain controlled workforce shift definitions.
+Conceptual Shift Model
+SHIFT  │  ├── Shift ID  ├── Shift Code  ├── Shift Name  ├── Start Time  ├── End Time  ├── Cross-Midnight Context  └── Active Status
+Examples:
+MORNING SHIFT08:00 → 16:00
+EVENING SHIFT16:00 → 00:00
+NIGHT SHIFT20:00 → 08:00
+Critical Time Principle
+The system shall support shifts that cross midnight.
+Example:
+START2026-07-14 20:00END2026-07-15 08:00
+Incorrect assumption:
+end_time must always be greater than start_timeon the same calendar date
+The workforce architecture shall use appropriate date-time context.
+
+5.526 CREATE SHIFT
+CS-HRM-FR-027 — Create Shift
+The system shall allow authorized users to create eligible shift definitions.
+Main Flow
+AUTHORIZED USER      │      ▼OPEN SHIFT CONFIGURATION      │      ▼CREATE SHIFT      │      ▼ENTER SHIFT CODE      │      ▼ENTER SHIFT NAME      │      ▼ENTER TIME RULE      │      ▼VALIDATE      │      ▼SAVE SHIFT
+
+5.527 UPDATE SHIFT
+CS-HRM-FR-028 — Update Shift
+The system shall allow authorized users to update eligible shift definitions.
+Changes to a shift definition shall not silently rewrite historical duty assignments.
+Example:
+Historical shift:
+MORNING08:00 → 16:00
+New policy:
+MORNING07:00 → 15:00
+Historical 2025 roster records shall not automatically appear as:
+07:00 → 15:00
+if the employee actually worked under the previous shift definition.
+The final temporal shift configuration strategy shall be defined during Workforce Domain Architecture.
+
+5.528 ACTIVATE OR DEACTIVATE SHIFT
+CS-HRM-FR-029 — Activate or Deactivate Shift
+The system shall allow authorized users to activate or deactivate eligible shift definitions.
+Inactive shifts shall not normally be available for new roster assignments.
+Historical assignments shall remain accessible.
+
+5.529 DUTY ROSTER
+CS-WFM-FR-001 — Create Duty Roster
+Requirement Name
+Create Duty Roster
+Description
+The system shall allow authorized users to create a duty roster for an eligible hospital department and roster period.
+Priority
+Must Have
+Conceptual Duty Roster Model
+DUTY ROSTER      │      ├── Roster ID      ├── Department      ├── Roster Start Date      ├── Roster End Date      ├── Created By      ├── Approved By      ├── Published At      └── Status
+Workflow
+DEPARTMENT     │     ▼CREATE DUTY ROSTER     │     ▼DEFINE ROSTER PERIOD     │     ▼ADD STAFF     │     ▼ASSIGN SHIFTS     │     ▼VALIDATE CONFLICTS     │     ▼SUBMIT     │     ▼REVIEW     │     ▼APPROVE     │     ▼PUBLISH
+Business Rule
+CS-WFM-BR-001
+A duty roster represents a controlled workforce schedule and shall not be treated as attendance evidence.
+Therefore:
+ROSTER ASSIGNMENT        ≠ATTENDANCE
+A person may be scheduled but absent.
+
+5.530 DUTY ROSTER IDENTIFIER
+CS-WFM-FR-002 — Generate Duty Roster Identifier
+The system shall generate a unique duty roster identifier.
+Example:
+RST-00000421
+
+5.531 ROSTER PERIOD
+CS-WFM-FR-003 — Define Roster Period
+The system shall record the applicable duty roster period.
+Example:
+ROSTER START2026-08-01ROSTER END2026-08-31
+Validation:
+START DATE VALID?END DATE VALID?END >= START?PERIOD ALLOWED BY POLICY?
+The final maximum roster period shall be configurable.
+
+5.532 ROSTER DEPARTMENT
+CS-WFM-FR-004 — Associate Roster With Department
+Each eligible duty roster shall reference an applicable hospital department.
+Example:
+ROSTERRST-421DEPARTMENTEmergency
+This allows CuraSphere to answer:
+SHOW AUGUST EMERGENCY DUTY ROSTER
+separately from:
+SHOW AUGUST CARDIOLOGY DUTY ROSTER
+
+5.533 STAFF SHIFT ASSIGNMENT
+CS-WFM-FR-005 — Add Staff Shift Assignment
+The system shall allow authorized users to assign eligible staff to shifts within a duty roster.
+Conceptual Model
+SHIFT ASSIGNMENT       │       ├── Assignment ID       ├── Duty Roster       ├── Employee       ├── Shift       ├── Duty Start       ├── Duty End       ├── Assignment Context       └── Status
+Example:
+EMPLOYEEEMP-421DATE2026-08-01SHIFTNIGHTDUTY START2026-08-01 20:00DUTY END2026-08-02 08:00
+Critical Principle
+Do not only store:
+employee.shift = "Night"
+because an employee may work:
+MONDAY → MORNINGTUESDAY → MORNINGWEDNESDAY → OFFTHURSDAY → NIGHTFRIDAY → NIGHT
+Shift assignment is a scheduling event.
+
+5.534 EMPLOYMENT ELIGIBILITY VALIDATION
+CS-WFM-FR-006 — Validate Staff Employment Eligibility
+The system shall validate whether an employee is eligible for an applicable duty assignment.
+Validation may include:
+EMPLOYEE EXISTS?EMPLOYMENT ACTIVE?DEPARTMENT ELIGIBLE?STAFF CATEGORY ELIGIBLE?ASSIGNMENT DATE VALID?EMPLOYMENT EFFECTIVE ON DUTY DATE?REQUIRED WORKFORCE RESTRICTION?
+Example:
+EMPLOYMENT STATUSRESIGNEDEFFECTIVE DATE2026-07-31
+Duty assignment:
+2026-08-10
+Result:
+NOT ELIGIBLE
+
+5.535 SHIFT ASSIGNMENT CONFLICT
+CS-WFM-FR-007 — Validate Shift Assignment Conflict
+The system shall detect applicable overlapping duty assignments.
+Example:
+Assignment A:
+14 JUL08:00 → 16:00
+Assignment B:
+14 JUL12:00 → 20:00
+Overlap:
+12:00 → 16:00
+Result:
+SHIFT CONFLICT
+Conceptually:
+NEW DUTY START < EXISTING DUTY ENDANDNEW DUTY END > EXISTING DUTY START
+may indicate temporal overlap.
+The final overlap algorithm shall be implemented in authoritative backend logic.
+Business Rule
+CS-WFM-BR-002
+The ASP.NET Core backend shall validate applicable shift assignment conflicts.
+React shall not be the authoritative conflict validator.
+
+5.536 LEAVE CONFLICT VALIDATION
+CS-WFM-FR-008 — Validate Leave Conflict
+The system shall identify applicable conflict between an approved leave period and a proposed duty assignment.
+Example:
+APPROVED LEAVE10 AUG → 15 AUG
+Proposed duty:
+12 AUG
+Result:
+LEAVE CONFLICT
+The system shall apply approved workforce policy.
+Possible policy behavior may include:
+BLOCK ASSIGNMENT
+or:
+REQUIRE AUTHORIZED EXCEPTION
+The final policy shall be defined during Workforce Governance Design.
+
+5.537 SUBMIT DUTY ROSTER
+CS-WFM-FR-009 — Submit Duty Roster
+The system shall allow an authorized user to submit an eligible draft duty roster.
+Preconditions
+Duty roster exists.
+Department is valid.
+Roster period is valid.
+Eligible assignments exist.
+Required conflict validation has completed.
+User is authorized.
+Main Flow
+DRAFT  │  ▼VALIDATE ROSTER  │  ▼VALIDATE ASSIGNMENTS  │  ▼VALIDATE EMPLOYMENT  │  ▼VALIDATE SHIFT CONFLICTS  │  ▼VALIDATE LEAVE CONFLICTS  │  ▼SUBMIT  │  ▼PENDING APPROVAL
+
+5.538 REVIEW DUTY ROSTER
+CS-WFM-FR-010 — Review Duty Roster
+Authorized users shall be able to review submitted duty rosters.
+The review view may include:
+ROSTER IDDEPARTMENTROSTER PERIODSTAFF COUNTSHIFT ASSIGNMENTSUNASSIGNED DATESCONFLICT WARNINGSLEAVE CONFLICTSWORKFORCE COVERAGE CONTEXT
+The system may provide workforce coverage indicators.
+Example:
+NIGHT SHIFTREQUIRED NURSES5ASSIGNED NURSES3STATUSUNDERSTAFFED
+Detailed staffing ratio rules shall be configurable and shall not be assumed by this SRS.
+
+5.539 APPROVE DUTY ROSTER
+CS-WFM-FR-011 — Approve Duty Roster
+The system shall allow an authorized approver to approve an eligible duty roster.
+The system shall record:
+APPROVED BYAPPROVED ATAPPROVAL CONTEXT
+Business Rule
+CS-WFM-BR-003
+Duty roster approval shall be backend authorized.
+A hidden React approval button shall not be treated as security.
+
+5.540 REJECT DUTY ROSTER
+CS-WFM-FR-012 — Reject Duty Roster
+The system shall allow an authorized approver to reject an eligible duty roster.
+The system shall record:
+REJECTED BYREJECTED ATREJECTION REASON
+Example:
+REJECTION REASONNight shift coverage is incomplete forthe Emergency Department on 12 and 13 August.
+
+5.541 PUBLISH DUTY ROSTER
+CS-WFM-FR-013 — Publish Duty Roster
+The system shall allow an approved duty roster to be published.
+Conceptually:
+APPROVED   │   ▼PUBLISH   │   ▼PUBLISHED   │   ▼VISIBLE TO ELIGIBLE STAFF
+Publication may trigger eligible notification events.
+Example:
+DUTY_ROSTER_PUBLISHED
+The Notification module shall determine the applicable delivery mechanism.
+
+5.542 DUTY ROSTER STATUS
+CS-WFM-FR-014 — Track Duty Roster Status
+The system shall track duty roster status.
+Conceptual State Model
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼PUBLISHED  │  ▼ACTIVE  │  ▼COMPLETED
+Alternative state:
+CANCELLED
+The final state vocabulary shall be defined during Workforce Domain Architecture.
+
+5.543 PERSONAL DUTY SCHEDULE
+CS-WFM-FR-015 — View Personal Duty Schedule
+Eligible employees shall be able to view their applicable personal duty schedule.
+The view may include:
+DATEDEPARTMENTSHIFTSTART TIMEEND TIMEROSTERASSIGNMENT STATUS
+Example:
+01 AUGMORNING08:00 → 16:0002 AUGMORNING08:00 → 16:0003 AUGOFF04 AUGNIGHT20:00 → 08:00
+The UI shall clearly represent cross-midnight shifts.
+
+5.544 DEPARTMENT DUTY SCHEDULE
+CS-WFM-FR-016 — View Department Duty Schedule
+Authorized users shall be able to view eligible department duty schedules.
+Potential views may include:
+DAILY VIEWWEEKLY VIEWMONTHLY VIEWSHIFT VIEWSTAFF VIEW
+The final React calendar and roster visualization shall be defined during UI/UX Architecture.
+
+5.545 AMEND DUTY ASSIGNMENT
+CS-WFM-FR-017 — Amend Eligible Duty Assignment
+The system shall support controlled amendment of eligible duty assignments.
+Example:
+ORIGINALEMP-421NIGHT SHIFT14 AUG
+Amended:
+EMP-521NIGHT SHIFT14 AUG
+The system shall record applicable amendment context.
+Published roster amendments may require:
+CHANGE REASONAUTHORIZED USERCHANGE TIMESTAMPNOTIFICATION EVENT
+The final approval policy for published roster changes shall be defined during Workforce Governance Design.
+
+5.546 DUTY ASSIGNMENT HISTORY
+CS-WFM-FR-018 — Preserve Duty Assignment History
+The system shall preserve applicable history for duty assignment changes.
+The system shall be able to answer:
+WHO WAS ORIGINALLY ASSIGNED?WHAT WAS CHANGED?WHO CHANGED IT?WHEN WAS IT CHANGED?WHY WAS IT CHANGED?
+Example:
+ORIGINAL ASSIGNMENTEMP-421
+AMENDED TOEMP-521
+REASONApproved emergency duty replacement
+
+5.547 ATTENDANCE RECORDING
+CS-HRM-FR-030 — Record Attendance
+Description
+The system shall record eligible employee attendance information.
+Priority
+Must Have
+Conceptual Attendance Model
+ATTENDANCE RECORD        │        ├── Attendance ID        ├── Employee        ├── Attendance Date        ├── Shift Assignment Context        ├── Check-In        ├── Check-Out        ├── Attendance Status        └── Source Context
+Critical Principle
+Attendance shall remain distinguishable from duty scheduling.
+SCHEDULED    │    ▼EXPECTED TO WORK
+ATTENDANCE    │    ▼ACTUAL ATTENDANCE EVIDENCE
+Therefore:
+DUTY ROSTER      ≠ATTENDANCE
+
+5.548 CHECK-IN
+CS-HRM-FR-031 — Record Check-In
+The system shall support recording an eligible employee check-in event.
+Example:
+EMPLOYEEEMP-421CHECK-IN2026-07-14 07:58
+The attendance source may be:
+AUTHORIZED MANUAL ENTRYAPPROVED ATTENDANCE DEVICEFUTURE BIOMETRIC INTEGRATIONOTHER APPROVED SOURCE
+This SRS does not select a biometric device.
+
+5.549 CHECK-OUT
+CS-HRM-FR-032 — Record Check-Out
+The system shall support recording an eligible employee check-out event.
+Example:
+CHECK-IN07:58CHECK-OUT16:07
+The system shall validate applicable temporal consistency.
+Invalid example:
+CHECK-IN16:00CHECK-OUT08:00
+shall not automatically be rejected without evaluating cross-midnight shift context.
+The date-time model shall support overnight duties.
+
+5.550 ATTENDANCE CONTEXT CALCULATION
+CS-HRM-FR-033 — Calculate Attendance Context
+The system shall calculate or derive applicable attendance context according to approved policy.
+Potential contexts may include:
+PRESENTABSENTLATEEARLY_DEPARTUREINCOMPLETEON_APPROVED_LEAVEOFF_DUTY
+The exact attendance policy shall be configurable.
+Important Principle
+The system shall not hardcode a universal rule such as:
+if checkIn > 08:00    employee = late
+because different shifts have different start times.
+Conceptually:
+ASSIGNED SHIFT START        │        ▼ATTENDANCE POLICY        │        ▼CHECK-IN TIME        │        ▼ATTENDANCE CONTEXT
+
+5.551 LATE ATTENDANCE
+CS-HRM-FR-034 — Identify Late Attendance
+The system should identify late attendance according to configured attendance policy.
+Priority
+Should Have
+Example:
+SHIFT START08:00GRACE PERIOD10 MINUTESCHECK-IN08:15
+Result:
+LATE
+The exact grace period shall be configured by authorized administration.
+
+5.552 MISSING ATTENDANCE
+CS-HRM-FR-035 — Identify Missing Attendance
+The system shall identify applicable missing attendance records.
+Example:
+PUBLISHED DUTY ASSIGNMENTEMP-42114 JUL08:00 → 16:00
+No:
+CHECK-IN
+No:
+APPROVED LEAVE
+Potential result:
+ATTENDANCE REVIEW REQUIRED
+The system shall not automatically make disciplinary decisions.
+It shall identify the operational discrepancy.
+
+5.553 ATTENDANCE CORRECTION REQUEST
+CS-HRM-FR-036 — Request Attendance Correction
+The system shall allow an eligible employee or authorized user to request correction of an attendance record.
+Potential contexts:
+MISSED CHECK-INMISSED CHECK-OUTINCORRECT DEVICE RECORDAPPROVED OFFICIAL DUTYSYSTEM ISSUEOTHER APPROVED REASON
+Conceptual Model
+ATTENDANCE CORRECTION          │          ├── Correction ID          ├── Attendance Context          ├── Employee          ├── Requested Value          ├── Reason          ├── Requested By          └── Status
+
+5.554 REVIEW ATTENDANCE CORRECTION
+CS-HRM-FR-037 — Review Attendance Correction
+Authorized users shall be able to review eligible attendance correction requests.
+The review may include:
+EMPLOYEEDUTY ASSIGNMENTORIGINAL ATTENDANCEREQUESTED CORRECTIONCORRECTION REASONREQUESTED BYREQUESTED AT
+
+5.555 APPROVE ATTENDANCE CORRECTION
+CS-HRM-FR-038 — Approve Attendance Correction
+The system shall allow an authorized approver to approve an eligible attendance correction.
+The system shall preserve:
+ORIGINAL VALUECORRECTED VALUEAPPROVED BYAPPROVED ATCORRECTION REASON
+Business Rule
+CS-HRM-BR-005
+Attendance correction shall not silently erase the original attendance context.
+
+5.556 REJECT ATTENDANCE CORRECTION
+CS-HRM-FR-039 — Reject Attendance Correction
+The system shall allow an authorized approver to reject an eligible attendance correction request.
+The rejection reason shall be recorded.
+
+5.557 ATTENDANCE CORRECTION HISTORY
+CS-HRM-FR-040 — Preserve Attendance Correction History
+The system shall preserve applicable attendance correction history.
+Example:
+ORIGINAL CHECK-IN09:15
+Correction request:
+08:05
+Approved correction:
+08:05
+The audit context shall still show:
+ORIGINAL09:15CORRECTED08:05
+The system shall not pretend the original record never existed.
+
+5.558 LEAVE TYPE
+CS-HRM-FR-041 — Maintain Leave Type
+The system shall maintain controlled leave types.
+Potential leave types may include:
+ANNUAL LEAVESICK LEAVECASUAL LEAVEMATERNITY LEAVEPATERNITY LEAVESTUDY LEAVEUNPAID LEAVEOTHER APPROVED LEAVE
+The exact leave policy, entitlement, and legal requirements shall be defined according to applicable hospital and employment rules.
+
+5.559 LEAVE REQUEST
+CS-HRM-FR-042 — Create Leave Request
+Description
+The system shall allow eligible employees or authorized HR users to create a leave request.
+Priority
+Must Have
+Conceptual Leave Request Model
+LEAVE REQUEST      │      ├── Leave Request ID      ├── Employee      ├── Leave Type      ├── Start Date      ├── End Date      ├── Reason      ├── Requested At      ├── Decision Context      └── Status
+Main Flow
+EMPLOYEE   │   ▼CREATE LEAVE REQUEST   │   ▼SELECT LEAVE TYPE   │   ▼ENTER DATE RANGE   │   ▼ENTER REASON   │   ▼VALIDATE   │   ▼SAVE DRAFT   │   ▼SUBMIT
+
+5.560 LEAVE REQUEST IDENTIFIER
+CS-HRM-FR-043 — Generate Leave Request Identifier
+The system shall generate a unique leave request identifier.
+Example:
+LVR-00000821
+
+5.561 LEAVE DATE VALIDATION
+CS-HRM-FR-044 — Validate Leave Date Range
+The system shall validate applicable leave date rules.
+Validation may include:
+START DATE VALID?END DATE VALID?END >= START?EMPLOYEE EMPLOYED DURING PERIOD?OVERLAPPING LEAVE EXISTS?LEAVE TYPE RULE VALID?
+Example:
+START20 AUGEND15 AUG
+Result:
+INVALID DATE RANGE
+
+5.562 LEAVE ELIGIBILITY
+CS-HRM-FR-045 — Validate Leave Eligibility
+The system shall validate applicable leave eligibility according to configured HR policy.
+Potential validation may include:
+EMPLOYEE ACTIVE?LEAVE TYPE ELIGIBLE?EMPLOYMENT TYPE ELIGIBLE?AVAILABLE ENTITLEMENT?OVERLAPPING REQUEST?REQUIRED DOCUMENT CONTEXT?
+The exact entitlement calculation model shall be defined during HR Domain Architecture.
+This SRS shall not assume one universal leave policy.
+
+5.563 SUBMIT LEAVE REQUEST
+CS-HRM-FR-046 — Submit Leave Request
+The system shall allow an eligible leave request to be submitted.
+DRAFT  │  ▼VALIDATE DATE RANGE  │  ▼VALIDATE EMPLOYEE  │  ▼VALIDATE LEAVE POLICY  │  ▼SUBMIT  │  ▼PENDING APPROVAL
+
+5.564 REVIEW LEAVE REQUEST
+CS-HRM-FR-047 — Review Leave Request
+Authorized users shall be able to review eligible leave requests.
+The review may include:
+EMPLOYEEDEPARTMENTDESIGNATIONLEAVE TYPEDATE RANGELEAVE REASONDUTY ASSIGNMENT CONFLICTWORKFORCE COVERAGE CONTEXTLEAVE ENTITLEMENT CONTEXT
+Workforce coverage may be provided as decision support.
+It shall not replace the approved leave decision policy.
+
+5.565 APPROVE LEAVE REQUEST
+CS-HRM-FR-048 — Approve Leave Request
+The system shall allow an authorized approver to approve an eligible leave request.
+Main Flow
+PENDING APPROVAL       │       ▼AUTHORIZED APPROVER       │       ▼REVIEW LEAVE       │       ▼REVIEW DUTY CONFLICT       │       ▼REVIEW WORKFORCE CONTEXT       │       ▼APPROVE       │       ▼APPROVED       │       ▼UPDATE AVAILABILITY CONTEXT       │       ▼AUDIT EVENT
+Important Requirement
+Approved leave shall become available to applicable workforce scheduling logic.
+Conceptually:
+LEAVE APPROVED      │      ▼STAFF AVAILABILITY      │      ▼ROSTER VALIDATION
+
+5.566 REJECT LEAVE REQUEST
+CS-HRM-FR-049 — Reject Leave Request
+The system shall allow an authorized approver to reject an eligible leave request.
+The system shall record:
+REJECTED BYREJECTED ATREJECTION REASON
+
+5.567 CANCEL LEAVE REQUEST
+CS-HRM-FR-050 — Cancel Eligible Leave Request
+The system shall allow eligible leave requests to be cancelled according to approved policy.
+Possible cases:
+DRAFT REQUEST
+may be cancelled by the requester.
+An:
+APPROVED REQUEST
+may require an authorized cancellation workflow.
+The final cancellation policy shall be defined during HR Domain Architecture.
+
+5.568 LEAVE REQUEST STATUS
+CS-HRM-FR-051 — Track Leave Request Status
+The system shall track leave request status.
+Conceptual State Model
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼ACTIVE  │  ▼COMPLETED
+Alternative:
+CANCELLED
+The final state vocabulary shall be defined during HR Domain Architecture.
+
+5.569 STAFF AVAILABILITY
+CS-HRM-FR-052 — Determine Staff Availability
+Description
+The system shall determine eligible staff availability context for approved operational workflows.
+Priority
+Must Have
+Conceptually:
+EMPLOYEE STATUS       │       ▼DEPARTMENT ASSIGNMENT       │       ▼PROFESSIONAL ELIGIBILITY       │       ▼APPROVED LEAVE       │       ▼DUTY ASSIGNMENT       │       ▼APPLICABLE RESTRICTIONS       │       ▼STAFF AVAILABILITY CONTEXT
+Potential availability contexts may include:
+AVAILABLEON_DUTYOFF_DUTYON_APPROVED_LEAVEUNAVAILABLEEMPLOYMENT_INACTIVECREDENTIAL_REVIEW_REQUIRED
+The exact availability vocabulary shall be defined during Workforce Domain Architecture.
+Critical Principle
+Do not implement:
+employee.isAvailable = true;
+as the only workforce availability model.
+Availability may be derived from multiple operational facts.
+
+5.570 EXPOSE AVAILABILITY CONTEXT
+CS-HRM-FR-053 — Expose Eligible Availability Context
+The system shall expose authorized staff availability information to eligible CuraSphere modules.
+Potential consumers include:
+APPOINTMENT MANAGEMENTOPDIPDEMERGENCYSURGERYNURSINGDEPARTMENT WORKFORCE VIEWS
+Example:
+APPOINTMENT MODULE        │        ▼REQUEST DOCTOR AVAILABILITY        │        ▼WORKFORCE AVAILABILITY SERVICE        │        ▼EMPLOYMENT ACTIVE?        │        ▼ON APPROVED LEAVE?        │        ▼APPLICABLE DUTY CONTEXT?        │        ▼RETURN ELIGIBLE AVAILABILITY
+Important Boundary
+The HRM/WFM module provides workforce context.
+The Appointment module remains responsible for appointment booking rules.
+
+5.571 WORKFORCE STATE TRANSITION VALIDATION
+CS-HRM-FR-054 — Prevent Invalid Workforce State Transition
+The system shall enforce approved HR and workforce state transitions.
+Employment Example
+Valid:
+PENDING_ONBOARDING        │        ▼ACTIVE
+Possible valid transition:
+ACTIVE  │  ▼RESIGNED
+Invalid ordinary transition:
+TERMINATED    │    ▼ACTIVE
+without an approved reinstatement process.
+Duty Roster Example
+Valid:
+DRAFT  │  ▼SUBMITTED  │  ▼APPROVED  │  ▼PUBLISHED
+Invalid:
+DRAFT  │  ▼PUBLISHED
+without required approval.
+Leave Example
+Valid:
+PENDING_APPROVAL       │       ▼APPROVED
+Invalid:
+REJECTED   │   ▼ACTIVE
+through ordinary leave workflow.
+Business Rules
+CS-HRM-BR-006
+HR and workforce states shall follow approved transitions.
+CS-HRM-BR-007
+The ASP.NET Core backend shall reject invalid HR and workforce state transitions.
+CS-HRM-BR-008
+React shall not be the authoritative workforce state engine.
+
+5.572 HR DOCUMENT METADATA
+CS-HRM-FR-055 — Maintain HR Document Metadata
+The system should support controlled metadata for eligible HR documents.
+Priority
+Should Have
+Potential document types may include:
+EMPLOYMENT DOCUMENTCONTRACTPROFESSIONAL CERTIFICATELICENSE DOCUMENTIDENTIFICATION DOCUMENTTRAINING CERTIFICATEOTHER APPROVED HR DOCUMENT
+Conceptually:
+HR DOCUMENT METADATA        │        ├── Document ID        ├── Employee        ├── Document Type        ├── Document Reference        ├── Issue Date        ├── Expiry Date        ├── Storage Reference        └── Access Classification
+Security Requirement
+HR document access shall be authorization controlled.
+A file URL shall not automatically become public merely because React can display it.
+The final secure document storage architecture shall be defined during File and Object Storage Architecture.
+
+5.573 SEARCH WORKFORCE RECORDS
+CS-HRM-FR-056 — Search Workforce Records
+Authorized users shall be able to search eligible workforce records.
+Search criteria may include:
+EMPLOYEE NUMBEREMPLOYEE NAMESTAFF CATEGORYDEPARTMENTDESIGNATIONEMPLOYMENT STATUSSHIFTDUTY DATELEAVE STATUSCREDENTIAL STATUS
+Search results shall respect authorization scope.
+
+5.574 HR AUDIT EVENTS
+CS-HRM-FR-057 — Record HR Audit Events
+The system shall record appropriate audit events for significant HR and workforce operations.
+Potential events include:
+EMPLOYEE_CREATEDEMPLOYEE_UPDATEDEMPLOYMENT_RECORD_CREATEDEMPLOYMENT_STATUS_CHANGEDDEPARTMENT_ASSIGNEDEMPLOYEE_TRANSFERREDDESIGNATION_ASSIGNEDDESIGNATION_CHANGEDCREDENTIAL_CREATEDCREDENTIAL_UPDATEDCREDENTIAL_EXPIREDSHIFT_CREATEDSHIFT_UPDATEDSHIFT_DEACTIVATEDDUTY_ROSTER_CREATEDDUTY_ROSTER_SUBMITTEDDUTY_ROSTER_APPROVEDDUTY_ROSTER_REJECTEDDUTY_ROSTER_PUBLISHEDDUTY_ASSIGNMENT_CREATEDDUTY_ASSIGNMENT_AMENDEDATTENDANCE_RECORDEDATTENDANCE_CORRECTION_REQUESTEDATTENDANCE_CORRECTION_APPROVEDATTENDANCE_CORRECTION_REJECTEDLEAVE_REQUEST_CREATEDLEAVE_REQUEST_SUBMITTEDLEAVE_REQUEST_APPROVEDLEAVE_REQUEST_REJECTEDLEAVE_REQUEST_CANCELLED
+Example Audit Event
+EVENTEMPLOYEE_TRANSFERREDTARGETEMP-000421FROM DEPARTMENTEMERGENCYTO DEPARTMENTCARDIOLOGYEFFECTIVE DATE2026-08-01ACTORUSR-HR-021TIME2026-07-14 19:10RESULTSUCCESS
+
+5.575 WORKFORCE REPORTING READ MODELS
+CS-HRM-FR-058 — Support Workforce Reporting Read Models
+The system shall support authorized HR and workforce reporting read models.
+Potential reports include:
+EMPLOYEE DIRECTORYACTIVE EMPLOYEE REPORTEMPLOYEE BY DEPARTMENTEMPLOYEE BY DESIGNATIONEMPLOYEE BY STAFF CATEGORYEMPLOYMENT STATUS REPORTDEPARTMENT TRANSFER HISTORYDESIGNATION HISTORYCREDENTIAL EXPIRY REPORTEXPIRED CREDENTIAL REPORTDUTY ROSTER REPORTSHIFT ASSIGNMENT REPORTDEPARTMENT COVERAGE REPORTATTENDANCE SUMMARYLATE ATTENDANCE REPORTMISSING ATTENDANCE REPORTATTENDANCE CORRECTION REPORTLEAVE REQUEST REPORTAPPROVED LEAVE REPORTSTAFF AVAILABILITY REPORTWORKFORCE HISTORY REPORT
+Conceptually:
+HR / WORKFORCE TRANSACTION DATA              │              ▼REPORTING PROJECTION / READ MODEL              │              ▼HR / WORKFORCE DASHBOARD
+Complex workforce dashboards shall not automatically perform uncontrolled joins across every operational HR table for every page request.
+The detailed reporting architecture shall be defined during System Architecture.
+
+5.576 NOTIFICATION INTEGRATION
+CS-HRM-FR-059 — Support Notification Integration
+The system should support eligible workforce notification events.
+Priority
+Should Have
+Potential events include:
+DUTY_ROSTER_PUBLISHEDDUTY_ASSIGNMENT_CHANGEDLEAVE_REQUEST_SUBMITTEDLEAVE_REQUEST_APPROVEDLEAVE_REQUEST_REJECTEDATTENDANCE_CORRECTION_APPROVEDATTENDANCE_CORRECTION_REJECTEDCREDENTIAL_EXPIRING
+Conceptually:
+HR / WORKFORCE EVENT          │          ▼NOTIFICATION EVENT          │          ▼NOTIFICATION MODULE          │          ▼APPROVED DELIVERY CHANNEL
+This SRS does not finalize:
+EMAIL PROVIDERSMS PROVIDERWHATSAPP PROVIDERPUSH NOTIFICATION PROVIDER
+These shall be defined during Integration Architecture.
+
+5.577 FUTURE PAYROLL INTEGRATION BOUNDARY
+CS-HRM-FR-060 — Support Future Payroll Integration Boundary
+The architecture should permit future integration with an approved payroll or financial workforce system.
+Priority
+Should Have
+Potential payroll inputs may include:
+EMPLOYEE IDENTITYEMPLOYMENT STATUSEMPLOYMENT TYPEATTENDANCE SUMMARYAPPROVED LEAVE CONTEXTAUTHORIZED WORKFORCE ADJUSTMENTS
+Conceptually:
+HRM / WFM    │    ▼APPROVED WORKFORCE DATA    │    ▼PAYROLL INTEGRATION BOUNDARY    │    ▼FUTURE PAYROLL SYSTEM
+Critical Boundary
+CuraSphere HR attendance shall not automatically be assumed to equal final payroll calculation.
+Therefore:
+ATTENDANCE DATA       ≠FINAL SALARY
+The payroll domain may require:
+SALARY STRUCTUREALLOWANCESDEDUCTIONSTAXOVERTIMELOANSADVANCESBENEFITSPAYROLL PERIODPAYROLL APPROVAL
+The complete payroll architecture shall be documented separately if included in approved CuraSphere scope.
+
+5.578 HRM ENTITY RELATIONSHIP CONCEPT
+The following is a conceptual domain relationship.
+It is not the final PostgreSQL ERD.
+PERSON  │  ▼EMPLOYEE  │  ├────────────► STAFF CATEGORY  │  ├────────────► EMPLOYMENT RECORD  │  ├────────────► DEPARTMENT ASSIGNMENT  │  ├────────────► DESIGNATION ASSIGNMENT  │  └────────────► PROFESSIONAL CREDENTIAL
+Workforce:
+DEPARTMENT     │     ▼DUTY ROSTER     │     ▼SHIFT ASSIGNMENT     │     ├────────────► EMPLOYEE     │     └────────────► SHIFT
+Attendance:
+EMPLOYEE    │    ▼SHIFT ASSIGNMENT    │    ▼ATTENDANCE RECORD    │    ▼ATTENDANCE CORRECTION
+Leave:
+EMPLOYEE    │    ▼LEAVE REQUEST    │    ▼LEAVE TYPE
+
+5.579 EMPLOYEE RELATIONSHIP MODEL
+                    EMPLOYEE                       │       ┌───────────────┼────────────────┐       │               │                │       ▼               ▼                ▼EMPLOYMENT RECORD  DEPARTMENT       DESIGNATION                       │                │                       ▼                ▼                  ASSIGNMENT        ASSIGNMENT                       │                │                       └───────┬────────┘                               ▼                         WORKFORCE CONTEXT
+Professional context:
+EMPLOYEE    │    ▼PROFESSIONAL CREDENTIAL    │    ├── TYPE    ├── NUMBER    ├── ISSUING AUTHORITY    ├── ISSUE DATE    ├── EXPIRY DATE    └── STATUS
+
+5.580 DUTY ROSTER RELATIONSHIP MODEL
+DEPARTMENT     │     ▼DUTY ROSTER     │     ▼SHIFT ASSIGNMENT     │     ├────────────► EMPLOYEE     │     └────────────► SHIFT
+Conceptually:
+ONE DUTY ROSTER       │       ▼MANY SHIFT ASSIGNMENTS
+An employee may appear in:
+MANY SHIFT ASSIGNMENTS
+over time.
+Therefore:
+employee.shift
+is not a sufficient workforce model.
+
+5.581 ATTENDANCE RELATIONSHIP MODEL
+DUTY ROSTER     │     ▼SHIFT ASSIGNMENT     │     ▼EXPECTED DUTY     │     ▼ATTENDANCE RECORD     │     ▼ACTUAL ATTENDANCE CONTEXT
+Correction:
+ATTENDANCE RECORD       │       ▼ATTENDANCE CORRECTION REQUEST       │       ▼APPROVAL       │       ▼CORRECTED ATTENDANCE CONTEXT
+The original attendance context shall remain traceable.
+
+5.582 LEAVE AND AVAILABILITY RELATIONSHIP MODEL
+EMPLOYEE    │    ▼LEAVE REQUEST    │    ▼APPROVAL    │    ▼APPROVED LEAVE    │    ▼STAFF AVAILABILITY
+Combined workforce availability:
+EMPLOYMENT STATUS        │        ├───────────────┐        │               │        ▼               ▼DEPARTMENT          CREDENTIALASSIGNMENT          CONTEXT        │               │        └───────┬───────┘                ▼          APPROVED LEAVE                │                ▼         DUTY ASSIGNMENT                │                ▼       STAFF AVAILABILITY
+
+5.583 COMPLETE EMPLOYEE LIFECYCLE MODEL
+PERSON IDENTIFIED       │       ▼CREATE EMPLOYEE       │       ▼GENERATE EMPLOYEE NUMBER       │       ▼CREATE EMPLOYMENT RECORD       │       ▼ASSIGN STAFF CATEGORY       │       ▼ASSIGN DEPARTMENT       │       ▼ASSIGN DESIGNATION       │       ▼RECORD CREDENTIALS       │       ▼ACTIVE EMPLOYMENT       │       ▼WORKFORCE SCHEDULING       │       ├──────────────┐       │              │       ▼              ▼DUTY ROSTER       LEAVE REQUEST       │              │       ▼              ▼SHIFT ASSIGNMENT   APPROVAL       │              │       └──────┬───────┘              ▼       STAFF AVAILABILITY              │              ▼          ATTENDANCE              │              ▼      WORKFORCE HISTORY              │       ┌──────┴──────┐       │             │       ▼             ▼   TRANSFER      STATUS CHANGE       │             │       └──────┬──────┘              ▼       EMPLOYMENT HISTORY
+
+5.584 COMPLETE DUTY ROSTER WORKFLOW MODEL
+DEPARTMENT WORKFORCE REQUIREMENT                │                ▼         CREATE DUTY ROSTER                │                ▼          DEFINE ROSTER PERIOD                │                ▼           SELECT EMPLOYEES                │                ▼             ASSIGN SHIFTS                │                ▼      VALIDATE EMPLOYMENT STATUS                │                ▼       VALIDATE SHIFT CONFLICTS                │                ▼        VALIDATE LEAVE CONFLICTS                │                ▼          REVIEW STAFF COVERAGE                │                ▼              SUBMIT                │                ▼         PENDING APPROVAL                │         ┌──────┴──────┐         │             │         ▼             ▼      REJECT         APPROVE         │             │         ▼             ▼     RETURN FOR       PUBLISH     CORRECTION         │                        ▼                 STAFF CAN VIEW                        │                        ▼                 DUTY EXECUTION                        │                        ▼                    ATTENDANCE
+
+5.585 COMPLETE LEAVE WORKFLOW MODEL
+EMPLOYEE   │   ▼CREATE LEAVE REQUEST   │   ▼SELECT LEAVE TYPE   │   ▼ENTER DATE RANGE   │   ▼VALIDATE DATE RANGE   │   ▼VALIDATE ELIGIBILITY   │   ▼CHECK OVERLAPPING LEAVE   │   ▼SUBMIT   │   ▼PENDING APPROVAL   │   ▼REVIEW DUTY CONFLICT   │   ▼REVIEW WORKFORCE CONTEXT   │   ┌───────────────┐   │               │   ▼               ▼REJECT          APPROVE   │               │   ▼               ▼END        UPDATE AVAILABILITY                   │                   ▼            ROSTER VALIDATION                   │                   ▼           WORKFORCE OPERATIONS
+
+5.586 HRM/WFM SEQUENCE MODEL
+HR USER   HR API   DATABASE   ROSTER MANAGER   WFM API   EMPLOYEE   │         │         │              │             │         │   │ Create  │         │              │             │         │   │ Employee│         │              │             │         │   ├────────►│         │              │             │         │   │         │ Validate│              │             │         │   │         ├────────►│              │             │         │   │         │         │              │             │         │   │         │ Save    │              │             │         │   │         ├────────►│              │             │         │   │         │         │              │             │         │   │         │         │              │ Create      │         │   │         │         │              │ Roster      │         │   │         │         │              ├────────────►│         │   │         │         │              │             │         │   │         │         │              │             │Validate │   │         │         │◄───────────────────────────┤         │   │         │         │              │             │         │   │         │         │              │ Publish     │         │   │         │         │              ├────────────►│         │   │         │         │              │             │         │   │         │         │              │             ├────────►│   │         │         │              │             │ Schedule│
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.587 HRM/WFM STATE MODELS
+Employment State
+PENDING_ONBOARDING        │        ▼ACTIVE  │     │  │     ├────────► ON_LEAVE  │     │               │  │     │               ▼  │     │             ACTIVE  │     │  │     ├────────► SUSPENDED  │     │  │     ├────────► RESIGNED  │     │  │     ├────────► TERMINATED  │     │  │     └────────► RETIRED  │  ▼INACTIVE
+
+Duty Roster State
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼PUBLISHED  │  ▼ACTIVE  │  ▼COMPLETED
+
+Attendance Correction State
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_REVIEW  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼APPLIED
+
+Leave Request State
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼ACTIVE  │  ▼COMPLETED
+Alternative:
+CANCELLED
+The final state vocabularies shall be defined during HR and Workforce Domain Architecture.
+
+5.588 HRM/WFM BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-HRM-BR-001
+Each employee shall have a unique internal employee identity
+CS-HRM-BR-002
+Active employee numbers shall be unique within applicable hospital scope
+CS-HRM-BR-003
+A user account shall not automatically be treated as an employee
+CS-HRM-BR-004
+Employment status changes shall be backend authorized
+CS-HRM-BR-005
+Attendance correction shall preserve original attendance context
+CS-HRM-BR-006
+HR and workforce states shall follow approved transitions
+CS-HRM-BR-007
+ASP.NET Core backend shall reject invalid HR and workforce transitions
+CS-HRM-BR-008
+React shall not be the authoritative workforce state engine
+CS-WFM-BR-001
+Duty roster assignment shall not be treated as attendance
+CS-WFM-BR-002
+Backend shall validate applicable shift conflicts
+CS-WFM-BR-003
+Duty roster approval shall be backend authorized
+
+5.589 HRM/WFM PERMISSION CONCEPT
+Potential HR and workforce permissions include:
+HR_EMPLOYEE_VIEWHR_EMPLOYEE_CREATEHR_EMPLOYEE_UPDATEHR_EMPLOYMENT_VIEWHR_EMPLOYMENT_CREATEHR_EMPLOYMENT_STATUS_CHANGEHR_STAFF_CATEGORY_MANAGEHR_DESIGNATION_MANAGEHR_DEPARTMENT_ASSIGNHR_EMPLOYEE_TRANSFERHR_DESIGNATION_ASSIGNHR_CREDENTIAL_VIEWHR_CREDENTIAL_CREATEHR_CREDENTIAL_UPDATEHR_SHIFT_VIEWHR_SHIFT_MANAGEWFM_ROSTER_VIEWWFM_ROSTER_CREATEWFM_ROSTER_UPDATEWFM_ROSTER_SUBMITWFM_ROSTER_APPROVEWFM_ROSTER_REJECTWFM_ROSTER_PUBLISHWFM_DUTY_ASSIGNWFM_DUTY_AMENDHR_ATTENDANCE_VIEWHR_ATTENDANCE_RECORDHR_ATTENDANCE_CORRECTION_REQUESTHR_ATTENDANCE_CORRECTION_REVIEWHR_ATTENDANCE_CORRECTION_APPROVEHR_LEAVE_VIEWHR_LEAVE_REQUESTHR_LEAVE_REVIEWHR_LEAVE_APPROVEHR_LEAVE_REJECTHR_REPORT_VIEW
+Example HR Officer Concept
+HR OFFICER    │    ├── HR_EMPLOYEE_VIEW    ├── HR_EMPLOYEE_CREATE    ├── HR_EMPLOYEE_UPDATE    ├── HR_EMPLOYMENT_VIEW    ├── HR_EMPLOYMENT_CREATE    ├── HR_DEPARTMENT_ASSIGN    ├── HR_EMPLOYEE_TRANSFER    ├── HR_DESIGNATION_ASSIGN    ├── HR_CREDENTIAL_VIEW    ├── HR_CREDENTIAL_CREATE    ├── HR_CREDENTIAL_UPDATE    ├── HR_ATTENDANCE_VIEW    └── HR_LEAVE_VIEW
+The HR Officer shall not automatically receive:
+WFM_ROSTER_APPROVEHR_ATTENDANCE_CORRECTION_APPROVEHR_LEAVE_APPROVE
+Example Roster Manager Concept
+ROSTER MANAGER       │       ├── HR_EMPLOYEE_VIEW       ├── HR_SHIFT_VIEW       ├── WFM_ROSTER_VIEW       ├── WFM_ROSTER_CREATE       ├── WFM_ROSTER_UPDATE       ├── WFM_ROSTER_SUBMIT       ├── WFM_DUTY_ASSIGN       └── WFM_DUTY_AMEND
+Approval permissions shall remain separately controlled.
+
+5.590 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Manage hospital employees
+CS-HRM-FR-001 to 006
+Manage staff categories
+CS-HRM-FR-007
+Manage designations
+CS-HRM-FR-008
+Manage employment records
+CS-HRM-FR-009 to 014
+Manage department assignments
+CS-HRM-FR-015 to 017
+Manage designation assignments
+CS-HRM-FR-018 to 020
+Manage professional credentials
+CS-HRM-FR-021 to 025
+Manage shifts
+CS-HRM-FR-026 to 029
+Create duty rosters
+CS-WFM-FR-001 to 004
+Assign staff to shifts
+CS-WFM-FR-005 to 008
+Submit and approve rosters
+CS-WFM-FR-009 to 014
+View duty schedules
+CS-WFM-FR-015 to 016
+Amend duty assignments
+CS-WFM-FR-017 to 018
+Record attendance
+CS-HRM-FR-030 to 035
+Correct attendance
+CS-HRM-FR-036 to 040
+Manage leave types
+CS-HRM-FR-041
+Request leave
+CS-HRM-FR-042 to 046
+Review and decide leave
+CS-HRM-FR-047 to 051
+Determine staff availability
+CS-HRM-FR-052 to 053
+Workforce state integrity
+CS-HRM-FR-054
+Manage HR document metadata
+CS-HRM-FR-055
+Search workforce records
+CS-HRM-FR-056
+HR and workforce auditing
+CS-HRM-FR-057
+Workforce reporting
+CS-HRM-FR-058
+Workforce notifications
+CS-HRM-FR-059
+Future payroll integration
+CS-HRM-FR-060
+
+5.591 HRM/WFM RISK ANALYSIS
+Risk 1 — User Account and Employee Are the Same Record
+Problem
+Authentication information and employment information are stored together.
+Impact
+Security and workforce lifecycle become tightly coupled.
+Mitigation
+Separate user account and employee concepts.
+
+Risk 2 — One Staff Table Stores Everything
+Problem
+namedepartmentdesignationshiftattendanceleave
+are stored in one table.
+Impact
+Historical and scheduling data become unreliable.
+Mitigation
+Separate employee, employment, assignment, roster, attendance, and leave concepts.
+
+Risk 3 — Department Transfer Overwrites History
+Problem
+employee.department = "Cardiology"
+Impact
+Previous department assignment disappears.
+Mitigation
+Maintain effective-dated department assignment history.
+
+Risk 4 — Designation Change Overwrites History
+Problem
+Employee designation is directly replaced.
+Impact
+Promotion and designation history cannot be reconstructed.
+Mitigation
+Maintain designation assignment history.
+
+Risk 5 — Employee Shift Stored as One Field
+Problem
+employee.shift = "Morning"
+Impact
+Real duty scheduling cannot be represented.
+Mitigation
+Use duty roster and shift assignment concepts.
+
+Risk 6 — Cross-Midnight Shift Is Invalidated
+Problem
+Night shift:
+20:00 → 08:00
+is treated as invalid because:
+08:00 < 20:00
+Impact
+Hospital night duty cannot be represented correctly.
+Mitigation
+Use full date-time intervals.
+
+Risk 7 — Shift Conflict Checked Only in React
+Problem
+React displays a warning.
+Direct API request bypasses the warning.
+Impact
+An employee receives overlapping duties.
+Mitigation
+Perform authoritative conflict validation in ASP.NET Core.
+
+Risk 8 — Duty Roster Treated as Attendance
+Problem
+Every scheduled employee is automatically marked present.
+Impact
+Attendance records become false.
+Mitigation
+Separate expected duty from actual attendance.
+
+Risk 9 — Attendance Correction Deletes Original Value
+Problem
+Original:
+09:15
+is replaced by:
+08:05
+Impact
+The system cannot explain the correction.
+Mitigation
+Preserve original and corrected attendance context.
+
+Risk 10 — Approved Leave Is Ignored by Roster
+Problem
+Employee is on approved leave.
+Roster assigns a night shift.
+Impact
+Workforce scheduling becomes unreliable.
+Mitigation
+Integrate approved leave into roster validation.
+
+Risk 11 — Employment Status Is Ignored During Scheduling
+Problem
+A resigned employee is assigned to a future shift.
+Impact
+Invalid workforce coverage.
+Mitigation
+Validate employment eligibility for the duty date.
+
+Risk 12 — Credential Expiry Is Not Monitored
+Problem
+Professional credential expires unnoticed.
+Impact
+Compliance and workforce risk.
+Mitigation
+Support credential expiry monitoring.
+
+Risk 13 — Credential Expiry Automatically Terminates Employee
+Problem
+The system changes employment status to terminated.
+Impact
+Administrative policy is incorrectly automated.
+Mitigation
+Separate credential status from employment status and apply approved workforce policy.
+
+Risk 14 — Staff Availability Is One Boolean
+Problem
+isAvailable = true
+Impact
+Leave, duty, employment, and credential context are ignored.
+Mitigation
+Derive availability from approved workforce facts.
+
+Risk 15 — Leave Approval Controlled Only by UI
+Problem
+Approval button is hidden.
+A user directly calls the approval API.
+Impact
+Unauthorized leave approval.
+Mitigation
+Backend authorization policy.
+
+Risk 16 — HR Documents Are Public URLs
+Problem
+Anyone with a URL can access employee documents.
+Impact
+Sensitive workforce information exposure.
+Mitigation
+Use authorized document access architecture.
+
+Risk 17 — Current Shift Definition Rewrites Historical Rosters
+Problem
+Morning shift changes from:
+08:00 → 16:00
+to:
+07:00 → 15:00
+All historical rosters display the new time.
+Impact
+Historical duty records become inaccurate.
+Mitigation
+Preserve applicable historical shift timing context.
+
+Risk 18 — Attendance Is Automatically Used as Payroll
+Problem
+Attendance totals directly generate salary.
+Impact
+Payroll rules, allowances, tax, and authorized adjustments are ignored.
+Mitigation
+Define a separate payroll integration boundary.
+
+5.592 COMPLETE HRM/WFM CAPABILITY MODEL
+                   HUMAN RESOURCES                          │         ┌────────────────┼────────────────┐         │                │                │         ▼                ▼                ▼      EMPLOYEE         EMPLOYMENT      ORGANIZATION         │                │                │         ├── Identity     ├── Type         ├── Department         ├── Number       ├── Status       ├── Designation         └── Category     └── History      └── Assignment                          │                          ▼                     CREDENTIALS                          │                          ▼                 WORKFORCE MANAGEMENT                          │             ┌────────────┼─────────────┐             │            │             │             ▼            ▼             ▼           SHIFT      DUTY ROSTER      LEAVE             │            │             │             │            ▼             │             │       SHIFT ASSIGNMENT   │             │            │             │             └────────────┼─────────────┘                          ▼                  STAFF AVAILABILITY                          │                          ▼                      ATTENDANCE                          │                  ┌───────┴────────┐                  │                │                  ▼                ▼              ATTENDANCE       CORRECTION               SUMMARY             │                  │                ▼                  └──────────► WORKFORCE HISTORY                                   │                                   ▼                            REPORTING READ MODEL
+
+5.593 HRM/WFM MODULE COMPLETION STATUS
+Module: Human Resources, Staff, Duty Roster and Workforce Management SystemModule Code: HRM/WFMHR Requirement Range: CS-HRM-FR-001 to CS-HRM-FR-060Workforce Requirement Range: CS-WFM-FR-001 to CS-WFM-FR-018HR Business Rule Range: CS-HRM-BR-001 to CS-HRM-BR-008Workforce Business Rule Range: CS-WFM-BR-001 to CS-WFM-BR-003
+HR Domain Boundary: DefinedWorkforce Domain Boundary: DefinedEmployee Identity: DefinedEmployee Master: DefinedEmployee Creation: DefinedEmployee Number: DefinedEmployee Profile: DefinedEmployee Search: DefinedStaff Category: DefinedStaff Category vs Security Role Boundary: DefinedDesignation Master: DefinedEmployment Record: DefinedEmployment Type: DefinedJoining Date: DefinedEmployment Status: DefinedEmployment Status Change: DefinedEmployment History: DefinedDepartment Assignment: DefinedEmployee Transfer: DefinedDepartment Assignment History: DefinedDesignation Assignment: DefinedDesignation Change: DefinedDesignation History: DefinedProfessional Credential: DefinedCredential Update: DefinedCredential Validity: DefinedExpiring Credential Monitoring: DefinedExpired Credential Identification: DefinedCredential vs Employment Boundary: DefinedShift Definition: DefinedCross-Midnight Shift Context: DefinedShift Creation: DefinedShift Update: DefinedShift Activation: DefinedDuty Roster: DefinedDuty Roster Identity: DefinedRoster Period: DefinedRoster Department: DefinedStaff Shift Assignment: DefinedEmployment Eligibility Validation: DefinedShift Conflict Validation: DefinedLeave Conflict Validation: DefinedRoster Submission: DefinedRoster Review: DefinedRoster Approval: DefinedRoster Rejection: DefinedRoster Publication: DefinedRoster State Model: DefinedPersonal Duty Schedule: DefinedDepartment Duty Schedule: DefinedDuty Assignment Amendment: DefinedDuty Assignment History: DefinedAttendance Recording: DefinedRoster vs Attendance Boundary: DefinedCheck-In: DefinedCheck-Out: DefinedAttendance Context: DefinedLate Attendance: DefinedMissing Attendance: DefinedAttendance Correction Request: DefinedAttendance Correction Review: DefinedAttendance Correction Approval: DefinedAttendance Correction Rejection: DefinedAttendance Correction History: DefinedLeave Type: DefinedLeave Request: DefinedLeave Request Identity: DefinedLeave Date Validation: DefinedLeave Eligibility: DefinedLeave Submission: DefinedLeave Review: DefinedLeave Approval: DefinedLeave Rejection: DefinedLeave Cancellation: DefinedLeave State Model: DefinedStaff Availability: DefinedAvailability Integration Boundary: DefinedWorkforce State Integrity: DefinedHR Document Metadata: DefinedWorkforce Search: DefinedHR Audit Events: DefinedWorkforce Reporting Read Models: DefinedNotification Integration Boundary: DefinedPayroll Integration Boundary: DefinedHR Risk Analysis: DefinedWorkforce Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The Human Resources, Staff, Duty Roster and Workforce Management requirements establish the workforce administration and operational scheduling foundation of CuraSphere.
+These requirements shall later be transformed into:
+Employee Management use case specification;
+Employment Management use case specification;
+Department Assignment use case;
+Employee Transfer use case;
+Designation Assignment use case;
+Professional Credential use case;
+Shift Management use case;
+Duty Roster use case;
+Roster Approval use case;
+Shift Assignment use case;
+Attendance Recording use case;
+Attendance Correction use case;
+Leave Request use case;
+Leave Approval use case;
+Staff Availability use case;
+employee lifecycle activity diagram;
+employee transfer activity diagram;
+credential management activity diagram;
+duty roster activity diagram;
+shift assignment activity diagram;
+attendance activity diagram;
+attendance correction activity diagram;
+leave request activity diagram;
+staff availability activity diagram;
+Employment state machine;
+Duty Roster state machine;
+Attendance Correction state machine;
+Leave Request state machine;
+Create Employee sequence diagram;
+Transfer Employee sequence diagram;
+Create Duty Roster sequence diagram;
+Assign Staff Shift sequence diagram;
+Approve Duty Roster sequence diagram;
+Publish Duty Roster sequence diagram;
+Record Attendance sequence diagram;
+Approve Attendance Correction sequence diagram;
+Create Leave Request sequence diagram;
+Approve Leave Request sequence diagram;
+Determine Staff Availability sequence diagram;
+Employee domain model;
+Employment Record domain model;
+Staff Category domain model;
+Department Assignment domain model;
+Designation Assignment domain model;
+Professional Credential domain model;
+Shift domain model;
+Duty Roster domain model;
+Shift Assignment domain model;
+Attendance domain model;
+Attendance Correction domain model;
+Leave Type domain model;
+Leave Request domain model;
+Staff Availability domain service;
+PostgreSQL HR schema;
+PostgreSQL workforce schema;
+employee number generation strategy;
+effective-dated employment strategy;
+department assignment history strategy;
+designation history strategy;
+credential expiry strategy;
+shift temporal strategy;
+cross-midnight duty strategy;
+roster conflict detection strategy;
+leave overlap query strategy;
+staff availability derivation strategy;
+attendance source strategy;
+attendance correction audit strategy;
+HR document storage strategy;
+workforce read model strategy;
+React Employee Directory requirements;
+React Employee Profile requirements;
+React Employment Workspace requirements;
+React Credential Workspace requirements;
+React Shift Configuration requirements;
+React Duty Roster Builder requirements;
+React Roster Approval Queue requirements;
+React Personal Duty Schedule requirements;
+React Department Duty Calendar requirements;
+React Attendance Workspace requirements;
+React Attendance Correction Queue requirements;
+React Leave Request requirements;
+React Leave Approval Queue requirements;
+React HR Dashboard requirements;
+ASP.NET Core Employee API;
+ASP.NET Core Employment API;
+ASP.NET Core Department Assignment API;
+ASP.NET Core Designation Assignment API;
+ASP.NET Core Credential API;
+ASP.NET Core Shift API;
+ASP.NET Core Duty Roster API;
+ASP.NET Core Shift Assignment API;
+ASP.NET Core Attendance API;
+ASP.NET Core Attendance Correction API;
+ASP.NET Core Leave API;
+ASP.NET Core Staff Availability API;
+HR authorization policies;
+employee identity tests;
+employee number uniqueness tests;
+employment state tests;
+department transfer tests;
+designation history tests;
+credential expiry tests;
+cross-midnight shift tests;
+roster conflict tests;
+leave conflict tests;
+roster approval tests;
+roster publication tests;
+duty amendment history tests;
+attendance recording tests;
+attendance context tests;
+attendance correction audit tests;
+leave date tests;
+leave overlap tests;
+leave approval tests;
+availability derivation tests.
+No final hospital employment policy, employee number format, legal employment classification, staff category hierarchy, designation hierarchy, department transfer approval matrix, professional licensing authority integration, clinical credential verification API, credential restriction policy, medical council integration, nursing council integration, shift duration rule, mandatory rest-period rule, overtime rule, staffing ratio, doctor-to-patient ratio, nurse-to-patient ratio, leave entitlement policy, annual leave calculation rule, sick leave regulation, biometric device, fingerprint scanner, face recognition attendance system, RFID attendance system, attendance terminal, payroll calculation method, salary structure, allowance structure, deduction structure, tax calculation, overtime payment model, employee benefits model, pension model, provident fund model, PostgreSQL HR table structure, Entity Framework Core HR entity structure, HR file storage provider, notification provider, or payroll engine has been finalized by this SRS section.
+Those decisions shall be made during HR Domain Architecture, Workforce Domain Architecture, Security Architecture, Compliance Architecture, Organization Master Data Design, UI/UX Architecture, PostgreSQL Data Architecture, Integration Architecture, and Detailed Design.
+

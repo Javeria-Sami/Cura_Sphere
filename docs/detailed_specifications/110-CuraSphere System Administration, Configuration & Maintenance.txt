@@ -1,0 +1,4653 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere — Hospital Management System
+Section 11 — System Administration, Configuration & Maintenance
+Part 11.1 — System Administration Overview
+
+11.1 System Administration Overview
+
+11.1.1 Introduction
+The System Administration, Configuration & Maintenance Module serves as the centralized administrative control center of the CuraSphere Hospital Management System. It enables authorized personnel to configure, monitor, maintain, and govern every operational aspect of the application without modifying the application source code.
+The Administration Module provides comprehensive tools for user management, organization configuration, security administration, workflow customization, business rule management, system monitoring, maintenance operations, backup management, and application configuration.
+This module ensures that CuraSphere remains scalable, secure, configurable, and adaptable to hospitals of different sizes, specialties, and operational policies.
+
+11.1.2 Purpose
+The System Administration Module shall enable authorized administrators to:
+Configure hospital-wide settings.
+Manage users and organizational structure.
+Configure departments and facilities.
+Maintain master reference data.
+Define business rules.
+Configure workflows.
+Monitor overall system health.
+Manage application security.
+Configure integrations.
+Perform maintenance activities.
+Support disaster recovery operations.
+Monitor system performance.
+Ensure regulatory compliance.
+
+11.1.3 Scope
+The Administration Module governs all configurable components across CuraSphere.
+It includes administration of:
+User Management
+Role & Permission Management
+Hospital Configuration
+Branch Management
+Department Configuration
+Clinical Configuration
+Financial Configuration
+Inventory Configuration
+Notification Settings
+Security Policies
+Integration Configuration
+Audit Administration
+Backup & Restore
+Maintenance Operations
+Performance Monitoring
+
+11.1.4 Objectives
+The Administration Module shall:
+Centralize administrative operations.
+Minimize manual configuration.
+Reduce operational errors.
+Enable organization-specific customization.
+Improve security management.
+Support scalability.
+Simplify software maintenance.
+Reduce downtime.
+Improve monitoring capabilities.
+Support multi-hospital deployments.
+
+11.1.5 Administrative Architecture
+                    Super Administrator
+                            │
+                            ▼
+                 System Administration Portal
+                            │
+     ┌──────────────────────┼──────────────────────┐
+     ▼                      ▼                      ▼
+User Administration   Configuration Center   Security Center
+     │                      │                      │
+     ├──────────────┬────────┴────────┬────────────┤
+     ▼              ▼                 ▼            ▼
+Hospital       Departments      Business Rules   Notifications
+Configuration
+     │
+     ▼
+Monitoring & Maintenance
+     │
+     ▼
+Backup & Disaster Recovery
+
+11.1.6 Administrative Dashboard
+
+Screen ID
+ADM-DASH-001
+
+Purpose
+Provides administrators with a unified dashboard to monitor system status, manage configurations, and perform administrative tasks.
+
+Authorized Users
+Role
+Access Level
+Super Administrator
+Full System Control
+Hospital Administrator
+Hospital Administration
+IT Administrator
+Infrastructure Administration
+Security Administrator
+Security Management
+Database Administrator
+Database Administration
+Network Administrator
+Infrastructure Monitoring
+Department Administrator
+Department Configuration
+
+11.1.7 Administrative Dashboard Layout
++------------------------------------------------------------------------------------------------+
+|                                CuraSphere Administration Console                               |
++------------------------------------------------------------------------------------------------+
+
+Global Search
+
+-----------------------------------------------------------------------------------------------
+
+Quick Actions
+
+-----------------------------------------------------------------------------------------------
+
+System Health      Active Users      Alerts      Notifications
+
+-----------------------------------------------------------------------------------------------
+
+User Management    Hospital Settings    Security Center
+
+-----------------------------------------------------------------------------------------------
+
+Workflow Management    Backup Center    Audit Center
+
+-----------------------------------------------------------------------------------------------
+
+Performance Dashboard    Maintenance Center
+
+-----------------------------------------------------------------------------------------------
+
+Recent Activities
+
+-----------------------------------------------------------------------------------------------
+
+System Logs
+
+11.1.8 Dashboard Widgets
+The Administration Dashboard shall provide configurable widgets.
+Widget
+Description
+Active Users
+Current logged-in users
+Server Status
+Application server health
+Database Status
+Database availability
+Storage Usage
+Disk utilization
+CPU Usage
+Processor utilization
+Memory Usage
+RAM utilization
+Network Status
+Network health
+Security Alerts
+Active security events
+Failed Logins
+Authentication failures
+Scheduled Jobs
+Background tasks
+Recent Backups
+Backup summary
+System Notifications
+Administrative notifications
+Each widget shall support:
+Auto refresh
+Manual refresh
+Expand/Collapse
+Drill-down
+Export
+Full-screen mode
+
+11.1.9 Global Administration Search
+Administrators shall be able to search:
+Users
+Departments
+Patients (where permitted)
+Employees
+Roles
+Permissions
+Reports
+Audit Logs
+System Settings
+Configuration Items
+Notifications
+Scheduled Tasks
+Search capabilities shall include:
+Keyword search
+Advanced filtering
+Auto-complete
+Search history
+Saved searches
+
+11.1.10 Administrative Navigation
+The Administration Console shall organize functionality into the following navigation groups:
+Navigation Group
+Purpose
+Dashboard
+Administrative overview
+Users & Roles
+Identity management
+Organization
+Hospital configuration
+Departments
+Department administration
+Clinical Settings
+Medical configurations
+Financial Settings
+Billing configuration
+Inventory Settings
+Pharmacy & inventory configuration
+Workflow Settings
+Workflow management
+Notifications
+Communication settings
+Security
+Security administration
+Integrations
+External systems
+Audit Center
+Audit logs
+Monitoring
+Performance monitoring
+Maintenance
+System maintenance
+Backup & Restore
+Disaster recovery
+Help & Documentation
+Administrator support
+
+11.1.11 Administrative Quick Actions
+The dashboard shall provide configurable quick-action shortcuts.
+Examples include:
+Create User
+Reset Password
+Lock User Account
+Create Department
+Configure Hospital Settings
+Review Security Alerts
+Start Backup
+Restore Configuration
+Clear System Cache
+Restart Background Services
+View Audit Logs
+Open Maintenance Mode
+Quick actions shall be configurable according to administrator permissions.
+
+11.1.12 System Status Panel
+The System Status Panel shall display:
+Status Item
+Description
+Application Status
+Running/Stopped
+Database Status
+Connected/Disconnected
+API Gateway
+Available/Unavailable
+Authentication Service
+Operational status
+Email Service
+Operational status
+SMS Gateway
+Operational status
+Storage Capacity
+Current utilization
+Backup Status
+Last successful backup
+Integration Status
+Connected services
+License Status
+Subscription/license information
+Status indicators shall update automatically at configurable intervals.
+
+11.1.13 Administrative Notifications
+The system shall notify administrators of:
+Failed login attempts
+Critical system errors
+Backup failures
+Low storage space
+High CPU utilization
+High memory utilization
+Database connection failures
+Integration failures
+License expiration
+Security incidents
+Scheduled maintenance reminders
+Notifications shall support configurable severity levels:
+Severity
+Description
+Information
+Informational event
+Warning
+Requires attention
+High
+Immediate review recommended
+Critical
+Immediate administrative action required
+
+11.1.14 Administrative Activity Timeline
+The dashboard shall maintain a real-time activity timeline displaying:
+User creation
+User deletion
+Role changes
+Configuration updates
+System startup
+System shutdown
+Backup execution
+Restore operations
+Security events
+Software updates
+Workflow modifications
+Each activity shall include:
+Timestamp
+User
+Action
+Module
+Status
+Description
+
+11.1.15 Performance Requirements
+The Administration Module shall:
+Load the administrative dashboard within acceptable operational response times under normal conditions.
+Refresh dashboard widgets independently without requiring a full page reload.
+Support concurrent administration by multiple authorized users.
+Execute administrative actions asynchronously where appropriate.
+Maintain responsiveness during background maintenance tasks.
+
+11.1.16 Accessibility Requirements
+The Administration Console shall:
+Support complete keyboard navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide screen-reader compatible controls.
+Ensure sufficient color contrast.
+Present alerts using text, icons, and visual indicators rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.1.17 Security Requirements
+The Administration Module shall:
+Require authenticated administrator sessions.
+Enforce Role-Based Access Control (RBAC).
+Restrict administrative functions based on assigned permissions.
+Log all administrative activities in the audit trail.
+Encrypt administrative communications using HTTPS/TLS.
+Automatically terminate inactive administrator sessions after a configurable timeout.
+Require re-authentication for sensitive administrative operations, where configured by organizational policy.
+
+11.1.18 Acceptance Criteria
+The System Administration Overview shall be accepted when:
+Authorized administrators can securely access the Administration Console.
+Administrative dashboards accurately display system health, alerts, and operational status.
+Global search, navigation, widgets, notifications, and activity timelines function correctly.
+Performance, accessibility, and security requirements are fully implemented.
+All administrative activities are properly logged and auditable.
+
+11.2 User & Role Administration
+
+11.2.1 Introduction
+The User & Role Administration Module provides comprehensive identity and access management (IAM) capabilities for CuraSphere. It enables authorized administrators to create, manage, monitor, and deactivate user accounts while enforcing secure authentication and Role-Based Access Control (RBAC).
+The module ensures that every authenticated user can access only the data, modules, and functions required for their responsibilities, supporting the principles of least privilege, segregation of duties, and accountability.
+
+11.2.2 Objectives
+The User & Role Administration Module shall enable administrators to:
+Create and manage user accounts.
+Assign organizational roles.
+Configure permissions.
+Manage user groups.
+Control authentication methods.
+Enforce password policies.
+Support Multi-Factor Authentication (MFA).
+Monitor user sessions.
+Manage delegated administration.
+Maintain complete user audit trails.
+Support user lifecycle management.
+
+11.2.3 User Administration Architecture
+                        Identity Management
+                                │
+                                ▼
+                      User Administration Portal
+                                │
+         ┌──────────────────────┼──────────────────────┐
+         ▼                      ▼                      ▼
+   User Accounts          Roles & Permissions     User Groups
+         │                      │                      │
+         └──────────────┬──────────────┬──────────────┘
+                        ▼
+             Authentication Services
+                        │
+                        ▼
+               Authorization Engine (RBAC)
+                        │
+                        ▼
+                Hospital Modules Access
+
+11.2.4 User Administration Dashboard
+Screen ID
+USR-ADM-001
+
+Purpose
+Provides centralized management of user accounts, roles, permissions, authentication, and user activity.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+Hospital Administrator
+Organization Users
+Security Administrator
+Security Functions
+HR Administrator
+Employee Accounts
+Department Administrator
+Department Users
+IT Administrator
+Technical Administration
+
+11.2.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| User & Role Administration Dashboard                                                 |
++--------------------------------------------------------------------------------------+
+
+Quick Search
+
+---------------------------------------------------------------
+
+User Statistics
+
+---------------------------------------------------------------
+
+Recent Logins
+
+---------------------------------------------------------------
+
+Active Sessions
+
+---------------------------------------------------------------
+
+Role Management
+
+---------------------------------------------------------------
+
+Permission Management
+
+---------------------------------------------------------------
+
+Security Alerts
+
+---------------------------------------------------------------
+
+Pending User Requests
+
+11.2.6 User Account Management
+The system shall support the following user account operations:
+Create User
+Edit User
+View User
+Activate User
+Deactivate User
+Suspend User
+Unlock User
+Delete User (subject to policy)
+Reset Password
+Reset MFA
+Assign Roles
+Assign Departments
+Assign Branches
+All account modifications shall be recorded in the audit log.
+
+11.2.7 User Profile Information
+Each user account shall maintain the following information:
+Field
+Description
+User ID
+Unique identifier
+Employee ID
+HR reference
+Username
+Login name
+Full Name
+Legal name
+Profile Photo
+Optional
+Email Address
+Official email
+Mobile Number
+Contact number
+Department
+Assigned department
+Designation
+Job title
+Hospital Branch
+Assigned location
+Employment Status
+Active/Inactive
+User Status
+Enabled/Disabled
+Preferred Language
+Localization
+Time Zone
+User time zone
+
+11.2.8 User Registration Workflow
+Administrator
+      │
+      ▼
+Create User
+      │
+      ▼
+Enter User Information
+      │
+      ▼
+Assign Role
+      │
+      ▼
+Assign Department
+      │
+      ▼
+Assign Permissions
+      │
+      ▼
+Generate Credentials
+      │
+      ▼
+Activate Account
+      │
+      ▼
+Notification Sent
+
+11.2.9 Role-Based Access Control (RBAC)
+The system shall implement Role-Based Access Control to manage authorization.
+Each role shall define:
+Accessible modules
+Permitted actions
+Data scope
+Approval authority
+Administrative privileges
+Reporting permissions
+Permissions shall be inherited through assigned roles unless explicitly overridden.
+
+11.2.10 Standard System Roles
+The system shall provide configurable default roles.
+Role
+Primary Responsibility
+Super Administrator
+Entire system administration
+Hospital Administrator
+Hospital operations
+Medical Director
+Clinical oversight
+Physician
+Patient care
+Nurse
+Nursing services
+Pharmacist
+Pharmacy operations
+Laboratory Technician
+Laboratory services
+Radiologist
+Imaging services
+Receptionist
+Registration & appointments
+Billing Officer
+Billing & payments
+Cashier
+Financial transactions
+Inventory Manager
+Stock management
+HR Manager
+Human resources
+Finance Manager
+Financial management
+Department Head
+Department administration
+Patient
+Patient Portal
+Organizations shall be able to create additional custom roles.
+
+11.2.11 Permission Matrix
+Permissions shall be defined using the following actions:
+Permission
+Description
+View
+Read information
+Create
+Add new records
+Edit
+Modify existing records
+Delete
+Remove records
+Approve
+Approval authority
+Cancel
+Cancel transactions
+Export
+Download reports
+Print
+Print documents
+Share
+Share information
+Configure
+Modify settings
+Audit
+View audit logs
+Administer
+Full administrative control
+Permissions may be assigned at the:
+Module level
+Screen level
+Record level
+Field level (where required)
+API level
+
+11.2.12 User Groups
+The system shall support logical grouping of users.
+Examples include:
+Cardiology Department
+Emergency Department
+Finance Team
+Laboratory Staff
+Pharmacy Staff
+Night Shift Team
+Executive Committee
+IT Support Team
+Groups shall simplify permission assignment and communication.
+
+11.2.13 Password Policy
+Administrators shall configure password policies.
+Supported settings include:
+Setting
+Description
+Minimum Length
+Configurable
+Maximum Length
+Configurable
+Complexity Rules
+Uppercase, lowercase, numeric, special characters
+Password Expiration
+Configurable
+Password History
+Prevent reuse
+Minimum Password Age
+Configurable
+Temporary Password Expiration
+Configurable
+Passwords shall be stored using secure one-way hashing algorithms.
+
+11.2.14 Multi-Factor Authentication (MFA)
+The system shall support configurable MFA methods, including:
+Email verification code
+SMS verification code
+Authenticator application (TOTP)
+Hardware security key (where supported)
+Biometric authentication (supported client devices)
+Administrators shall be able to enforce MFA for selected users or roles.
+
+11.2.15 Session Management
+The system shall maintain secure user sessions.
+Session controls shall include:
+Session timeout
+Automatic logout
+Maximum concurrent sessions
+Device recognition
+Session history
+Remote session termination
+Forced logout
+Session renewal
+
+11.2.16 Account Lockout & Recovery
+The system shall automatically protect against unauthorized access.
+Supported controls include:
+Configurable failed login threshold
+Temporary account lockout
+Administrator account unlock
+Self-service password reset
+Identity verification before recovery
+Password reset notifications
+
+11.2.17 Delegated Administration
+Organizations may delegate limited administrative authority.
+Examples include:
+Administrator
+Scope
+Department Administrator
+Department users
+HR Administrator
+Employee accounts
+IT Administrator
+Technical users
+Branch Administrator
+Branch users
+Delegated administrators shall not exceed the permissions granted by higher-level administrators.
+
+11.2.18 User Lifecycle Management
+The system shall support the complete user lifecycle.
+Recruitment
+      │
+      ▼
+Account Creation
+      │
+      ▼
+Role Assignment
+      │
+      ▼
+Active Employment
+      │
+      ▼
+Role Change
+      │
+      ▼
+Department Transfer
+      │
+      ▼
+Leave/Suspension
+      │
+      ▼
+Termination
+      │
+      ▼
+Account Deactivation
+      │
+      ▼
+Archival
+User access shall be updated promptly following employment or organizational changes.
+
+11.2.19 User Activity Monitoring
+Administrators shall monitor:
+Login history
+Logout history
+Failed login attempts
+Password changes
+MFA changes
+Role modifications
+Permission updates
+Active sessions
+Device information
+IP address (where available)
+Last activity timestamp
+
+11.2.20 Performance Requirements
+The User & Role Administration Module shall:
+Support concurrent administration by multiple authorized administrators.
+Process user authentication within acceptable organizational response times under normal operating conditions.
+Apply permission changes immediately to new user requests after the changes are saved.
+Support large user directories across multiple hospital branches.
+Maintain responsive administration interfaces during bulk user operations.
+
+11.2.21 Accessibility Requirements
+The User Administration interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible forms and validation messages.
+Ensure sufficient color contrast.
+Present account status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.2.22 Security Requirements
+The User & Role Administration Module shall:
+Enforce Role-Based Access Control (RBAC).
+Require authentication for all administrative operations.
+Record all account and permission changes in the audit log.
+Encrypt authentication traffic using HTTPS/TLS.
+Protect stored credentials using secure hashing and salting techniques.
+Support configurable account lockout, password policies, and session controls.
+Prevent privilege escalation through unauthorized role assignment.
+
+11.2.23 Acceptance Criteria
+The User & Role Administration Module shall be accepted when:
+Administrators can create, modify, deactivate, and manage user accounts securely.
+RBAC permissions are consistently enforced across all system modules.
+Password policies, MFA, session management, and account recovery function as configured.
+User lifecycle events, delegated administration, and activity monitoring operate correctly.
+Accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.3 Organization & Hospital Configuration
+
+11.3.1 Introduction
+The Organization & Hospital Configuration Module enables authorized administrators to configure the organizational structure, hospital profile, branches, facilities, operational calendars, localization settings, branding, licensing, and other enterprise-level parameters of the CuraSphere Hospital Management System.
+The module provides a centralized configuration environment that supports single-hospital, multi-hospital, multi-campus, and multi-branch healthcare organizations while maintaining centralized governance and configurable local autonomy.
+
+11.3.2 Objectives
+The Organization & Hospital Configuration Module shall enable administrators to:
+Configure organization details.
+Manage multiple hospitals and branches.
+Configure facilities and campuses.
+Define organizational hierarchy.
+Configure departments and business units.
+Manage fiscal years and operational calendars.
+Configure localization settings.
+Apply organization branding.
+Manage software licenses.
+Support enterprise scalability.
+
+11.3.3 Configuration Architecture
+                          Enterprise Organization
+                                   │
+                  ┌────────────────┴────────────────┐
+                  ▼                                 ▼
+           Hospital Group A                  Hospital Group B
+                  │                                 │
+         ┌────────┴────────┐               ┌────────┴────────┐
+         ▼                 ▼               ▼                 ▼
+     Hospital A1      Hospital A2      Hospital B1      Hospital B2
+         │
+         ▼
+ Departments → Units → Wards → Rooms → Beds
+The architecture shall support centralized administration with configurable delegation to individual hospitals and branches.
+
+11.3.4 Organization Configuration Dashboard
+Screen ID
+ORG-CONF-001
+
+Purpose
+Provides centralized administration for organization-wide settings, hospital profiles, branches, facilities, branding, localization, and licensing.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+Enterprise Administrator
+Enterprise Configuration
+Hospital Administrator
+Hospital Configuration
+Branch Administrator
+Branch Configuration
+IT Administrator
+Technical Configuration
+
+11.3.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Organization & Hospital Configuration Dashboard                                      |
++--------------------------------------------------------------------------------------+
+
+Organization Profile
+
+--------------------------------------------------------------
+
+Hospital Management
+
+--------------------------------------------------------------
+
+Branch Configuration
+
+--------------------------------------------------------------
+
+Facility Configuration
+
+--------------------------------------------------------------
+
+Localization
+
+--------------------------------------------------------------
+
+Branding & Themes
+
+--------------------------------------------------------------
+
+Licensing
+
+--------------------------------------------------------------
+
+Configuration History
+
+11.3.6 Organization Profile
+The system shall maintain a master organization profile.
+Organization Information
+Field
+Description
+Organization ID
+Unique identifier
+Organization Name
+Legal organization name
+Organization Type
+Public, Private, NGO, Academic, Military
+Registration Number
+Government registration
+Tax Identification Number
+Tax registration
+Accreditation Number
+Accreditation identifier
+Website
+Official website
+Email
+Organization email
+Telephone
+Primary contact
+Emergency Contact
+Emergency number
+Headquarters Address
+Primary office
+
+11.3.7 Hospital Profile Management
+Each hospital shall maintain an independent profile.
+Hospital Information
+Field
+Description
+Hospital ID
+Unique hospital identifier
+Hospital Name
+Official name
+Hospital Code
+Internal code
+Hospital Category
+General, Specialty, Teaching
+Ownership Type
+Public/Private
+License Number
+Operating license
+Accreditation Status
+Accreditation details
+Number of Beds
+Licensed capacity
+Emergency Services
+Available/Unavailable
+ICU Availability
+Yes/No
+Trauma Center Level
+Configurable
+Operating Hours
+Hospital schedule
+
+11.3.8 Multi-Hospital Management
+The system shall support management of multiple hospitals from a single platform.
+Capabilities include:
+Create hospital
+Edit hospital
+Archive hospital
+Activate hospital
+Deactivate hospital
+Transfer administrative ownership
+Merge organizational reporting
+Separate operational reporting
+Enterprise administrators shall be able to switch between hospitals without logging out, subject to permissions.
+
+11.3.9 Branch Management
+Each hospital may contain multiple branches.
+Supported branch operations include:
+Create branch
+Update branch
+Deactivate branch
+Assign branch administrator
+Configure operating hours
+Configure branch services
+Define geographical location
+Assign departments
+Each branch shall maintain independent operational settings while inheriting enterprise policies where configured.
+
+11.3.10 Facility Configuration
+Hospitals shall configure physical facilities.
+Supported facility types include:
+Facility
+Example
+Building
+Main Building
+Campus
+North Campus
+Ward
+Medical Ward
+ICU
+Intensive Care Unit
+Operation Theatre
+OT Complex
+Laboratory
+Central Laboratory
+Pharmacy
+Main Pharmacy
+Radiology Center
+Imaging Department
+Emergency Unit
+Emergency Department
+Administrative Office
+Management Office
+Each facility shall include:
+Facility ID
+Facility Name
+Facility Code
+Capacity
+Operating Hours
+Assigned Manager
+Parent Facility
+
+11.3.11 Organizational Hierarchy
+The system shall support configurable organizational hierarchies.
+Enterprise
+      │
+      ▼
+Hospital
+      │
+      ▼
+Branch
+      │
+      ▼
+Department
+      │
+      ▼
+Unit
+      │
+      ▼
+Ward
+      │
+      ▼
+Room
+      │
+      ▼
+Bed
+The hierarchy shall support configurable depth where organizational requirements differ.
+
+11.3.12 Business Unit Configuration
+Administrators shall define business units.
+Examples include:
+Clinical Services
+Nursing Services
+Diagnostic Services
+Pharmacy Services
+Administrative Services
+Finance Department
+Human Resources
+Information Technology
+Facilities Management
+Research & Development
+Business units may be mapped to one or more departments.
+
+11.3.13 Working Calendars
+The system shall support configurable operational calendars.
+Calendar configuration shall include:
+Working Days
+Weekend Definition
+Public Holidays
+Organizational Holidays
+Emergency Operations
+Shift Calendars
+Seasonal Schedules
+Special Events
+Different hospitals and branches may maintain independent calendars.
+
+11.3.14 Fiscal Year Configuration
+The system shall support configurable financial periods.
+Administrators shall define:
+Field
+Description
+Fiscal Year Name
+Example: FY2027
+Start Date
+Beginning of fiscal year
+End Date
+End of fiscal year
+Financial Quarters
+Q1–Q4
+Accounting Periods
+Monthly periods
+Closing Schedule
+Year-end process
+Only one fiscal year may be active for a hospital at a time unless multi-period accounting is enabled.
+
+11.3.15 Localization Settings
+The system shall support localization.
+Configurable options include:
+Language
+Date Format
+Time Format
+Number Format
+Currency
+Measurement Units
+Paper Size
+Time Zone
+Week Start Day
+Multiple languages may be enabled simultaneously.
+
+11.3.16 Branding & Themes
+Administrators shall customize the application's appearance.
+Supported branding elements include:
+Organization Logo
+Hospital Logo
+Favicon
+Color Scheme
+Login Background
+Login Banner
+Email Templates
+Report Header
+Report Footer
+Digital Signatures
+Watermarks
+Branding may be configured independently for each hospital or branch.
+
+11.3.17 License & Subscription Management
+The system shall maintain licensing information.
+License information shall include:
+Field
+Description
+License ID
+Unique identifier
+License Type
+Enterprise, Standard, Academic
+Subscription Plan
+Configured plan
+Activation Date
+License activation
+Expiration Date
+License validity
+Number of Users
+Licensed users
+Number of Hospitals
+Licensed organizations
+Storage Allocation
+Licensed storage
+Enabled Modules
+Licensed features
+The system shall notify administrators before license expiration according to configurable reminder periods.
+
+11.3.18 Configuration Import & Export
+Authorized administrators shall be able to:
+Export organization settings.
+Import configuration packages.
+Clone hospital configurations.
+Copy branch settings.
+Backup configuration profiles.
+Restore previous configurations.
+Configuration packages shall undergo validation before import.
+
+11.3.19 Configuration Version History
+All configuration changes shall maintain version history.
+Each version shall record:
+Version Number
+Modified By
+Date & Time
+Configuration Category
+Previous Value
+New Value
+Change Reason
+Approval Status (where applicable)
+Authorized administrators shall be able to review and restore previous configurations subject to organizational policy.
+
+11.3.20 Performance Requirements
+The Organization & Hospital Configuration Module shall:
+Load configuration dashboards within acceptable organizational response times under normal operating conditions.
+Apply configuration updates without requiring unnecessary system restarts where technically feasible.
+Support concurrent administration across multiple hospitals and branches.
+Maintain consistent configuration synchronization across enterprise deployments.
+Validate configuration changes before they are committed.
+
+11.3.21 Accessibility Requirements
+The Organization Configuration interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible configuration forms and validation messages.
+Ensure sufficient color contrast.
+Present configuration status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.3.22 Security Requirements
+The Organization & Hospital Configuration Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict enterprise, hospital, and branch configuration according to assigned administrative roles.
+Record all configuration changes in the audit log.
+Encrypt configuration data transmitted between clients and servers using HTTPS/TLS.
+Protect licensing and organizational information against unauthorized modification.
+Support approval workflows for critical configuration changes where enabled.
+
+11.3.23 Acceptance Criteria
+The Organization & Hospital Configuration Module shall be accepted when:
+Organizations, hospitals, branches, facilities, and business units can be configured according to organizational requirements.
+Multi-hospital and multi-branch management functions operate correctly.
+Localization, branding, fiscal years, calendars, and licensing settings are configurable and applied consistently.
+Configuration import/export, version history, accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.4 Department, Facility & Resource Configuration
+
+11.4.1 Introduction
+The Department, Facility & Resource Configuration Module enables authorized administrators to configure and manage the organizational structure of hospitals, including departments, clinical units, wards, rooms, beds, service locations, medical equipment, and operational resources.
+The module provides a centralized framework for organizing physical and operational healthcare resources, ensuring efficient utilization, standardized configurations, and consistent management across single or multiple hospital branches.
+
+11.4.2 Objectives
+The Department, Facility & Resource Configuration Module shall enable administrators to:
+Configure hospital departments.
+Manage clinical and non-clinical units.
+Configure wards, rooms, and beds.
+Register medical equipment.
+Configure service locations.
+Define operational capacities.
+Manage facility resources.
+Configure operating hours.
+Allocate resources to departments.
+Support multi-hospital resource management.
+
+11.4.3 Facility Configuration Architecture
+                    Hospital
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+ Clinical        Administrative     Support
+Departments        Departments      Services
+        │
+        ▼
+Clinical Units
+        │
+        ▼
+Wards
+        │
+        ▼
+Rooms
+        │
+        ▼
+Beds
+        │
+        ▼
+Medical Equipment
+The hierarchy shall support configurable organizational structures while preserving logical parent-child relationships.
+
+11.4.4 Department & Facility Dashboard
+Screen ID
+FAC-CONF-001
+
+Purpose
+Provides centralized administration for departments, facilities, clinical units, rooms, beds, equipment, and operational resources.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+Hospital Administrator
+Full Configuration
+Facility Manager
+Facility Management
+Department Administrator
+Department Configuration
+Biomedical Engineer
+Equipment Configuration
+Maintenance Administrator
+Facility Resources
+
+11.4.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Department, Facility & Resource Configuration                                        |
++--------------------------------------------------------------------------------------+
+
+Department Explorer
+
+---------------------------------------------------------------
+
+Clinical Units
+
+---------------------------------------------------------------
+
+Facility Map
+
+---------------------------------------------------------------
+
+Ward & Room Management
+
+---------------------------------------------------------------
+
+Bed Management
+
+---------------------------------------------------------------
+
+Equipment Registry
+
+---------------------------------------------------------------
+
+Capacity Overview
+
+---------------------------------------------------------------
+
+Configuration History
+
+11.4.6 Department Management
+Administrators shall be able to manage hospital departments.
+Supported operations include:
+Create Department
+Edit Department
+Merge Departments
+Deactivate Department
+Archive Department
+Assign Department Head
+Configure Services
+Configure Capacity
+Assign Staff
+Configure Cost Center
+
+Department Information
+Field
+Description
+Department ID
+Unique identifier
+Department Name
+Official name
+Department Code
+Internal code
+Department Type
+Clinical, Administrative, Support
+Parent Department
+Optional hierarchy
+Branch
+Assigned hospital branch
+Department Head
+Responsible manager
+Contact Information
+Telephone & email
+Operational Status
+Active/Inactive
+
+11.4.7 Clinical Unit Configuration
+Each department may contain one or more clinical units.
+Examples include:
+Intensive Care Unit (ICU)
+Coronary Care Unit (CCU)
+Neonatal Intensive Care Unit (NICU)
+Emergency Unit
+Dialysis Unit
+Oncology Unit
+Cardiology Unit
+Orthopedic Unit
+Surgical Unit
+Maternity Unit
+Each unit shall maintain:
+Unit Name
+Capacity
+Assigned Staff
+Equipment Inventory
+Operating Hours
+Service Availability
+Responsible Supervisor
+
+11.4.8 Ward Configuration
+Administrators shall configure wards within clinical units.
+Ward configuration shall include:
+Field
+Description
+Ward ID
+Unique identifier
+Ward Name
+Official name
+Ward Code
+Internal code
+Ward Type
+General, ICU, Isolation, Pediatric
+Capacity
+Maximum beds
+Gender Restriction
+Male, Female, Mixed
+Isolation Status
+Yes/No
+Nurse Station
+Assigned station
+Responsible Supervisor
+Ward manager
+
+11.4.9 Room Configuration
+Each ward may contain multiple rooms.
+Room configuration shall include:
+Room Number
+Room Name
+Room Type
+Capacity
+Floor
+Building
+Air Conditioning Status
+Isolation Capability
+Oxygen Supply Availability
+Ventilator Support
+Current Status
+Supported room types include:
+General Room
+Private Room
+Semi-Private Room
+ICU Room
+Operating Theatre
+Recovery Room
+Consultation Room
+Procedure Room
+Delivery Room
+Isolation Room
+
+11.4.10 Bed Configuration
+Each room may contain one or more beds.
+Bed information shall include:
+Field
+Description
+Bed ID
+Unique identifier
+Bed Number
+Bed identifier
+Bed Type
+General, ICU, Pediatric, Emergency
+Current Status
+Available, Occupied, Reserved, Maintenance
+Isolation Capability
+Yes/No
+Monitoring Equipment
+Connected devices
+Assigned Room
+Parent room
+Assigned Ward
+Parent ward
+Bed status shall update automatically based on patient admission, discharge, transfer, and maintenance events.
+
+11.4.11 Service Location Configuration
+The system shall support management of service locations.
+Examples include:
+Reception
+Registration Desk
+OPD Clinics
+Emergency Reception
+Pharmacy Counter
+Laboratory Collection Center
+Radiology Reception
+Billing Counter
+Cashier Office
+Blood Bank
+Vaccination Center
+Each location shall include:
+Service Name
+Location Code
+Floor
+Building
+Responsible Department
+Operating Hours
+Queue Configuration
+
+11.4.12 Medical Equipment Registry
+The system shall maintain a centralized registry of medical equipment.
+Supported equipment categories include:
+MRI Machine
+CT Scanner
+Ultrasound Machine
+X-Ray Machine
+ECG Machine
+Ventilator
+Defibrillator
+Infusion Pump
+Dialysis Machine
+Laboratory Analyzer
+Patient Monitor
+
+Equipment Information
+Field
+Description
+Equipment ID
+Unique identifier
+Asset Number
+Organization asset ID
+Equipment Name
+Device name
+Manufacturer
+Equipment manufacturer
+Model
+Model number
+Serial Number
+Manufacturer serial number
+Purchase Date
+Acquisition date
+Warranty Expiry
+Warranty information
+Assigned Department
+Equipment location
+Current Status
+Operational, Maintenance, Retired
+
+11.4.13 Resource Allocation
+Administrators shall allocate operational resources.
+Resources include:
+Medical Equipment
+Staff
+Rooms
+Beds
+Ambulances
+Wheelchairs
+Operating Theatres
+Diagnostic Equipment
+The system shall prevent allocation conflicts according to configured business rules.
+
+11.4.14 Capacity Management
+Each department shall define operational capacities.
+Supported capacity metrics include:
+Metric
+Description
+Maximum Patients
+Capacity limit
+Available Beds
+Bed availability
+Available Rooms
+Operational rooms
+Staff Capacity
+Staffing level
+Equipment Availability
+Equipment readiness
+Appointment Capacity
+Daily appointment limit
+Capacity thresholds shall support configurable warning and critical levels.
+
+11.4.15 Operating Hours Configuration
+Administrators shall configure operating schedules.
+Supported schedules include:
+24/7 Operation
+Business Hours
+Weekend Schedule
+Holiday Schedule
+Emergency Schedule
+Maintenance Window
+Each facility may maintain independent operating hours.
+
+11.4.16 Department Relationships
+Departments may establish configurable relationships.
+Examples include:
+Emergency Department
+        │
+        ├────────► Laboratory
+        │
+        ├────────► Radiology
+        │
+        ├────────► Pharmacy
+        │
+        └────────► ICU
+These relationships shall support referrals, patient transfers, service requests, and workflow automation.
+
+11.4.17 Configuration Validation
+Before saving configuration changes, the system shall validate:
+Duplicate department codes.
+Duplicate room numbers within the same ward.
+Duplicate bed identifiers.
+Capacity consistency.
+Parent-child hierarchy integrity.
+Equipment assignment conflicts.
+Required field completion.
+Branch ownership consistency.
+Validation errors shall identify the affected configuration item and provide descriptive guidance for correction.
+
+11.4.18 Resource Availability Dashboard
+The dashboard shall display real-time resource utilization.
+Resource
+Metrics
+Beds
+Available, Occupied, Reserved
+Rooms
+Available, In Use, Maintenance
+Equipment
+Operational, Under Maintenance
+Operating Theatres
+Scheduled, Available
+ICU Capacity
+Current utilization
+Ambulances
+Available, Dispatched
+Staff
+On Duty, Off Duty
+The dashboard shall support filtering by hospital, branch, department, and facility.
+
+11.4.19 Performance Requirements
+The Department, Facility & Resource Configuration Module shall:
+Load facility configuration dashboards within acceptable organizational response times under normal operating conditions.
+Apply validated configuration changes without unnecessary service interruption.
+Support concurrent configuration by multiple authorized administrators.
+Synchronize resource updates across related modules.
+Maintain data consistency during bulk configuration operations.
+
+11.4.20 Accessibility Requirements
+The Department & Facility Configuration interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible forms, validation messages, and facility diagrams.
+Ensure sufficient color contrast.
+Present resource status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.4.21 Security Requirements
+The Department, Facility & Resource Configuration Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict department and facility administration according to assigned permissions.
+Record all configuration changes in the audit log.
+Protect configuration data during transmission using HTTPS/TLS.
+Prevent unauthorized modification of critical facility and resource records.
+Support approval workflows for high-impact configuration changes where enabled.
+
+11.4.22 Acceptance Criteria
+The Department, Facility & Resource Configuration Module shall be accepted when:
+Departments, clinical units, wards, rooms, beds, and service locations can be configured and managed successfully.
+Medical equipment registration, resource allocation, capacity management, and operating schedules function correctly.
+Configuration validation prevents inconsistent or conflicting configurations.
+Real-time resource availability is accurately reflected across the system.
+Accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.5 Master Data Management (MDM) & Reference Data Configuration
+
+11.5.1 Introduction
+The Master Data Management (MDM) & Reference Data Configuration Module provides a centralized framework for managing standardized master data and reference datasets used throughout the CuraSphere Hospital Management System.
+Master data represents the core business entities shared across multiple modules. Maintaining a single, governed source of truth ensures data consistency, interoperability, regulatory compliance, and reliable reporting across the organization.
+This module enables administrators to configure, validate, version, approve, and synchronize master data while reducing duplication and maintaining enterprise-wide data quality.
+
+11.5.2 Objectives
+The Master Data Management Module shall enable administrators to:
+Maintain centralized master data.
+Configure enterprise reference datasets.
+Standardize medical coding systems.
+Manage clinical reference catalogs.
+Maintain medication and pharmaceutical masters.
+Configure laboratory and radiology masters.
+Manage insurance and payer information.
+Configure supplier and vendor masters.
+Validate reference data integrity.
+Synchronize master data across all modules.
+
+11.5.3 Master Data Architecture
+                     Master Data Repository
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+ Clinical Masters      Administrative       Financial Masters
+                            Masters
+        │                     │                     │
+        └──────────────┬──────┴──────┬──────────────┘
+                       ▼
+            All CuraSphere Modules
+The Master Data Repository shall serve as the authoritative source for all shared reference data.
+
+11.5.4 Master Data Dashboard
+Screen ID
+MDM-CONF-001
+
+Purpose
+Provides administrators with a centralized interface for managing master records, reference catalogs, coding standards, synchronization status, and data quality.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+Hospital Administrator
+Organization Master Data
+Clinical Administrator
+Clinical Masters
+Pharmacy Administrator
+Medication Masters
+Laboratory Administrator
+Laboratory Masters
+Finance Administrator
+Financial Masters
+Procurement Administrator
+Vendor & Supplier Masters
+
+11.5.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Master Data Management Dashboard                                                     |
++--------------------------------------------------------------------------------------+
+
+Master Data Categories
+
+---------------------------------------------------------------
+
+Clinical Reference Data
+
+---------------------------------------------------------------
+
+Medication Master
+
+---------------------------------------------------------------
+
+Laboratory & Radiology Masters
+
+---------------------------------------------------------------
+
+Insurance & Vendor Masters
+
+---------------------------------------------------------------
+
+Synchronization Status
+
+---------------------------------------------------------------
+
+Validation Errors
+
+---------------------------------------------------------------
+
+Version History
+
+11.5.6 Master Data Categories
+The system shall maintain centralized master records for the following categories:
+Category
+Examples
+Patient Reference Data
+Gender, Marital Status, Nationality
+Clinical Data
+Diagnoses, Procedures
+Pharmacy Data
+Medicines, Dosage Forms
+Laboratory Data
+Laboratory Tests
+Radiology Data
+Imaging Procedures
+Financial Data
+Payment Methods, Tax Codes
+Insurance Data
+Insurance Providers
+Human Resources
+Job Titles, Employee Types
+Inventory Data
+Item Categories
+Procurement Data
+Vendors, Suppliers
+Geographic Data
+Countries, States, Cities
+
+11.5.7 Clinical Coding Standards
+The system shall support configurable medical coding standards.
+Standard
+Purpose
+ICD-10
+Disease Classification
+ICD-11 (Optional)
+Updated Disease Classification
+SNOMED CT
+Clinical Terminology
+LOINC
+Laboratory Observation Codes
+CPT (Optional)
+Procedure Coding
+HCPCS (Optional)
+Healthcare Procedure Codes
+ATC
+Drug Classification
+RxNorm (Optional)
+Medication Terminology
+Administrators shall configure the coding systems applicable to the organization's jurisdiction and operational requirements.
+
+11.5.8 Diagnosis Master
+The Diagnosis Master shall maintain standardized diagnosis records.
+Diagnosis Information
+Field
+Description
+Diagnosis ID
+Unique identifier
+ICD Code
+Standard diagnosis code
+Diagnosis Name
+Official description
+Clinical Category
+Disease group
+Severity Level
+Configurable
+Active Status
+Active/Inactive
+Effective Date
+Activation date
+Retirement Date
+Deactivation date
+The system shall prevent duplicate diagnosis codes.
+
+11.5.9 Procedure Master
+The Procedure Master shall maintain standardized clinical procedures.
+Each procedure shall include:
+Procedure Code
+Procedure Name
+Procedure Category
+Clinical Specialty
+Estimated Duration
+Required Resources
+Billing Category
+Active Status
+Procedures may be mapped to billing, scheduling, and clinical workflow modules.
+
+11.5.10 Medication & Drug Master
+The Medication Master shall provide standardized pharmaceutical information.
+Medication Information
+Field
+Description
+Medication ID
+Unique identifier
+Generic Name
+Standard name
+Brand Name
+Commercial name
+Drug Classification
+Therapeutic category
+Strength
+Dosage strength
+Dosage Form
+Tablet, Capsule, Injection, etc.
+Route of Administration
+Oral, IV, IM, Topical, etc.
+Manufacturer
+Drug manufacturer
+Storage Requirements
+Storage conditions
+Controlled Substance
+Yes/No
+Active Status
+Active/Inactive
+The medication master shall integrate with the Pharmacy Management Module.
+
+11.5.11 Laboratory Test Master
+The Laboratory Test Master shall maintain standardized laboratory tests.
+Supported information includes:
+Test Code
+Test Name
+LOINC Code (where applicable)
+Test Category
+Sample Type
+Reference Range
+Units of Measurement
+Expected Turnaround Time
+Reporting Template
+Active Status
+
+11.5.12 Radiology Procedure Master
+The Radiology Master shall include:
+Procedure Code
+Procedure Name
+Imaging Modality
+Body Region
+Contrast Requirement
+Preparation Instructions
+Estimated Duration
+Radiation Category (if applicable)
+Active Status
+Supported modalities include:
+X-Ray
+CT Scan
+MRI
+Ultrasound
+Mammography
+Fluoroscopy
+PET Scan
+Nuclear Medicine
+
+11.5.13 Insurance & Payer Master
+The Insurance Master shall maintain payer information.
+Field
+Description
+Insurance ID
+Unique identifier
+Provider Name
+Insurance company
+Provider Code
+Internal code
+Contact Information
+Phone & email
+Coverage Types
+Supported plans
+Claim Submission Method
+Electronic/Manual
+Contract Status
+Active/Inactive
+Insurance records shall support integration with billing and claims processing.
+
+11.5.14 Vendor & Supplier Master
+The Vendor Master shall maintain approved supplier records.
+Vendor information shall include:
+Vendor ID
+Vendor Name
+Registration Number
+Tax Number
+Contact Person
+Email
+Telephone
+Address
+Product Categories
+Payment Terms
+Contract Expiry
+Performance Rating
+Active Status
+Vendor records shall be available to procurement and inventory modules.
+
+11.5.15 Geographic & Location Master
+The system shall maintain standardized geographic reference data.
+Supported entities include:
+Country
+State / Province
+District
+City
+Postal Code
+Time Zone
+Currency
+Language
+These records shall be reused across patient, employee, supplier, and organization modules.
+
+11.5.16 Data Validation Rules
+Before saving master data, the system shall validate:
+Duplicate codes.
+Duplicate names where uniqueness is required.
+Mandatory fields.
+Valid code formats.
+Parent-child relationships.
+Effective and expiration dates.
+Referential integrity.
+Cross-module dependencies.
+Validation failures shall prevent publication until corrected.
+
+11.5.17 Version Control & Change Management
+The system shall maintain version history for master data.
+Each version shall record:
+Field
+Description
+Version Number
+Sequential version
+Record Identifier
+Master record
+Modified By
+User
+Modification Date
+Timestamp
+Previous Value
+Original data
+New Value
+Updated data
+Change Reason
+Administrator comments
+Approval Status
+Pending/Approved/Rejected
+Where enabled, organizations may require approval before changes become active.
+
+11.5.18 Data Synchronization
+Master data shall synchronize with dependent modules.
+Master Data Repository
+          │
+          ▼
+Validation Engine
+          │
+          ▼
+Synchronization Service
+          │
+ ┌────────┼────────┬────────┬────────┐
+ ▼        ▼        ▼        ▼
+EMR    Pharmacy  Billing Inventory
+Synchronization shall:
+Maintain consistency.
+Prevent duplicate records.
+Log synchronization events.
+Retry failed synchronization jobs.
+Notify administrators of synchronization failures.
+
+11.5.19 Audit & Traceability
+The system shall audit all master data activities.
+Auditable events include:
+Record creation
+Record update
+Record deletion (logical where applicable)
+Activation
+Deactivation
+Approval
+Rejection
+Import
+Export
+Synchronization
+Audit records shall include user identity, timestamp, affected record, action performed, and outcome.
+
+11.5.20 Performance Requirements
+The Master Data Management Module shall:
+Support large enterprise reference datasets.
+Validate master records before publication.
+Synchronize updates efficiently across dependent modules.
+Support concurrent administrative access.
+Provide responsive search and filtering for master records.
+
+11.5.21 Accessibility Requirements
+The Master Data interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible forms and validation messages.
+Ensure sufficient color contrast.
+Support responsive layouts across desktop and tablet devices.
+Present status indicators using text and icons rather than color alone.
+
+11.5.22 Security Requirements
+The Master Data Management Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict modification of reference data to authorized users.
+Record all master data changes in immutable audit logs where supported.
+Encrypt data transmitted between clients and servers using HTTPS/TLS.
+Support approval workflows for critical reference data.
+Prevent unauthorized deletion or modification of enterprise master records.
+
+11.5.23 Acceptance Criteria
+The Master Data Management Module shall be accepted when:
+Master data categories can be created, maintained, versioned, and synchronized successfully.
+Clinical coding standards, medication, laboratory, radiology, insurance, vendor, and geographic masters operate correctly.
+Validation rules prevent inconsistent or duplicate master records.
+Synchronization propagates approved changes across dependent modules.
+Audit logging, accessibility, security, and performance requirements are fully implemented.
+
+11.6 Workflow & Business Rules Configuration
+
+11.6.1 Introduction
+The Workflow & Business Rules Configuration Module enables authorized administrators to design, configure, automate, and manage business processes across the CuraSphere Hospital Management System without modifying application source code.
+The module provides a configurable workflow engine that allows healthcare organizations to define approval chains, automate repetitive tasks, enforce organizational policies, implement decision logic, and adapt workflows to meet operational, clinical, financial, and regulatory requirements.
+This capability ensures that CuraSphere can accommodate varying hospital procedures while maintaining consistency, transparency, and governance.
+
+11.6.2 Objectives
+The Workflow & Business Rules Configuration Module shall enable administrators to:
+Configure organizational workflows.
+Define business rules.
+Automate repetitive business processes.
+Configure approval hierarchies.
+Define workflow conditions.
+Configure escalation policies.
+Trigger notifications automatically.
+Monitor workflow execution.
+Version workflow definitions.
+Test workflows before deployment.
+
+11.6.3 Workflow Engine Architecture
+                 Workflow Designer
+                        │
+                        ▼
+               Business Rule Engine
+                        │
+        ┌───────────────┼────────────────┐
+        ▼               ▼                ▼
+   Workflow Engine   Decision Engine   Scheduler
+        │               │                │
+        └───────────────┼────────────────┘
+                        ▼
+              Notification Engine
+                        │
+                        ▼
+              CuraSphere Modules
+The workflow engine shall support configurable business processes across all application modules.
+
+11.6.4 Workflow Configuration Dashboard
+Screen ID
+WF-CONF-001
+
+Purpose
+Provides administrators with centralized tools to create, edit, test, publish, monitor, and retire workflows and business rules.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+Workflow Administrator
+Workflow Management
+Hospital Administrator
+Organizational Workflows
+Clinical Administrator
+Clinical Workflows
+Finance Administrator
+Financial Workflows
+HR Administrator
+HR Workflows
+
+11.6.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Workflow & Business Rules Dashboard                                                  |
++--------------------------------------------------------------------------------------+
+
+Workflow Library
+
+---------------------------------------------------------------
+
+Active Workflows
+
+---------------------------------------------------------------
+
+Draft Workflows
+
+---------------------------------------------------------------
+
+Business Rules
+
+---------------------------------------------------------------
+
+Approval Chains
+
+---------------------------------------------------------------
+
+Automation Triggers
+
+---------------------------------------------------------------
+
+Workflow Analytics
+
+---------------------------------------------------------------
+
+Execution Logs
+
+11.6.6 Workflow Categories
+The system shall support configurable workflows for:
+Category
+Examples
+Patient Registration
+Registration approval
+Appointment Management
+Scheduling workflow
+Admission & Discharge
+Admission approval
+Clinical Documentation
+Record review
+Laboratory
+Test request & validation
+Radiology
+Imaging request workflow
+Pharmacy
+Prescription verification
+Billing
+Invoice approval
+Insurance
+Claim processing
+Procurement
+Purchase approval
+Inventory
+Stock replenishment
+HR
+Leave approval
+Maintenance
+Work order processing
+Additional workflow categories may be created by authorized administrators.
+
+11.6.7 Workflow Designer
+The system shall provide a visual workflow designer.
+Supported workflow elements include:
+Start Event
+End Event
+User Task
+System Task
+Approval Task
+Decision Point
+Timer Event
+Notification Event
+Parallel Branch
+Merge Point
+Escalation Step
+Exception Handler
+Administrators shall configure workflows using a graphical drag-and-drop interface or an equivalent structured configuration interface.
+
+11.6.8 Workflow Components
+Each workflow shall include:
+Component
+Description
+Workflow ID
+Unique identifier
+Workflow Name
+Display name
+Category
+Functional area
+Description
+Business purpose
+Owner
+Responsible administrator
+Status
+Draft, Active, Archived
+Version
+Workflow version
+Effective Date
+Activation date
+Expiration Date
+Optional retirement date
+
+11.6.9 Business Rule Engine
+The Business Rule Engine shall evaluate configurable rules during workflow execution.
+Business rules may evaluate:
+Patient Age
+Department
+Diagnosis
+Insurance Type
+Invoice Amount
+Medication Type
+Stock Level
+Employee Role
+Appointment Priority
+Risk Classification
+Hospital Branch
+Service Category
+Rules shall execute consistently for all applicable transactions.
+
+11.6.10 Rule Types
+Supported rule categories include:
+Rule Type
+Example
+Validation Rule
+Required fields
+Approval Rule
+Manager approval required
+Assignment Rule
+Assign physician automatically
+Notification Rule
+Send email notification
+Escalation Rule
+Escalate after 24 hours
+Routing Rule
+Route by department
+Calculation Rule
+Billing calculations
+Eligibility Rule
+Insurance validation
+
+11.6.11 Approval Workflow Configuration
+Administrators shall configure approval chains.
+Example:
+Request Submitted
+        │
+        ▼
+Department Supervisor
+        │
+        ▼
+Department Head
+        │
+        ▼
+Hospital Administrator
+        │
+        ▼
+Approved
+Approval workflows may include:
+Single-level approval
+Multi-level approval
+Parallel approvals
+Conditional approvals
+Emergency approvals
+Auto-approval for defined conditions
+
+11.6.12 Decision Trees
+The workflow engine shall support conditional decision logic.
+Example:
+Claim Submitted
+       │
+       ▼
+Insurance Verified?
+   ┌───────────────┐
+   │               │
+ Yes              No
+   │               │
+   ▼               ▼
+Continue     Manual Review
+Decision conditions may evaluate multiple fields and logical expressions.
+
+11.6.13 Automation Triggers
+The system shall automatically initiate workflows based on configurable events.
+Supported triggers include:
+Record Created
+Record Updated
+Record Deleted
+Patient Admitted
+Patient Discharged
+Appointment Scheduled
+Invoice Generated
+Payment Received
+Laboratory Result Available
+Prescription Approved
+Inventory Threshold Reached
+Equipment Maintenance Due
+User Login
+Scheduled Time/Event
+
+11.6.14 Notification Integration
+Workflow events shall trigger configurable notifications.
+Notification channels include:
+In-Application Notifications
+Email
+SMS
+Push Notifications
+Dashboard Alerts
+Task Queue Assignments
+Notification templates shall support dynamic placeholders and localization.
+
+11.6.15 Escalation Policies
+Administrators shall configure escalation rules for overdue workflow tasks.
+Escalation options include:
+Policy
+Description
+Reminder
+Notify assigned user
+Supervisor Escalation
+Notify supervisor
+Department Escalation
+Notify department head
+Executive Escalation
+Notify senior management
+Automatic Reassignment
+Assign alternate user
+Escalation timing shall be configurable by workflow.
+
+11.6.16 Workflow Simulation & Testing
+Before publication, administrators shall be able to simulate workflows.
+Simulation capabilities include:
+Test with sample data.
+Validate routing paths.
+Verify business rules.
+Confirm approval chains.
+Test notifications.
+Review execution timeline.
+Detect configuration conflicts.
+No production data shall be modified during simulation.
+
+11.6.17 Workflow Versioning
+The system shall maintain version history for workflows.
+Each version shall record:
+Field
+Description
+Version Number
+Sequential version
+Workflow Name
+Workflow identifier
+Modified By
+Administrator
+Modification Date
+Timestamp
+Change Summary
+Description of changes
+Approval Status
+Draft/Approved
+Deployment Status
+Active/Inactive
+Previous workflow versions shall remain available for audit and rollback purposes.
+
+11.6.18 Workflow Monitoring
+Administrators shall monitor workflow execution.
+Dashboard metrics shall include:
+Active Workflows
+Completed Workflows
+Failed Workflows
+Average Processing Time
+Pending Approvals
+Escalated Tasks
+Workflow Errors
+Automation Success Rate
+Administrators shall be able to filter metrics by module, department, branch, and date range.
+
+11.6.19 Workflow Audit Trail
+The system shall record all workflow activities.
+Auditable events include:
+Workflow creation
+Workflow modification
+Workflow publication
+Workflow execution
+Approval decisions
+Rule evaluations
+Escalations
+Notifications sent
+Workflow cancellation
+Workflow archival
+Each audit record shall include:
+Timestamp
+User
+Workflow ID
+Action
+Previous State
+New State
+Outcome
+
+11.6.20 Performance Requirements
+The Workflow & Business Rules Module shall:
+Execute workflow rules with minimal latency under normal operating conditions.
+Support concurrent workflow execution across multiple hospital branches.
+Process high volumes of automated tasks without significant degradation.
+Queue and retry transient workflow failures where appropriate.
+Maintain workflow consistency during system updates and maintenance windows.
+
+11.6.21 Accessibility Requirements
+The Workflow Configuration interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible workflow diagrams and forms.
+Ensure sufficient color contrast.
+Present workflow status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.6.22 Security Requirements
+The Workflow & Business Rules Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict workflow creation, editing, publishing, and deletion to authorized users.
+Record all workflow and business rule changes in the audit log.
+Encrypt workflow configuration data transmitted using HTTPS/TLS.
+Support approval before activating critical workflows where organizational policy requires it.
+Prevent unauthorized modification of active production workflows.
+
+11.6.23 Acceptance Criteria
+The Workflow & Business Rules Configuration Module shall be accepted when:
+Administrators can successfully design, test, publish, and manage workflows.
+Business rules execute accurately based on configured conditions.
+Approval chains, decision trees, automation triggers, notifications, and escalations operate correctly.
+Workflow versioning, monitoring, and audit logging function as expected.
+Accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.7 System Parameters & Global Settings
+
+11.7.1 Introduction
+The System Parameters & Global Settings Module provides a centralized framework for configuring application-wide operational parameters that affect the behavior of the CuraSphere Hospital Management System.
+Unlike module-specific settings, global parameters apply across the entire platform and ensure standardized behavior for all hospitals, branches, departments, and users while allowing configurable exceptions where organizational policies permit.
+This module minimizes software customization by enabling administrators to modify system behavior through configuration rather than application code changes.
+
+11.7.2 Objectives
+The System Parameters & Global Settings Module shall enable administrators to:
+Configure enterprise-wide application settings.
+Manage global operational parameters.
+Configure numbering sequences.
+Configure localization preferences.
+Manage document templates.
+Configure storage settings.
+Configure application logging.
+Manage API settings.
+Enable or disable system features.
+Configure environment-specific settings.
+
+11.7.3 System Configuration Architecture
+                  Global Configuration Center
+                           │
+        ┌──────────────────┼──────────────────┐
+        ▼                  ▼                  ▼
+ Application         Infrastructure      Integration
+  Parameters            Parameters         Parameters
+        │                  │                  │
+        └──────────────────┼──────────────────┘
+                           ▼
+                 CuraSphere Application
+All global settings shall be stored centrally and applied according to organizational scope and permissions.
+
+11.7.4 Global Settings Dashboard
+Screen ID
+SYS-CONF-001
+
+Purpose
+Provides authorized administrators with a centralized interface to manage enterprise-wide application parameters and global configuration settings.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+Enterprise Administrator
+Enterprise Configuration
+Hospital Administrator
+Hospital-Level Settings
+IT Administrator
+Infrastructure Configuration
+System Administrator
+Global Parameters
+
+11.7.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| System Parameters & Global Settings                                                  |
++--------------------------------------------------------------------------------------+
+
+General Settings
+
+---------------------------------------------------------------
+
+Regional Settings
+
+---------------------------------------------------------------
+
+Numbering Configuration
+
+---------------------------------------------------------------
+
+Storage Configuration
+
+---------------------------------------------------------------
+
+Document Templates
+
+---------------------------------------------------------------
+
+API Configuration
+
+---------------------------------------------------------------
+
+Feature Management
+
+---------------------------------------------------------------
+
+Configuration History
+
+11.7.6 General Application Settings
+Administrators shall configure general application behavior.
+Supported settings include:
+Setting
+Description
+System Name
+Display name of the application
+Organization Name
+Default organization
+Default Language
+System language
+Default Theme
+Light/Dark/System
+Default Landing Page
+Initial dashboard
+Session Timeout
+User inactivity timeout
+Maximum Concurrent Sessions
+Configurable limit
+Auto Save Interval
+Draft save frequency
+Maintenance Message
+System notification during maintenance
+Default Time Zone
+Enterprise time zone
+Changes shall be applied according to the configured deployment scope.
+
+11.7.7 Regional & Localization Settings
+The system shall support regional customization.
+Configurable options include:
+Language
+Date Format
+Time Format
+Currency
+Decimal Separator
+Thousands Separator
+Measurement Units
+Paper Size
+Time Zone
+Week Start Day
+Holiday Calendar
+Localization settings may be overridden at the hospital or user level where permitted.
+
+11.7.8 Numbering & Identifier Generation
+The system shall support configurable numbering schemes for business entities.
+Supported identifiers include:
+Entity
+Example
+Patient ID
+PAT-2027-000001
+Medical Record Number (MRN)
+MRN-000001
+Appointment Number
+APT-2027-000001
+Admission Number
+ADM-2027-000001
+Invoice Number
+INV-2027-000001
+Receipt Number
+REC-2027-000001
+Laboratory Order
+LAB-2027-000001
+Radiology Order
+RAD-2027-000001
+Prescription Number
+RX-2027-000001
+Purchase Order
+PO-2027-000001
+Administrators shall configure:
+Prefix
+Suffix
+Sequence Length
+Starting Number
+Reset Frequency (Never, Daily, Monthly, Yearly)
+Branch-Specific Numbering
+Department-Specific Numbering
+
+11.7.9 File Storage Configuration
+The system shall support configurable storage locations for uploaded documents and generated files.
+Supported storage types include:
+Local File System
+Network Attached Storage (NAS)
+Cloud Object Storage (where supported)
+Hybrid Storage
+Storage configuration shall include:
+Parameter
+Description
+Storage Location
+Primary repository
+Backup Storage
+Secondary repository
+Maximum File Size
+Upload limit
+Allowed File Types
+Configurable extensions
+File Retention Period
+Retention policy
+Encryption at Rest
+Enabled/Disabled
+
+11.7.10 Document Template Management
+Administrators shall manage reusable document templates.
+Supported templates include:
+Patient Registration Form
+Admission Form
+Discharge Summary
+Laboratory Report
+Radiology Report
+Prescription
+Medical Certificate
+Invoice
+Receipt
+Insurance Claim Form
+Purchase Order
+Each template shall support:
+Organization logo
+Hospital logo
+Header and footer
+Dynamic data fields
+QR code (where enabled)
+Barcode (where enabled)
+Digital signature placeholders
+Version control
+
+11.7.11 Logging & Diagnostic Settings
+The system shall support configurable application logging.
+Log categories include:
+Category
+Description
+Application Logs
+General application events
+Security Logs
+Authentication & authorization
+Audit Logs
+User activities
+API Logs
+Integration events
+Database Logs
+Database operations
+Error Logs
+Application errors
+Performance Logs
+Resource usage
+Administrators shall configure:
+Log retention period
+Log level (Information, Warning, Error, Critical)
+Log rotation policy
+Diagnostic mode
+Alert thresholds
+
+11.7.12 API & Integration Parameters
+Global API settings shall include:
+Base API URL
+API Version
+Authentication Method
+Token Lifetime
+Request Timeout
+Rate Limits
+Retry Policy
+Allowed Origins (CORS)
+Webhook Endpoints
+Integration Status
+Configuration changes shall be validated before activation.
+
+11.7.13 Feature Flags
+The system shall support feature flag management to enable or disable functionality without redeploying the application.
+Examples include:
+Patient Portal
+Telemedicine
+Online Appointment Booking
+AI Decision Support
+Electronic Prescriptions
+Mobile Notifications
+Digital Consent Forms
+Advanced Analytics
+Experimental Features
+Feature flags may be applied globally or scoped to specific hospitals, branches, or user groups.
+
+11.7.14 Environment Configuration
+The system shall support multiple deployment environments.
+Supported environments include:
+Environment
+Purpose
+Development
+Software development
+Testing
+Functional testing
+Staging
+Pre-production validation
+Production
+Live hospital operations
+Environment-specific settings shall remain isolated to prevent accidental cross-environment configuration.
+
+11.7.15 Configuration Validation
+Before applying changes, the system shall validate:
+Required fields
+Parameter ranges
+Numbering conflicts
+File storage availability
+API connectivity
+Template syntax
+Duplicate configuration keys
+Dependency conflicts
+Invalid configurations shall not be applied until corrected.
+
+11.7.16 Configuration Backup & Restore
+Administrators shall be able to:
+Export global configuration.
+Import configuration packages.
+Create configuration snapshots.
+Restore previous configurations.
+Compare configuration versions.
+Roll back unsuccessful configuration changes.
+Configuration backups shall be version-controlled and auditable.
+
+11.7.17 Configuration Change History
+The system shall maintain a complete history of global configuration changes.
+Each record shall include:
+Field
+Description
+Configuration ID
+Unique identifier
+Parameter Name
+Modified setting
+Previous Value
+Original value
+New Value
+Updated value
+Modified By
+Administrator
+Change Date
+Timestamp
+Reason for Change
+Optional comments
+Approval Status
+Approved/Rejected (if applicable)
+
+11.7.18 Performance Requirements
+The System Parameters & Global Settings Module shall:
+Apply validated configuration changes efficiently without unnecessary downtime.
+Support concurrent configuration management by multiple authorized administrators.
+Ensure configuration synchronization across distributed deployments.
+Minimize performance impact when loading or updating global parameters.
+Cache frequently accessed configuration values while ensuring timely propagation of approved changes.
+
+11.7.19 Accessibility Requirements
+The Global Settings interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible configuration forms and validation messages.
+Ensure sufficient color contrast.
+Present configuration status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.7.20 Security Requirements
+The System Parameters & Global Settings Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict modification of global settings to authorized administrators.
+Record all configuration changes in the audit log.
+Encrypt configuration data transmitted between clients and servers using HTTPS/TLS.
+Support approval workflows for high-impact configuration changes where enabled.
+Protect sensitive parameters (such as API secrets and encryption keys) from unauthorized viewing and modification.
+
+11.7.21 Acceptance Criteria
+The System Parameters & Global Settings Module shall be accepted when:
+Global application parameters can be configured and applied successfully.
+Numbering schemes, localization settings, storage configuration, document templates, logging, APIs, and feature flags function according to configuration.
+Configuration validation prevents invalid or conflicting settings.
+Backup, restore, version history, accessibility, security, and performance requirements are fully implemented.
+
+11.8 Notification & Communication Configuration
+
+11.8.1 Introduction
+The Notification & Communication Configuration Module provides centralized management of all communication channels within the CuraSphere Hospital Management System. It enables administrators to configure notification services, messaging templates, communication preferences, delivery rules, escalation policies, and third-party communication providers.
+The module ensures timely, reliable, and secure communication between the system, healthcare professionals, patients, caregivers, insurance providers, suppliers, and administrators while supporting organizational communication policies and regulatory requirements.
+
+11.8.2 Objectives
+The Notification & Communication Configuration Module shall enable administrators to:
+Configure notification channels.
+Manage email services.
+Configure SMS gateways.
+Configure push notifications.
+Configure in-application notifications.
+Manage WhatsApp and third-party messaging services.
+Configure communication templates.
+Define reminder schedules.
+Configure escalation policies.
+Monitor communication delivery.
+Maintain communication audit logs.
+
+11.8.3 Communication Architecture
+                     Notification Engine
+                             │
+      ┌──────────────┬────────┼────────┬──────────────┐
+      ▼              ▼        ▼        ▼              ▼
+ In-App         Email      SMS     Push Notification WhatsApp
+Notification
+      │
+      ▼
+ Communication Queue
+      │
+      ▼
+ Delivery Service
+      │
+      ▼
+ Delivery Tracking & Audit
+The communication engine shall support asynchronous message processing to improve reliability and scalability.
+
+11.8.4 Notification Configuration Dashboard
+Screen ID
+NTF-CONF-001
+
+Purpose
+Provides centralized administration of notification services, communication channels, templates, reminders, delivery monitoring, and messaging policies.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+System Administrator
+Notification Configuration
+Hospital Administrator
+Hospital Communication Settings
+IT Administrator
+Gateway Configuration
+Communication Administrator
+Templates & Messaging
+
+11.8.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Notification & Communication Configuration                                           |
++--------------------------------------------------------------------------------------+
+
+Communication Channels
+
+---------------------------------------------------------------
+
+Email Services
+
+---------------------------------------------------------------
+
+SMS Gateway
+
+---------------------------------------------------------------
+
+Push Notifications
+
+---------------------------------------------------------------
+
+Notification Templates
+
+---------------------------------------------------------------
+
+Reminder Rules
+
+---------------------------------------------------------------
+
+Delivery Monitoring
+
+---------------------------------------------------------------
+
+Communication Logs
+
+11.8.6 Supported Communication Channels
+The system shall support multiple communication channels.
+Channel
+Purpose
+In-App Notifications
+Internal system alerts
+Email
+Official communication
+SMS
+Time-sensitive alerts
+Push Notifications
+Mobile application alerts
+Voice Call Integration (Optional)
+Emergency notifications
+WhatsApp Business API (Optional)
+Patient communication
+Webhooks
+External integrations
+Organizations may enable or disable channels based on operational requirements and local regulations.
+
+11.8.7 Email Configuration
+Administrators shall configure enterprise email services.
+Supported configuration includes:
+Parameter
+Description
+SMTP Host
+Mail server
+SMTP Port
+Communication port
+Encryption
+TLS/SSL
+Sender Email Address
+Default sender
+Sender Display Name
+Display name
+Authentication Method
+Login mechanism
+Username
+SMTP account
+Password
+Secure credential
+Maximum Retry Attempts
+Delivery retries
+Timeout
+Connection timeout
+The system shall support test email functionality before activation.
+
+11.8.8 SMS Gateway Configuration
+The system shall support integration with configurable SMS providers.
+Configuration shall include:
+Gateway Name
+Provider URL
+Authentication Method
+API Key / Token
+Sender ID
+Country Codes
+Message Encoding
+Delivery Report Callback
+Retry Policy
+Status Monitoring
+SMS gateways shall support failover where multiple providers are configured.
+
+11.8.9 Push Notification Configuration
+The system shall support push notifications for mobile and web applications.
+Supported settings include:
+Application Identifier
+Push Service Provider
+Authentication Credentials
+Device Registration
+Notification Priority
+Badge Count
+Notification Sound
+Deep Linking
+Expiration Time
+Push notifications shall support Android, iOS, and web platforms where applicable.
+
+11.8.10 In-Application Notifications
+The system shall display notifications within the application.
+Notification categories include:
+Appointment Updates
+Patient Admissions
+Laboratory Results
+Radiology Reports
+Prescription Approvals
+Billing Notifications
+Inventory Alerts
+System Announcements
+Security Alerts
+Workflow Tasks
+Users shall be able to:
+View notifications.
+Mark notifications as read.
+Archive notifications.
+Filter by category.
+Search notification history.
+
+11.8.11 WhatsApp & Third-Party Messaging Integration
+Where supported and enabled by the organization, the system may integrate with messaging platforms such as the WhatsApp Business Platform and other approved third-party messaging services.
+Supported capabilities include:
+Appointment reminders.
+Prescription notifications.
+Laboratory result availability alerts.
+Payment reminders.
+Patient education messages.
+Two-way communication (where enabled).
+Delivery status tracking.
+All messaging shall comply with applicable privacy regulations and organizational consent policies.
+
+11.8.12 Notification Templates
+Administrators shall manage reusable notification templates.
+Supported template categories include:
+Template
+Purpose
+Appointment Reminder
+Appointment notifications
+Appointment Cancellation
+Cancellation notice
+Admission Confirmation
+Admission notification
+Discharge Notification
+Discharge information
+Laboratory Result Ready
+Result availability
+Prescription Ready
+Pharmacy notification
+Invoice Generated
+Billing communication
+Payment Receipt
+Payment confirmation
+Password Reset
+Security notification
+Account Activation
+User onboarding
+Templates shall support:
+Dynamic placeholders
+Multiple languages
+Rich text formatting (where supported)
+Branding elements
+Version control
+
+11.8.13 Reminder Configuration
+The system shall support automated reminders.
+Reminder types include:
+Appointment Reminder
+Follow-Up Reminder
+Medication Reminder
+Vaccination Reminder
+Payment Due Reminder
+Insurance Renewal Reminder
+Equipment Maintenance Reminder
+Employee Certification Renewal
+License Expiration Reminder
+Reminder timing shall be configurable (for example, minutes, hours, or days before or after an event).
+
+11.8.14 Communication Preferences
+Users shall be able to configure communication preferences where permitted.
+Supported preferences include:
+Preferred Language
+Preferred Communication Channel
+Quiet Hours
+Marketing Opt-In/Opt-Out
+Appointment Notifications
+Billing Notifications
+Clinical Notifications
+Administrative Notifications
+Organization-wide mandatory notifications shall override individual preferences where legally or operationally required.
+
+11.8.15 Escalation Rules
+Administrators shall configure communication escalation policies.
+Examples include:
+Notification Sent
+       │
+       ▼
+Delivered?
+   ┌───────────┐
+   │           │
+ Yes          No
+   │           │
+ Finish    Retry Delivery
+                │
+                ▼
+         Alternate Channel
+                │
+                ▼
+        Notify Administrator
+Escalation rules shall support configurable retry intervals, maximum retry counts, and alternate delivery channels.
+
+11.8.16 Delivery Monitoring
+The system shall monitor message delivery.
+Tracked delivery states include:
+Status
+Description
+Queued
+Awaiting processing
+Sent
+Submitted to provider
+Delivered
+Successfully delivered
+Read
+Recipient opened message (where supported)
+Failed
+Delivery unsuccessful
+Expired
+Delivery window expired
+Cancelled
+Delivery cancelled
+Delivery reports shall be retained according to organizational retention policies.
+
+11.8.17 Communication Analytics
+The dashboard shall display communication metrics.
+Metrics include:
+Messages Sent
+Successful Deliveries
+Failed Deliveries
+Average Delivery Time
+Open Rate (where supported)
+Read Rate (where supported)
+Retry Count
+Notification Queue Length
+Channel Utilization
+Delivery Success Percentage
+Analytics shall support filtering by:
+Date Range
+Hospital
+Branch
+Department
+Communication Channel
+Template
+
+11.8.18 Communication Audit Trail
+The system shall record communication events.
+Auditable events include:
+Template Creation
+Template Modification
+Notification Sent
+Notification Cancelled
+Reminder Triggered
+Delivery Failure
+Gateway Configuration Changes
+User Preference Changes
+Escalation Events
+Each audit record shall include:
+Timestamp
+User/System Process
+Communication Channel
+Template Used
+Recipient Identifier
+Delivery Status
+Outcome
+
+11.8.19 Performance Requirements
+The Notification & Communication Module shall:
+Process large volumes of notifications through asynchronous queues.
+Support concurrent message delivery across multiple communication channels.
+Retry transient delivery failures according to configured policies.
+Minimize notification delivery latency under normal operating conditions.
+Scale to support enterprise-wide communication demands.
+
+11.8.20 Accessibility Requirements
+The Notification Configuration interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible forms, templates, and validation messages.
+Ensure sufficient color contrast.
+Present delivery status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.8.21 Security Requirements
+The Notification & Communication Module shall:
+Enforce Role-Based Access Control (RBAC).
+Protect communication credentials and API keys from unauthorized access.
+Encrypt communication between CuraSphere and external messaging providers using secure transport protocols.
+Record all configuration changes and communication events in the audit log.
+Respect user consent and communication preferences where applicable.
+Prevent unauthorized modification of notification templates and delivery policies.
+
+11.8.22 Acceptance Criteria
+The Notification & Communication Configuration Module shall be accepted when:
+Communication channels can be configured and managed successfully.
+Email, SMS, push notifications, in-app notifications, and supported third-party messaging services operate correctly.
+Templates, reminders, escalation rules, delivery monitoring, and communication analytics function as configured.
+Audit logging, accessibility, security, and performance requirements are fully implemented.
+
+11.9 Backup, Restore & Disaster Recovery
+
+11.9.1 Introduction
+The Backup, Restore & Disaster Recovery Module provides a comprehensive framework for protecting critical data, application configurations, system resources, and operational continuity within the CuraSphere Hospital Management System.
+The module ensures that patient records, clinical information, financial data, system configurations, documents, audit logs, and other critical assets can be recovered following hardware failures, software failures, cyber incidents, accidental deletion, natural disasters, or other operational disruptions.
+This module supports enterprise-grade backup management, automated recovery procedures, disaster recovery planning, and business continuity strategies to minimize downtime and data loss.
+
+11.9.2 Objectives
+The Backup, Restore & Disaster Recovery Module shall enable administrators to:
+Configure backup policies.
+Schedule automatic backups.
+Perform manual backups.
+Restore data and system configurations.
+Manage backup repositories.
+Monitor backup health.
+Verify backup integrity.
+Define disaster recovery procedures.
+Minimize Recovery Point Objective (RPO).
+Minimize Recovery Time Objective (RTO).
+Ensure business continuity.
+
+11.9.3 Backup & Recovery Architecture
+                    CuraSphere Production System
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+ Database Backup      File System Backup    Configuration Backup
+        │                     │                     │
+        └──────────────┬──────┴──────────────┬──────┘
+                       ▼
+               Backup Management Engine
+                       │
+         ┌─────────────┼─────────────┐
+         ▼             ▼             ▼
+ Local Storage   Remote Storage   Cloud Storage
+         │
+         ▼
+ Backup Verification & Recovery
+The architecture shall support redundant backup storage to reduce the risk of data loss.
+
+11.9.4 Backup Administration Dashboard
+Screen ID
+BKP-ADM-001
+
+Purpose
+Provides centralized administration of backup scheduling, storage configuration, recovery operations, disaster recovery planning, and backup monitoring.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+System Administrator
+Backup Administration
+IT Administrator
+Backup & Restore
+Database Administrator
+Database Recovery
+Disaster Recovery Administrator
+DR Management
+
+11.9.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Backup, Restore & Disaster Recovery Dashboard                                        |
++--------------------------------------------------------------------------------------+
+
+Backup Overview
+
+---------------------------------------------------------------
+
+Backup Schedules
+
+---------------------------------------------------------------
+
+Storage Repositories
+
+---------------------------------------------------------------
+
+Recovery Operations
+
+---------------------------------------------------------------
+
+Backup Verification
+
+---------------------------------------------------------------
+
+Disaster Recovery Status
+
+---------------------------------------------------------------
+
+Recovery Logs
+
+---------------------------------------------------------------
+
+Backup Analytics
+
+11.9.6 Backup Categories
+The system shall support backups for the following data categories:
+Category
+Description
+Database Backup
+Clinical and operational database
+Document Backup
+Uploaded documents and files
+Medical Images
+Diagnostic images and attachments
+Configuration Backup
+System configuration
+Audit Log Backup
+Audit records
+Report Backup
+Generated reports
+Workflow Configuration
+Business workflows
+Application Files
+System binaries and resources
+Master Data
+Enterprise reference data
+Administrators may configure backup inclusion and exclusion policies.
+
+11.9.7 Backup Types
+The system shall support multiple backup strategies.
+Backup Type
+Description
+Full Backup
+Complete copy of selected data
+Incremental Backup
+Changes since last backup
+Differential Backup
+Changes since last full backup
+Snapshot Backup
+Point-in-time snapshot
+Configuration Backup
+Settings only
+Archive Backup
+Long-term storage
+Organizations shall configure backup strategies according to operational and regulatory requirements.
+
+11.9.8 Backup Scheduling
+Administrators shall configure automated backup schedules.
+Scheduling options include:
+Hourly
+Daily
+Weekly
+Monthly
+Quarterly
+Yearly
+Event-Based
+Manual Execution
+Each backup schedule shall include:
+Backup Type
+Target Repository
+Retention Policy
+Compression Option
+Encryption Option
+Verification Requirement
+
+11.9.9 Backup Storage Configuration
+Supported backup repositories include:
+Local Storage
+Network Attached Storage (NAS)
+Storage Area Network (SAN)
+Cloud Object Storage (where supported)
+Hybrid Storage
+Offsite Disaster Recovery Repository
+Storage configuration shall define:
+Parameter
+Description
+Repository Name
+Backup location
+Storage Type
+Local/Cloud/Network
+Capacity
+Maximum storage
+Available Space
+Remaining storage
+Encryption
+Enabled/Disabled
+Compression
+Enabled/Disabled
+Replication
+Enabled/Disabled
+
+11.9.10 Database Backup
+The Database Backup service shall support:
+Full database backup
+Incremental database backup
+Transaction log backup (where supported)
+Backup verification
+Automatic cleanup of expired backups
+Encrypted backups
+Backup compression
+Database backups shall preserve transactional consistency.
+
+11.9.11 File & Document Backup
+The system shall back up:
+Patient documents
+Medical images
+Laboratory attachments
+Radiology images
+User-uploaded files
+Report templates
+Configuration files
+Digital signatures
+File integrity shall be verified during backup and restore operations.
+
+11.9.12 Backup Retention Policy
+Administrators shall configure retention policies.
+Example configuration:
+Backup Type
+Retention
+Hourly Backup
+48 Hours
+Daily Backup
+30 Days
+Weekly Backup
+12 Weeks
+Monthly Backup
+12 Months
+Annual Backup
+7 Years (or organizational policy)
+Retention periods shall remain configurable to meet legal, regulatory, and organizational requirements.
+
+11.9.13 Backup Verification
+The system shall verify completed backups.
+Verification shall include:
+File integrity verification
+Checksum validation
+Backup completeness
+Database consistency
+Restore simulation (optional)
+Corruption detection
+Administrators shall receive alerts when verification fails.
+
+11.9.14 Restore Operations
+Authorized administrators shall restore:
+Entire system
+Individual databases
+Selected modules
+Individual documents
+Configuration settings
+Master data
+Reports
+User files
+Restore operations shall support preview and validation before execution where technically feasible.
+
+11.9.15 Point-in-Time Recovery (PITR)
+Where supported by the underlying database platform, the system shall support Point-in-Time Recovery (PITR).
+Capabilities include:
+Restore to a specified timestamp.
+Recover prior to accidental deletion.
+Recover after data corruption.
+Recover before application failures.
+Recover selected databases.
+PITR availability shall depend on the configured database engine and backup strategy.
+
+11.9.16 Disaster Recovery Planning
+The system shall support disaster recovery planning.
+The Disaster Recovery Plan shall include:
+Recovery procedures
+System recovery sequence
+Recovery responsibilities
+Communication procedures
+Emergency contacts
+Recovery validation checklist
+Alternate infrastructure
+Recovery testing schedule
+
+11.9.17 Recovery Point Objective (RPO)
+Administrators shall define Recovery Point Objectives.
+Example:
+System
+Example Target RPO
+EMR Database
+Organization-defined
+Billing
+Organization-defined
+Pharmacy
+Organization-defined
+Laboratory
+Organization-defined
+Audit Logs
+Organization-defined
+Target RPO values shall be configurable based on organizational service-level requirements.
+
+11.9.18 Recovery Time Objective (RTO)
+Administrators shall define Recovery Time Objectives.
+Example:
+System
+Example Target RTO
+Core Application
+Organization-defined
+Database Services
+Organization-defined
+Authentication Services
+Organization-defined
+Reporting Services
+Organization-defined
+Communication Services
+Organization-defined
+Target RTO values shall align with business continuity requirements.
+
+11.9.19 Disaster Recovery Workflow
+Incident Detected
+        │
+        ▼
+Assess Severity
+        │
+        ▼
+Activate Disaster Recovery Plan
+        │
+        ▼
+Recover Infrastructure
+        │
+        ▼
+Restore Data
+        │
+        ▼
+Verify Integrity
+        │
+        ▼
+Resume Services
+        │
+        ▼
+Post-Incident Review
+
+11.9.20 Backup Monitoring & Analytics
+The dashboard shall display:
+Backup Success Rate
+Failed Backups
+Storage Utilization
+Repository Health
+Backup Duration
+Verification Status
+Recovery Tests
+Restore Success Rate
+Backup Queue Status
+Last Successful Backup
+Analytics shall support filtering by hospital, branch, repository, and date range.
+
+11.9.21 Backup Audit Trail
+The system shall record all backup and recovery activities.
+Auditable events include:
+Backup creation
+Backup modification
+Backup deletion
+Backup verification
+Restore execution
+Recovery testing
+Repository changes
+Schedule changes
+Retention policy updates
+Each audit record shall include:
+Timestamp
+User/System Process
+Action Performed
+Backup Identifier
+Repository
+Outcome
+Error Details (if applicable)
+
+11.9.22 Performance Requirements
+The Backup & Disaster Recovery Module shall:
+Execute scheduled backups without significantly affecting production workloads.
+Support concurrent backup and restore operations where technically feasible.
+Optimize storage through configurable compression and deduplication (where supported).
+Recover approved datasets within organizational RTO targets.
+Scale to support multi-hospital deployments and large data volumes.
+
+11.9.23 Accessibility Requirements
+The Backup Administration interface shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible configuration forms and recovery dashboards.
+Ensure sufficient color contrast.
+Present backup status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.9.24 Security Requirements
+The Backup, Restore & Disaster Recovery Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict backup and restore operations to authorized administrators.
+Encrypt backup data at rest and in transit using approved cryptographic methods.
+Protect backup repositories against unauthorized access or modification.
+Record all backup and recovery activities in the audit log.
+Support secure key management for encrypted backups.
+
+11.9.25 Acceptance Criteria
+The Backup, Restore & Disaster Recovery Module shall be accepted when:
+Backup schedules execute successfully according to configuration.
+Full, incremental, differential, and configuration backups function correctly.
+Backup verification confirms integrity and completeness.
+Restore operations recover data accurately and consistently.
+Disaster recovery planning, RPO, RTO, monitoring, accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.10 System Monitoring & Health Dashboard
+
+11.10.1 Introduction
+The System Monitoring & Health Dashboard Module provides real-time visibility into the operational health, availability, performance, security, and reliability of the CuraSphere Hospital Management System.
+This module enables administrators to continuously monitor application services, infrastructure resources, databases, integrations, network connectivity, background services, scheduled jobs, and user activity. It supports proactive detection of issues, rapid incident response, capacity planning, and preventive maintenance to ensure uninterrupted healthcare operations.
+
+11.10.2 Objectives
+The System Monitoring & Health Dashboard Module shall enable administrators to:
+Monitor overall system health.
+Track application performance.
+Monitor infrastructure resources.
+Monitor database performance.
+Monitor APIs and integrations.
+Detect failures automatically.
+Generate operational alerts.
+Support predictive maintenance.
+Monitor capacity utilization.
+Assist incident management.
+Improve service availability.
+
+11.10.3 Monitoring Architecture
+                     CuraSphere Services
+                              │
+      ┌──────────────┬─────────┼──────────┬──────────────┐
+      ▼              ▼         ▼          ▼
+ Application      Database   APIs    Background Services
+      │              │         │          │
+      └──────────────┼─────────┼──────────┘
+                     ▼
+             Monitoring Engine
+                     │
+      ┌──────────────┼──────────────┐
+      ▼              ▼              ▼
+ Alert Manager   Analytics Engine   Log Aggregator
+      │
+      ▼
+ Monitoring Dashboard
+The monitoring engine shall collect telemetry from all major application components.
+
+11.10.4 Monitoring Dashboard
+Screen ID
+MON-DASH-001
+
+Purpose
+Provides a centralized, real-time operational dashboard displaying the health and performance of all CuraSphere services and infrastructure components.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+System Administrator
+Full Monitoring
+IT Administrator
+Infrastructure Monitoring
+Database Administrator
+Database Monitoring
+Network Administrator
+Network Monitoring
+Security Administrator
+Security Monitoring
+
+11.10.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| System Monitoring & Health Dashboard                                                 |
++--------------------------------------------------------------------------------------+
+
+Overall System Status
+
+---------------------------------------------------------------
+
+Infrastructure Health
+
+---------------------------------------------------------------
+
+Application Services
+
+---------------------------------------------------------------
+
+Database Performance
+
+---------------------------------------------------------------
+
+API & Integration Status
+
+---------------------------------------------------------------
+
+Security Events
+
+---------------------------------------------------------------
+
+Alerts & Incidents
+
+---------------------------------------------------------------
+
+Performance Trends
+
+---------------------------------------------------------------
+
+System Logs
+
+11.10.6 Overall System Health
+The dashboard shall display an enterprise-wide health summary.
+Health indicators include:
+Indicator
+Description
+Overall Status
+Healthy, Warning, Critical
+System Availability
+Current operational state
+Active Users
+Current logged-in users
+Running Services
+Operational services
+Failed Services
+Service failures
+Active Alerts
+Current alerts
+Open Incidents
+Active incidents
+Scheduled Maintenance
+Upcoming maintenance
+The overall health score shall be calculated using configurable organizational thresholds.
+
+11.10.7 Application Health Monitoring
+The system shall continuously monitor application components.
+Monitored services include:
+Authentication Service
+Patient Management
+Appointment Management
+EMR Service
+Laboratory Module
+Radiology Module
+Pharmacy Module
+Billing Module
+Inventory Module
+Reporting Service
+Notification Service
+Background Job Processor
+Each service shall display:
+Running Status
+Response Time
+Last Restart
+Error Count
+Uptime
+Health Score
+
+11.10.8 Infrastructure Monitoring
+Infrastructure monitoring shall include:
+Resource
+Metrics
+CPU
+Utilization (%)
+Memory
+Usage (%)
+Disk Storage
+Capacity & Free Space
+Network
+Throughput & Latency
+Virtual Machines
+Operational Status
+Containers (where deployed)
+Health & Availability
+Operating System
+Resource Utilization
+File System
+Read/Write Performance
+Administrators shall configure alert thresholds for each monitored resource.
+
+11.10.9 Database Health Monitoring
+The dashboard shall monitor database performance.
+Metrics include:
+Database Availability
+Active Connections
+Query Response Time
+Long-Running Queries
+Deadlocks
+Lock Contention
+Transaction Rate
+Replication Status (where applicable)
+Backup Status
+Storage Growth
+Database health indicators shall support trend analysis.
+
+11.10.10 API & Integration Monitoring
+The system shall monitor all configured APIs and external integrations.
+Supported monitoring includes:
+API Availability
+API Response Time
+Request Rate
+Error Rate
+Authentication Failures
+Timeout Events
+Third-Party Integration Status
+Webhook Delivery Status
+Each integration shall display:
+Current Status
+Last Successful Communication
+Last Failure
+Retry Count
+Version
+
+11.10.11 Background Services Monitoring
+The monitoring dashboard shall track background processing services.
+Examples include:
+Scheduled Jobs
+Notification Queue
+Email Queue
+SMS Queue
+Report Generation Queue
+Backup Jobs
+Synchronization Services
+Workflow Engine
+Audit Processing
+Data Import/Export Tasks
+Each service shall display:
+Queue Size
+Average Processing Time
+Pending Jobs
+Failed Jobs
+Last Successful Execution
+
+11.10.12 Performance Metrics & KPIs
+The dashboard shall display key performance indicators.
+KPI
+Description
+System Uptime
+Service availability
+Average Response Time
+User experience
+Peak Concurrent Users
+Maximum active users
+Average Transaction Time
+Processing performance
+Requests Per Second
+System throughput
+Error Rate
+Operational quality
+Queue Processing Time
+Background performance
+Resource Utilization
+Infrastructure efficiency
+Metrics shall support configurable reporting periods.
+
+11.10.13 Alert Management
+The system shall generate alerts when monitored thresholds are exceeded.
+Alert categories include:
+Critical
+High
+Medium
+Low
+Informational
+Supported alert sources include:
+CPU overload
+Low memory
+Disk capacity
+Database failure
+Service outage
+Integration failure
+Authentication failures
+Backup failure
+Security incidents
+Network interruption
+Alerts shall support acknowledgment, assignment, escalation, and closure.
+
+11.10.14 Incident Management
+The monitoring system shall support incident tracking.
+Incident records shall include:
+Field
+Description
+Incident ID
+Unique identifier
+Severity
+Critical/High/Medium/Low
+Status
+Open/In Progress/Resolved
+Reported Time
+Detection timestamp
+Assigned Administrator
+Responsible user
+Resolution Notes
+Corrective action
+Resolution Time
+Completion timestamp
+Incident history shall remain searchable for audit and reporting purposes.
+
+11.10.15 Capacity Planning
+The dashboard shall provide capacity planning analytics.
+Monitored trends include:
+CPU growth
+Memory growth
+Storage consumption
+Database size growth
+User growth
+Transaction growth
+Network utilization
+Backup storage growth
+Capacity reports shall assist administrators in forecasting future infrastructure requirements.
+
+11.10.16 Log Aggregation & Diagnostics
+The monitoring platform shall aggregate logs from all system components.
+Supported log sources include:
+Application Logs
+Security Logs
+Audit Logs
+Database Logs
+API Logs
+Server Logs
+Operating System Logs
+Integration Logs
+Administrators shall be able to:
+Search logs.
+Filter logs.
+Export logs.
+View log timelines.
+Correlate related events.
+
+11.10.17 Predictive Health Monitoring
+The system may support predictive analytics to identify potential operational issues.
+Examples include:
+Storage capacity nearing configured limits.
+Increasing application response times.
+Recurring service failures.
+Database growth trends.
+Hardware resource exhaustion.
+Repeated integration failures.
+Predictive monitoring shall provide recommendations to administrators before service degradation occurs.
+
+11.10.18 Monitoring Workflow
+Collect Metrics
+       │
+       ▼
+Evaluate Thresholds
+       │
+       ▼
+Issue Detected?
+   ┌──────────────┐
+   │              │
+  No             Yes
+   │              │
+Continue      Generate Alert
+                  │
+                  ▼
+          Notify Administrator
+                  │
+                  ▼
+          Incident Management
+                  │
+                  ▼
+           Resolution Verified
+
+11.10.19 Monitoring Analytics
+The dashboard shall provide historical analytics including:
+Availability Trends
+Incident Frequency
+Mean Time to Detect (MTTD)
+Mean Time to Respond (MTTR)
+Mean Time to Resolve (MTTRv)
+Service Reliability
+Resource Utilization Trends
+Integration Success Rate
+Database Performance Trends
+Analytics shall support export to PDF, spreadsheet, and supported reporting formats.
+
+11.10.20 Performance Requirements
+The System Monitoring & Health Dashboard Module shall:
+Refresh monitoring metrics at configurable intervals.
+Process large volumes of monitoring events without significant degradation.
+Support enterprise-scale deployments with multiple hospitals and branches.
+Minimize monitoring overhead on production systems.
+Continue monitoring during non-disruptive application updates where technically feasible.
+
+11.10.21 Accessibility Requirements
+The Monitoring Dashboard shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible charts, tables, and dashboards.
+Ensure sufficient color contrast.
+Present health status using text, icons, and visual indicators rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.10.22 Security Requirements
+The System Monitoring Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict monitoring data according to administrative permissions.
+Record monitoring configuration changes in the audit log.
+Protect monitoring data using encrypted communication channels.
+Secure access to diagnostic information and system logs.
+Support configurable retention policies for monitoring data.
+
+11.10.23 Acceptance Criteria
+The System Monitoring & Health Dashboard Module shall be accepted when:
+Real-time monitoring accurately reflects the operational status of application services, infrastructure, databases, and integrations.
+Alerts, incidents, capacity planning, diagnostics, and predictive monitoring function according to configuration.
+Historical analytics and monitoring dashboards provide accurate operational insights.
+Accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.11 Maintenance Mode & Software Updates
+
+11.11.1 Introduction
+The Maintenance Mode & Software Updates Module provides administrators with a secure and controlled framework for performing planned maintenance, emergency maintenance, software upgrades, security patch deployment, database schema updates, and application version management without compromising data integrity or patient safety.
+This module ensures that CuraSphere remains secure, stable, and compliant by enabling structured release management, controlled deployment procedures, rollback capabilities, and comprehensive maintenance auditing.
+
+11.11.2 Objectives
+The Maintenance Mode & Software Updates Module shall enable administrators to:
+Schedule planned maintenance.
+Initiate emergency maintenance.
+Configure maintenance windows.
+Deploy software updates.
+Manage security patches.
+Upgrade application modules.
+Execute database migrations.
+Roll back unsuccessful updates.
+Notify users of maintenance activities.
+Validate deployments before production release.
+Maintain complete release history.
+
+11.11.3 Maintenance & Update Architecture
+                    Software Release Package
+                              │
+                              ▼
+                    Validation & Verification
+                              │
+               ┌──────────────┼──────────────┐
+               ▼              ▼              ▼
+         Application      Database      Configuration
+           Update         Migration        Update
+               │              │              │
+               └──────────────┼──────────────┘
+                              ▼
+                   Deployment Management
+                              │
+             ┌────────────────┼────────────────┐
+             ▼                ▼                ▼
+      Maintenance Mode   Health Check   Rollback Engine
+                              │
+                              ▼
+                      Production Environment
+The update architecture shall support staged deployments with verification checkpoints before production activation.
+
+11.11.4 Maintenance Dashboard
+Screen ID
+MNT-ADM-001
+
+Purpose
+Provides centralized administration for maintenance scheduling, software deployments, patch management, version control, release monitoring, rollback operations, and deployment history.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+System Administrator
+Maintenance & Updates
+IT Administrator
+Deployment Management
+DevOps Administrator
+Release Management
+Database Administrator
+Database Migration
+
+11.11.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Maintenance Mode & Software Updates                                                  |
++--------------------------------------------------------------------------------------+
+
+Upcoming Maintenance
+
+---------------------------------------------------------------
+
+Current System Version
+
+---------------------------------------------------------------
+
+Available Updates
+
+---------------------------------------------------------------
+
+Patch Management
+
+---------------------------------------------------------------
+
+Deployment Status
+
+---------------------------------------------------------------
+
+Rollback Center
+
+---------------------------------------------------------------
+
+Release History
+
+---------------------------------------------------------------
+
+Maintenance Logs
+
+11.11.6 Maintenance Modes
+The system shall support multiple maintenance modes.
+Mode
+Description
+Planned Maintenance
+Scheduled maintenance window
+Emergency Maintenance
+Immediate maintenance
+Read-Only Mode
+Users may view but not modify data
+Partial Maintenance
+Selected modules unavailable
+Full Maintenance
+Entire application unavailable
+Background Maintenance
+Maintenance without user interruption where supported
+Maintenance modes shall be configurable according to organizational requirements.
+
+11.11.7 Maintenance Scheduling
+Administrators shall schedule maintenance activities.
+Scheduling parameters include:
+Maintenance Title
+Description
+Maintenance Type
+Start Date
+Start Time
+Expected Duration
+Affected Modules
+Responsible Administrator
+Priority Level
+Notification Schedule
+The system shall prevent overlapping maintenance windows unless explicitly authorized.
+
+11.11.8 Planned Maintenance Workflow
+Administrator Creates Maintenance Window
+                 │
+                 ▼
+        Configure Maintenance Details
+                 │
+                 ▼
+         Notify Users Automatically
+                 │
+                 ▼
+         Activate Maintenance Mode
+                 │
+                 ▼
+      Perform Maintenance Activities
+                 │
+                 ▼
+          Validate System Health
+                 │
+                 ▼
+        Resume Normal Operations
+
+11.11.9 Software Update Management
+The system shall support controlled deployment of software updates.
+Supported update categories include:
+Major Releases
+Minor Releases
+Hotfixes
+Security Updates
+Feature Updates
+Configuration Updates
+User Interface Updates
+Performance Improvements
+Each update package shall contain metadata describing its contents and compatibility.
+
+11.11.10 Patch Management
+Administrators shall manage software patches.
+Patch information shall include:
+Field
+Description
+Patch ID
+Unique identifier
+Patch Name
+Patch title
+Release Date
+Publication date
+Severity
+Critical, High, Medium, Low
+Affected Modules
+Impacted components
+Dependencies
+Required updates
+Installation Status
+Pending/Installed
+Verification Status
+Verified/Failed
+Patch deployment shall support testing before production installation.
+
+11.11.11 Module Version Management
+Each application module shall maintain version information.
+Version records shall include:
+Module Name
+Current Version
+Previous Version
+Release Date
+Build Number
+Release Notes
+Compatibility Information
+Deployment Status
+Administrators shall view version history for each module.
+
+11.11.12 Database Schema Migration
+The system shall support controlled database schema changes.
+Supported migration activities include:
+Table Creation
+Table Modification
+Index Management
+Constraint Updates
+Stored Procedure Updates
+View Updates
+Data Transformation Scripts
+Rollback Scripts
+Schema migrations shall be executed within validated deployment procedures.
+
+11.11.13 Pre-Deployment Validation
+Before deploying updates, the system shall validate:
+Package integrity
+Digital signature (where implemented)
+Version compatibility
+Database compatibility
+Available storage
+Backup availability
+Dependency requirements
+Configuration consistency
+Deployment shall not proceed if critical validation fails.
+
+11.11.14 Post-Deployment Verification
+Following deployment, the system shall verify:
+Application startup
+Service availability
+Database connectivity
+API functionality
+Authentication services
+Background jobs
+Notification services
+Module accessibility
+Verification failures shall generate alerts and recommend corrective actions.
+
+11.11.15 Rollback Management
+Authorized administrators shall initiate rollback procedures when necessary.
+Rollback capabilities include:
+Application rollback
+Module rollback
+Database rollback (where supported)
+Configuration rollback
+Patch removal
+Release restoration
+Rollback shall restore the last verified stable version where supported.
+
+11.11.16 Release Management
+The system shall maintain structured release records.
+Field
+Description
+Release ID
+Unique identifier
+Release Name
+Version title
+Release Type
+Major/Minor/Hotfix
+Release Date
+Deployment date
+Deployment Status
+Successful/Failed
+Approved By
+Authorizing administrator
+Deployment Notes
+Additional information
+Release documentation shall remain accessible for future reference.
+
+11.11.17 Maintenance Notifications
+The system shall notify affected users before, during, and after maintenance.
+Notification events include:
+Scheduled maintenance announcement.
+Reminder before maintenance.
+Maintenance started.
+Maintenance extended.
+Maintenance completed.
+Emergency maintenance alert.
+Update successfully deployed.
+Service restored.
+Supported communication channels include:
+In-Application Notifications
+Email
+SMS (where configured)
+Push Notifications
+Organizational Announcement Banner
+
+11.11.18 Maintenance Logs
+The system shall record all maintenance activities.
+Logged events include:
+Maintenance scheduling
+Maintenance activation
+Update installation
+Patch deployment
+Migration execution
+Rollback operations
+Validation results
+User notifications
+System restart events
+Each log entry shall include:
+Timestamp
+Administrator
+Action
+Affected Component
+Status
+Additional Notes
+
+11.11.19 Performance Requirements
+The Maintenance Mode & Software Updates Module shall:
+Minimize application downtime during planned maintenance.
+Support staged deployments to reduce operational risk.
+Validate deployments before exposing updates to end users.
+Complete rollback procedures within organizational recovery objectives.
+Scale to support enterprise-wide deployments across multiple hospitals and branches.
+
+11.11.20 Accessibility Requirements
+The Maintenance Dashboard shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible deployment forms and maintenance schedules.
+Ensure sufficient color contrast.
+Present deployment status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.11.21 Security Requirements
+The Maintenance Mode & Software Updates Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict deployment and rollback operations to authorized administrators.
+Verify update package authenticity before installation.
+Record all maintenance and deployment activities in the audit log.
+Protect release packages from unauthorized modification.
+Support approval workflows for production deployments where required.
+
+11.11.22 Acceptance Criteria
+The Maintenance Mode & Software Updates Module shall be accepted when:
+Maintenance windows can be scheduled and executed successfully.
+Software updates, patches, module upgrades, and database migrations are deployed according to configuration.
+Pre-deployment validation and post-deployment verification operate correctly.
+Rollback procedures successfully restore the previous stable state when required.
+Release history, notifications, accessibility, security, auditing, and performance requirements are fully implemented.
+
+11.12 Audit Logging, Compliance & Administrative Reporting
+
+11.12.1 Introduction
+The Audit Logging, Compliance & Administrative Reporting Module provides a comprehensive framework for recording, monitoring, investigating, and reporting all significant system activities performed within the CuraSphere Hospital Management System.
+This module ensures accountability, transparency, regulatory compliance, forensic investigation capability, and operational governance by maintaining immutable audit trails, supporting compliance reporting, and providing administrators with powerful search, analysis, and reporting tools.
+Audit information shall cover all major functional modules, including clinical, administrative, financial, operational, security, and infrastructure activities.
+
+11.12.2 Objectives
+The Audit Logging, Compliance & Administrative Reporting Module shall enable administrators to:
+Capture comprehensive audit logs.
+Monitor administrative activities.
+Record security-related events.
+Support compliance monitoring.
+Search audit records efficiently.
+Generate compliance reports.
+Detect unauthorized activities.
+Preserve evidentiary records.
+Monitor regulatory compliance.
+Produce executive administrative reports.
+
+11.12.3 Audit Logging Architecture
+                     CuraSphere Modules
+                             │
+ ┌──────────────┬─────────────┼─────────────┬──────────────┐
+ ▼              ▼             ▼             ▼
+Clinical     Financial     Administrative   Infrastructure
+Modules       Modules         Modules          Services
+      │             │             │              │
+      └─────────────┼─────────────┼──────────────┘
+                    ▼
+              Audit Collection Engine
+                    │
+        ┌───────────┼────────────┐
+        ▼           ▼            ▼
+ Audit Repository Search Engine Compliance Engine
+        │
+        ▼
+ Administrative Reporting Dashboard
+The audit infrastructure shall collect events from all system components using standardized event formats.
+
+11.12.4 Audit Administration Dashboard
+Screen ID
+AUD-DASH-001
+
+Purpose
+Provides centralized access to audit logs, compliance monitoring, investigations, administrative reports, and system governance information.
+
+Authorized Users
+Role
+Access
+Super Administrator
+Full Access
+System Administrator
+Audit Management
+Compliance Officer
+Compliance Reports
+Internal Auditor
+Audit Investigation
+Information Security Officer
+Security Audit
+External Auditor
+Read-Only (Authorized Scope)
+
+11.12.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Audit Logging, Compliance & Administrative Reporting                                 |
++--------------------------------------------------------------------------------------+
+
+Enterprise Audit Summary
+
+---------------------------------------------------------------
+
+Administrative Activities
+
+---------------------------------------------------------------
+
+Security Events
+
+---------------------------------------------------------------
+
+Compliance Dashboard
+
+---------------------------------------------------------------
+
+Investigation Center
+
+---------------------------------------------------------------
+
+Audit Search
+
+---------------------------------------------------------------
+
+Administrative Reports
+
+---------------------------------------------------------------
+
+Evidence Export
+
+11.12.6 Enterprise Audit Logging
+The system shall automatically record auditable events generated throughout the application.
+Audited modules shall include:
+Module
+Audit Coverage
+Patient Management
+Complete
+EMR
+Complete
+Appointments
+Complete
+Laboratory
+Complete
+Radiology
+Complete
+Pharmacy
+Complete
+Billing
+Complete
+Inventory
+Complete
+HR & Payroll
+Complete
+Administration
+Complete
+Security
+Complete
+System Configuration
+Complete
+Audit logging shall be enabled by default for all production environments.
+
+11.12.7 Audit Event Categories
+The system shall classify audit events into standardized categories.
+Category
+Examples
+Authentication
+Login, Logout, MFA
+Authorization
+Permission Changes
+Patient Data Access
+Record View
+Clinical Activities
+Diagnosis Entry
+Financial Activities
+Invoice Approval
+Administrative Changes
+Configuration Update
+Workflow Activities
+Approval Actions
+Security Events
+Failed Login
+System Events
+Service Restart
+Integration Events
+API Calls
+Categories shall support filtering and reporting.
+
+11.12.8 Administrative Activity Tracking
+Administrative actions shall be recorded.
+Examples include:
+User creation
+Role assignment
+Permission modification
+Department creation
+Workflow modification
+System parameter changes
+Backup execution
+Restore operations
+Maintenance activation
+Software deployment
+Configuration imports
+Report generation
+Each action shall be associated with the responsible administrator.
+
+11.12.9 Audit Record Structure
+Each audit record shall include, at minimum:
+Field
+Description
+Audit ID
+Unique identifier
+Event Timestamp
+Date and time
+User ID
+Initiating user
+User Role
+Assigned role
+Module
+Source module
+Event Type
+Category
+Action
+Operation performed
+Previous Value
+Before change (where applicable)
+New Value
+After change (where applicable)
+IP Address
+Originating client
+Device Information
+Client details
+Session ID
+User session
+Result
+Success/Failure
+Correlation ID
+Related transaction identifier
+Additional metadata may be captured as required for troubleshooting or regulatory obligations.
+
+11.12.10 Compliance Monitoring
+The system shall assist organizations in monitoring compliance with applicable healthcare, privacy, and information security standards.
+Supported compliance frameworks may include:
+Framework
+Monitoring Support
+HIPAA
+Audit & Access Logging
+GDPR
+Privacy & Data Processing
+ISO 27001
+Security Controls
+ISO 27799
+Health Information Security
+HL7
+Message Logging
+FHIR
+API Audit Logging
+Local Healthcare Regulations
+Configurable
+The availability and applicability of specific frameworks shall depend on the organization's jurisdiction and deployment requirements.
+
+11.12.11 Audit Search & Investigation
+Authorized users shall search audit records using advanced filters.
+Supported filters include:
+Date Range
+User
+Department
+Hospital
+Branch
+Module
+Event Type
+Severity
+IP Address
+Patient Identifier
+Transaction ID
+Session ID
+Search results shall support sorting, grouping, bookmarking, and export.
+
+11.12.12 Tamper Detection
+The audit repository shall protect against unauthorized modification.
+Supported safeguards include:
+Immutable audit records where supported by the deployment architecture.
+Hash verification of audit data.
+Detection of missing log entries.
+Unauthorized deletion detection.
+Integrity validation during export.
+Administrative alerts for suspected tampering.
+
+11.12.13 Log Retention Policies
+Administrators shall configure audit log retention.
+Example policies:
+Audit Type
+Example Retention
+Security Logs
+Organization-defined
+Patient Access Logs
+Organization-defined
+Financial Logs
+Organization-defined
+System Logs
+Organization-defined
+Administrative Logs
+Organization-defined
+Retention periods shall remain configurable to satisfy organizational, legal, and regulatory requirements.
+
+11.12.14 Compliance Reports
+The system shall generate compliance reports.
+Examples include:
+Patient Access Report
+User Login Activity
+Privileged User Activity
+Failed Authentication Report
+Security Incident Report
+Configuration Change Report
+Backup Compliance Report
+Software Update Compliance
+Data Access Report
+Audit Integrity Report
+Reports shall support PDF, spreadsheet, and other supported export formats.
+
+11.12.15 Administrative Reports
+The dashboard shall provide enterprise administrative reports.
+Supported reports include:
+Report
+Description
+Active Users
+Current user statistics
+Role Distribution
+User roles
+System Configuration Changes
+Administrative changes
+Workflow Changes
+Process modifications
+Maintenance Activities
+Maintenance history
+Backup Status
+Backup summary
+Security Events
+Security overview
+Performance Overview
+Administrative KPIs
+Compliance Summary
+Regulatory overview
+
+11.12.16 Evidence Export
+Authorized users shall export audit evidence for investigations.
+Supported export contents include:
+Audit records
+System logs
+Security events
+Administrative activities
+Compliance reports
+Configuration history
+User activity history
+Exports shall preserve data integrity and include metadata necessary for verification.
+
+11.12.17 Compliance Dashboard
+The Compliance Dashboard shall display:
+Compliance Status
+Outstanding Findings
+Policy Violations
+Security Incidents
+Audit Coverage
+High-Risk Activities
+Recent Administrative Changes
+Outstanding Reviews
+Regulatory Reporting Status
+Dashboards shall support configurable date ranges and organizational scopes.
+
+11.12.18 Audit Workflow
+User/System Event
+        │
+        ▼
+Capture Audit Event
+        │
+        ▼
+Validate Event Data
+        │
+        ▼
+Store Securely
+        │
+        ▼
+Index for Search
+        │
+        ▼
+Compliance Analysis
+        │
+        ▼
+Reporting & Investigation
+
+11.12.19 Audit Analytics
+The system shall provide analytical insights including:
+Audit Volume Trends
+Failed Login Trends
+Administrative Activity Trends
+Configuration Change Frequency
+Security Event Trends
+Patient Record Access Trends
+User Activity Heatmaps
+Compliance Scorecards
+Investigation Statistics
+Analytics shall support scheduled reporting and executive dashboards.
+
+11.12.20 Performance Requirements
+The Audit Logging, Compliance & Administrative Reporting Module shall:
+Record audit events with minimal impact on application performance.
+Support high-volume audit generation across enterprise deployments.
+Provide efficient indexing and retrieval for large audit repositories.
+Scale to support multi-hospital environments with millions of audit records.
+Maintain reliable audit collection during normal operations and controlled maintenance activities.
+
+11.12.21 Accessibility Requirements
+The Audit Dashboard shall:
+Support keyboard-only navigation.
+Maintain WCAG 2.1 Level AA compliance.
+Provide accessible reports, tables, charts, and search interfaces.
+Ensure sufficient color contrast.
+Present compliance status using text and icons rather than color alone.
+Support responsive layouts across desktop and tablet devices.
+
+11.12.22 Security Requirements
+The Audit Logging, Compliance & Administrative Reporting Module shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict access to audit records according to organizational responsibilities.
+Protect audit repositories from unauthorized access, alteration, or deletion.
+Encrypt audit data during transmission and, where required by organizational policy, at rest.
+Record all access to sensitive audit records.
+Support secure export of audit evidence with integrity verification.
+
+11.12.23 Acceptance Criteria
+The Audit Logging, Compliance & Administrative Reporting Module shall be accepted when:
+Audit events are consistently captured across all applicable modules.
+Administrative activity tracking, compliance monitoring, audit search, tamper detection, and reporting operate as specified.
+Compliance dashboards and evidence exports produce accurate and verifiable information.
+Accessibility, security, auditing, retention, and performance requirements are fully implemented.
+
+
+

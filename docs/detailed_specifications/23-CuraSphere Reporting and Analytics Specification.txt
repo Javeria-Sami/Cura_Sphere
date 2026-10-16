@@ -1,0 +1,2610 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.18 — REPORTING, ANALYTICS, DASHBOARD AND MANAGEMENT INFORMATION SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: RPT/ANAModule Name: Reporting, Analytics, Dashboard and Management Information SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.1298 MODULE PURPOSE
+The Reporting, Analytics, Dashboard and Management Information System shall provide the centralized functional foundation through which CuraSphere generates, presents, filters, executes, exports, schedules, monitors, and protects approved operational reports, analytical summaries, management dashboards, Key Performance Indicators, statistical views, and decision-support information.
+The module shall support:
+operational reporting;
+management reporting;
+administrative reporting;
+clinical reporting boundaries;
+patient reporting boundaries;
+appointment reporting;
+admission reporting;
+discharge reporting;
+bed occupancy reporting;
+emergency reporting boundaries;
+doctor activity reporting;
+nurse activity reporting boundaries;
+laboratory reporting;
+radiology reporting;
+pharmacy reporting;
+inventory reporting;
+billing reporting;
+payment reporting;
+revenue reporting;
+outstanding balance reporting;
+insurance reporting boundaries;
+workforce reporting;
+attendance reporting;
+leave reporting;
+payroll reporting boundaries;
+department reporting;
+hospital reporting;
+multi-hospital reporting boundaries;
+dashboard management;
+role-based dashboards;
+dashboard widgets;
+dashboard data retrieval;
+dashboard refresh;
+dashboard time ranges;
+dashboard filtering;
+dashboard drill-down boundaries;
+dashboard personalization boundaries;
+KPI registration;
+KPI identification;
+KPI definition;
+KPI ownership;
+KPI calculation rules;
+KPI dimensions;
+KPI measurement units;
+KPI target values;
+KPI thresholds;
+KPI status classification;
+KPI calculation;
+KPI aggregation;
+KPI trend analysis;
+KPI comparison;
+KPI historical values;
+KPI snapshots;
+report registration;
+report identification;
+report definition;
+report category management;
+report ownership;
+report data source definition;
+report parameter definition;
+report parameter validation;
+report date-range validation;
+report execution;
+report execution history;
+report status management;
+report result generation;
+report result pagination;
+report result sorting;
+report result filtering;
+report aggregation;
+report grouping;
+report totals;
+report subtotals;
+report snapshots;
+report export;
+CSV export;
+spreadsheet export boundaries;
+PDF export boundaries;
+scheduled reports;
+recurring report schedules;
+report delivery boundaries;
+report notification integration;
+failed report handling;
+long-running report boundaries;
+background report execution;
+report queue boundaries;
+report cancellation boundaries;
+report retry boundaries;
+report data freshness;
+report as-of time;
+reporting snapshot time;
+delayed data indicators;
+near-real-time dashboard boundaries;
+analytical data consistency;
+source-of-truth boundaries;
+server-side KPI calculation;
+server-side aggregation;
+frontend analytical boundaries;
+React dashboard boundaries;
+sensitive report classification;
+report authorization;
+report record scope;
+patient report scope;
+clinical report scope;
+financial report scope;
+workforce report scope;
+hospital report scope;
+cross-hospital report scope;
+report export authorization;
+sensitive export control;
+report access events;
+report execution audit;
+report configuration audit;
+analytical security events;
+excessive report execution monitoring;
+excessive export monitoring;
+expensive-query monitoring;
+dashboard performance monitoring;
+report performance monitoring;
+reporting database load protection;
+query timeout boundaries;
+maximum date-range boundaries;
+maximum export-size boundaries;
+large report protection;
+reporting cache boundaries;
+pre-aggregation boundaries;
+materialized reporting boundaries;
+reporting read-model boundaries;
+future data warehouse integration;
+future business intelligence integration;
+future predictive analytics;
+future artificial intelligence analytics;
+future machine learning analytics;
+future anomaly detection;
+future forecasting;
+future population health analytics;
+future clinical decision-support analytical boundaries;
+future executive command center;
+future regulatory reporting;
+future external reporting integration;
+future multi-hospital comparative analytics.
+The high-level reporting lifecycle shall be:
+BUSINESS / CLINICAL DATA          │          ▼APPROVED DATA SOURCE          │          ▼REPORT / KPI DEFINITION          │          ▼PARAMETER VALIDATION          │          ▼AUTHORIZATION + SCOPE          │          ▼SERVER-SIDE EXECUTION          │          ▼AGGREGATION / CALCULATION          │          ▼REPORT RESULT          │          ├────────────► DASHBOARD          │          ├────────────► DETAIL VIEW          │          ├────────────► EXPORT          │          └────────────► SCHEDULED DELIVERY
+The module shall help CuraSphere answer questions such as:
+HOW MANY PATIENTS VISITED TODAY?HOW MANY APPOINTMENTS ARE SCHEDULED?HOW MANY APPOINTMENTS WERE COMPLETED?WHAT IS THE APPOINTMENT CANCELLATION RATE?HOW MANY PATIENTS ARE CURRENTLY ADMITTED?WHAT IS THE CURRENT BED OCCUPANCY RATE?WHICH DEPARTMENT HAS THE HIGHEST PATIENT VOLUME?HOW MANY PATIENTS WERE DISCHARGED THIS MONTH?WHAT IS THE AVERAGE LENGTH OF STAY?HOW MANY LAB ORDERS ARE PENDING?WHAT IS THE AVERAGE LAB TURNAROUND TIME?HOW MANY RADIOLOGY ORDERS ARE PENDING?WHAT IS THE PHARMACY DISPENSING VOLUME?WHICH MEDICINES ARE LOW IN STOCK?WHAT IS THE CURRENT INVENTORY VALUE?WHAT IS THE TOTAL REVENUE TODAY?WHAT IS THE TOTAL REVENUE THIS MONTH?HOW MUCH PATIENT BALANCE IS OUTSTANDING?HOW MANY INVOICES REMAIN UNPAID?WHAT IS THE PAYMENT COLLECTION RATE?WHICH DEPARTMENT GENERATES THE MOST BILLABLE ACTIVITY?HOW MANY STAFF MEMBERS ARE PRESENT?WHAT IS THE STAFF ATTENDANCE RATE?HOW MANY LEAVE REQUESTS ARE PENDING?WHAT IS THE HOSPITAL'S CURRENT OPERATIONAL STATUS?WHO DEFINED THIS KPI?HOW IS THIS KPI CALCULATED?WHAT IS THE KPI MEASUREMENT UNIT?WHAT TIME PERIOD DOES THE KPI REPRESENT?WHAT DATA SOURCE WAS USED?WHEN WAS THE DASHBOARD LAST REFRESHED?IS THIS DATA REAL-TIME?IS THIS DATA DELAYED?WHAT IS THE REPORT AS-OF TIME?CAN THE REACT APPLICATION CALCULATE REVENUE ITSELF?CAN THE UI DOWNLOAD ALL PATIENT RECORDS AND COUNT THEM?CAN A RECEPTIONIST VIEW THE PAYROLL DASHBOARD?CAN A DOCTOR VIEW HOSPITAL-WIDE REVENUE?CAN AN HR USER VIEW PATIENT DIAGNOSIS ANALYTICS?CAN A USER CHANGE THE HOSPITAL ID IN A REPORT REQUEST?CAN A PATIENT RUN A REPORT FOR ANOTHER PATIENT?CAN A USER EXPORT ONE MILLION PATIENT RECORDS?CAN A REPORT RUN FOR A 50-YEAR DATE RANGE?WHAT HAPPENS IF A REPORT TAKES 30 MINUTES?CAN A LONG REPORT RUN IN THE BACKGROUND?CAN REPORTS BE SCHEDULED?CAN A REPORT BE GENERATED EVERY MONDAY?WHAT HAPPENS IF A SCHEDULED REPORT FAILS?WHO EXPORTED A SENSITIVE REPORT?HOW MANY REPORTS DID A USER EXPORT?IS A REPORT QUERY OVERLOADING POSTGRESQL?SHOULD EVERY DASHBOARD REQUEST QUERY ALL TRANSACTION TABLES?CAN REPORTING USE A READ MODEL LATER?CAN A DATA WAREHOUSE BE ADDED LATER?CAN POWER BI OR ANOTHER BI PLATFORM BE INTEGRATED LATER?CAN MACHINE LEARNING PREDICT PATIENT VOLUME LATER?CAN CURASPHERE COMPARE MULTIPLE HOSPITALS LATER?
+
+5.1299 REPORTING DOMAIN BOUNDARY
+The RPT/ANA module shall manage reporting, analytical calculation, KPI presentation, dashboard data, and approved analytical output.
+It shall not own the underlying operational business transaction.
+Example:
+APPOINTMENT MODULE        │        ▼OWNS APPOINTMENTS
+Reporting module:
+RPT/ANA   │   ▼CALCULATES APPOINTMENT METRICS
+Another example:
+BILLING MODULE      │      ▼OWNS INVOICES AND PAYMENTS
+Reporting module:
+RPT/ANA   │   ▼CALCULATES REVENUE AND COLLECTION KPIs
+Another example:
+LABORATORY MODULE       │       ▼OWNS LAB ORDERS AND RESULTS
+Reporting module:
+RPT/ANA   │   ▼CALCULATES LAB TURNAROUND ANALYTICS
+Critical Principle
+OPERATIONAL MODULE        │        ▼OWNS BUSINESS FACT
+RPT/ANA   │   ▼READS APPROVED FACTS   │   ▼CALCULATES ANALYTICAL INFORMATION
+The reporting module shall not independently:
+COMPLETE AN APPOINTMENTADMIT A PATIENTDISCHARGE A PATIENTVERIFY A LAB RESULTAPPROVE A RADIOLOGY REPORTDISPENSE MEDICATIONMARK AN INVOICE PAIDAPPROVE EMPLOYEE LEAVEGENERATE SALARY
+because a dashboard value or report calculation changed.
+Therefore:
+ANALYTICAL RESULT       ≠OPERATIONAL COMMAND
+
+5.1300 SOURCE OF TRUTH BOUNDARY
+Every report and KPI shall use an approved source of truth.
+Example:
+KPITOTAL PAID REVENUE
+Source:
+BILLING / PAYMENT DOMAIN
+The system shall not calculate paid revenue from:
+REACT TABLE ROWS
+or:
+BROWSER LOCAL STORAGE
+Conceptually:
+SOURCE DOMAIN     │     ▼APPROVED DATA     │     ▼REPORTING LOGIC     │     ▼KPI / REPORT
+Critical Principle
+DISPLAYED DATA      ≠SOURCE OF TRUTH
+Example:
+A React page currently displays 25 invoices because:
+PAGE SIZE = 25
+The frontend shall not calculate:
+TOTAL INVOICES = 25
+unless the server explicitly states that the total count is 25.
+
+5.1301 REACT ANALYTICS BOUNDARY
+The React application shall present analytical information received from approved APIs.
+Incorrect architecture:
+REACT  │  ▼DOWNLOAD 500,000 APPOINTMENTS  │  ▼JavaScript Array.filter()  │  ▼COUNT COMPLETED APPOINTMENTS  │  ▼CALCULATE KPI
+Preferred architecture:
+REACT  │  ▼ANALYTICS API  │  ▼AUTHORIZATION  │  ▼REPORTING SERVICE  │  ▼SERVER-SIDE QUERY / AGGREGATION  │  ▼KPI RESULT  │  ▼REACT PRESENTATION
+The React application may perform approved presentation calculations such as:
+CHART LABEL FORMATTINGDATE DISPLAY FORMATTINGPERCENTAGE DISPLAY FORMATTINGVISUAL SORTING OF ALREADY APPROVED SMALL DATASETS
+It shall not independently redefine hospital KPI business logic.
+Therefore:
+REACT   │   ▼PRESENTATION
+and:
+ASP.NET CORE / REPORTING DOMAIN               │               ▼AUTHORITATIVE KPI CALCULATION
+
+5.1302 REPORTING ACTORS
+Actor
+Reporting Responsibility
+Patient
+Views eligible personal summaries
+Doctor
+Views approved clinical and personal activity analytics
+Nurse
+Views approved nursing and care dashboards
+Receptionist
+Views approved appointment and reception reports
+Laboratory Staff
+Views approved laboratory operational reports
+Radiology Staff
+Views approved radiology operational reports
+Pharmacist
+Views approved pharmacy reports
+Billing Staff
+Views approved billing and payment reports
+HR Staff
+Views approved workforce reports
+Department Manager
+Views approved department-level dashboards
+Hospital Manager
+Views approved hospital operational reports
+Executive Management
+Views approved executive dashboards
+Report Administrator
+Manages report definitions and approved configuration
+Analytics Administrator
+Manages approved KPI and dashboard configuration
+Security Administrator
+Reviews analytical security events
+System Administrator
+Reviews reporting system health
+Background Worker
+Executes eligible scheduled or long-running reports
+RPT/ANA Module
+Calculates and manages analytical outputs
+Source Module
+Provides approved operational facts
+Notification Module
+Delivers approved report notifications
+Future BI Platform
+Consumes approved analytical information
+Future Data Warehouse
+Stores approved analytical data
+External Regulatory System
+Receives future approved regulatory reports
+
+5.1303 REPORTING FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-RPT-FR-001
+Register Report Definition
+M
+CS-RPT-FR-002
+Generate Report Identifier
+M
+CS-RPT-FR-003
+Assign Report Name
+M
+CS-RPT-FR-004
+Assign Report Category
+M
+CS-RPT-FR-005
+Assign Report Owner
+M
+CS-RPT-FR-006
+Define Report Data Source
+M
+CS-RPT-FR-007
+Define Report Parameters
+M
+CS-RPT-FR-008
+Validate Report Parameters
+M
+CS-RPT-FR-009
+Validate Report Date Range
+M
+CS-RPT-FR-010
+Execute Authorized Report
+M
+CS-RPT-FR-011
+Generate Report Execution Identifier
+M
+CS-RPT-FR-012
+Record Report Execution Status
+M
+CS-RPT-FR-013
+Generate Report Result
+M
+CS-RPT-FR-014
+Apply Server-Side Report Calculation
+M
+CS-RPT-FR-015
+Apply Server-Side Aggregation
+M
+CS-RPT-FR-016
+Group Report Results
+M
+CS-RPT-FR-017
+Calculate Report Totals
+M
+CS-RPT-FR-018
+Calculate Report Subtotals
+S
+CS-RPT-FR-019
+Sort Report Results
+M
+CS-RPT-FR-020
+Filter Report Results
+M
+CS-RPT-FR-021
+Paginate Report Results
+M
+CS-RPT-FR-022
+Record Report As-Of Time
+M
+CS-RPT-FR-023
+Display Reporting Data Freshness
+M
+CS-RPT-FR-024
+Maintain Report Execution History
+M
+CS-RPT-FR-025
+Register KPI Definition
+M
+CS-RPT-FR-026
+Generate KPI Identifier
+M
+CS-RPT-FR-027
+Define KPI Calculation Rule
+M
+CS-RPT-FR-028
+Assign KPI Owner
+M
+CS-RPT-FR-029
+Define KPI Measurement Unit
+M
+CS-RPT-FR-030
+Define KPI Dimensions
+M
+CS-RPT-FR-031
+Define KPI Target
+S
+CS-RPT-FR-032
+Define KPI Threshold
+S
+CS-RPT-FR-033
+Calculate KPI
+M
+CS-RPT-FR-034
+Store Eligible KPI Snapshot
+M
+CS-RPT-FR-035
+Retrieve KPI History
+M
+CS-RPT-FR-036
+Calculate KPI Trend
+M
+CS-RPT-FR-037
+Compare KPI Periods
+M
+CS-RPT-FR-038
+Classify KPI Status
+S
+CS-RPT-FR-039
+Provide Operational Dashboard
+M
+CS-RPT-FR-040
+Provide Role-Based Dashboard
+M
+CS-RPT-FR-041
+Provide Department Dashboard
+M
+CS-RPT-FR-042
+Provide Hospital Dashboard
+M
+CS-RPT-FR-043
+Support Dashboard Widget
+M
+CS-RPT-FR-044
+Retrieve Dashboard Data
+M
+CS-RPT-FR-045
+Refresh Dashboard Data
+M
+CS-RPT-FR-046
+Apply Dashboard Date Range
+M
+CS-RPT-FR-047
+Apply Dashboard Filters
+M
+CS-RPT-FR-048
+Support Dashboard Drill-Down Boundary
+S
+CS-RPT-FR-049
+Support Dashboard Personalization Boundary
+S
+CS-RPT-FR-050
+Generate Report Snapshot
+S
+CS-RPT-FR-051
+Export Authorized Report
+M
+CS-RPT-FR-052
+Export Report as CSV
+M
+CS-RPT-FR-053
+Support Spreadsheet Export Boundary
+S
+CS-RPT-FR-054
+Support PDF Report Export Boundary
+S
+CS-RPT-FR-055
+Apply Export Size Limit
+M
+CS-RPT-FR-056
+Record Sensitive Report Export
+M
+CS-RPT-FR-057
+Schedule Eligible Report
+M
+CS-RPT-FR-058
+Define Recurring Report Schedule
+M
+CS-RPT-FR-059
+Execute Scheduled Report
+M
+CS-RPT-FR-060
+Record Scheduled Report Execution
+M
+CS-RPT-FR-061
+Handle Scheduled Report Failure
+M
+CS-RPT-FR-062
+Support Report Delivery Boundary
+S
+CS-RPT-FR-063
+Integrate Report Notification
+S
+CS-RPT-FR-064
+Execute Eligible Long-Running Report in Background
+M
+CS-RPT-FR-065
+Track Background Report Status
+M
+CS-RPT-FR-066
+Support Report Cancellation Boundary
+S
+CS-RPT-FR-067
+Support Report Retry Boundary
+S
+CS-RPT-FR-068
+Apply Report Authorization
+M
+CS-RPT-FR-069
+Apply Report Record Scope
+M
+CS-RPT-FR-070
+Apply Patient Reporting Scope
+M
+CS-RPT-FR-071
+Apply Clinical Reporting Scope
+M
+CS-RPT-FR-072
+Apply Financial Reporting Scope
+M
+CS-RPT-FR-073
+Apply Workforce Reporting Scope
+M
+CS-RPT-FR-074
+Apply Hospital Reporting Scope
+M
+CS-RPT-FR-075
+Restrict Cross-Hospital Analytics
+M
+CS-RPT-FR-076
+Classify Sensitive Report
+M
+CS-RPT-FR-077
+Restrict Sensitive Report Access
+M
+CS-RPT-FR-078
+Restrict Sensitive Report Export
+M
+CS-RPT-FR-079
+Record Report Access Event
+M
+CS-RPT-FR-080
+Audit Report Configuration
+M
+CS-RPT-FR-081
+Audit KPI Configuration
+M
+CS-RPT-FR-082
+Audit Dashboard Configuration
+M
+CS-RPT-FR-083
+Record Analytical Security Event
+M
+CS-RPT-FR-084
+Monitor Report Execution
+M
+CS-RPT-FR-085
+Monitor Report Performance
+M
+CS-RPT-FR-086
+Monitor Dashboard Performance
+M
+CS-RPT-FR-087
+Detect Excessive Report Execution
+M
+CS-RPT-FR-088
+Detect Excessive Report Export
+M
+CS-RPT-FR-089
+Monitor Expensive Reporting Queries
+M
+CS-RPT-FR-090
+Apply Report Query Timeout Boundary
+M
+CS-RPT-FR-091
+Apply Maximum Reporting Date Range
+M
+CS-RPT-FR-092
+Protect Operational Database from Reporting Load
+M
+CS-RPT-FR-093
+Support Reporting Cache Boundary
+S
+CS-RPT-FR-094
+Support Reporting Read Model Boundary
+S
+CS-RPT-FR-095
+Support Pre-Aggregated Analytics Boundary
+S
+CS-RPT-FR-096
+Support Materialized Reporting Boundary
+S
+CS-RPT-FR-097
+Support Future Data Warehouse Integration
+S
+CS-RPT-FR-098
+Support Future Business Intelligence Integration
+S
+CS-RPT-FR-099
+Support Future Predictive Analytics
+S
+CS-RPT-FR-100
+Support Future Machine Learning Analytics
+S
+CS-RPT-FR-101
+Support Future Anomaly Detection
+S
+CS-RPT-FR-102
+Support Future Forecasting
+S
+CS-RPT-FR-103
+Support Future Population Health Analytics
+S
+CS-RPT-FR-104
+Support Future Clinical Analytical Decision Support Boundary
+S
+CS-RPT-FR-105
+Support Future Executive Command Center
+S
+CS-RPT-FR-106
+Support Future Regulatory Reporting
+S
+CS-RPT-FR-107
+Support Future External Reporting Integration
+S
+CS-RPT-FR-108
+Support Future Multi-Hospital Comparative Analytics
+S
+CS-RPT-FR-109
+Maintain Analytical Processing History
+M
+
+5.1304 REGISTER REPORT DEFINITION
+CS-RPT-FR-001 — Register Report Definition
+The system shall allow authorized report administrators to register approved report definitions.
+A report definition may include:
+REPORT NAMEREPORT CATEGORYREPORT DESCRIPTIONREPORT OWNERSOURCE DOMAINPARAMETERSSUPPORTED FILTERSSUPPORTED SORTINGSUPPORTED EXPORTSSENSITIVITY CLASSIFICATION
+Conceptually:
+REPORT DEFINITION       │       ▼DATA SOURCE       │       ▼PARAMETERS       │       ▼CALCULATION / QUERY POLICY       │       ▼OUTPUT POLICY
+The report definition shall remain distinct from a report execution.
+Therefore:
+REPORT DEFINITION        ≠REPORT EXECUTION
+
+5.1305 REPORT IDENTIFIER
+CS-RPT-FR-002 — Generate Report Identifier
+The system shall generate a unique report definition identifier.
+Example:
+RPT-000128
+The identifier shall remain stable across normal report configuration changes.
+Example:
+RPT-000128MONTHLY REVENUE SUMMARY
+The display name may change according to approved configuration.
+The identifier shall remain the stable system reference.
+
+5.1306 REPORT NAME
+CS-RPT-FR-003 — Assign Report Name
+The system shall assign an approved human-readable report name.
+Examples:
+DAILY APPOINTMENT SUMMARYBED OCCUPANCY REPORTLAB TURNAROUND REPORTMONTHLY REVENUE SUMMARYOUTSTANDING PATIENT BALANCE REPORTSTAFF ATTENDANCE SUMMARY
+Report names shall not replace unique report identifiers.
+
+5.1307 REPORT CATEGORY
+CS-RPT-FR-004 — Assign Report Category
+The system shall assign an approved report category.
+Potential categories include:
+OPERATIONALCLINICALFINANCIALWORKFORCEADMINISTRATIVEEXECUTIVESECURITYSYSTEM
+Example:
+REPORTMONTHLY REVENUE SUMMARY
+Category:
+FINANCIAL
+Report category shall support:
+AUTHORIZATIONSENSITIVITYSEARCHORGANIZATIONAUDIT
+
+5.1308 REPORT OWNER
+CS-RPT-FR-005 — Assign Report Owner
+The system shall identify the business or operational owner of an approved report.
+Potential owners include:
+PATIENT SERVICESCLINICAL OPERATIONSLABORATORYRADIOLOGYPHARMACYFINANCEHUMAN RESOURCESHOSPITAL MANAGEMENTSECURITYIT OPERATIONS
+The report owner shall be responsible for the business meaning of the report.
+Critical Principle
+REPORT DEVELOPER       ≠REPORT BUSINESS OWNER
+A C# developer implementing the report query shall not automatically define the business meaning of:
+NET REVENUE
+or:
+BED OCCUPANCY RATE
+without approved business definition.
+
+5.1309 REPORT DATA SOURCE
+CS-RPT-FR-006 — Define Report Data Source
+The system shall associate each report with approved source domains or reporting data sources.
+Example:
+REPORTDAILY APPOINTMENT SUMMARY
+Source domain:
+APPOINTMENT
+Another:
+MONTHLY REVENUE SUMMARY
+Sources:
+BILLINGPAYMENT
+A report shall not silently use unrelated data sources.
+The final physical query source may later be:
+OPERATIONAL POSTGRESQLREPORTING READ MODELMATERIALIZED VIEWANALYTICAL DATABASEDATA WAREHOUSE
+The SRS defines the logical data-source boundary.
+
+5.1310 REPORT PARAMETERS
+CS-RPT-FR-007 — Define Report Parameters
+The system shall support approved report parameters.
+Potential parameters include:
+START DATEEND DATEHOSPITALDEPARTMENTDOCTORPATIENTREPORT STATUSPAYMENT STATUSDOCUMENT TYPEMEDICINESTAFF MEMBER
+Each report shall define its supported parameter set.
+Example:
+BED OCCUPANCY REPORT
+may support:
+HOSPITALDEPARTMENTDATE
+It shall not automatically support:
+SALARY STATUS
+
+5.1311 REPORT PARAMETER VALIDATION
+CS-RPT-FR-008 — Validate Report Parameters
+The system shall validate report parameters before execution.
+Validation may include:
+REQUIRED PARAMETERDATA TYPEALLOWED VALUEDATE FORMATIDENTIFIER FORMATENUMERATION VALUEPARAMETER COMBINATIONUSER SCOPE
+Example:
+START DATE"HELLO"
+Result:
+INVALID REPORT PARAMETER
+The React client may provide early validation.
+The server shall remain authoritative.
+
+5.1312 REPORT DATE-RANGE VALIDATION
+CS-RPT-FR-009 — Validate Report Date Range
+The system shall validate date ranges for reports.
+Validation shall consider:
+START DATE <= END DATEMAXIMUM ALLOWED RANGEREPORT-SPECIFIC RANGEFUTURE DATE POLICYDATA AVAILABILITY
+Example:
+START DATE2030-01-01
+END DATE2020-01-01
+Result:
+INVALID DATE RANGE
+Large date ranges may require background execution or specialized reporting workflows.
+
+5.1313 EXECUTE AUTHORIZED REPORT
+CS-RPT-FR-010 — Execute Authorized Report
+The system shall allow authorized users to execute eligible reports.
+Execution flow:
+USER │ ▼SELECT REPORT │ ▼ENTER PARAMETERS │ ▼SUBMIT │ ▼AUTHENTICATE │ ▼AUTHORIZE REPORT │ ▼VALIDATE SCOPE │ ▼VALIDATE PARAMETERS │ ▼EXECUTE REPORT │ ▼GENERATE RESULT
+A user shall not gain report access merely because the report identifier is known.
+
+5.1314 REPORT EXECUTION IDENTIFIER
+CS-RPT-FR-011 — Generate Report Execution Identifier
+The system shall generate a unique identifier for eligible report executions.
+Example:
+RPT-EXE-0009821
+Conceptually:
+REPORTRPT-000128
+Executions:
+RPT-EXE-0009821RPT-EXE-0009822RPT-EXE-0009823
+Therefore:
+REPORT ID    ≠REPORT EXECUTION ID
+
+5.1315 REPORT EXECUTION STATUS
+CS-RPT-FR-012 — Record Report Execution Status
+The system shall record the status of eligible report executions.
+Potential states include:
+REQUESTEDVALIDATINGQUEUEDRUNNINGCOMPLETEDFAILEDCANCELLEDEXPIRED
+Not every synchronous report shall require a queue state.
+The execution model may depend on report complexity.
+
+5.1316 GENERATE REPORT RESULT
+CS-RPT-FR-013 — Generate Report Result
+The system shall generate an approved result for a successfully executed report.
+Potential result types include:
+SUMMARYTABULAR DATAKPI COLLECTIONTIME SERIESGROUPED RESULTCHART DATASETEXPORT DATASET
+The server shall return structured analytical data.
+Example:
+{  "totalAppointments": 820,  "completedAppointments": 710,  "cancelledAppointments": 45,  "noShowAppointments": 65}
+The API contract shown above is conceptual.
+Exact DTO design shall be defined during Application Architecture.
+
+5.1317 SERVER-SIDE REPORT CALCULATION
+CS-RPT-FR-014 — Apply Server-Side Report Calculation
+The system shall perform authoritative report calculations through approved server-side reporting logic.
+Incorrect:
+REACTfetch("/appointments")      │      ▼appointments.filter(...)      │      ▼CALCULATE HOSPITAL KPI
+Preferred:
+REACT  │  ▼GET APPROVED ANALYTICS  │  ▼ASP.NET CORE  │  ▼REPORTING SERVICE  │  ▼CALCULATE KPI
+The server shall define calculation rules for authoritative metrics.
+
+5.1318 SERVER-SIDE AGGREGATION
+CS-RPT-FR-015 — Apply Server-Side Aggregation
+The system shall support server-side aggregation.
+Potential aggregations include:
+COUNTSUMAVERAGEMINIMUMMAXIMUMPERCENTAGERATE
+Example:
+TOTAL PAID AMOUNTSUM(APPROVED PAID PAYMENT AMOUNTS)
+The exact implementation may use:
+SQL AGGREGATIONAPPLICATION CALCULATIONREPORTING READ MODELPRE-AGGREGATED DATA
+according to architecture and performance requirements.
+
+5.1319 GROUP REPORT RESULTS
+CS-RPT-FR-016 — Group Report Results
+The system shall support approved result grouping.
+Potential groupings include:
+BY DAYBY WEEKBY MONTHBY DEPARTMENTBY DOCTORBY HOSPITALBY PAYMENT METHODBY DOCUMENT TYPEBY MEDICINE CATEGORY
+Only approved grouping dimensions shall be accepted.
+The server shall not dynamically execute arbitrary user-provided SQL grouping expressions.
+
+5.1320 REPORT TOTALS
+CS-RPT-FR-017 — Calculate Report Totals
+The system shall calculate approved report totals.
+Example:
+DEPARTMENT A100 APPOINTMENTS
+DEPARTMENT B150 APPOINTMENTS
+Total:
+250 APPOINTMENTS
+The total shall be calculated according to the report definition.
+The UI shall not assume that visible page rows represent the complete report total.
+
+5.1321 REPORT SUBTOTALS
+CS-RPT-FR-018 — Calculate Report Subtotals
+Priority
+Should Have
+The system should support approved report subtotals.
+Example:
+HOSPITAL   │   ├── CARDIOLOGY   │      ├── DOCTOR A   │      └── DOCTOR B   │   └── ORTHOPEDICS          ├── DOCTOR C          └── DOCTOR D
+Potential result:
+CARDIOLOGY SUBTOTALORTHOPEDICS SUBTOTALHOSPITAL TOTAL
+Subtotal logic shall be defined by the report.
+
+5.1322 SORT REPORT RESULTS
+CS-RPT-FR-019 — Sort Report Results
+The system shall support sorting of eligible report results.
+Potential fields include:
+DATECOUNTAMOUNTDEPARTMENT NAMESTATUS
+Only approved sortable fields shall be accepted.
+Unsafe design:
+ORDER BY <RAW USER INPUT>
+without validation.
+Sorting shall use approved field mapping.
+
+5.1323 FILTER REPORT RESULTS
+CS-RPT-FR-020 — Filter Report Results
+The system shall support approved report filters.
+Potential filters include:
+DATE RANGEHOSPITALDEPARTMENTSTATUSDOCTORPAYMENT METHODDOCUMENT CATEGORY
+Filters shall respect authorization and scope.
+A hospital filter shall not allow a user to access another hospital without cross-hospital permission.
+
+5.1324 PAGINATE REPORT RESULTS
+CS-RPT-FR-021 — Paginate Report Results
+The system shall paginate large tabular report results.
+Example:
+PAGE1PAGE SIZE50
+Potential response metadata:
+CURRENT PAGEPAGE SIZETOTAL RECORDSTOTAL PAGES
+The system shall enforce an approved maximum page size.
+Example unsafe request:
+pageSize = 10000000
+The server shall reject or restrict the request.
+
+5.1325 REPORT AS-OF TIME
+CS-RPT-FR-022 — Record Report As-Of Time
+The system shall identify the effective data time of an eligible report.
+Example:
+REPORT GENERATED14 JUL 2026 10:30
+Data:
+AS OF14 JUL 2026 10:29
+This distinction becomes important when reporting uses:
+CACHEREAD MODELMATERIALIZED DATADATA WAREHOUSE
+The user shall be able to understand when the analytical data was current.
+
+5.1326 REPORTING DATA FRESHNESS
+CS-RPT-FR-023 — Display Reporting Data Freshness
+The system shall support reporting data freshness information.
+Potential classifications may include:
+REAL_TIMENEAR_REAL_TIMEDELAYEDSNAPSHOTHISTORICAL
+Example:
+BED OCCUPANCY DASHBOARDNEAR REAL-TIMELAST REFRESHED 10:30
+Another:
+MONTHLY FINANCIAL SNAPSHOTSNAPSHOTAS OF 30 JUNE 2026
+Critical Principle
+DASHBOARD DISPLAYED NOW          ≠DATA CREATED NOW
+
+5.1327 REPORT EXECUTION HISTORY
+CS-RPT-FR-024 — Maintain Report Execution History
+The system shall maintain eligible report execution history.
+Potential information includes:
+EXECUTION IDREPORT IDREQUESTED BYPARAMETER SUMMARYREQUESTED TIMESTART TIMECOMPLETION TIMESTATUSRESULT SIZEFAILURE CATEGORY
+Sensitive parameter values shall follow approved logging and privacy policies.
+
+5.1328 REGISTER KPI DEFINITION
+CS-RPT-FR-025 — Register KPI Definition
+The system shall support approved KPI definitions.
+Potential KPI information includes:
+KPI NAMEKPI DESCRIPTIONBUSINESS OWNERCALCULATION RULEMEASUREMENT UNITDIMENSIONSTARGETTHRESHOLDDATA SOURCEFRESHNESS CLASSIFICATION
+Example:
+BED OCCUPANCY RATE
+A KPI shall have one approved business meaning.
+The same KPI name shall not silently use different formulas on different React pages.
+
+5.1329 KPI IDENTIFIER
+CS-RPT-FR-026 — Generate KPI Identifier
+The system shall generate a unique KPI identifier.
+Example:
+KPI-000041
+Example mapping:
+KPI-000041BED OCCUPANCY RATE
+The KPI identifier shall remain stable across approved display-name changes.
+
+5.1330 KPI CALCULATION RULE
+CS-RPT-FR-027 — Define KPI Calculation Rule
+The system shall maintain an approved business definition for each KPI.
+Example conceptual formula:
+BED OCCUPANCY RATEOCCUPIED ELIGIBLE BEDS──────────────────────── × 100TOTAL ELIGIBLE BEDS
+Another:
+APPOINTMENT COMPLETION RATECOMPLETED APPOINTMENTS──────────────────────── × 100ELIGIBLE APPOINTMENTS
+The exact inclusion and exclusion rules shall be documented.
+Example questions:
+ARE CANCELLED APPOINTMENTS INCLUDED?ARE TEST PATIENTS INCLUDED?ARE INACTIVE BEDS INCLUDED?ARE TEMPORARY BEDS INCLUDED?ARE REFUNDED PAYMENTS INCLUDED?
+KPI definitions shall answer these business questions.
+
+5.1331 KPI OWNER
+CS-RPT-FR-028 — Assign KPI Owner
+The system shall associate each KPI with an approved business owner.
+Examples:
+BED OCCUPANCY RATEOWNER: HOSPITAL OPERATIONS
+COLLECTION RATEOWNER: FINANCE
+LAB TURNAROUND TIMEOWNER: LABORATORY
+The KPI owner shall approve the business interpretation.
+
+5.1332 KPI MEASUREMENT UNIT
+CS-RPT-FR-029 — Define KPI Measurement Unit
+The system shall define a measurement unit for eligible KPIs.
+Potential units include:
+COUNTPERCENTAGECURRENCYMINUTESHOURSDAYSRATERATIO
+Example:
+AVERAGE LENGTH OF STAYUNIT: DAYS
+Another:
+TOTAL REVENUEUNIT: CURRENCY
+The React UI shall use the KPI metadata or approved API contract for correct presentation.
+
+5.1333 KPI DIMENSIONS
+CS-RPT-FR-030 — Define KPI Dimensions
+The system shall support approved KPI dimensions.
+Potential dimensions include:
+TIMEHOSPITALDEPARTMENTDOCTORSERVICEPAYMENT METHODPATIENT TYPE
+Example:
+PATIENT VISITS
+may be analyzed:
+BY DAYBY DEPARTMENTBY HOSPITAL
+Dimensions shall remain governed.
+Arbitrary database columns shall not automatically become public analytical dimensions.
+
+5.1334 KPI TARGET
+CS-RPT-FR-031 — Define KPI Target
+Priority
+Should Have
+The system should support approved KPI targets.
+Example:
+APPOINTMENT COMPLETION RATETARGET >= 90%
+Targets may vary by:
+HOSPITALDEPARTMENTTIME PERIOD
+The final target inheritance strategy shall be defined during Analytics Architecture.
+
+5.1335 KPI THRESHOLD
+CS-RPT-FR-032 — Define KPI Threshold
+Priority
+Should Have
+The system should support KPI thresholds.
+Example:
+BED OCCUPANCY RATE0%–70%       NORMAL71%–85%      ATTENTION86%–95%      HIGH>95%         CRITICAL
+The values above are illustrative only.
+Actual thresholds shall require business approval.
+
+5.1336 CALCULATE KPI
+CS-RPT-FR-033 — Calculate KPI
+The system shall calculate approved KPIs using authoritative server-side logic.
+Conceptually:
+KPI REQUEST    │    ▼AUTHORIZE    │    ▼VALIDATE DIMENSIONS    │    ▼LOAD APPROVED DATA    │    ▼APPLY KPI RULE    │    ▼CALCULATE VALUE    │    ▼RETURN KPI RESULT
+Potential KPI result:
+KPI IDVALUEUNITPERIODDIMENSIONAS-OF TIMEFRESHNESS
+
+5.1337 KPI SNAPSHOT
+CS-RPT-FR-034 — Store Eligible KPI Snapshot
+The system shall support storage of eligible KPI snapshots.
+Example:
+KPIBED OCCUPANCY RATE
+Snapshots:
+01 JUL 2026     78%02 JUL 2026     81%03 JUL 2026     84%
+Snapshots may support:
+TREND ANALYSISHISTORICAL COMPARISONEXECUTIVE REPORTING
+Not every real-time metric shall require permanent snapshot storage.
+
+5.1338 KPI HISTORY
+CS-RPT-FR-035 — Retrieve KPI History
+The system shall allow authorized users to retrieve eligible KPI history.
+Example:
+KPIMONTHLY REVENUE
+Period:
+JAN 2026 – JUL 2026
+Result:
+JANFEBMARAPRMAYJUNJUL
+KPI history shall respect reporting scope.
+
+5.1339 KPI TREND
+CS-RPT-FR-036 — Calculate KPI Trend
+The system shall support trend calculation for eligible KPIs.
+Potential trend states include:
+INCREASINGDECREASINGSTABLEINSUFFICIENT_DATA
+The trend calculation method shall be defined for the KPI or analytics policy.
+The React UI shall not invent trend status solely from chart appearance.
+
+5.1340 KPI PERIOD COMPARISON
+CS-RPT-FR-037 — Compare KPI Periods
+The system shall support approved period comparisons.
+Examples:
+TODAY VS YESTERDAYTHIS WEEK VS LAST WEEKTHIS MONTH VS LAST MONTHTHIS YEAR VS LAST YEAR
+Example:
+CURRENT MONTH REVENUEPKR 12,000,000
+Previous month:
+PKR 10,000,000
+Change:
++20%
+The comparison shall use compatible periods and approved calculation rules.
+
+5.1341 KPI STATUS CLASSIFICATION
+CS-RPT-FR-038 — Classify KPI Status
+Priority
+Should Have
+The system should classify eligible KPI values according to approved thresholds.
+Potential statuses include:
+NORMALATTENTIONWARNINGCRITICALUNKNOWN
+The server should return the approved status.
+The React UI may map the status to visual presentation.
+Conceptually:
+SERVERSTATUS = CRITICAL
+React:
+CRITICAL    │    ▼DISPLAY APPROVED CRITICAL VISUAL STYLE
+React shall not independently redefine the threshold.
+
+5.1342 OPERATIONAL DASHBOARD
+CS-RPT-FR-039 — Provide Operational Dashboard
+The system shall provide approved operational dashboards.
+Potential operational dashboard information includes:
+TODAY'S APPOINTMENTSCURRENT ADMISSIONSAVAILABLE BEDSPENDING LAB ORDERSPENDING RADIOLOGY ORDERSLOW STOCK ITEMSOUTSTANDING INVOICES
+The dashboard shall provide information appropriate to the user’s responsibilities.
+
+5.1343 ROLE-BASED DASHBOARD
+CS-RPT-FR-040 — Provide Role-Based Dashboard
+The system shall provide role-aware dashboards.
+Example:
+DOCTOR DASHBOARD
+may include:
+TODAY'S APPOINTMENTSCURRENT PATIENTSPENDING CLINICAL TASKSELIGIBLE CLINICAL SUMMARY
+Billing staff:
+BILLING DASHBOARD
+may include:
+TODAY'S INVOICESPAYMENTS RECEIVEDOUTSTANDING BALANCEPENDING BILLING TASKS
+HR:
+HR DASHBOARD
+may include:
+STAFF PRESENTABSENT STAFFPENDING LEAVE REQUESTS
+Critical Principle
+ONE DASHBOARD     │     ▼EVERY HOSPITAL METRIC
+shall not be the default authorization model.
+
+5.1344 DEPARTMENT DASHBOARD
+CS-RPT-FR-041 — Provide Department Dashboard
+The system shall support department-scoped dashboards.
+Example:
+CARDIOLOGY
+Potential metrics:
+PATIENT VOLUMEAPPOINTMENTSADMISSIONSBED OCCUPANCYDEPARTMENT ACTIVITY
+A department manager shall not automatically gain access to unrelated departments.
+
+5.1345 HOSPITAL DASHBOARD
+CS-RPT-FR-042 — Provide Hospital Dashboard
+The system shall support hospital-scoped management dashboards.
+Potential information includes:
+PATIENT VOLUMEAPPOINTMENT ACTIVITYADMISSION ACTIVITYBED OCCUPANCYLAB ACTIVITYRADIOLOGY ACTIVITYPHARMACY ACTIVITYREVENUE SUMMARYWORKFORCE SUMMARY
+The dashboard shall present approved aggregated information.
+Access to a summary KPI shall not automatically grant access to every underlying record.
+
+5.1346 DASHBOARD WIDGET
+CS-RPT-FR-043 — Support Dashboard Widget
+The system shall support approved dashboard widgets.
+Potential widget types include:
+KPI CARDLINE CHARTBAR CHARTPIE / DONUT CHART BOUNDARYTABLESTATUS SUMMARYTREND INDICATORALERT SUMMARY
+The backend shall provide structured data.
+The React application shall own visual rendering.
+Conceptually:
+ASP.NET CORE{   KPI VALUE,   TREND,   STATUS,   PERIOD}
+React:
+CARD / CHART PRESENTATION
+
+5.1347 DASHBOARD DATA RETRIEVAL
+CS-RPT-FR-044 — Retrieve Dashboard Data
+The system shall allow authorized clients to retrieve approved dashboard data.
+The API may provide:
+DASHBOARD METADATAWIDGET DEFINITIONSWIDGET DATADATA FRESHNESSAS-OF TIME
+The exact API structure shall be defined during Application Architecture.
+The client shall not request raw database table access.
+
+5.1348 DASHBOARD REFRESH
+CS-RPT-FR-045 — Refresh Dashboard Data
+The system shall support dashboard data refresh.
+Potential refresh models include:
+MANUAL REFRESHTIMED REFRESHNEAR-REAL-TIME REFRESH BOUNDARY
+The refresh model shall depend on:
+DATA CRITICALITYQUERY COSTUSER NEEDSOURCE DATA FRESHNESS
+The system shall avoid unnecessary aggressive polling.
+Example unsafe behavior:
+EVERY USEREVERY DASHBOARDEVERY 1 SECONDRUN 50 LARGE POSTGRESQL QUERIES
+This may overload the system.
+
+5.1349 DASHBOARD DATE RANGE
+CS-RPT-FR-046 — Apply Dashboard Date Range
+The system shall support approved dashboard date ranges.
+Potential options include:
+TODAYYESTERDAYLAST 7 DAYSLAST 30 DAYSTHIS MONTHCUSTOM RANGE
+Custom ranges shall follow report range policies.
+
+5.1350 DASHBOARD FILTERS
+CS-RPT-FR-047 — Apply Dashboard Filters
+The system shall support approved dashboard filters.
+Potential filters include:
+HOSPITALDEPARTMENTDOCTORSERVICEDATE RANGE
+Filters shall not expand the user’s authorization scope.
+Conceptually:
+USER SCOPEHOSPITAL A
+Request:
+FILTER = HOSPITAL B
+Result:
+ACCESS DENIED
+not:
+RETURN HOSPITAL B ANALYTICS
+
+5.1351 DASHBOARD DRILL-DOWN BOUNDARY
+CS-RPT-FR-048 — Support Dashboard Drill-Down Boundary
+Priority
+Should Have
+The system should support authorized drill-down from summary analytics.
+Example:
+PENDING LAB ORDERS42
+Authorized user selects:
+VIEW DETAILS
+Conceptually:
+KPI SUMMARY     │     ▼DRILL-DOWN REQUEST     │     ▼SEPARATE AUTHORIZATION     │     ▼SCOPED DETAIL RESULT
+Critical Principle
+CAN VIEW KPI     ≠CAN VIEW EVERY UNDERLYING RECORD
+
+5.1352 DASHBOARD PERSONALIZATION BOUNDARY
+CS-RPT-FR-049 — Support Dashboard Personalization Boundary
+Priority
+Should Have
+The system should support future approved dashboard personalization.
+Potential personalization includes:
+WIDGET ORDERVISIBLE ELIGIBLE WIDGETSDEFAULT DATE RANGEAPPROVED DISPLAY PREFERENCE
+Personalization shall not allow a user to add unauthorized KPIs.
+Example:
+RECEPTIONIST
+shall not personalize the dashboard by adding:
+EXECUTIVE PAYROLL COST
+without permission.
+
+5.1353 REPORT SNAPSHOT
+CS-RPT-FR-050 — Generate Report Snapshot
+Priority
+Should Have
+The system should support immutable or controlled report snapshots for eligible use cases.
+Example:
+MONTH-END FINANCIAL REPORT
+Generated:
+30 JUNE 2026
+Snapshot:
+RPT-SNP-000421
+A snapshot may preserve:
+REPORT DEFINITION REFERENCEPARAMETERSAS-OF TIMEGENERATED TIMERESULT REFERENCEGENERATED BY
+A report rerun later may produce different values if operational data changed.
+Therefore:
+REPORT EXECUTION TODAY          ≠HISTORICAL REPORT SNAPSHOT
+
+5.1354 EXPORT AUTHORIZED REPORT
+CS-RPT-FR-051 — Export Authorized Report
+The system shall allow authorized users to export eligible report results.
+Export flow:
+USER │ ▼EXPORT REQUEST │ ▼AUTHENTICATE │ ▼AUTHORIZE REPORT │ ▼AUTHORIZE EXPORT │ ▼VALIDATE SENSITIVITY │ ▼VALIDATE SIZE │ ▼GENERATE EXPORT
+Report viewing permission shall not automatically grant export permission for every sensitive report.
+
+5.1355 CSV REPORT EXPORT
+CS-RPT-FR-052 — Export Report as CSV
+The system shall support CSV export for approved tabular reports.
+CSV export shall consider:
+COLUMN POLICYDATA FORMATTINGENCODINGSENSITIVE FIELDSEXPORT SIZE
+The export shall not automatically include hidden internal identifiers or restricted fields.
+CSV injection protection shall be evaluated during Security Architecture.
+
+5.1356 SPREADSHEET EXPORT BOUNDARY
+CS-RPT-FR-053 — Support Spreadsheet Export Boundary
+Priority
+Should Have
+The system should support spreadsheet export for approved reports.
+Potential format:
+XLSX
+The exact spreadsheet generation library shall be selected during Application Architecture.
+Spreadsheet exports may include:
+HEADERSDATA ROWSTOTALSAPPROVED FORMATTING
+The export implementation shall remain server-controlled.
+
+5.1357 PDF REPORT EXPORT BOUNDARY
+CS-RPT-FR-054 — Support PDF Report Export Boundary
+Priority
+Should Have
+The system should support PDF export for approved reports.
+Potential PDF information includes:
+CURASPHERE BRANDINGREPORT NAMEPARAMETERSGENERATED TIMEAS-OF TIMESUMMARYAPPROVED TABLESAPPROVED CHARTS
+The exact PDF library shall be selected during Detailed Design.
+
+5.1358 EXPORT SIZE LIMIT
+CS-RPT-FR-055 — Apply Export Size Limit
+The system shall apply approved export-size limits.
+Example:
+EXPORT REQUEST5,000,000 ROWS
+Potential system behavior:
+REJECTREQUIRE BACKGROUND EXPORTREQUIRE NARROWER FILTERREQUIRE SPECIAL PERMISSION
+The exact limits shall be defined during Capacity and Security Architecture.
+
+5.1359 SENSITIVE REPORT EXPORT EVENT
+CS-RPT-FR-056 — Record Sensitive Report Export
+The system shall record eligible sensitive report exports.
+Potential information includes:
+USER REFERENCEREPORT REFERENCEEXECUTION REFERENCEEXPORT FORMATEXPORT TIMERECORD COUNTHOSPITAL SCOPECORRELATION REFERENCE
+Sensitive report export monitoring shall support security investigation.
+
+5.1360 SCHEDULE REPORT
+CS-RPT-FR-057 — Schedule Eligible Report
+The system shall allow authorized users to schedule eligible reports.
+Conceptually:
+REPORT  │  ▼PARAMETERS  │  ▼SCHEDULE  │  ▼DELIVERY POLICY
+Not every report shall be schedulable.
+Sensitive reports may require additional restrictions.
+
+5.1361 RECURRING REPORT SCHEDULE
+CS-RPT-FR-058 — Define Recurring Report Schedule
+The system shall support approved recurring report schedules.
+Potential schedules include:
+DAILYWEEKLYMONTHLY
+Example:
+MONTHLY REVENUE SUMMARYRUN ON FIRST DAY OF EACH MONTH
+The exact schedule representation shall be defined during Application Architecture.
+Time zone shall be considered.
+
+5.1362 EXECUTE SCHEDULED REPORT
+CS-RPT-FR-059 — Execute Scheduled Report
+The system shall execute eligible scheduled reports according to approved schedule configuration.
+Conceptually:
+SCHEDULER    │    ▼DUE REPORT SCHEDULE    │    ▼CREATE EXECUTION    │    ▼VALIDATE CONFIGURATION    │    ▼RUN REPORT    │    ▼GENERATE RESULT
+Scheduled execution shall use approved service or system identity boundaries.
+
+5.1363 SCHEDULED REPORT EXECUTION RECORD
+CS-RPT-FR-060 — Record Scheduled Report Execution
+The system shall record scheduled report executions.
+Potential information includes:
+SCHEDULE IDREPORT IDEXECUTION IDSCHEDULED TIMESTART TIMECOMPLETION TIMESTATUSFAILURE CATEGORY
+This shall support operational investigation.
+
+5.1364 SCHEDULED REPORT FAILURE
+CS-RPT-FR-061 — Handle Scheduled Report Failure
+The system shall handle scheduled report failures.
+Potential failure categories include:
+DATA SOURCE FAILUREQUERY TIMEOUTEXPORT FAILUREDELIVERY FAILUREINVALID CONFIGURATIONAUTHORIZATION POLICY CHANGESYSTEM FAILURE
+Conceptually:
+SCHEDULED REPORT       │       ▼EXECUTION       │    ┌──┴──┐    │     │ SUCCESS FAILURE    │     │    ▼     ▼RESULT  RECORD FAILURE            │            ▼      RETRY / ALERT POLICY
+The system shall not silently discard repeated scheduled-report failures.
+
+5.1365 REPORT DELIVERY BOUNDARY
+CS-RPT-FR-062 — Support Report Delivery Boundary
+Priority
+Should Have
+The system should support delivery of approved report outputs.
+Potential delivery channels may include:
+IN-APPLICATION AVAILABILITYSECURE DOWNLOADAPPROVED EMAIL NOTIFICATION BOUNDARY
+The system shall avoid attaching sensitive patient reports to unrestricted communication channels without approved policy.
+Delivery policy shall consider:
+REPORT SENSITIVITYRECIPIENT AUTHORIZATIONDOCUMENT RETENTIONDOWNLOAD SECURITY
+
+5.1366 REPORT NOTIFICATION INTEGRATION
+CS-RPT-FR-063 — Integrate Report Notification
+Priority
+Should Have
+The system should integrate with the Notification module for eligible report events.
+Potential events include:
+REPORT_COMPLETEDREPORT_FAILEDSCHEDULED_REPORT_COMPLETEDSCHEDULED_REPORT_FAILEDBACKGROUND_EXPORT_READY
+Conceptually:
+RPT/ANA   │   ▼REPORT EVENT   │   ▼NOTIFICATION MODULE   │   ▼APPROVED DELIVERY CHANNEL
+RPT/ANA shall not independently implement unrelated SMS and email infrastructure.
+
+5.1367 BACKGROUND REPORT EXECUTION
+CS-RPT-FR-064 — Execute Eligible Long-Running Report in Background
+The system shall support background execution for eligible long-running reports.
+Conceptually:
+USER REQUEST     │     ▼REPORT COMPLEXITY CHECK     │  ┌──┴─────────┐  │            │SHORT         LONG  │            │  ▼            ▼SYNC        BACKGROUNDRESULT         JOB                │                ▼             PROCESS                │                ▼          RESULT AVAILABLE
+The exact complexity classification strategy shall be defined during Performance Architecture.
+
+5.1368 BACKGROUND REPORT STATUS
+CS-RPT-FR-065 — Track Background Report Status
+The system shall allow authorized users to view eligible background report status.
+Potential information includes:
+EXECUTION IDREPORT NAMEREQUESTED TIMESTATUSPROGRESS BOUNDARYCOMPLETION TIMEFAILURE CATEGORY
+Potential states:
+QUEUEDRUNNINGCOMPLETEDFAILEDCANCELLED
+Progress percentage shall only be shown where meaningful progress can be calculated.
+
+5.1369 REPORT CANCELLATION BOUNDARY
+CS-RPT-FR-066 — Support Report Cancellation Boundary
+Priority
+Should Have
+The system should support cancellation of eligible queued or running report executions.
+Conceptually:
+RUNNING REPORT      │      ▼CANCEL REQUEST      │      ▼AUTHORIZE      │      ▼CANCELLABLE?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼CANCEL  REJECT
+Cancellation behavior shall depend on execution technology.
+
+5.1370 REPORT RETRY BOUNDARY
+CS-RPT-FR-067 — Support Report Retry Boundary
+Priority
+Should Have
+The system should support retry of eligible failed report executions.
+Retry shall consider failure category.
+Example:
+TEMPORARY DATABASE CONNECTION FAILURERETRY MAY BE ELIGIBLE
+Example:
+INVALID REPORT PARAMETERRETRY WITHOUT CHANGE
+shall not repeatedly execute the same invalid request.
+
+5.1371 REPORT AUTHORIZATION
+CS-RPT-FR-068 — Apply Report Authorization
+The system shall enforce permission-based report access.
+Potential permissions may distinguish:
+VIEW REPORTEXECUTE REPORTEXPORT REPORTSCHEDULE REPORTMANAGE REPORT
+Example:
+USER CAN VIEW REPORT CATALOG
+does not automatically mean:
+USER CAN EXECUTE EVERY REPORT
+Authorization shall be enforced server-side.
+
+5.1372 REPORT RECORD SCOPE
+CS-RPT-FR-069 — Apply Report Record Scope
+The system shall apply business-record and organizational scope to report results.
+Conceptually:
+USER │ ▼REPORT │ ▼PERMISSION │ ▼ORGANIZATIONAL SCOPE │ ▼RECORD SCOPE │ ▼ANALYTICAL RESULT
+A report query shall not bypass source-domain scope rules without approved analytical authorization.
+
+5.1373 PATIENT REPORTING SCOPE
+CS-RPT-FR-070 — Apply Patient Reporting Scope
+The system shall restrict patient-facing analytical information to the authenticated patient’s eligible records.
+Example:
+PATIENT A
+requests:
+MY APPOINTMENT SUMMARY
+The system shall apply:
+PATIENT REFERENCE = PATIENT A
+server-side.
+The client shall not be trusted to provide another patient identifier.
+
+5.1374 CLINICAL REPORTING SCOPE
+CS-RPT-FR-071 — Apply Clinical Reporting Scope
+The system shall apply approved clinical reporting boundaries.
+Potential considerations include:
+ROLEDEPARTMENTCLINICAL RELATIONSHIPHOSPITALPATIENT SCOPEREPORT SENSITIVITY
+A doctor shall not automatically access every clinical report in the hospital.
+
+5.1375 FINANCIAL REPORTING SCOPE
+CS-RPT-FR-072 — Apply Financial Reporting Scope
+The system shall apply financial reporting authorization.
+Potential financial reports include:
+REVENUE SUMMARYPAYMENT COLLECTIONOUTSTANDING BALANCEREFUND SUMMARYINVOICE STATUS
+Financial report access shall remain separate from ordinary clinical access.
+Example:
+DOCTOR
+shall not automatically receive:
+HOSPITAL-WIDE REVENUE DASHBOARD
+because the doctor can access clinical records.
+
+5.1376 WORKFORCE REPORTING SCOPE
+CS-RPT-FR-073 — Apply Workforce Reporting Scope
+The system shall apply workforce reporting authorization.
+Potential reports include:
+ATTENDANCE SUMMARYLEAVE SUMMARYSTAFFING SUMMARYPAYROLL ANALYTICS BOUNDARY
+Workforce reports shall remain separated from patient clinical reporting.
+Example:
+HR USER
+shall not automatically access:
+PATIENT DIAGNOSIS ANALYTICS
+
+5.1377 HOSPITAL REPORTING SCOPE
+CS-RPT-FR-074 — Apply Hospital Reporting Scope
+The system shall enforce hospital scope for hospital-specific reports.
+Example:
+MANAGERHOSPITAL A
+requests:
+HOSPITAL B REVENUE
+Without cross-hospital permission:
+ACCESS DENIED
+Hospital identifiers supplied by the client shall be validated against authorized scope.
+
+5.1378 CROSS-HOSPITAL ANALYTICS
+CS-RPT-FR-075 — Restrict Cross-Hospital Analytics
+The system shall restrict cross-hospital analytics to approved roles.
+Potential users may include:
+GROUP EXECUTIVECENTRAL MANAGEMENTAUTHORIZED ANALYTICS ROLE
+Conceptually:
+HOSPITAL A ──┐             │HOSPITAL B ──┼──► CROSS-HOSPITAL ANALYTICS             │HOSPITAL C ──┘
+Cross-hospital analytics shall not be enabled through client-side aggregation of separately unauthorized data.
+
+5.1379 SENSITIVE REPORT CLASSIFICATION
+CS-RPT-FR-076 — Classify Sensitive Report
+The system shall support sensitivity classification for reports.
+Potential classifications include:
+STANDARDCONFIDENTIALRESTRICTEDHIGHLY_RESTRICTED
+Potential sensitive reports include:
+PATIENT DIAGNOSIS REPORTFINANCIAL DETAIL REPORTPAYROLL REPORTSECURITY EVENT REPORTPATIENT IDENTITY EXPORT
+Sensitivity shall influence:
+ACCESSEXPORTSCHEDULINGDELIVERYMONITORING
+
+5.1380 RESTRICT SENSITIVE REPORT ACCESS
+CS-RPT-FR-077 — Restrict Sensitive Report Access
+The system shall enforce additional controls for eligible sensitive reports.
+Potential controls include:
+SPECIAL PERMISSIONLIMITED ROLEHOSPITAL SCOPEDEPARTMENT SCOPEACCESS EVENT RECORDINGEXPORT RESTRICTION
+Sensitive report access shall still require normal authentication and authorization.
+
+5.1381 RESTRICT SENSITIVE REPORT EXPORT
+CS-RPT-FR-078 — Restrict Sensitive Report Export
+The system shall separately evaluate export authorization for sensitive reports.
+Conceptually:
+CAN VIEW REPORT?       │       ▼YES       │       ▼CAN EXPORT REPORT?       │   ┌───┴───┐   │       │  YES      NO   │       │   ▼       ▼EXPORT   VIEW ONLY
+Critical Principle
+VIEW PERMISSION      ≠EXPORT PERMISSION
+
+5.1382 REPORT ACCESS EVENT
+CS-RPT-FR-079 — Record Report Access Event
+The system shall record eligible report access events.
+Potential events include:
+REPORT_VIEWEDREPORT_EXECUTEDREPORT_RESULT_VIEWEDREPORT_EXPORTEDREPORT_SCHEDULED
+Potential information includes:
+USER REFERENCEREPORT REFERENCEEXECUTION REFERENCEACTIONTIMEHOSPITAL SCOPECORRELATION REFERENCE
+
+5.1383 REPORT CONFIGURATION AUDIT
+CS-RPT-FR-080 — Audit Report Configuration
+The system shall audit eligible report configuration changes.
+Potential events include:
+REPORT_CREATEDREPORT_UPDATEDREPORT_ACTIVATEDREPORT_DEACTIVATEDREPORT_PARAMETER_UPDATEDREPORT_SOURCE_UPDATEDREPORT_SENSITIVITY_UPDATED
+Audit shall integrate with the centralized Audit module.
+
+5.1384 KPI CONFIGURATION AUDIT
+CS-RPT-FR-081 — Audit KPI Configuration
+The system shall audit eligible KPI definition changes.
+Potential events include:
+KPI_CREATEDKPI_RULE_UPDATEDKPI_OWNER_UPDATEDKPI_TARGET_UPDATEDKPI_THRESHOLD_UPDATEDKPI_DIMENSION_UPDATED
+A KPI formula change may materially affect management decisions.
+Therefore:
+KPI FORMULA CHANGE        │        ▼AUDITABLE CONFIGURATION CHANGE
+
+5.1385 DASHBOARD CONFIGURATION AUDIT
+CS-RPT-FR-082 — Audit Dashboard Configuration
+The system shall audit eligible administrative dashboard configuration changes.
+Potential events include:
+DASHBOARD_CREATEDDASHBOARD_UPDATEDWIDGET_ADDEDWIDGET_REMOVEDWIDGET_PERMISSION_UPDATEDDASHBOARD_SCOPE_UPDATED
+Personal user display preferences may use a different operational history policy.
+
+5.1386 ANALYTICAL SECURITY EVENT
+CS-RPT-FR-083 — Record Analytical Security Event
+The system shall record eligible analytical security events.
+Potential events include:
+UNAUTHORIZED_REPORT_ACCESSUNAUTHORIZED_REPORT_EXECUTIONUNAUTHORIZED_REPORT_EXPORTCROSS_HOSPITAL_REPORT_ACCESS_DENIEDSENSITIVE_REPORT_ACCESS_DENIEDEXCESSIVE_REPORT_EXECUTIONEXCESSIVE_EXPORT_ACTIVITYREPORT_PARAMETER_SCOPE_TAMPERINGANALYTICAL_DATA_SCRAPING_PATTERN
+Security events shall support approved investigation.
+
+5.1387 REPORT EXECUTION MONITORING
+CS-RPT-FR-084 — Monitor Report Execution
+The system shall support report execution monitoring.
+Potential metrics include:
+TOTAL REPORT EXECUTIONSSUCCESSFUL EXECUTIONSFAILED EXECUTIONSRUNNING EXECUTIONSQUEUED EXECUTIONSCANCELLED EXECUTIONS
+Metrics may be grouped by:
+REPORTCATEGORYHOSPITALTIME PERIOD
+
+5.1388 REPORT PERFORMANCE MONITORING
+CS-RPT-FR-085 — Monitor Report Performance
+The system shall monitor report performance.
+Potential indicators include:
+AVERAGE EXECUTION TIMEMAXIMUM EXECUTION TIMEP95 EXECUTION TIMEFAILED EXECUTIONSTIMEOUTSRESULT SIZE
+Slow reports shall support investigation.
+
+5.1389 DASHBOARD PERFORMANCE MONITORING
+CS-RPT-FR-086 — Monitor Dashboard Performance
+The system shall support dashboard performance monitoring.
+Potential indicators include:
+DASHBOARD LOAD TIMEWIDGET LOAD TIMEFAILED WIDGET REQUESTSCACHE HIT BOUNDARYREFRESH FREQUENCYAPI RESPONSE TIME
+A dashboard with 30 widgets shall not automatically issue uncontrolled expensive queries.
+
+5.1390 EXCESSIVE REPORT EXECUTION DETECTION
+CS-RPT-FR-087 — Detect Excessive Report Execution
+The system shall support detection of unusual report execution activity.
+Example:
+USERRUNS SAME EXPENSIVE REPORT5,000 TIMES
+Potential response may include:
+MONITORRATE LIMITSECURITY EVENTTEMPORARY RESTRICTION BOUNDARY
+The exact threshold shall be defined during Security and Performance Architecture.
+
+5.1391 EXCESSIVE REPORT EXPORT DETECTION
+CS-RPT-FR-088 — Detect Excessive Report Export
+The system shall support monitoring of excessive report exports.
+Potential signals include:
+HIGH EXPORT FREQUENCYLARGE EXPORT VOLUMEMULTIPLE SENSITIVE EXPORTSCROSS-DEPARTMENT EXPORT PATTERN
+The system may generate a security event according to approved policy.
+
+5.1392 EXPENSIVE REPORTING QUERY MONITORING
+CS-RPT-FR-089 — Monitor Expensive Reporting Queries
+The system shall support monitoring of expensive report executions.
+Potential indicators include:
+QUERY DURATIONCPU COST BOUNDARYDATABASE LOADROWS PROCESSEDRESULT SIZELOCK IMPACT BOUNDARY
+The exact PostgreSQL monitoring strategy shall be defined during Data and DevOps Architecture.
+
+5.1393 REPORT QUERY TIMEOUT BOUNDARY
+CS-RPT-FR-090 — Apply Report Query Timeout Boundary
+The system shall support approved timeout boundaries for report execution.
+Conceptually:
+REPORT QUERY     │     ▼EXECUTION TIME     │ ┌───┴────────┐ │            │WITHIN      EXCEEDSLIMIT       LIMIT │            │ ▼            ▼CONTINUE   TIMEOUT POLICY
+Long-running analytical requirements may require background processing or a reporting data architecture.
+Timeout values shall not be hardcoded independently throughout controllers.
+
+5.1394 MAXIMUM REPORTING DATE RANGE
+CS-RPT-FR-091 — Apply Maximum Reporting Date Range
+The system shall support maximum date-range policies.
+Example:
+OPERATIONAL REPORTMAXIMUM INTERACTIVE RANGE90 DAYS
+The value above is illustrative only.
+Historical multi-year analytics may require:
+BACKGROUND REPORTPRE-AGGREGATED DATADATA WAREHOUSE
+The exact policies shall be defined during Performance Architecture.
+
+5.1395 PROTECT OPERATIONAL DATABASE FROM REPORTING LOAD
+CS-RPT-FR-092 — Protect Operational Database from Reporting Load
+The system shall preserve an architectural boundary for protecting transactional PostgreSQL workloads from excessive analytical load.
+Problem:
+PATIENT REGISTRATIONAPPOINTMENT BOOKINGLAB RESULT ENTRYPAYMENT PROCESSING
+share PostgreSQL resources with:
+10-YEAR ANALYTICAL REPORT
+Potential impact:
+SLOW TRANSACTIONSTIMEOUTSDATABASE RESOURCE EXHAUSTIONPATIENT CARE WORKFLOW DELAYS
+The architecture shall support future strategies such as:
+QUERY OPTIMIZATIONINDEXINGREPORTING CACHEREAD MODELMATERIALIZED VIEWREAD REPLICA BOUNDARYANALYTICAL DATABASEDATA WAREHOUSE
+No specific strategy is finalized by this SRS requirement.
+
+5.1396 REPORTING CACHE BOUNDARY
+CS-RPT-FR-093 — Support Reporting Cache Boundary
+Priority
+Should Have
+The architecture should support caching of eligible analytical results.
+Potential candidates include:
+EXECUTIVE SUMMARYDAILY KPIDEPARTMENT SUMMARYSLOW-CHANGING DASHBOARD DATA
+Cache policy shall consider:
+DATA FRESHNESSSENSITIVITYHOSPITAL SCOPEUSER SCOPEINVALIDATION
+A cached result for Hospital A shall not be returned to Hospital B.
+
+5.1397 REPORTING READ MODEL BOUNDARY
+CS-RPT-FR-094 — Support Reporting Read Model Boundary
+Priority
+Should Have
+The architecture should support future reporting-specific read models.
+Conceptually:
+OPERATIONAL DOMAINS        │        ▼APPROVED DATA SYNCHRONIZATION        │        ▼REPORTING READ MODEL        │        ▼RPT/ANA
+A reporting read model may optimize analytical reads without changing operational domain ownership.
+
+5.1398 PRE-AGGREGATED ANALYTICS BOUNDARY
+CS-RPT-FR-095 — Support Pre-Aggregated Analytics Boundary
+Priority
+Should Have
+The architecture should support pre-aggregated analytical data.
+Example:
+Instead of recalculating:
+10 YEARS OF APPOINTMENTS
+for every dashboard request, the system may maintain:
+DAILY APPOINTMENT SUMMARY
+Conceptually:
+TRANSACTION DATA      │      ▼AGGREGATION PROCESS      │      ▼DAILY SUMMARY      │      ▼DASHBOARD
+Pre-aggregated data shall preserve documented calculation rules.
+
+5.1399 MATERIALIZED REPORTING BOUNDARY
+CS-RPT-FR-096 — Support Materialized Reporting Boundary
+Priority
+Should Have
+The architecture should support future materialized reporting structures.
+Potential implementation may include:
+POSTGRESQL MATERIALIZED VIEW
+or another approved analytical structure.
+The SRS shall not require materialized views for every report.
+Refresh strategy shall consider:
+DATA FRESHNESSQUERY COSTDATABASE LOADBUSINESS NEED
+
+5.1400 FUTURE DATA WAREHOUSE INTEGRATION
+CS-RPT-FR-097 — Support Future Data Warehouse Integration
+Priority
+Should Have
+The architecture should support future data warehouse integration.
+Conceptually:
+CURASPHERE OPERATIONAL SYSTEM             │             ▼APPROVED DATA PIPELINE             │             ▼DATA WAREHOUSE             │             ▼ANALYTICS
+The data warehouse may support:
+LONG-TERM ANALYTICSCROSS-DOMAIN ANALYTICSHISTORICAL TRENDINGEXECUTIVE REPORTING
+No data warehouse technology is selected by this SRS section.
+
+5.1401 FUTURE BUSINESS INTELLIGENCE INTEGRATION
+CS-RPT-FR-098 — Support Future Business Intelligence Integration
+Priority
+Should Have
+The architecture should support future approved Business Intelligence platform integration.
+Conceptually:
+CURASPHERE    │    ▼APPROVED ANALYTICAL DATA BOUNDARY    │    ▼BI PLATFORM    │    ▼AUTHORIZED DASHBOARD
+Potential BI platforms shall be evaluated later.
+Direct unrestricted BI access to production transactional tables shall not be assumed.
+
+5.1402 FUTURE PREDICTIVE ANALYTICS
+CS-RPT-FR-099 — Support Future Predictive Analytics
+Priority
+Should Have
+The architecture should preserve a future predictive analytics boundary.
+Potential use cases include:
+PATIENT VOLUME FORECASTBED DEMAND FORECASTMEDICINE DEMAND FORECASTSTAFFING DEMAND FORECAST
+Predictive output shall be clearly distinguished from confirmed operational facts.
+Therefore:
+PREDICTION    ≠CONFIRMED EVENT
+
+5.1403 FUTURE MACHINE LEARNING ANALYTICS
+CS-RPT-FR-100 — Support Future Machine Learning Analytics
+Priority
+Should Have
+The architecture should support future approved machine learning analytical services.
+Conceptually:
+CURASPHERE DATA      │      ▼APPROVED ML DATA BOUNDARY      │      ▼ML MODEL      │      ▼PREDICTION / SCORE      │      ▼RPT/ANA
+Machine learning output shall include approved context such as:
+MODEL VERSIONPREDICTION TIMECONFIDENCE BOUNDARYINPUT PERIOD
+where required.
+
+5.1404 FUTURE ANOMALY DETECTION
+CS-RPT-FR-101 — Support Future Anomaly Detection
+Priority
+Should Have
+The architecture should support future anomaly detection.
+Potential examples include:
+UNUSUAL BILLING ACTIVITYUNUSUAL MEDICINE CONSUMPTIONUNUSUAL APPOINTMENT CANCELLATION RATEUNUSUAL DOCUMENT EXPORT ACTIVITY
+An anomaly shall not automatically prove fraud or wrongdoing.
+Critical Principle
+ANOMALY   ≠CONFIRMED VIOLATION
+Anomaly output shall support investigation.
+
+5.1405 FUTURE FORECASTING
+CS-RPT-FR-102 — Support Future Forecasting
+Priority
+Should Have
+The system should support future forecasting outputs.
+Potential forecast dimensions include:
+DAILY PATIENT VOLUMEWEEKLY BED DEMANDMONTHLY REVENUEMEDICINE CONSUMPTIONSTAFFING DEMAND
+Forecasts shall identify their forecast period and generation time.
+
+5.1406 FUTURE POPULATION HEALTH ANALYTICS
+CS-RPT-FR-103 — Support Future Population Health Analytics
+Priority
+Should Have
+The architecture should preserve a future population health analytics boundary.
+Potential analytical use cases include:
+DISEASE TREND SUMMARYAGE GROUP ANALYSISREGIONAL HEALTH TREND BOUNDARYPUBLIC HEALTH REPORTING
+Such analytics shall require:
+PRIVACY REVIEWDATA GOVERNANCECLINICAL GOVERNANCELEGAL REVIEW
+The SRS shall not assume unrestricted secondary use of patient data.
+
+5.1407 FUTURE CLINICAL ANALYTICAL DECISION SUPPORT
+CS-RPT-FR-104 — Support Future Clinical Analytical Decision Support Boundary
+Priority
+Should Have
+The architecture should preserve a future clinical analytical decision-support boundary.
+Conceptually:
+APPROVED CLINICAL DATA         │         ▼ANALYTICAL ENGINE         │         ▼DECISION SUPPORT OUTPUT         │         ▼AUTHORIZED CLINICIAN
+Critical Principle
+ANALYTICAL RECOMMENDATION          ≠FINAL CLINICAL DECISION
+Clinical decision-support requirements shall be defined in a dedicated architecture and governance process.
+
+5.1408 FUTURE EXECUTIVE COMMAND CENTER
+CS-RPT-FR-105 — Support Future Executive Command Center
+Priority
+Should Have
+The architecture should support a future executive hospital command-center dashboard.
+Potential information includes:
+PATIENT FLOWBED OCCUPANCYEMERGENCY LOADLAB LOADRADIOLOGY LOADPHARMACY STATUSSTAFFING STATUSFINANCIAL SUMMARYSYSTEM HEALTH BOUNDARY
+The command center shall use approved aggregated data.
+Sensitive record-level access shall require separate authorization.
+
+5.1409 FUTURE REGULATORY REPORTING
+CS-RPT-FR-106 — Support Future Regulatory Reporting
+Priority
+Should Have
+The architecture should support future approved regulatory reports.
+Potential workflow:
+CURASPHERE DATA      │      ▼REGULATORY REPORT DEFINITION      │      ▼VALIDATION      │      ▼AUTHORIZED APPROVAL      │      ▼EXPORT / SUBMISSION
+Regulatory report definitions shall depend on applicable jurisdiction and hospital obligations.
+
+5.1410 FUTURE EXTERNAL REPORTING INTEGRATION
+CS-RPT-FR-107 — Support Future External Reporting Integration
+Priority
+Should Have
+The architecture should support future approved external reporting integration.
+Conceptually:
+RPT/ANA   │   ▼INT/API   │   ▼EXTERNAL REPORTING SYSTEM
+The Integration module shall own external communication boundaries.
+RPT/ANA shall own the approved report meaning and analytical result.
+
+5.1411 FUTURE MULTI-HOSPITAL COMPARATIVE ANALYTICS
+CS-RPT-FR-108 — Support Future Multi-Hospital Comparative Analytics
+Priority
+Should Have
+The architecture should support comparative analytics across approved hospitals.
+Example:
+                BED OCCUPANCYHOSPITAL A           82%HOSPITAL B           74%HOSPITAL C           91%
+Comparison shall use compatible KPI definitions.
+Incorrect:
+HOSPITAL AOCCUPANCY FORMULA A
+compared with:
+HOSPITAL BOCCUPANCY FORMULA B
+without analytical disclosure.
+Critical Principle
+COMPARABLE KPI NAME        │        ▼REQUIRES COMPARABLE KPI DEFINITION
+
+5.1412 ANALYTICAL PROCESSING HISTORY
+CS-RPT-FR-109 — Maintain Analytical Processing History
+The system shall maintain eligible analytical processing history.
+Potential events include:
+REPORT_REQUESTEDREPORT_VALIDATEDREPORT_QUEUEDREPORT_STARTEDREPORT_COMPLETEDREPORT_FAILEDREPORT_CANCELLEDREPORT_EXPORTEDREPORT_SCHEDULEDSCHEDULED_REPORT_STARTEDSCHEDULED_REPORT_COMPLETEDSCHEDULED_REPORT_FAILEDKPI_CALCULATEDKPI_SNAPSHOT_CREATEDDASHBOARD_REFRESHED
+Conceptually:
+REPORT EXECUTION       │       ▼PROCESSING EVENT 1       │       ▼PROCESSING EVENT 2       │       ▼PROCESSING EVENT 3
+Processing history shall support technical and operational traceability.
+It shall not replace centralized Audit requirements.
+
+5.1413 REPORT EXECUTION DATA FLOW MODEL
+USER │ ▼REACT REPORT UI │ ▼REPORT API REQUEST │ ▼ASP.NET CORE API │ ▼AUTHENTICATION │ ▼REPORT AUTHORIZATION │ ▼REPORT SCOPE │ ▼PARAMETER VALIDATION │ ▼REPORTING SERVICE │ ▼APPROVED DATA SOURCE │ ▼SERVER-SIDE CALCULATION │ ▼AGGREGATION │ ▼REPORT RESULT │ ▼REACT PRESENTATION
+
+5.1414 DASHBOARD DATA FLOW MODEL
+REACT DASHBOARD       │       ▼DASHBOARD REQUEST       │       ▼ASP.NET CORE API       │       ▼AUTHORIZATION       │       ▼DASHBOARD SERVICE       │       ▼WIDGET DEFINITIONS       │       ▼KPI / REPORT SERVICES       │       ▼APPROVED DATA SOURCES       │       ▼ANALYTICAL RESULTS       │       ▼DASHBOARD DTO       │       ▼REACT WIDGETS
+
+5.1415 SCHEDULED REPORT DATA FLOW MODEL
+REPORT SCHEDULE       │       ▼SCHEDULER / BACKGROUND WORKER       │       ▼DUE SCHEDULE       │       ▼CREATE REPORT EXECUTION       │       ▼VALIDATE CONFIGURATION       │       ▼REPORTING SERVICE       │       ▼GENERATE RESULT       │       ▼EXPORT IF REQUIRED       │       ▼REPORT RESULT AVAILABLE       │       ▼NOTIFICATION EVENT
+
+5.1416 FUTURE ANALYTICAL ARCHITECTURE MODEL
+                    CURASPHERE                         │          ┌──────────────┼──────────────┐          │              │              │          ▼              ▼              ▼     CLINICAL DATA   FINANCIAL DATA  OPERATIONS DATA          │              │              │          └──────────────┼──────────────┘                         ▼                APPROVED DATA BOUNDARY                         │              ┌──────────┼──────────┐              │          │          │              ▼          ▼          ▼         READ MODEL   AGGREGATION  DATA PIPELINE              │          │          │              └──────────┼──────────┘                         ▼                   ANALYTICS LAYER                         │              ┌──────────┼──────────┐              │          │          │              ▼          ▼          ▼            REPORTS     KPIs     DASHBOARDS              │          │          │              └──────────┼──────────┘                         ▼                 AUTHORIZED CONSUMERS                         │          ┌──────────────┼──────────────┐          ▼              ▼              ▼        REACT         FUTURE BI      FUTURE ML
+
+5.1417 REPORT EXECUTION SEQUENCE MODEL
+CLIENT       API       REPORT SERVICE       DATA SOURCE  │           │               │                  │  │ Execute   │               │                  │  ├──────────►│               │                  │  │           │ Authenticate  │                  │  │           │ Authorize     │                  │  │           │               │                  │  │           │ Execute       │                  │  │           ├──────────────►│                  │  │           │               │ Validate Params  │  │           │               │                  │  │           │               │ Query Data       │  │           │               ├─────────────────►│  │           │               │ Data             │  │           │               │◄─────────────────┤  │           │               │ Calculate        │  │           │               │ Aggregate        │  │           │               │                  │  │           │ Result        │                  │  │           │◄──────────────┤                  │  │ Response  │               │                  │  │◄──────────┤               │                  │
+
+5.1418 BACKGROUND REPORT SEQUENCE MODEL
+CLIENT      API      REPORT SERVICE      JOB STORE      WORKER  │          │              │                │             │  │ Request  │              │                │             │  ├─────────►│              │                │             │  │          │ Authorize    │                │             │  │          │              │                │             │  │          │ Create Job   │                │             │  │          ├─────────────►│                │             │  │          │              │ Save Job       │             │  │          │              ├───────────────►│             │  │          │ Job ID       │                │             │  │          │◄─────────────┤                │             │  │ Job ID   │              │                │             │  │◄─────────┤              │                │             │  │          │              │                │ Get Job     │  │          │              │                │◄────────────┤  │          │              │                │ Job         │  │          │              │                ├────────────►│  │          │              │                │             │  │          │              │                │             │ Execute  │          │              │                │             │ Report  │          │              │                │             │  │          │              │                │ Update      │  │          │              │                │◄────────────┤
+
+5.1419 REPORT EXECUTION STATE MODEL
+REQUESTED    │    ▼VALIDATING    │ ┌──┴──────────┐ │             │ ▼             ▼INVALID       VALID                │                ▼             QUEUED                │                ▼             RUNNING                │       ┌────────┼────────┐       │        │        │       ▼        ▼        ▼   COMPLETED  FAILED   CANCELLED       │       ▼   AVAILABLE       │       ▼    EXPIRED
+A synchronous report may transition:
+REQUESTED    │    ▼VALIDATING    │    ▼RUNNING    │    ▼COMPLETED
+without using a queue.
+
+5.1420 KPI LIFECYCLE MODEL
+KPI PROPOSED     │     ▼BUSINESS DEFINITION     │     ▼OWNER ASSIGNED     │     ▼CALCULATION RULE DEFINED     │     ▼DATA SOURCE APPROVED     │     ▼VALIDATED     │     ▼ACTIVE     │     ▼CALCULATED     │     ▼SNAPSHOT / HISTORY     │     ▼REVIEW     │     ├────────► UPDATED     │     └────────► RETIRED
+KPI definition changes shall remain traceable.
+
+5.1421 DASHBOARD REQUEST STATE MODEL
+REQUESTED    │    ▼AUTHORIZED    │    ▼SCOPE VALIDATED    │    ▼WIDGETS RESOLVED    │    ▼DATA REQUESTED    │    ▼ANALYTICS CALCULATED    │    ▼DASHBOARD RESULT    │    ▼DISPLAYED
+Failure may occur at:
+AUTHORIZATIONSCOPE VALIDATIONWIDGET DATA RETRIEVALANALYTICS EXECUTION
+The dashboard shall support approved partial-failure behavior during Detailed Design.
+
+5.1422 REPORTING BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-RPT-BR-001
+Reporting shall remain separate from operational business ownership
+CS-RPT-BR-002
+Analytical results shall not automatically execute operational commands
+CS-RPT-BR-003
+Every authoritative KPI shall use an approved source of truth
+CS-RPT-BR-004
+Displayed React data shall not automatically be treated as the complete analytical dataset
+CS-RPT-BR-005
+Authoritative KPI calculations shall be server-controlled
+CS-RPT-BR-006
+React shall primarily present approved analytical results
+CS-RPT-BR-007
+Report definitions shall remain distinct from report executions
+CS-RPT-BR-008
+Report identifiers shall remain distinct from execution identifiers
+CS-RPT-BR-009
+Reports shall use approved logical data sources
+CS-RPT-BR-010
+Report parameters shall be validated server-side
+CS-RPT-BR-011
+Report date ranges shall follow approved limits
+CS-RPT-BR-012
+Knowledge of a report identifier shall not grant report access
+CS-RPT-BR-013
+Report calculations shall use approved server-side logic
+CS-RPT-BR-014
+Report grouping and sorting fields shall be governed
+CS-RPT-BR-015
+Visible page rows shall not be treated as complete report totals
+CS-RPT-BR-016
+Large report results shall support pagination
+CS-RPT-BR-017
+Eligible reports shall identify data freshness and as-of time
+CS-RPT-BR-018
+KPI business definitions shall be approved and documented
+CS-RPT-BR-019
+KPI business owners shall remain distinct from technical implementers
+CS-RPT-BR-020
+KPI units and dimensions shall be governed
+CS-RPT-BR-021
+KPI thresholds shall require approved business definition
+CS-RPT-BR-022
+KPI calculations shall remain consistent across clients
+CS-RPT-BR-023
+React shall not independently redefine KPI status thresholds
+CS-RPT-BR-024
+Dashboards shall be role-aware
+CS-RPT-BR-025
+Department dashboards shall enforce department scope
+CS-RPT-BR-026
+Hospital dashboards shall enforce hospital scope
+CS-RPT-BR-027
+Dashboard filters shall not expand authorization scope
+CS-RPT-BR-028
+KPI summary access shall not automatically grant underlying record access
+CS-RPT-BR-029
+Dashboard personalization shall not expose unauthorized widgets
+CS-RPT-BR-030
+Historical report snapshots shall remain distinct from later report reruns
+CS-RPT-BR-031
+Report viewing permission shall remain distinct from export permission
+CS-RPT-BR-032
+Report exports shall follow approved field and size policies
+CS-RPT-BR-033
+Sensitive report exports shall support access-event recording
+CS-RPT-BR-034
+Only eligible reports shall support scheduling
+CS-RPT-BR-035
+Scheduled report failures shall not be silently discarded
+CS-RPT-BR-036
+Report delivery shall respect report sensitivity
+CS-RPT-BR-037
+Long-running reports shall support background execution where required
+CS-RPT-BR-038
+Report retry behavior shall consider failure category
+CS-RPT-BR-039
+Report authorization shall be enforced server-side
+CS-RPT-BR-040
+Patient analytical scope shall be derived from authenticated identity
+CS-RPT-BR-041
+Clinical report access shall follow approved clinical reporting policy
+CS-RPT-BR-042
+Financial reporting access shall remain separate from clinical access
+CS-RPT-BR-043
+Workforce reporting access shall remain separate from patient clinical access
+CS-RPT-BR-044
+Hospital scope shall be validated server-side
+CS-RPT-BR-045
+Cross-hospital analytics shall require explicit authorization
+CS-RPT-BR-046
+Sensitive reports shall support additional access controls
+CS-RPT-BR-047
+Sensitive report export shall be separately authorized
+CS-RPT-BR-048
+Report, KPI, and dashboard configuration changes shall be auditable
+CS-RPT-BR-049
+Excessive report and export activity shall support monitoring
+CS-RPT-BR-050
+Expensive reporting queries shall support performance investigation
+CS-RPT-BR-051
+Report timeout policy shall be centrally governed
+CS-RPT-BR-052
+Interactive reporting shall follow approved date-range policies
+CS-RPT-BR-053
+Analytical workloads shall not unnecessarily degrade operational hospital workflows
+CS-RPT-BR-054
+Cached analytical data shall preserve authorization and hospital scope
+CS-RPT-BR-055
+Reporting read models shall not change operational domain ownership
+CS-RPT-BR-056
+Pre-aggregated analytical data shall preserve documented KPI definitions
+CS-RPT-BR-057
+Materialized analytical structures shall define data freshness
+CS-RPT-BR-058
+Data warehouse integration shall use approved data governance
+CS-RPT-BR-059
+BI integration shall not assume unrestricted production database access
+CS-RPT-BR-060
+Predictive output shall remain distinct from confirmed operational fact
+CS-RPT-BR-061
+Machine learning output shall follow approved model governance
+CS-RPT-BR-062
+Anomaly detection shall not automatically prove wrongdoing
+CS-RPT-BR-063
+Forecast output shall identify its forecast period
+CS-RPT-BR-064
+Population health analytics shall require privacy and governance review
+CS-RPT-BR-065
+Analytical clinical recommendations shall not replace final clinical decisions
+CS-RPT-BR-066
+Executive summary access shall not automatically grant underlying sensitive record access
+CS-RPT-BR-067
+Regulatory reports shall use approved jurisdiction-specific definitions
+CS-RPT-BR-068
+External report exchange shall use the Integration boundary
+CS-RPT-BR-069
+Comparative hospital KPIs shall use compatible definitions
+CS-RPT-BR-070
+Analytical processing history shall support technical traceability
+
+5.1423 REPORTING PERMISSION CONCEPT
+Potential permissions include:
+RPT_REPORT_CATALOG_VIEWRPT_REPORT_VIEWRPT_REPORT_EXECUTERPT_REPORT_EXPORTRPT_REPORT_SCHEDULERPT_REPORT_HISTORY_VIEWRPT_REPORT_MANAGERPT_KPI_VIEWRPT_KPI_HISTORY_VIEWRPT_KPI_MANAGERPT_DASHBOARD_VIEWRPT_DEPARTMENT_DASHBOARD_VIEWRPT_HOSPITAL_DASHBOARD_VIEWRPT_CROSS_HOSPITAL_DASHBOARD_VIEWRPT_FINANCIAL_REPORT_VIEWRPT_FINANCIAL_REPORT_EXPORTRPT_CLINICAL_REPORT_VIEWRPT_WORKFORCE_REPORT_VIEWRPT_SENSITIVE_REPORT_VIEWRPT_SENSITIVE_REPORT_EXPORTRPT_REPORT_EXECUTION_MONITOR_VIEWRPT_REPORT_PERFORMANCE_VIEWRPT_ANALYTICAL_SECURITY_EVENT_VIEWRPT_ADMIN
+Receptionist:
+RECEPTIONIST     │     ├── RPT_DASHBOARD_VIEW     ├── RPT_REPORT_VIEW     └── RPT_REPORT_EXECUTE
+Doctor:
+DOCTOR   │   ├── RPT_DASHBOARD_VIEW   ├── RPT_KPI_VIEW   └── RPT_CLINICAL_REPORT_VIEW
+Billing Manager:
+BILLING MANAGER       │       ├── RPT_FINANCIAL_REPORT_VIEW       ├── RPT_FINANCIAL_REPORT_EXPORT       └── RPT_HOSPITAL_DASHBOARD_VIEW
+Executive:
+EXECUTIVE    │    ├── RPT_HOSPITAL_DASHBOARD_VIEW    └── RPT_CROSS_HOSPITAL_DASHBOARD_VIEW
+Report Administrator:
+REPORT ADMINISTRATOR         │         ├── RPT_REPORT_MANAGE         ├── RPT_KPI_MANAGE         └── RPT_REPORT_PERFORMANCE_VIEW
+Critical Principle
+RPT_ADMIN
+shall not automatically grant:
+PATIENT_RECORD_EDITCLINICAL_NOTE_EDITLAB_RESULT_VERIFYRADIOLOGY_REPORT_APPROVEPRESCRIPTION_CREATEPAYMENT_REVERSESALARY_APPROVEIAM_PERMISSION_MANAGE
+Reporting administration shall not become universal hospital operational authority.
+
+5.1424 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Report registration
+CS-RPT-FR-001 to 006
+Report parameters
+CS-RPT-FR-007 to 009
+Report execution
+CS-RPT-FR-010 to 013
+Server-side calculation
+CS-RPT-FR-014 to 015
+Report grouping and totals
+CS-RPT-FR-016 to 018
+Report sorting and filtering
+CS-RPT-FR-019 to 020
+Report pagination
+CS-RPT-FR-021
+Data freshness
+CS-RPT-FR-022 to 023
+Report execution history
+CS-RPT-FR-024
+KPI definition
+CS-RPT-FR-025 to 032
+KPI calculation and history
+CS-RPT-FR-033 to 038
+Operational dashboard
+CS-RPT-FR-039
+Role dashboard
+CS-RPT-FR-040
+Department dashboard
+CS-RPT-FR-041
+Hospital dashboard
+CS-RPT-FR-042
+Dashboard widgets and data
+CS-RPT-FR-043 to 047
+Dashboard drill-down
+CS-RPT-FR-048
+Dashboard personalization
+CS-RPT-FR-049
+Report snapshots
+CS-RPT-FR-050
+Report exports
+CS-RPT-FR-051 to 056
+Scheduled reporting
+CS-RPT-FR-057 to 063
+Background reporting
+CS-RPT-FR-064 to 067
+Report authorization
+CS-RPT-FR-068 to 069
+Patient reporting scope
+CS-RPT-FR-070
+Clinical reporting scope
+CS-RPT-FR-071
+Financial reporting scope
+CS-RPT-FR-072
+Workforce reporting scope
+CS-RPT-FR-073
+Hospital reporting scope
+CS-RPT-FR-074
+Cross-hospital analytics
+CS-RPT-FR-075
+Sensitive reporting
+CS-RPT-FR-076 to 078
+Report access events
+CS-RPT-FR-079
+Configuration audit
+CS-RPT-FR-080 to 082
+Analytical security
+CS-RPT-FR-083
+Reporting monitoring
+CS-RPT-FR-084 to 089
+Query protection
+CS-RPT-FR-090 to 092
+Reporting cache
+CS-RPT-FR-093
+Reporting read model
+CS-RPT-FR-094
+Pre-aggregation
+CS-RPT-FR-095
+Materialized reporting
+CS-RPT-FR-096
+Future data warehouse
+CS-RPT-FR-097
+Future BI
+CS-RPT-FR-098
+Future predictive analytics
+CS-RPT-FR-099
+Future machine learning
+CS-RPT-FR-100
+Future anomaly detection
+CS-RPT-FR-101
+Future forecasting
+CS-RPT-FR-102
+Future population health
+CS-RPT-FR-103
+Future clinical analytics
+CS-RPT-FR-104
+Future executive command center
+CS-RPT-FR-105
+Future regulatory reporting
+CS-RPT-FR-106
+Future external reporting
+CS-RPT-FR-107
+Future multi-hospital analytics
+CS-RPT-FR-108
+Analytical processing history
+CS-RPT-FR-109
+
+5.1425 REPORTING AND ANALYTICS RISK ANALYSIS
+Risk 1 — React Calculates Hospital KPIs
+Problem
+React downloads operational records and calculates:
+REVENUEBED OCCUPANCYAPPOINTMENT COMPLETION RATE
+Impact
+Different screens may produce different KPI values.
+Mitigation
+Use authoritative server-side KPI calculation.
+
+Risk 2 — Pagination Data Is Treated as Complete Data
+Problem
+React receives:
+25 RECORDS
+because:
+PAGE SIZE = 25
+and displays:
+TOTAL PATIENTS = 25
+Impact
+Management decisions use incorrect information.
+Mitigation
+Return authoritative total and KPI values from the server.
+
+Risk 3 — KPI Formula Exists Only in Developer Code
+Problem
+No approved business definition exists for:
+BED OCCUPANCY RATE
+Impact
+Developers make independent assumptions.
+Mitigation
+Maintain governed KPI definitions and business owners.
+
+Risk 4 — Same KPI Uses Different Formulas
+Problem
+Dashboard A calculates:
+COMPLETED / ALL APPOINTMENTS
+Dashboard B calculates:
+COMPLETED / NON-CANCELLED APPOINTMENTS
+Both display:
+APPOINTMENT COMPLETION RATE
+Impact
+Users lose trust in CuraSphere analytics.
+Mitigation
+Use one approved KPI definition.
+
+Risk 5 — Report ID Grants Access
+Problem
+User changes:
+RPT-000101
+to:
+RPT-000102
+and opens a payroll report.
+Impact
+Sensitive information exposure.
+Mitigation
+Authorize every report request.
+
+Risk 6 — Hospital Filter Bypasses Scope
+Problem
+Manager belongs to Hospital A.
+Client sends:
+hospitalId = HOSPITAL_B
+Impact
+Cross-hospital data exposure.
+Mitigation
+Validate hospital scope server-side.
+
+Risk 7 — Patient ID Is Trusted From React
+Problem
+Patient changes:
+patientId = PAT-001
+to:
+patientId = PAT-002
+Impact
+Another patient’s analytics may be exposed.
+Mitigation
+Derive patient scope from authenticated identity.
+
+Risk 8 — Dashboard Gives Everyone All KPIs
+Problem
+One dashboard API returns:
+PATIENT DATAREVENUEPAYROLLSECURITY EVENTSCLINICAL ANALYTICS
+to every user.
+Impact
+Role boundaries disappear.
+Mitigation
+Use role and scope-aware dashboards.
+
+Risk 9 — KPI Access Grants Detail Access
+Problem
+A manager can view:
+PATIENT COUNT = 5,000
+and therefore the system allows access to all 5,000 patient records.
+Impact
+Summary access becomes record-level access.
+Mitigation
+Authorize drill-down separately.
+
+Risk 10 — Report View Permission Grants Export Permission
+Problem
+A user can view a restricted report.
+The same user exports:
+500,000 PATIENT RECORDS
+Impact
+Large-scale data extraction becomes possible.
+Mitigation
+Separate report view and export permissions.
+
+Risk 11 — Unlimited Export Size
+Problem
+User requests millions of rows.
+Impact
+Memory, CPU, database, and security risk increase.
+Mitigation
+Apply export-size limits and background export boundaries.
+
+Risk 12 — Sensitive Export Is Not Recorded
+Problem
+A payroll or patient report is exported.
+No access event exists.
+Impact
+Security investigation becomes difficult.
+Mitigation
+Record eligible sensitive exports.
+
+Risk 13 — CSV Injection
+Problem
+Exported cell begins with spreadsheet formula syntax.
+Impact
+Opening the CSV may trigger unsafe spreadsheet behavior.
+Mitigation
+Evaluate CSV injection protection during Security Architecture.
+
+Risk 14 — Every Dashboard Refresh Runs Huge Queries
+Problem
+Every widget independently scans large transactional tables.
+Impact
+PostgreSQL performance degrades.
+Mitigation
+Use query optimization and future caching, read models, or pre-aggregation where justified.
+
+Risk 15 — Dashboard Polls Every Second
+Problem
+Hundreds of users continuously refresh expensive KPIs.
+Impact
+Application and database load increase.
+Mitigation
+Define dashboard freshness and refresh policies.
+
+Risk 16 — Real-Time Label on Delayed Data
+Problem
+Dashboard displays:
+LIVE
+but data is refreshed once daily.
+Impact
+Users make decisions based on incorrect freshness assumptions.
+Mitigation
+Expose data freshness and as-of time.
+
+Risk 17 — 50-Year Interactive Report
+Problem
+User executes:
+START: 1976END: 2026
+on transactional data.
+Impact
+Long-running queries affect operational workloads.
+Mitigation
+Apply date-range limits and background analytical workflows.
+
+Risk 18 — No Query Timeout Policy
+Problem
+A report query runs indefinitely.
+Impact
+Database and application resources remain occupied.
+Mitigation
+Define governed report timeout boundaries.
+
+Risk 19 — Scheduled Reports Fail Silently
+Problem
+Monthly management report fails for six months.
+No alert or execution history exists.
+Impact
+Management receives incomplete information.
+Mitigation
+Record scheduled executions and failures.
+
+Risk 20 — Sensitive Report Sent as Open Email Attachment
+Problem
+A detailed patient report is automatically attached to ordinary email.
+Impact
+Sensitive information may leave controlled CuraSphere access boundaries.
+Mitigation
+Apply report delivery sensitivity policies.
+
+Risk 21 — Background Job Stored Only in Memory
+Problem
+Long report is running.
+ASP.NET Core application restarts.
+Impact
+The report execution disappears.
+Mitigation
+Use durable background processing boundaries for important jobs.
+
+Risk 22 — Retry Every Failure Forever
+Problem
+Invalid report continuously retries.
+Impact
+Resources are wasted.
+Mitigation
+Classify failures and define retry eligibility.
+
+Risk 23 — Reporting Admin Becomes Hospital Superuser
+Problem
+Report configuration permission grants access to:
+ALL PATIENT RECORDSALL PAYROLL RECORDSALL FINANCIAL RECORDS
+Impact
+Technical administration becomes unrestricted business access.
+Mitigation
+Separate report configuration from report-content authorization.
+
+Risk 24 — Reporting Queries Block Patient Care Workflows
+Problem
+A large analytical query consumes PostgreSQL resources.
+At the same time:
+PATIENT REGISTRATIONLAB RESULT ENTRYPAYMENT PROCESSING
+become slow.
+Impact
+Operational hospital workflows are affected.
+Mitigation
+Protect transactional workloads through approved reporting architecture.
+
+Risk 25 — Cache Leaks Hospital Data
+Problem
+Cache key:
+dashboard-summary
+stores Hospital A result.
+Hospital B requests the same key.
+Impact
+Hospital A analytics are returned to Hospital B.
+Mitigation
+Cache policy shall include authorization and hospital scope.
+
+Risk 26 — Stale Cache Is Presented as Current
+Problem
+Dashboard displays old values without freshness information.
+Impact
+Users assume the data is current.
+Mitigation
+Return as-of time and freshness classification.
+
+Risk 27 — Materialized Data Has Unknown Refresh Time
+Problem
+Management sees a KPI.
+No one knows when the underlying materialized data was refreshed.
+Impact
+The KPI cannot be interpreted correctly.
+Mitigation
+Track analytical data freshness.
+
+Risk 28 — BI Tool Connects Directly With Full Production Access
+Problem
+A BI account receives unrestricted production database credentials.
+Impact
+Data exposure and operational database risk increase.
+Mitigation
+Use approved analytical data and access boundaries.
+
+Risk 29 — Prediction Is Presented as Fact
+Problem
+Model predicts:
+500 PATIENTS TOMORROW
+UI displays:
+500 PATIENTS WILL ARRIVE
+Impact
+Uncertainty is hidden.
+Mitigation
+Clearly classify predictive output.
+
+Risk 30 — Machine Learning Model Version Is Unknown
+Problem
+A prediction exists.
+The system cannot identify which model generated it.
+Impact
+Analytical reproducibility and investigation become difficult.
+Mitigation
+Preserve future model governance metadata.
+
+Risk 31 — Anomaly Means Automatic Fraud Accusation
+Problem
+Anomaly model identifies unusual billing.
+System marks employee:
+FRAUDULENT
+Impact
+Analytical uncertainty becomes an unsupported accusation.
+Mitigation
+Treat anomaly detection as an investigation signal.
+
+Risk 32 — Population Health Analytics Ignores Privacy
+Problem
+Patient data is reused for broad analytics without governance review.
+Impact
+Privacy and compliance risks increase.
+Mitigation
+Require privacy, data governance, and legal review.
+
+Risk 33 — AI Recommendation Replaces Clinician
+Problem
+Analytical model recommends an action.
+System automatically treats it as the final clinical decision.
+Impact
+Patient safety and clinical accountability may be affected.
+Mitigation
+Keep analytical recommendations distinct from final clinical decisions.
+
+Risk 34 — Hospitals Compare Different KPI Definitions
+Problem
+Hospital A and Hospital B calculate occupancy differently.
+Management ranks hospitals using the values.
+Impact
+The comparison is misleading.
+Mitigation
+Use governed comparable KPI definitions.
+
+Risk 35 — Analytics Microservices Created Too Early
+Problem
+RAD team immediately creates:
+REPORT MICROSERVICEKPI MICROSERVICEDASHBOARD MICROSERVICEEXPORT MICROSERVICESCHEDULER MICROSERVICEANALYTICS MICROSERVICE
+Impact
+NETWORK COMPLEXITYDEPLOYMENT COMPLEXITYDATA SYNCHRONIZATION PROBLEMSDISTRIBUTED FAILURE MODESDEVOPS OVERHEAD
+Mitigation
+Begin with a well-isolated modular reporting and analytics domain.
+Extract independent analytical services only when scale and architecture evidence require them.
+
+5.1426 COMPLETE REPORTING CAPABILITY MODEL
+                         REPORTING PLATFORM                                │          ┌─────────────────────┼─────────────────────┐          │                     │                     │          ▼                     ▼                     ▼       REPORTS                 KPIs                DASHBOARDS          │                     │                     │          ▼                     ▼                     ▼     DEFINITIONS             DEFINITIONS            WIDGETS          │                     │                     │          ▼                     ▼                     ▼     PARAMETERS             CALCULATION             ROLE SCOPE          │                     │                     │          ▼                     ▼                     ▼     EXECUTION              DIMENSIONS             FILTERS          │                     │                     │          ▼                     ▼                     ▼     AGGREGATION              TARGETS              REFRESH          │                     │                     │          ▼                     ▼                     ▼       RESULTS                TRENDS              DRILL-DOWN          │                     │                     │          └─────────────────────┼─────────────────────┘                                ▼                             SECURITY                                │                  ┌─────────────┼─────────────┐                  │             │             │                  ▼             ▼             ▼             AUTHORIZATION     SCOPE       SENSITIVITY                  │             │             │                  └─────────────┼─────────────┘                                ▼                              OUTPUT                                │                 ┌──────────────┼──────────────┐                 │              │              │                 ▼              ▼              ▼              DISPLAY         EXPORT        SCHEDULE                 │              │              │                 └──────────────┼──────────────┘                                ▼                           PERFORMANCE                                │                 ┌──────────────┼──────────────┐                 │              │              │                 ▼              ▼              ▼              MONITOR         CACHE        READ MODEL                 │              │              │                 └──────────────┼──────────────┘                                ▼                         FUTURE ANALYTICS                                │              ┌─────────────────┼─────────────────┐              ▼                 ▼                 ▼         DATA WAREHOUSE         BI                ML
+
+5.1427 REPORTING MODULE COMPLETION STATUS
+Module: Reporting, Analytics, Dashboard and Management Information SystemModule Code: RPT/ANARequirement Range: CS-RPT-FR-001 to CS-RPT-FR-109Business Rule Range: CS-RPT-BR-001 to CS-RPT-BR-070
+Reporting Domain Boundary: DefinedSource of Truth Boundary: DefinedReact Analytics Boundary: DefinedReporting Actors: DefinedReport Definition: DefinedReport Identifier: DefinedReport Name: DefinedReport Category: DefinedReport Owner: DefinedReport Data Source: DefinedReport Parameters: DefinedReport Parameter Validation: DefinedReport Date-Range Validation: DefinedReport Execution: DefinedReport Execution Identifier: DefinedReport Execution Status: DefinedReport Result Generation: DefinedServer-Side Calculation: DefinedServer-Side Aggregation: DefinedReport Grouping: DefinedReport Totals: DefinedReport Subtotals: DefinedReport Sorting: DefinedReport Filtering: DefinedReport Pagination: DefinedReport As-Of Time: DefinedReporting Data Freshness: DefinedReport Execution History: DefinedKPI Definition: DefinedKPI Identifier: DefinedKPI Calculation Rule: DefinedKPI Owner: DefinedKPI Measurement Unit: DefinedKPI Dimensions: DefinedKPI Target: DefinedKPI Threshold: DefinedKPI Calculation: DefinedKPI Snapshot: DefinedKPI History: DefinedKPI Trend: DefinedKPI Period Comparison: DefinedKPI Status Classification: DefinedOperational Dashboard: DefinedRole-Based Dashboard: DefinedDepartment Dashboard: DefinedHospital Dashboard: DefinedDashboard Widget: DefinedDashboard Data Retrieval: DefinedDashboard Refresh: DefinedDashboard Date Range: DefinedDashboard Filters: DefinedDashboard Drill-Down: DefinedDashboard Personalization: DefinedReport Snapshot: DefinedReport Export: DefinedCSV Export: DefinedSpreadsheet Export Boundary: DefinedPDF Export Boundary: DefinedExport Size Limit: DefinedSensitive Export Event: DefinedReport Scheduling: DefinedRecurring Report Schedule: DefinedScheduled Report Execution: DefinedScheduled Report Execution Record: DefinedScheduled Report Failure: DefinedReport Delivery Boundary: DefinedReport Notification Integration: DefinedBackground Report Execution: DefinedBackground Report Status: DefinedReport Cancellation Boundary: DefinedReport Retry Boundary: DefinedReport Authorization: DefinedReport Record Scope: DefinedPatient Reporting Scope: DefinedClinical Reporting Scope: DefinedFinancial Reporting Scope: DefinedWorkforce Reporting Scope: DefinedHospital Reporting Scope: DefinedCross-Hospital Analytics: DefinedSensitive Report Classification: DefinedSensitive Report Access: DefinedSensitive Report Export: DefinedReport Access Events: DefinedReport Configuration Audit: DefinedKPI Configuration Audit: DefinedDashboard Configuration Audit: DefinedAnalytical Security Events: DefinedReport Execution Monitoring: DefinedReport Performance Monitoring: DefinedDashboard Performance Monitoring: DefinedExcessive Report Execution Detection: DefinedExcessive Export Detection: DefinedExpensive Query Monitoring: DefinedReport Query Timeout Boundary: DefinedMaximum Reporting Date Range: DefinedOperational Database Protection: DefinedReporting Cache Boundary: DefinedReporting Read Model Boundary: DefinedPre-Aggregated Analytics Boundary: DefinedMaterialized Reporting Boundary: DefinedFuture Data Warehouse Integration: DefinedFuture BI Integration: DefinedFuture Predictive Analytics: DefinedFuture Machine Learning Analytics: DefinedFuture Anomaly Detection: DefinedFuture Forecasting: DefinedFuture Population Health Analytics: DefinedFuture Clinical Analytical Decision Support: DefinedFuture Executive Command Center: DefinedFuture Regulatory Reporting: DefinedFuture External Reporting Integration: DefinedFuture Multi-Hospital Comparative Analytics: DefinedAnalytical Processing History: DefinedReport Execution Data Flow: DefinedDashboard Data Flow: DefinedScheduled Report Data Flow: DefinedFuture Analytical Architecture Model: DefinedReport Execution Sequence Model: DefinedBackground Report Sequence Model: DefinedReport Execution State Model: DefinedKPI Lifecycle Model: DefinedDashboard Request State Model: DefinedReporting Permission Concept: DefinedRequirement Traceability: EstablishedReporting and Analytics Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The Reporting, Analytics, Dashboard and Management Information requirements establish the analytical and management-information foundation of CuraSphere.
+These requirements shall later be transformed into:
+reporting domain architecture;
+analytics domain architecture;
+dashboard architecture;
+KPI governance architecture;
+reporting application architecture;
+analytical data architecture;
+reporting security architecture;
+reporting use case model;
+execute report use case;
+view report use case;
+export report use case;
+schedule report use case;
+cancel report use case;
+retry report use case;
+view dashboard use case;
+refresh dashboard use case;
+drill-down dashboard use case;
+view KPI history use case;
+configure KPI use case;
+configure report use case;
+configure dashboard use case;
+report execution activity diagram;
+report export activity diagram;
+report scheduling activity diagram;
+background report activity diagram;
+KPI calculation activity diagram;
+dashboard refresh activity diagram;
+report execution sequence diagram;
+background report sequence diagram;
+scheduled report sequence diagram;
+KPI calculation sequence diagram;
+dashboard loading sequence diagram;
+report domain model;
+Report Definition entity;
+Report Parameter Definition entity;
+Report Execution entity;
+Report Result entity;
+Report Snapshot entity;
+Report Schedule entity;
+KPI Definition entity;
+KPI Snapshot entity;
+Dashboard entity;
+Dashboard Widget entity;
+Dashboard Assignment entity;
+Analytical Processing Event entity;
+PostgreSQL reporting metadata schema;
+report identifier strategy;
+report execution identifier strategy;
+KPI identifier strategy;
+report category strategy;
+report ownership strategy;
+report parameter strategy;
+report parameter validation strategy;
+reporting date-range policy;
+report execution strategy;
+synchronous report strategy;
+background report strategy;
+scheduled report strategy;
+report status strategy;
+report result strategy;
+report pagination strategy;
+report aggregation strategy;
+report grouping strategy;
+report total strategy;
+report subtotal strategy;
+report sorting strategy;
+report filtering strategy;
+report as-of time strategy;
+analytical freshness strategy;
+KPI definition governance;
+KPI formula governance;
+KPI versioning evaluation;
+KPI ownership strategy;
+KPI unit strategy;
+KPI dimension strategy;
+KPI target strategy;
+KPI threshold strategy;
+KPI calculation service;
+KPI snapshot strategy;
+KPI trend strategy;
+KPI comparison strategy;
+KPI status strategy;
+dashboard definition strategy;
+dashboard role assignment;
+dashboard widget strategy;
+dashboard data composition strategy;
+dashboard refresh strategy;
+dashboard partial-failure strategy;
+dashboard drill-down strategy;
+dashboard personalization strategy;
+report snapshot strategy;
+CSV export strategy;
+XLSX export evaluation;
+PDF report generation evaluation;
+export field policy;
+export size policy;
+sensitive export policy;
+report schedule strategy;
+recurring schedule representation;
+report time-zone strategy;
+report background worker;
+durable report job strategy;
+report cancellation strategy;
+report retry strategy;
+report failure classification;
+report delivery strategy;
+notification integration;
+report authorization policy;
+report scope evaluator;
+patient report scope evaluator;
+clinical report scope evaluator;
+financial report scope evaluator;
+workforce report scope evaluator;
+hospital report scope evaluator;
+cross-hospital analytics policy;
+report sensitivity evaluator;
+report export authorization policy;
+report access event service;
+analytical security event strategy;
+report monitoring metrics;
+dashboard monitoring metrics;
+expensive query monitoring;
+PostgreSQL query analysis;
+PostgreSQL execution plan evaluation;
+reporting index strategy;
+report query timeout strategy;
+maximum date-range strategy;
+operational database protection strategy;
+reporting cache evaluation;
+Redis reporting cache evaluation;
+in-memory reporting cache evaluation;
+cache key scope strategy;
+cache invalidation strategy;
+reporting read model evaluation;
+CQRS read model evaluation;
+materialized view evaluation;
+PostgreSQL materialized view strategy;
+pre-aggregation strategy;
+daily summary strategy;
+monthly summary strategy;
+analytical event processing evaluation;
+read replica evaluation;
+analytical database evaluation;
+data warehouse evaluation;
+ETL evaluation;
+ELT evaluation;
+analytical pipeline strategy;
+Power BI integration evaluation;
+other BI platform evaluation;
+predictive analytics architecture;
+ML integration architecture;
+ML model governance;
+model version tracking;
+prediction metadata strategy;
+anomaly detection architecture;
+forecasting architecture;
+population health governance;
+clinical analytics governance;
+executive command-center architecture;
+regulatory report architecture;
+external report integration architecture;
+multi-hospital analytical architecture;
+React reporting module architecture;
+React report catalog UI;
+React report parameter UI;
+React report result UI;
+React report table;
+React report pagination;
+React report filtering;
+React report sorting;
+React report export UI;
+React background report status UI;
+React report schedule UI;
+React KPI card architecture;
+React KPI trend architecture;
+React chart architecture;
+React dashboard grid architecture;
+React dashboard widget architecture;
+React dashboard filter architecture;
+React dashboard refresh architecture;
+React drill-down architecture;
+TanStack Query analytical data strategy;
+Zustand dashboard UI state strategy;
+chart library evaluation;
+data visualization accessibility;
+responsive dashboard design;
+report authorization tests;
+patient report scope tests;
+clinical report scope tests;
+financial report scope tests;
+workforce report scope tests;
+hospital scope tests;
+cross-hospital scope tests;
+report parameter tests;
+date-range tests;
+report calculation tests;
+report aggregation tests;
+report total tests;
+report subtotal tests;
+report grouping tests;
+report sorting tests;
+report filtering tests;
+report pagination tests;
+report as-of time tests;
+data freshness tests;
+KPI formula tests;
+KPI unit tests;
+KPI dimension tests;
+KPI target tests;
+KPI threshold tests;
+KPI snapshot tests;
+KPI trend tests;
+KPI comparison tests;
+KPI status tests;
+dashboard authorization tests;
+dashboard widget tests;
+dashboard scope tests;
+dashboard refresh tests;
+dashboard filter tests;
+dashboard drill-down tests;
+dashboard personalization tests;
+report snapshot tests;
+CSV export tests;
+CSV injection tests;
+spreadsheet export tests;
+PDF export tests;
+export-size tests;
+sensitive export tests;
+report scheduling tests;
+scheduled report failure tests;
+background report tests;
+application restart tests;
+durable job tests;
+report cancellation tests;
+report retry tests;
+report timeout tests;
+expensive query tests;
+database load tests;
+concurrent report execution tests;
+concurrent dashboard tests;
+cache scope tests;
+stale cache tests;
+read model consistency tests;
+materialized data freshness tests;
+pre-aggregation accuracy tests;
+reporting security tests;
+analytical scraping tests;
+excessive execution tests;
+excessive export tests;
+future BI security tests;
+future ML governance tests;
+future prediction classification tests;
+future anomaly tests;
+future population health privacy tests;
+future clinical analytics safety tests;
+future multi-hospital KPI compatibility tests.
+No reporting microservice, analytics microservice, KPI microservice, dashboard microservice, export microservice, scheduler microservice, data warehouse, data lake, lakehouse, reporting database, analytical database, PostgreSQL read replica, PostgreSQL materialized view implementation, CQRS implementation, reporting read model implementation, Redis reporting cache, in-memory reporting cache, distributed cache, cache expiration period, cache invalidation strategy, pre-aggregation schedule, daily summary tables, monthly summary tables, ETL platform, ELT platform, Apache Kafka deployment, RabbitMQ deployment, background report queue, Hangfire deployment, Quartz.NET deployment, Azure Service Bus deployment, report scheduler technology, report execution timeout, report maximum date range, report maximum page size, report maximum export rows, report maximum export file size, CSV generation library, CSV injection handling implementation, XLSX generation library, ClosedXML deployment, EPPlus deployment, PDF generation library, QuestPDF deployment, iText deployment, chart rendering library, server-side chart rendering, React chart library, Recharts deployment, Chart.js deployment, Apache ECharts deployment, dashboard grid library, report snapshot storage implementation, report result storage implementation, report result expiration period, background report result retention period, report retry count, report retry delay, report cancellation technology, report progress calculation strategy, KPI formula expression engine, KPI definition DSL, dynamic SQL report builder, report designer, end-user report builder, arbitrary SQL reporting, Power BI deployment, Tableau deployment, Looker deployment, Metabase deployment, Superset deployment, data warehouse provider, Azure Synapse deployment, Snowflake deployment, BigQuery deployment, Amazon Redshift deployment, Databricks deployment, machine learning platform, ML.NET deployment, Python ML service, TensorFlow deployment, PyTorch deployment, anomaly detection model, forecasting model, clinical decision-support model, executive command-center technology, regulatory submission protocol, analytical data retention period, analytical data anonymization strategy, de-identification strategy, pseudonymization strategy, read replica routing strategy, analytical encryption strategy, multi-hospital KPI inheritance strategy, or analytical service extraction strategy has been finalized by this SRS section.
+Those decisions shall be made during Domain Architecture, Application Architecture, Data Architecture, Reporting Architecture, Analytics Architecture, KPI Governance, Data Governance, Security Architecture, Identity and Access Architecture, Clinical Architecture, Financial Architecture, Workforce Architecture, Integration Architecture, Infrastructure Architecture, Performance Architecture, DevOps Architecture, Disaster Recovery Architecture, Privacy Review, Legal and Compliance Review, Hospital Governance, UI Architecture, Detailed Design, technology evaluation, performance testing, security testing, and approved operational planning.
+

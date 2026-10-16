@@ -1,0 +1,453 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 7 - System Architecture
+Part 7.4 - Component Architecture
+
+7.4 Component Architecture
+
+7.4.1 Introduction
+The Component Architecture defines the internal structure of CuraSphere by decomposing the Hospital Management System into modular, reusable, and independently deployable software components. Each component encapsulates a specific business capability and communicates with other components through standardized interfaces and service contracts.
+The component-based architecture improves:
+Maintainability
+Scalability
+Testability
+Reusability
+Fault Isolation
+Team Collaboration
+Continuous Deployment
+Future Expansion
+Each component owns its business logic while depending only on published interfaces rather than internal implementations.
+
+7.4.2 Objectives
+The Component Architecture shall:
+Divide the HMS into independent modules.
+Minimize coupling between components.
+Maximize cohesion within components.
+Define clear service boundaries.
+Enable independent testing and deployment.
+Support horizontal scaling of individual modules.
+Facilitate integration with external systems.
+Provide a foundation for future microservice adoption if required.
+
+7.4.3 Enterprise Component Overview
+The CuraSphere system consists of the following primary components.
+Component ID
+Component Name
+Description
+CMP-001
+Authentication & Identity
+Authentication, authorization, session management
+CMP-002
+Patient Management
+Patient registration and demographics
+CMP-003
+Appointment Management
+Appointment scheduling and calendar
+CMP-004
+OPD Management
+Outpatient consultation workflow
+CMP-005
+IPD Management
+Inpatient admission, stay, discharge
+CMP-006
+Emergency Management
+Emergency patient workflow
+CMP-007
+Laboratory Information System (LIS)
+Diagnostic laboratory management
+CMP-008
+Radiology Information System (RIS)
+Imaging workflow
+CMP-009
+Pharmacy Management
+Prescription and medicine dispensing
+CMP-010
+Billing & Finance
+Billing, invoicing, insurance, payments
+CMP-011
+Inventory Management
+Medical inventory and procurement
+CMP-012
+Human Resource Management
+Staff and payroll management
+CMP-013
+Reporting & Analytics
+Reports, dashboards, KPIs
+CMP-014
+Notification Service
+SMS, email, push notifications
+CMP-015
+Administration
+System configuration and administration
+CMP-016
+Audit & Logging
+Audit trail and activity logging
+
+7.4.4 Enterprise Component Relationship
+                             CuraSphere HMS
+                                    │
+      ┌─────────────────────────────┼─────────────────────────────┐
+      │                             │                             │
+ Clinical Components          Administrative Components      Platform Components
+      │                             │                             │
+ ┌────┼─────┐                 ┌──────┼────────┐             ┌──────┼────────┐
+ │    │     │                 │      │        │             │      │        │
+Patient Appointment OPD      Billing Inventory HR      Auth Notification Audit
+ │      │       │                │         │             │
+ ├──────┼───────┼────────────────┼─────────┼─────────────┤
+ ▼      ▼       ▼                ▼         ▼             ▼
+ Laboratory Radiology Pharmacy Reporting Administration
+
+7.4.5 Component Interaction Principles
+All components shall adhere to the following architectural principles:
+Loose Coupling
+Components shall interact through service interfaces and APIs.
+High Cohesion
+Each component shall implement a single business domain.
+Encapsulation
+Internal implementation details shall remain hidden from other components.
+Interface-Based Communication
+Components shall expose documented interfaces rather than internal classes.
+Independent Testing
+Each component shall be testable without requiring the entire system.
+
+7.4.6 Component 1 — Authentication & Identity (CMP-001)
+Purpose
+Manages authentication, authorization, identity verification, session control, and user access.
+Internal Subcomponents
+Login Manager
+JWT Service
+Session Manager
+Password Manager
+MFA Service
+RBAC Engine
+Token Validator
+Audit Logger
+Responsibilities
+User login
+Password validation
+JWT generation
+Session creation
+Session expiration
+Password reset
+MFA verification
+Role verification
+Interfaces
+Consumes
+User Repository
+Notification Service
+Provides
+Login API
+Logout API
+Refresh Token API
+Validate Token API
+
+7.4.7 Component 2 — Patient Management (CMP-002)
+Purpose
+Maintains the complete lifecycle of patient demographic information.
+Internal Components
+Patient Registration
+Patient Search
+Patient Profile
+Medical History
+Family Information
+Emergency Contacts
+Identity Verification
+Patient Merge
+Patient Archive
+Responsibilities
+Register patients
+Update profiles
+Search patients
+Validate uniqueness
+Maintain demographics
+Manage medical history
+Link insurance information
+Interfaces
+Consumes
+Authentication
+Billing
+Reporting
+Provides
+Patient Registration API
+Patient Search API
+Patient Update API
+Patient Record API
+
+7.4.8 Component 3 — Appointment Management (CMP-003)
+Internal Modules
+Appointment Scheduler
+Doctor Calendar
+Queue Management
+Token Generator
+Appointment Cancellation
+Appointment Rescheduling
+Reminder Service
+Responsibilities
+Schedule appointments
+Validate availability
+Prevent double booking
+Generate queue tokens
+Notify patients
+Maintain schedules
+External Interfaces
+Provides:
+Appointment Booking API
+Calendar API
+Queue API
+Consumes:
+Patient Component
+Doctor Component
+Notification Component
+
+7.4.9 Component 4 — OPD Management (CMP-004)
+Internal Components
+Consultation Module
+Clinical Notes
+Diagnosis Module
+Prescription Module
+Referral Module
+Follow-up Module
+Responsibilities
+Record consultations
+Capture symptoms
+Generate diagnoses
+Create prescriptions
+Refer patients
+Schedule follow-ups
+
+7.4.10 Component 5 — IPD Management (CMP-005)
+Internal Components
+Admission
+Bed Allocation
+Ward Transfer
+Nursing Notes
+Daily Progress
+Discharge Summary
+Bed Availability
+Responsibilities
+Admit patients
+Manage beds
+Track inpatient stay
+Record treatment
+Prepare discharge documentation
+
+7.4.11 Component 6 — Emergency Management (CMP-006)
+Internal Components
+Triage
+Emergency Registration
+Critical Care
+Emergency Orders
+Observation
+Transfer
+Responsibilities
+Prioritize emergency patients
+Record emergency treatments
+Assign triage levels
+Track emergency workflow
+
+7.4.12 Component 7 — Laboratory Information System (CMP-007)
+Internal Components
+Test Catalog
+Test Orders
+Sample Collection
+Sample Tracking
+Result Entry
+Result Validation
+Report Generation
+Responsibilities
+Process laboratory requests
+Manage samples
+Validate results
+Publish reports
+
+7.4.13 Component 8 — Radiology Information System (CMP-008)
+Internal Components
+Imaging Orders
+Scheduling
+Image Tracking
+Report Authoring
+Image Viewer Integration
+DICOM Connector
+Responsibilities
+Manage imaging requests
+Integrate with PACS
+Generate radiology reports
+
+7.4.14 Component 9 — Pharmacy Management (CMP-009)
+Internal Components
+Prescription Processing
+Medicine Catalog
+Stock Validation
+Dispensing
+Batch Tracking
+Expiry Monitoring
+Responsibilities
+Dispense medicines
+Verify prescriptions
+Update inventory
+Prevent expired medicine dispensing
+
+7.4.15 Component 10 — Billing & Finance (CMP-010)
+Internal Components
+Invoice Generator
+Payment Processing
+Insurance Claims
+Discounts
+Refunds
+Revenue Reports
+Responsibilities
+Generate invoices
+Record payments
+Process insurance claims
+Manage refunds
+Calculate taxes and discounts
+
+7.4.16 Component 11 — Inventory Management (CMP-011)
+Internal Components
+Item Catalog
+Purchase Orders
+Goods Receipt
+Warehouse
+Stock Movement
+Supplier Management
+Expiry Tracking
+Responsibilities
+Manage stock
+Track purchases
+Monitor inventory levels
+Handle supplier information
+
+7.4.17 Component 12 — Human Resource Management (CMP-012)
+Internal Components
+Employee Records
+Attendance
+Leave Management
+Payroll
+Performance Reviews
+Training Records
+Responsibilities
+Manage staff information
+Calculate payroll
+Track attendance
+Process leave requests
+
+7.4.18 Component 13 — Reporting & Analytics (CMP-013)
+Internal Components
+Operational Reports
+Clinical Reports
+Financial Reports
+KPI Dashboard
+Executive Dashboard
+Data Export
+Responsibilities
+Generate reports
+Analyze operational metrics
+Visualize KPIs
+Export data
+
+7.4.19 Component 14 — Notification Service (CMP-014)
+Internal Components
+Email Sender
+SMS Sender
+Push Notifications
+Template Manager
+Queue Processor
+Responsibilities
+Deliver notifications
+Manage templates
+Retry failed deliveries
+Track notification status
+
+7.4.20 Component 15 — Administration (CMP-015)
+Internal Components
+System Settings
+User Management
+Role Management
+Department Configuration
+Audit Review
+Master Data
+Responsibilities
+Configure the system
+Manage users
+Define roles
+Maintain master data
+
+7.4.21 Component 16 — Audit & Logging (CMP-016)
+Internal Components
+Activity Logger
+Security Logger
+API Logger
+Database Logger
+Error Logger
+Audit Viewer
+Responsibilities
+Record user actions
+Log security events
+Maintain audit trails
+Support compliance investigations
+
+7.4.22 Component Communication Matrix
+Source Component
+Target Component
+Interaction
+Patient Management
+Appointment
+Patient scheduling
+Appointment
+OPD
+Consultation initiation
+OPD
+Laboratory
+Test requests
+OPD
+Radiology
+Imaging requests
+OPD
+Pharmacy
+Prescription generation
+Laboratory
+Billing
+Test charges
+Radiology
+Billing
+Imaging charges
+Pharmacy
+Inventory
+Stock updates
+Billing
+Reporting
+Financial analytics
+HR
+Administration
+Staff management
+Notification
+All Components
+Alerts and reminders
+Audit & Logging
+All Components
+Event recording
+
+7.4.23 Component Design Rules
+All components shall comply with the following rules:
+Each component shall expose only documented service interfaces.
+Components shall not directly access another component's database tables.
+Shared business logic shall be implemented through reusable services.
+Component dependencies shall remain acyclic.
+Sensitive operations shall generate audit logs.
+Components shall validate all incoming requests.
+Long-running tasks shall be delegated to asynchronous background workers.
+Configuration values shall be externalized rather than hardcoded.
+
+7.4.24 Acceptance Criteria
+The Component Architecture shall be accepted when:
+All major business capabilities are encapsulated within dedicated components.
+Component responsibilities are clearly defined and do not overlap unnecessarily.
+Service interfaces are documented and used consistently.
+Inter-component communication follows approved architectural patterns.
+Components can be tested independently.
+Cross-component dependencies are minimized and traceable.
+Security, logging, and configuration requirements are applied consistently across all components.
+
+
+

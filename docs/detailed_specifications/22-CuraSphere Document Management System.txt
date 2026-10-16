@@ -1,0 +1,2052 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.17 — DOCUMENT, FILE, MEDICAL ATTACHMENT AND DIGITAL RECORD MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: DOC/FILModule Name: Document, File, Medical Attachment and Digital Record Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.1192 MODULE PURPOSE
+The Document, File, Medical Attachment and Digital Record Management System shall provide the centralized functional foundation through which CuraSphere registers, uploads, validates, classifies, associates, stores, protects, retrieves, versions, verifies, archives, and manages approved digital documents and file-based medical records.
+The module shall support:
+document registration;
+document identification;
+file identification;
+document classification;
+document type management;
+document category management;
+medical attachment management;
+patient document management;
+encounter attachment management;
+clinical note attachment boundaries;
+laboratory attachment management;
+radiology document references;
+prescription document management;
+discharge document management;
+referral document management;
+consent document management;
+insurance document boundaries;
+billing attachment boundaries;
+staff document boundaries;
+administrative document boundaries;
+scanned document registration;
+externally generated document registration;
+system-generated document registration;
+file upload;
+upload validation;
+file name validation;
+file extension validation;
+media type validation;
+file signature validation boundaries;
+file size validation;
+file count validation;
+duplicate file detection;
+checksum generation;
+checksum verification;
+document integrity validation;
+malware scanning boundaries;
+quarantine boundaries;
+file storage abstraction;
+document metadata storage;
+binary file storage boundaries;
+PostgreSQL metadata boundaries;
+object storage boundaries;
+local file storage boundaries;
+cloud storage boundaries;
+storage provider independence;
+secure file reference management;
+storage key generation;
+original file name preservation;
+safe storage name generation;
+document ownership;
+document source identification;
+document source module identification;
+business record association;
+patient association;
+encounter association;
+order association;
+result association;
+invoice association;
+staff association;
+multiple document association boundaries;
+document versioning;
+version identification;
+version history;
+document replacement;
+document supersession;
+document correction boundaries;
+immutable historical versions;
+document status management;
+document review;
+document verification;
+document approval boundaries;
+document rejection;
+document quarantine;
+document release;
+document archival;
+document restoration boundaries;
+document soft deletion boundaries;
+document permanent deletion boundaries;
+retention boundaries;
+legal hold boundaries;
+document access control;
+document scope enforcement;
+patient document access;
+staff document access;
+clinical document access;
+administrative document access;
+sensitive document classification;
+restricted document access;
+document download;
+document preview boundaries;
+document streaming boundaries;
+secure document delivery;
+temporary access boundaries;
+signed URL boundaries;
+document search;
+document filtering;
+document pagination;
+document metadata retrieval;
+document history;
+document activity tracking;
+document audit;
+document security event recording;
+document access logging;
+document integrity monitoring;
+storage monitoring;
+upload monitoring;
+download monitoring;
+failed upload monitoring;
+storage capacity monitoring;
+orphan file detection boundaries;
+missing file detection;
+metadata-file consistency boundaries;
+backup boundaries;
+restore boundaries;
+disaster recovery boundaries;
+future OCR integration;
+future document text extraction;
+future document indexing;
+future document content search;
+future electronic signature boundaries;
+future digital signature verification;
+future patient document upload;
+future external document exchange;
+future FHIR document reference integration;
+future DICOM document reference boundaries;
+future cloud object storage;
+future multi-hospital storage configuration.
+The high-level document lifecycle shall be:
+DOCUMENT SOURCE      │      ▼REGISTER DOCUMENT      │      ▼VALIDATE METADATA      │      ▼RECEIVE FILE      │      ▼VALIDATE FILE      │      ▼SECURITY SCAN      │      ▼GENERATE CHECKSUM      │      ▼STORE BINARY      │      ▼STORE DOCUMENT METADATA      │      ▼ASSOCIATE BUSINESS RECORD      │      ▼REVIEW / VERIFY      │      ▼ACTIVE DOCUMENT      │      ▼VERSION / ARCHIVE / RETAIN
+The module shall help CuraSphere answer questions such as:
+WHAT DOCUMENT WAS UPLOADED?WHO UPLOADED THE DOCUMENT?WHEN WAS THE DOCUMENT UPLOADED?WHICH MODULE CREATED THE DOCUMENT?IS THE DOCUMENT PATIENT-RELATED?WHICH PATIENT DOES THE DOCUMENT BELONG TO?WHICH ENCOUNTER DOES THE DOCUMENT BELONG TO?IS THE DOCUMENT RELATED TO A LAB RESULT?IS THE DOCUMENT RELATED TO A RADIOLOGY RECORD?IS THE DOCUMENT RELATED TO A PRESCRIPTION?WHAT IS THE DOCUMENT TYPE?WHAT IS THE DOCUMENT CATEGORY?WHAT IS THE ORIGINAL FILE NAME?WHAT IS THE SAFE STORAGE NAME?WHAT IS THE FILE SIZE?WHAT IS THE FILE MEDIA TYPE?WAS THE FILE TYPE VALIDATED?WAS THE FILE SCANNED FOR MALWARE?IS THE FILE QUARANTINED?WHERE IS THE FILE STORED?IS THE FILE STORED INSIDE POSTGRESQL?IS THE FILE STORED IN OBJECT STORAGE?WHAT STORAGE PROVIDER IS USED?WHAT IS THE FILE CHECKSUM?HAS THE FILE CHANGED?IS THE BINARY FILE MISSING?DOES THE METADATA EXIST WITHOUT A FILE?DOES A FILE EXIST WITHOUT DOCUMENT METADATA?IS THIS DOCUMENT A NEW VERSION?WHICH VERSION IS CURRENT?WHO CAN VIEW THE DOCUMENT?WHO CAN DOWNLOAD THE DOCUMENT?CAN A PATIENT VIEW THE DOCUMENT?CAN A RECEPTIONIST VIEW THE CLINICAL DOCUMENT?CAN A DOCUMENT ADMINISTRATOR READ ALL MEDICAL RECORDS?CAN A USER ACCESS A DOCUMENT BY GUESSING ITS URL?CAN A FILE BE PLACED IN THE REACT PUBLIC FOLDER?CAN AN EXECUTABLE FILE BE UPLOADED?CAN A FILE BE RENAMED TO .PDF TO BYPASS VALIDATION?CAN A 10 GB FILE BE UPLOADED?CAN A DOCUMENT BE DELETED?WHAT HAPPENS TO OLD DOCUMENT VERSIONS?HOW LONG MUST THE DOCUMENT BE RETAINED?IS THE DOCUMENT UNDER LEGAL HOLD?WAS THE DOCUMENT DOWNLOADED?WHO ACCESSED THE DOCUMENT?CAN DOCUMENT CONTENT BE INDEXED LATER?CAN OCR BE ADDED LATER?CAN ELECTRONIC SIGNATURES BE SUPPORTED LATER?CAN CURASPHERE USE CLOUD OBJECT STORAGE LATER?
+
+5.1193 DOCUMENT DOMAIN BOUNDARY
+The DOC/FIL module shall manage document and file lifecycle processing.
+It shall not own the clinical or business record represented by the document.
+Example:
+LABORATORY MODULE        │        ▼OWNS LAB RESULT
+Document module:
+DOC/FIL   │   ▼OWNS LAB RESULT ATTACHMENT FILE
+Therefore:
+LAB RESULT     ≠LAB ATTACHMENT
+Another example:
+RADIOLOGY MODULE       │       ▼OWNS RADIOLOGY REPORT
+Document module:
+DOC/FIL   │   ▼OWNS APPROVED REPORT DOCUMENT FILE
+Another:
+PATIENT MODULE      │      ▼OWNS PATIENT DEMOGRAPHICS
+Document module:
+DOC/FIL   │   ▼OWNS PATIENT IDENTITY DOCUMENT FILE
+Critical Principle
+BUSINESS / CLINICAL MODULE            │            ▼OWNS BUSINESS MEANING
+DOC/FIL   │   ▼OWNS DOCUMENT AND FILE LIFECYCLE
+The Document module shall not independently:
+DIAGNOSE PATIENTSVERIFY LAB RESULTSAPPROVE RADIOLOGY REPORTSDISPENSE MEDICATIONCONFIRM APPOINTMENTSMARK INVOICES PAIDCHANGE PATIENT DEMOGRAPHICSAPPROVE EMPLOYEE LEAVE
+because a file was uploaded, downloaded, archived, or versioned.
+
+5.1194 DOCUMENT VS FILE CONCEPT
+CuraSphere shall distinguish:
+DOCUMENT
+from:
+FILE
+A document represents the business-managed digital record.
+Example:
+DOCUMENTPATIENT REFERRAL LETTER
+The file represents the binary digital object.
+Example:
+FILEreferral-letter.pdf
+Conceptually:
+DOCUMENT   │   ▼DOCUMENT METADATA   │   ▼FILE REFERENCE   │   ▼BINARY OBJECT
+A document may later have multiple versions:
+DOCUMENT   │   ├── VERSION 1   │       └── FILE A   │   ├── VERSION 2   │       └── FILE B   │   └── VERSION 3           └── FILE C
+Therefore:
+DOCUMENT ID     ≠FILE ID
+and:
+DOCUMENT VERSION       ≠DOCUMENT
+
+5.1195 DOCUMENT STORAGE ARCHITECTURAL BOUNDARY
+The SRS shall distinguish document metadata from binary file storage.
+Conceptually:
+POSTGRESQL    │    ▼DOCUMENT METADATA
+Potential metadata:
+DOCUMENT IDFILE IDDOCUMENT TYPEPATIENT REFERENCEBUSINESS REFERENCEFILE SIZEMEDIA TYPECHECKSUMSTORAGE PROVIDERSTORAGE KEYSTATUSCREATED TIME
+Binary content:
+PDF BYTESIMAGE BYTESSCANNED DOCUMENT BYTES
+shall be managed through an approved storage boundary.
+Conceptually:
+ASP.NET CORE APPLICATION          │          ▼DOCUMENT SERVICE          │          ▼FILE STORAGE ABSTRACTION          │    ┌─────┼──────────┐    │     │          │    ▼     ▼          ▼ LOCAL   OBJECT     CLOUDSTORAGE  STORAGE   STORAGE
+This SRS shall not require every large file to be stored directly as PostgreSQL binary data.
+Critical Principle
+POSTGRESQL    │    ▼DOCUMENT METADATA + REFERENCES
+APPROVED FILE STORAGE          │          ▼BINARY CONTENT
+The final physical storage technology shall be selected during Data, Infrastructure, Security, and Detailed Architecture.
+
+5.1196 REACT PUBLIC FOLDER BOUNDARY
+Patient and hospital documents shall not be treated as public frontend assets.
+Incorrect:
+React Application      │      ▼public/   ├── patient-001-lab.pdf   ├── patient-002-scan.jpg   └── prescription-009.pdf
+This may expose documents through predictable public URLs.
+Preferred boundary:
+REACT CLIENT     │     ▼AUTHORIZED API REQUEST     │     ▼ASP.NET CORE API     │     ▼AUTHORIZATION     │     ▼DOCUMENT ACCESS POLICY     │     ▼FILE STORAGE
+Therefore:
+UI ASSET   ≠PATIENT DOCUMENT
+The React public folder may contain approved public application assets such as:
+LOGOPUBLIC ICONSTATIC BRAND IMAGE
+It shall not become the hospital document repository.
+
+5.1197 DOCUMENT ACTORS
+Actor
+Document Responsibility
+Patient
+Views eligible patient documents
+Doctor
+Uploads and accesses eligible clinical documents
+Nurse
+Accesses eligible care-related documents
+Receptionist
+Uploads and accesses approved administrative patient documents
+Laboratory Staff
+Manages eligible laboratory attachments
+Radiology Staff
+Manages eligible radiology document references
+Pharmacist
+Accesses eligible prescription-related documents
+Billing Staff
+Accesses eligible billing attachments
+HR Staff
+Manages eligible workforce documents
+Administrator
+Accesses approved administrative documents
+Document Administrator
+Manages document configuration and operational lifecycle
+Security Administrator
+Reviews document security events
+System Administrator
+Reviews storage and document system health
+Background Worker
+Performs eligible document processing
+DOC/FIL Module
+Manages document and file lifecycle
+Storage Provider
+Stores approved binary file content
+Malware Scanner
+Evaluates eligible uploaded files
+Future OCR Provider
+Extracts text from approved documents
+Future Signature Provider
+Supports electronic or digital signature processing
+External System
+Exchanges approved documents through future integration boundaries
+
+5.1198 DOCUMENT FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-DOC-FR-001
+Register Document
+M
+CS-DOC-FR-002
+Generate Document Identifier
+M
+CS-DOC-FR-003
+Generate File Identifier
+M
+CS-DOC-FR-004
+Assign Document Type
+M
+CS-DOC-FR-005
+Assign Document Category
+M
+CS-DOC-FR-006
+Record Document Source
+M
+CS-DOC-FR-007
+Record Source Module
+M
+CS-DOC-FR-008
+Associate Business Reference
+M
+CS-DOC-FR-009
+Associate Patient Reference
+M
+CS-DOC-FR-010
+Associate Encounter Reference
+M
+CS-DOC-FR-011
+Associate Clinical Order Reference
+M
+CS-DOC-FR-012
+Associate Result Reference
+M
+CS-DOC-FR-013
+Support Administrative Document Association
+M
+CS-DOC-FR-014
+Upload Document File
+M
+CS-DOC-FR-015
+Preserve Original File Name
+M
+CS-DOC-FR-016
+Generate Safe Storage Name
+M
+CS-DOC-FR-017
+Validate File Name
+M
+CS-DOC-FR-018
+Validate File Extension
+M
+CS-DOC-FR-019
+Validate Media Type
+M
+CS-DOC-FR-020
+Validate File Signature Boundary
+M
+CS-DOC-FR-021
+Validate File Size
+M
+CS-DOC-FR-022
+Validate Upload File Count
+M
+CS-DOC-FR-023
+Generate File Checksum
+M
+CS-DOC-FR-024
+Verify File Integrity
+M
+CS-DOC-FR-025
+Detect Eligible Duplicate File
+M
+CS-DOC-FR-026
+Scan Eligible File for Malware
+M
+CS-DOC-FR-027
+Quarantine Unsafe File
+M
+CS-DOC-FR-028
+Release Eligible Quarantined File
+M
+CS-DOC-FR-029
+Store File Through Storage Abstraction
+M
+CS-DOC-FR-030
+Record Storage Provider
+M
+CS-DOC-FR-031
+Generate Storage Key
+M
+CS-DOC-FR-032
+Store Document Metadata
+M
+CS-DOC-FR-033
+Prevent Direct Public File Exposure
+M
+CS-DOC-FR-034
+Retrieve Document Metadata
+M
+CS-DOC-FR-035
+Download Authorized Document
+M
+CS-DOC-FR-036
+Support Secure Document Streaming
+M
+CS-DOC-FR-037
+Support Document Preview Boundary
+S
+CS-DOC-FR-038
+Apply Document Access Control
+M
+CS-DOC-FR-039
+Apply Document Record Scope
+M
+CS-DOC-FR-040
+Apply Patient Document Scope
+M
+CS-DOC-FR-041
+Apply Clinical Document Scope
+M
+CS-DOC-FR-042
+Classify Sensitive Document
+M
+CS-DOC-FR-043
+Restrict Sensitive Document Access
+M
+CS-DOC-FR-044
+Create Document Version
+M
+CS-DOC-FR-045
+Generate Document Version Number
+M
+CS-DOC-FR-046
+Preserve Historical Document Version
+M
+CS-DOC-FR-047
+Identify Current Document Version
+M
+CS-DOC-FR-048
+Supersede Document Version
+M
+CS-DOC-FR-049
+View Document Version History
+M
+CS-DOC-FR-050
+Review Eligible Document
+M
+CS-DOC-FR-051
+Verify Eligible Document
+M
+CS-DOC-FR-052
+Reject Eligible Document
+M
+CS-DOC-FR-053
+Activate Eligible Document
+M
+CS-DOC-FR-054
+Archive Document
+M
+CS-DOC-FR-055
+Restore Eligible Archived Document
+S
+CS-DOC-FR-056
+Soft Delete Eligible Document
+M
+CS-DOC-FR-057
+Restrict Permanent Document Deletion
+M
+CS-DOC-FR-058
+Apply Document Retention Boundary
+M
+CS-DOC-FR-059
+Apply Legal Hold Boundary
+M
+CS-DOC-FR-060
+Search Documents
+M
+CS-DOC-FR-061
+Filter Documents
+M
+CS-DOC-FR-062
+Paginate Document Collections
+M
+CS-DOC-FR-063
+View Document History
+M
+CS-DOC-FR-064
+Record Document Access Event
+M
+CS-DOC-FR-065
+Audit Document Administration
+M
+CS-DOC-FR-066
+Record Document Security Event
+M
+CS-DOC-FR-067
+Monitor Document Uploads
+M
+CS-DOC-FR-068
+Monitor Document Downloads
+M
+CS-DOC-FR-069
+Monitor Storage Capacity
+M
+CS-DOC-FR-070
+Detect Missing Binary File Boundary
+M
+CS-DOC-FR-071
+Detect Orphan File Boundary
+M
+CS-DOC-FR-072
+Support Metadata-File Consistency Validation
+M
+CS-DOC-FR-073
+Support Document Backup Boundary
+M
+CS-DOC-FR-074
+Support Document Restore Boundary
+M
+CS-DOC-FR-075
+Support Future OCR Integration
+S
+CS-DOC-FR-076
+Support Future Document Text Extraction
+S
+CS-DOC-FR-077
+Support Future Document Content Search
+S
+CS-DOC-FR-078
+Support Future Electronic Signature
+S
+CS-DOC-FR-079
+Support Future Digital Signature Verification
+S
+CS-DOC-FR-080
+Support Future Patient Document Upload
+S
+CS-DOC-FR-081
+Support Future External Document Exchange
+S
+CS-DOC-FR-082
+Support Future FHIR Document Reference
+S
+CS-DOC-FR-083
+Support Future DICOM Reference Boundary
+S
+CS-DOC-FR-084
+Support Hospital-Specific Storage Configuration
+S
+CS-DOC-FR-085
+Maintain Document Processing History
+M
+
+5.1199 REGISTER DOCUMENT
+CS-DOC-FR-001 — Register Document
+The system shall allow authorized users and approved CuraSphere modules to register a document.
+Main flow:
+AUTHORIZED ACTOR / MODULE          │          ▼CREATE DOCUMENT REQUEST          │          ▼SELECT DOCUMENT TYPE          │          ▼IDENTIFY SOURCE          │          ▼ASSOCIATE BUSINESS RECORD          │          ▼UPLOAD FILE          │          ▼VALIDATE          │          ▼STORE          │          ▼REGISTER DOCUMENT
+Potential registration information includes:
+DOCUMENT TYPEDOCUMENT CATEGORYSOURCESOURCE MODULEPATIENT REFERENCEENCOUNTER REFERENCEBUSINESS REFERENCEFILEDESCRIPTIONSENSITIVITY CLASSIFICATION
+The system shall reject incomplete document registration where mandatory associations are missing.
+
+5.1200 DOCUMENT IDENTIFIER
+CS-DOC-FR-002 — Generate Document Identifier
+The system shall generate a unique document identifier.
+Example:
+DOC-000004821
+The document identifier shall remain stable across document versions.
+Example:
+DOCUMENTDOC-000004821
+Versions:
+VERSION 1VERSION 2VERSION 3
+All versions belong to the same logical document.
+
+5.1201 FILE IDENTIFIER
+CS-DOC-FR-003 — Generate File Identifier
+The system shall generate a unique file identifier for each managed file object.
+Example:
+FIL-000009521
+Conceptually:
+DOCUMENTDOC-000004821
+Version 1:
+FILEFIL-000009521
+Version 2:
+FILEFIL-000009884
+Therefore:
+DOCUMENT ID     ≠FILE ID
+
+5.1202 DOCUMENT TYPE
+CS-DOC-FR-004 — Assign Document Type
+The system shall assign an approved document type.
+Potential document types include:
+PATIENT_IDENTITY_DOCUMENTREFERRAL_LETTERCONSENT_FORMLAB_ATTACHMENTRADIOLOGY_REPORT_DOCUMENTPRESCRIPTION_DOCUMENTDISCHARGE_SUMMARY_DOCUMENTCLINICAL_ATTACHMENTINSURANCE_DOCUMENTBILLING_ATTACHMENTSTAFF_DOCUMENTADMINISTRATIVE_DOCUMENT
+Document type shall support:
+VALIDATION POLICYACCESS POLICYRETENTION POLICYASSOCIATION POLICYSENSITIVITY POLICY
+The document type registry shall be governed.
+
+5.1203 DOCUMENT CATEGORY
+CS-DOC-FR-005 — Assign Document Category
+The system shall support approved document categories.
+Potential categories include:
+CLINICALPATIENT_ADMINISTRATIVEFINANCIALWORKFORCELEGALSYSTEM_ADMINISTRATIVE
+Example:
+DOCUMENT TYPELAB_ATTACHMENT
+Category:
+CLINICAL
+Another:
+DOCUMENT TYPEINSURANCE_DOCUMENT
+Category:
+FINANCIAL
+Document category shall support broad policy classification.
+
+5.1204 DOCUMENT SOURCE
+CS-DOC-FR-006 — Record Document Source
+The system shall record the source of an eligible document.
+Potential sources include:
+USER_UPLOADSYSTEM_GENERATEDEXTERNAL_SYSTEMSCANNED_DOCUMENTMIGRATIONFUTURE_PATIENT_UPLOAD
+Example:
+SOURCESCANNED_DOCUMENT
+The source shall support document traceability.
+
+5.1205 SOURCE MODULE
+CS-DOC-FR-007 — Record Source Module
+The system shall record the CuraSphere module associated with document creation where applicable.
+Examples:
+PATIENTENCOUNTERLABORATORYRADIOLOGYPHARMACYBILLINGHRSYSTEM
+Example:
+SOURCE MODULELABORATORY
+This information shall not replace the business reference association.
+
+5.1206 BUSINESS REFERENCE ASSOCIATION
+CS-DOC-FR-008 — Associate Business Reference
+The system shall associate eligible documents with an originating business record.
+Example:
+DOCUMENTDOC-0004821
+Associated record:
+LAB RESULTLAB-RES-000921
+Conceptually:
+DOC-0004821      │      ▼SOURCE MODULE: LABORATORY      │      ▼BUSINESS REFERENCE: LAB-RES-000921
+The document module shall not own the laboratory result.
+
+5.1207 PATIENT REFERENCE ASSOCIATION
+CS-DOC-FR-009 — Associate Patient Reference
+The system shall associate patient-related documents with the correct patient.
+Example:
+DOCUMENTDOC-0004821
+Patient:
+PAT-000108
+Conceptually:
+PATIENT   │   ▼DOCUMENT COLLECTION   │   ├── REFERRAL LETTER   ├── CONSENT FORM   ├── LAB ATTACHMENT   └── DISCHARGE DOCUMENT
+The system shall validate patient scope before association.
+
+5.1208 ENCOUNTER REFERENCE ASSOCIATION
+CS-DOC-FR-010 — Associate Encounter Reference
+The system shall support association of eligible documents with an encounter.
+Example:
+ENCOUNTERENC-000421
+Document:
+DISCHARGE_SUMMARY_DOCUMENT
+Conceptually:
+PATIENT   │   ▼ENCOUNTER   │   ▼DOCUMENT
+A patient may have documents not associated with a specific encounter.
+Therefore:
+PATIENT DOCUMENT       ≠ALWAYS ENCOUNTER DOCUMENT
+
+5.1209 CLINICAL ORDER REFERENCE
+CS-DOC-FR-011 — Associate Clinical Order Reference
+The system shall support document association with an eligible clinical order.
+Examples:
+LAB ORDERRADIOLOGY ORDER
+Conceptually:
+CLINICAL ORDER      │      ▼RELATED DOCUMENT
+The association shall not modify clinical order state automatically.
+
+5.1210 RESULT REFERENCE ASSOCIATION
+CS-DOC-FR-012 — Associate Result Reference
+The system shall support association with eligible clinical result records.
+Example:
+RADIOLOGY RESULT       │       ▼REPORT DOCUMENT
+Another:
+LAB RESULT    │    ▼EXTERNAL LAB ATTACHMENT
+The structured clinical result shall remain owned by its clinical module.
+
+5.1211 ADMINISTRATIVE DOCUMENT ASSOCIATION
+CS-DOC-FR-013 — Support Administrative Document Association
+The system shall support approved non-clinical document associations.
+Potential examples include:
+STAFF CONTRACTEMPLOYEE CERTIFICATEBILLING ATTACHMENTINSURANCE DOCUMENTADMINISTRATIVE NOTICE
+Clinical document permissions shall not automatically apply to workforce documents.
+
+5.1212 UPLOAD DOCUMENT FILE
+CS-DOC-FR-014 — Upload Document File
+The system shall allow authorized users to upload approved files.
+Upload flow:
+CLIENT  │  ▼UPLOAD REQUEST  │  ▼AUTHENTICATE  │  ▼AUTHORIZE  │  ▼VALIDATE METADATA  │  ▼VALIDATE FILE  │  ▼SECURITY PROCESSING  │  ▼STORE  │  ▼REGISTER METADATA
+The system shall not trust the uploaded file solely because the browser accepted it.
+
+5.1213 ORIGINAL FILE NAME
+CS-DOC-FR-015 — Preserve Original File Name
+The system shall preserve the original file name as document metadata where permitted.
+Example:
+Original File NameAli-Lab-Report-July.pdf
+The original file name shall not automatically become the physical storage key.
+Therefore:
+ORIGINAL FILE NAME         ≠STORAGE KEY
+
+5.1214 SAFE STORAGE NAME
+CS-DOC-FR-016 — Generate Safe Storage Name
+The system shall generate or assign a safe storage identifier or key.
+Example:
+STORAGE KEYhospital-a/2026/07/fil-000009521
+The system shall not rely on:
+../../patient-files/report.pdf
+or other unsafe user-provided path values.
+Storage naming shall be controlled by the server.
+
+5.1215 FILE NAME VALIDATION
+CS-DOC-FR-017 — Validate File Name
+The system shall validate uploaded file names.
+The validation shall consider:
+EMPTY FILE NAMEEXCESSIVE LENGTHCONTROL CHARACTERSPATH SEPARATORSPATH TRAVERSAL PATTERNSUNSAFE CHARACTERS
+Example unsafe value:
+../../../../system/config.json
+The server shall not use this value directly as a physical path.
+
+5.1216 FILE EXTENSION VALIDATION
+CS-DOC-FR-018 — Validate File Extension
+The system shall validate file extensions according to approved document policy.
+Potential approved extensions may include:
+.pdf.jpg.jpeg.png
+Additional formats shall require approval.
+An extension allowlist shall be preferred over unrestricted upload.
+Example:
+malware.exe
+Result:
+FILE TYPE NOT ALLOWED
+The final extension matrix shall be defined during Security and Detailed Design.
+
+5.1217 MEDIA TYPE VALIDATION
+CS-DOC-FR-019 — Validate Media Type
+The system shall validate the media type of uploaded files.
+Example:
+application/pdfimage/jpegimage/png
+The system shall not rely only on:
+Content-Type
+provided by the client.
+Client-provided metadata shall be treated as untrusted input.
+
+5.1218 FILE SIGNATURE VALIDATION BOUNDARY
+CS-DOC-FR-020 — Validate File Signature Boundary
+The system shall support validation of eligible file signatures or file content characteristics.
+Example attack:
+malware.exe
+renamed:
+medical-report.pdf
+Extension:
+.pdf
+Actual content:
+EXECUTABLE
+Conceptually:
+FILE EXTENSION      │      ▼MEDIA TYPE      │      ▼CONTENT / SIGNATURE VALIDATION      │      ▼CONSISTENT?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼CONTINUE REJECT
+The exact file inspection library shall be selected during Detailed Design.
+
+5.1219 FILE SIZE VALIDATION
+CS-DOC-FR-021 — Validate File Size
+The system shall enforce approved file size limits.
+Conceptually:
+UPLOAD FILE     │     ▼SIZE CHECK     │ ┌───┴────┐ │        │VALID   TOO LARGE │        │ ▼        ▼CONTINUE REJECT
+Different document types may have different limits.
+Example:
+PATIENT ID IMAGEMAX SIZE POLICY A
+Radiology-related file:
+MAX SIZE POLICY B
+The exact size limits shall be defined during Capacity and Detailed Design.
+
+5.1220 FILE COUNT VALIDATION
+CS-DOC-FR-022 — Validate Upload File Count
+The system shall enforce approved file-count limits per upload operation.
+Example:
+REQUESTUPLOAD 50,000 FILES
+The system shall reject or restrict the request according to approved policy.
+Batch document processing shall use a dedicated workflow where required.
+
+5.1221 FILE CHECKSUM
+CS-DOC-FR-023 — Generate File Checksum
+The system shall generate an approved checksum for eligible stored files.
+Conceptually:
+FILE BYTES    │    ▼CHECKSUM ALGORITHM    │    ▼CHECKSUM VALUE
+Example:
+FILEFIL-000009521
+Checksum:
+<APPROVED CHECKSUM VALUE>
+The final checksum algorithm shall be selected during Security Architecture.
+
+5.1222 FILE INTEGRITY VERIFICATION
+CS-DOC-FR-024 — Verify File Integrity
+The system shall support file integrity verification.
+Conceptually:
+STORED FILE     │     ▼CALCULATE CHECKSUM     │     ▼COMPARE WITH REGISTERED CHECKSUM     │  ┌──┴───┐  │      │MATCH  MISMATCH  │      │  ▼      ▼VALID   INTEGRITY FAILURE
+A checksum mismatch shall be treated as an operational or security event according to approved policy.
+
+5.1223 DUPLICATE FILE DETECTION
+CS-DOC-FR-025 — Detect Eligible Duplicate File
+The system shall support duplicate file detection where required.
+Potential signals include:
+CHECKSUMFILE SIZEDOCUMENT TYPEBUSINESS REFERENCEPATIENT REFERENCE
+The same checksum shall not automatically mean:
+DELETE DUPLICATE
+because the same document may be legitimately associated with multiple records.
+Duplicate detection shall support review or approved deduplication policies.
+
+5.1224 MALWARE SCANNING
+CS-DOC-FR-026 — Scan Eligible File for Malware
+The system shall support malware scanning for eligible uploaded files.
+Conceptually:
+UPLOAD  │  ▼VALIDATE BASIC FILE POLICY  │  ▼MALWARE SCAN  │  ├────────────► CLEAN  │  ├────────────► INFECTED  │  └────────────► SCAN FAILURE
+The exact scanning technology shall be selected during Security and Infrastructure Architecture.
+The system shall not assume:
+.pdf
+means:
+SAFE
+
+5.1225 QUARANTINE UNSAFE FILE
+CS-DOC-FR-027 — Quarantine Unsafe File
+The system shall quarantine files classified as unsafe or requiring security review.
+Conceptually:
+FILE │ ▼MALWARE / SECURITY CHECK │ ▼UNSAFE │ ▼QUARANTINED
+A quarantined file shall not be available through normal document download workflows.
+The file shall not be treated as an active clinical document.
+
+5.1226 RELEASE QUARANTINED FILE
+CS-DOC-FR-028 — Release Eligible Quarantined File
+The system shall allow only authorized security or document operations to release an eligible quarantined file.
+Conceptually:
+QUARANTINED     │     ▼SECURITY REVIEW     │  ┌──┴──┐  │     │ SAFE  UNSAFE  │     │  ▼     ▼RELEASE REJECT / RETAIN
+The release action shall be audited.
+Manual release shall not bypass required security controls without approved policy.
+
+5.1227 STORAGE ABSTRACTION
+CS-DOC-FR-029 — Store File Through Storage Abstraction
+The system shall store managed files through an approved storage abstraction.
+Conceptually:
+DOCUMENT SERVICE       │       ▼IFileStorage       │  ┌────┼────────┐  │    │        │  ▼    ▼        ▼LOCAL OBJECT   CLOUD
+This conceptual interface name is illustrative and shall be finalized during Application Architecture.
+The business application shall not scatter physical file-path logic across:
+CONTROLLERSCLINICAL SERVICESBILLING SERVICESREACT COMPONENTS
+
+5.1228 STORAGE PROVIDER RECORDING
+CS-DOC-FR-030 — Record Storage Provider
+The system shall record the storage provider or storage classification associated with an eligible file.
+Potential values may include:
+LOCAL_MANAGEDOBJECT_STORAGECLOUD_OBJECT_STORAGE
+No specific provider is selected by this requirement.
+The storage provider reference shall support retrieval and migration.
+
+5.1229 STORAGE KEY
+CS-DOC-FR-031 — Generate Storage Key
+The system shall generate an approved storage key.
+The storage key shall be:
+SERVER CONTROLLEDNON-TRAVERSABLEUNAMBIGUOUSSTORAGE-PROVIDER COMPATIBLE
+The storage key should not expose unnecessary patient information.
+Avoid:
+patients/ali-khan-hiv-positive/report.pdf
+Preferred conceptual approach:
+hospital-a/2026/07/fil-000009521
+Critical Principle
+STORAGE KEY     │     ▼TECHNICAL FILE LOCATION REFERENCE
+not:
+STORAGE KEY     │     ▼CLINICAL SUMMARY
+
+5.1230 DOCUMENT METADATA STORAGE
+CS-DOC-FR-032 — Store Document Metadata
+The system shall store document metadata in the approved data layer.
+Potential metadata includes:
+DOCUMENT IDFILE IDVERSIONDOCUMENT TYPEDOCUMENT CATEGORYSOURCESOURCE MODULEBUSINESS REFERENCEPATIENT REFERENCEENCOUNTER REFERENCEORIGINAL FILE NAMEMEDIA TYPEFILE SIZECHECKSUMSTORAGE PROVIDERSTORAGE KEYSENSITIVITYSTATUSCREATED BYCREATED TIME
+Document metadata shall support controlled search and retrieval.
+
+5.1231 PREVENT DIRECT PUBLIC FILE EXPOSURE
+CS-DOC-FR-033 — Prevent Direct Public File Exposure
+The system shall prevent protected documents from being exposed as unrestricted public assets.
+Incorrect:
+https://curasphere.com/files/patient-108-report.pdf
+where no authorization is performed.
+Preferred:
+CLIENT  │  ▼DOCUMENT API  │  ▼AUTHENTICATION  │  ▼AUTHORIZATION  │  ▼RECORD SCOPE  │  ▼DOCUMENT POLICY  │  ▼FILE DELIVERY
+Knowledge of a document identifier shall not automatically grant access.
+
+5.1232 RETRIEVE DOCUMENT METADATA
+CS-DOC-FR-034 — Retrieve Document Metadata
+The system shall allow authorized users to retrieve eligible document metadata.
+Potential response information includes:
+DOCUMENT IDDOCUMENT TYPEDOCUMENT CATEGORYVERSIONORIGINAL FILE NAMEMEDIA TYPEFILE SIZESTATUSCREATED TIMECURRENT VERSION INDICATOR
+Sensitive technical information such as internal physical storage paths shall not automatically be returned.
+
+5.1233 DOWNLOAD AUTHORIZED DOCUMENT
+CS-DOC-FR-035 — Download Authorized Document
+The system shall allow authorized users to download eligible documents.
+Download flow:
+USER │ ▼DOWNLOAD REQUEST │ ▼AUTHENTICATE │ ▼AUTHORIZE │ ▼VALIDATE DOCUMENT SCOPE │ ▼VALIDATE DOCUMENT STATUS │ ▼LOCATE FILE │ ▼DELIVER FILE
+The system shall not trust a client-supplied storage path.
+Example unsafe request:
+/download?path=C:\HospitalFiles\Patient108.pdf
+Preferred:
+/documents/DOC-0004821/download
+The server resolves the storage reference.
+
+5.1234 SECURE DOCUMENT STREAMING
+CS-DOC-FR-036 — Support Secure Document Streaming
+The system shall support secure file streaming for eligible documents.
+The application should avoid loading unnecessarily large files completely into application memory where streaming is supported.
+Conceptually:
+STORAGE   │   ▼STREAM   │   ▼AUTHORIZED RESPONSE   │   ▼CLIENT
+The exact streaming implementation shall be defined during Application Architecture.
+
+5.1235 DOCUMENT PREVIEW BOUNDARY
+CS-DOC-FR-037 — Support Document Preview Boundary
+Priority
+Should Have
+The system should support preview of approved document formats.
+Potential previewable formats may include:
+PDFJPEGPNG
+Preview shall remain authorization-controlled.
+The system shall not expose a document publicly merely to make browser preview easier.
+Unsupported document types may require download.
+
+5.1236 DOCUMENT ACCESS CONTROL
+CS-DOC-FR-038 — Apply Document Access Control
+The system shall enforce permission-based document access.
+Example:
+DOCTOR   │   ▼ELIGIBLE CLINICAL DOCUMENT
+Receptionist:
+RECEPTIONIST     │     ▼APPROVED ADMINISTRATIVE PATIENT DOCUMENT
+HR user:
+HR │ ▼ELIGIBLE STAFF DOCUMENT
+A general document permission shall not automatically grant access to every document category.
+
+5.1237 DOCUMENT RECORD SCOPE
+CS-DOC-FR-039 — Apply Document Record Scope
+The system shall enforce business-record scope before document access.
+Conceptually:
+USER │ ▼DOCUMENT REQUEST │ ▼DOCUMENT CATEGORY │ ▼BUSINESS RECORD ASSOCIATION │ ▼USER CAN ACCESS BUSINESS RECORD? │ ┌───┴───┐ │       │YES      NO │       │ ▼       ▼CONTINUE DENY
+Example:
+A doctor unable to access a patient encounter shall not automatically access its attached documents.
+
+5.1238 PATIENT DOCUMENT SCOPE
+CS-DOC-FR-040 — Apply Patient Document Scope
+The system shall enforce patient scope for patient-related documents.
+Example:
+PATIENT A    │    ▼DOC-0004821
+Patient B requests:
+DOC-0004821
+Result:
+ACCESS DENIED
+Patient self-service document access shall be limited to approved patient-visible document types and states.
+
+5.1239 CLINICAL DOCUMENT SCOPE
+CS-DOC-FR-041 — Apply Clinical Document Scope
+The system shall apply clinical access boundaries to clinical documents.
+Potential considerations include:
+ROLECLINICAL RELATIONSHIPDEPARTMENTENCOUNTER ACCESSPATIENT SCOPEDOCUMENT SENSITIVITYDOCUMENT TYPE
+The final clinical access policy shall be aligned with IAM and Clinical Security Architecture.
+
+5.1240 SENSITIVE DOCUMENT CLASSIFICATION
+CS-DOC-FR-042 — Classify Sensitive Document
+The system shall support sensitivity classification.
+Potential classifications may include:
+STANDARDCONFIDENTIALRESTRICTEDHIGHLY_RESTRICTED
+Examples of potentially sensitive documents include:
+CLINICAL DOCUMENTPATIENT IDENTITY DOCUMENTLEGAL DOCUMENTSTAFF CONTRACTSECURITY DOCUMENT
+Sensitivity classification shall influence access and monitoring.
+
+5.1241 RESTRICT SENSITIVE DOCUMENT ACCESS
+CS-DOC-FR-043 — Restrict Sensitive Document Access
+The system shall enforce additional controls for eligible sensitive documents.
+Potential controls may include:
+ADDITIONAL PERMISSIONRECORD SCOPEACCESS EVENT RECORDINGDOWNLOAD RESTRICTIONPREVIEW RESTRICTIONTEMPORARY ACCESS RESTRICTION
+Sensitivity classification shall not replace normal authorization.
+Conceptually:
+NORMAL AUTHORIZATION        │        ▼SENSITIVITY POLICY        │        ▼FINAL ACCESS DECISION
+
+5.1242 CREATE DOCUMENT VERSION
+CS-DOC-FR-044 — Create Document Version
+The system shall support creation of a new version of an eligible document.
+Example:
+DOCUMENTDOC-0004821
+Current:
+VERSION 1
+Corrected file uploaded:
+VERSION 2
+Conceptually:
+DOCUMENT   │   ├── V1   │   └── V2 ← CURRENT
+The system shall not overwrite Version 1 where version preservation is required.
+
+5.1243 DOCUMENT VERSION NUMBER
+CS-DOC-FR-045 — Generate Document Version Number
+The system shall assign a version number or equivalent version identifier.
+Example:
+123
+Version numbering shall be managed by the server.
+The client shall not arbitrarily declare:
+VERSION = 999999
+as the current version.
+
+5.1244 PRESERVE HISTORICAL VERSION
+CS-DOC-FR-046 — Preserve Historical Document Version
+The system shall preserve historical versions where document policy requires version history.
+Example:
+VERSION 1Original referral letter
+Version 2:
+Corrected referral letter
+The existence of Version 2 shall not falsely rewrite Version 1.
+Historical version access shall remain permission-controlled.
+
+5.1245 CURRENT DOCUMENT VERSION
+CS-DOC-FR-047 — Identify Current Document Version
+The system shall identify the current document version.
+Conceptually:
+DOC-0004821     │     ├── V1     ├── V2     └── V3 ← CURRENT
+Normal document retrieval may return the current version by default.
+Historical retrieval shall require an explicit version request or history workflow.
+
+5.1246 SUPERSEDE DOCUMENT VERSION
+CS-DOC-FR-048 — Supersede Document Version
+The system shall allow an eligible version to supersede the previous current version.
+Conceptually:
+V1 CURRENT    │    ▼CREATE V2    │    ▼V1 SUPERSEDED    │    ▼V2 CURRENT
+Superseded shall not mean deleted.
+
+5.1247 DOCUMENT VERSION HISTORY
+CS-DOC-FR-049 — View Document Version History
+The system shall allow authorized users to view eligible version history.
+Potential information includes:
+VERSION NUMBERFILE IDCREATED BYCREATED TIMEVERSION STATUSCHANGE REASONCURRENT VERSION INDICATOR
+Sensitive file content access shall remain separately authorized.
+
+5.1248 REVIEW DOCUMENT
+CS-DOC-FR-050 — Review Eligible Document
+The system shall support review of document types requiring human review.
+Example:
+SCANNED REFERRAL LETTER          │          ▼PENDING REVIEW          │          ▼AUTHORIZED REVIEWER
+The reviewer may evaluate:
+DOCUMENT TYPEPATIENT ASSOCIATIONFILE READABILITYFILE COMPLETENESSDOCUMENT RELEVANCE
+Review shall not automatically equal clinical verification.
+
+5.1249 VERIFY DOCUMENT
+CS-DOC-FR-051 — Verify Eligible Document
+The system shall support verification of eligible documents.
+Verification may indicate that an authorized actor has confirmed the document according to approved workflow.
+Example:
+DOCUMENTPENDING_VERIFICATION
+Authorized verifier:
+VERIFY
+Result:
+VERIFIED
+The verifier identity and time shall be preserved.
+
+5.1250 REJECT DOCUMENT
+CS-DOC-FR-052 — Reject Eligible Document
+The system shall allow authorized users to reject eligible documents.
+Potential reasons include:
+WRONG PATIENTUNREADABLE FILEINVALID DOCUMENT TYPEINCOMPLETE DOCUMENTDUPLICATE DOCUMENTUNRELATED DOCUMENT
+A rejection reason shall be recorded where required.
+Rejected documents shall not automatically be treated as active medical records.
+
+5.1251 ACTIVATE DOCUMENT
+CS-DOC-FR-053 — Activate Eligible Document
+The system shall activate an eligible document after required processing.
+Conceptually:
+UPLOADED   │   ▼VALIDATED   │   ▼SCANNED   │   ▼REVIEWED / VERIFIED IF REQUIRED   │   ▼ACTIVE
+Not every document type shall require manual verification.
+The document policy shall determine activation requirements.
+
+5.1252 ARCHIVE DOCUMENT
+CS-DOC-FR-054 — Archive Document
+The system shall support document archival.
+Conceptually:
+ACTIVE  │  ▼ARCHIVE  │  ▼ARCHIVED
+Archived documents may remain retrievable by authorized users.
+Archival shall not automatically mean permanent deletion.
+
+5.1253 RESTORE ARCHIVED DOCUMENT
+CS-DOC-FR-055 — Restore Eligible Archived Document
+Priority
+Should Have
+The system should allow authorized users to restore eligible archived documents.
+Conceptually:
+ARCHIVED   │   ▼RESTORE REQUEST   │   ▼ELIGIBLE? ┌─┴─┐ │   │YES  NO │   │ ▼   ▼ACTIVE REJECT
+The restore action shall be recorded.
+
+5.1254 SOFT DELETE DOCUMENT
+CS-DOC-FR-056 — Soft Delete Eligible Document
+The system shall support controlled soft deletion for eligible documents.
+Soft deletion may mark a document as:
+DELETED
+without immediately removing the binary object.
+The exact behavior shall depend on:
+DOCUMENT TYPERETENTION POLICYLEGAL HOLDCLINICAL RECORD POLICYAUDIT REQUIREMENT
+A user shall not assume that a delete button permanently destroys a hospital record.
+
+5.1255 PERMANENT DOCUMENT DELETION
+CS-DOC-FR-057 — Restrict Permanent Document Deletion
+The system shall restrict permanent document deletion.
+Permanent deletion shall require approved policy and authorization.
+Conceptually:
+DELETE REQUEST      │      ▼RETENTION CHECK      │      ▼LEGAL HOLD CHECK      │      ▼DOCUMENT POLICY CHECK      │      ▼AUTHORIZATION CHECK      │   ┌──┴───┐   │      │ALLOWED  DENIED   │      │   ▼      ▼PROCESS  REJECT
+The SRS shall not define a universal:
+DELETE FROM documents WHERE id = ?
+workflow for all hospital documents.
+
+5.1256 DOCUMENT RETENTION BOUNDARY
+CS-DOC-FR-058 — Apply Document Retention Boundary
+The system shall support document retention policies.
+Retention may depend on:
+DOCUMENT TYPEDOCUMENT CATEGORYPATIENT RECORD POLICYHOSPITAL POLICYLEGAL REQUIREMENTREGULATORY REQUIREMENT
+Example conceptual policy:
+DOCUMENT TYPE A      │      ▼RETENTION POLICY A
+Document Type B:
+RETENTION POLICY B
+Exact retention periods shall be approved through Legal, Compliance, and Hospital Governance.
+
+5.1257 LEGAL HOLD BOUNDARY
+CS-DOC-FR-059 — Apply Legal Hold Boundary
+The system shall support a legal hold boundary for eligible documents.
+Conceptually:
+DOCUMENT   │   ▼LEGAL HOLD   │   ▼DELETION RESTRICTED
+A document under legal hold shall not be permanently deleted through normal retention cleanup.
+Legal hold administration shall require approved permissions and audit.
+
+5.1258 SEARCH DOCUMENTS
+CS-DOC-FR-060 — Search Documents
+The system shall support authorized document search.
+Potential search fields include:
+DOCUMENT IDPATIENT REFERENCEBUSINESS REFERENCEORIGINAL FILE NAMEDOCUMENT TYPE
+Search shall respect:
+AUTHORIZATIONPATIENT SCOPEBUSINESS RECORD SCOPEDOCUMENT CATEGORYSENSITIVITY
+A search endpoint shall not become a method for discovering restricted document names.
+
+5.1259 FILTER DOCUMENTS
+CS-DOC-FR-061 — Filter Documents
+The system shall support approved document filters.
+Potential filters include:
+DOCUMENT TYPEDOCUMENT CATEGORYSTATUSSOURCE MODULEPATIENTDATE RANGESENSITIVITYVERSION STATUS
+Only approved filter fields shall be accepted.
+
+5.1260 PAGINATE DOCUMENT COLLECTIONS
+CS-DOC-FR-062 — Paginate Document Collections
+The system shall paginate document collections.
+Example:
+PAGE1PAGE SIZE25
+The system shall enforce an approved maximum page size.
+The system shall not return every document record in the hospital through one unrestricted request.
+
+5.1261 DOCUMENT HISTORY
+CS-DOC-FR-063 — View Document History
+The system shall allow authorized users to view eligible document processing history.
+Potential events include:
+DOCUMENT_REGISTEREDFILE_UPLOADEDFILE_VALIDATEDFILE_SCANNEDFILE_QUARANTINEDFILE_RELEASEDDOCUMENT_REVIEWEDDOCUMENT_VERIFIEDDOCUMENT_REJECTEDDOCUMENT_ACTIVATEDDOCUMENT_VERSION_CREATEDDOCUMENT_SUPERSEDEDDOCUMENT_ARCHIVEDDOCUMENT_RESTOREDDOCUMENT_SOFT_DELETED
+Document history shall support operational traceability.
+
+5.1262 DOCUMENT ACCESS EVENT
+CS-DOC-FR-064 — Record Document Access Event
+The system shall record eligible document access events.
+Potential events include:
+DOCUMENT_VIEWEDDOCUMENT_PREVIEWEDDOCUMENT_DOWNLOADEDDOCUMENT_VERSION_VIEWED
+Potential event information includes:
+USER REFERENCEDOCUMENT REFERENCEVERSION REFERENCEACTIONTIMECORRELATION REFERENCE
+The final access logging policy shall consider privacy and operational requirements.
+
+5.1263 DOCUMENT ADMINISTRATION AUDIT
+CS-DOC-FR-065 — Audit Document Administration
+The system shall audit eligible document administration actions.
+Potential events include:
+DOCUMENT_TYPE_CREATEDDOCUMENT_TYPE_UPDATEDDOCUMENT_POLICY_UPDATEDSTORAGE_CONFIGURATION_UPDATEDDOCUMENT_RELEASED_FROM_QUARANTINELEGAL_HOLD_APPLIEDLEGAL_HOLD_REMOVEDDOCUMENT_PERMANENT_DELETION_APPROVED
+Audit records shall integrate with the centralized Audit system.
+
+5.1264 DOCUMENT SECURITY EVENT
+CS-DOC-FR-066 — Record Document Security Event
+The system shall record eligible document security events.
+Potential events include:
+UNAUTHORIZED_DOCUMENT_ACCESSUNAUTHORIZED_DOCUMENT_DOWNLOADPATH_TRAVERSAL_ATTEMPTINVALID_FILE_SIGNATUREMALWARE_DETECTEDDOCUMENT_CHECKSUM_MISMATCHRESTRICTED_DOCUMENT_ACCESS_DENIEDEXCESSIVE_DOCUMENT_DOWNLOADQUARANTINE_BYPASS_ATTEMPT
+Security events shall support approved monitoring and investigation.
+
+5.1265 DOCUMENT UPLOAD MONITORING
+CS-DOC-FR-067 — Monitor Document Uploads
+The system shall support upload monitoring.
+Potential indicators include:
+TOTAL UPLOADSSUCCESSFUL UPLOADSFAILED UPLOADSREJECTED FILE TYPESOVERSIZED FILESMALWARE DETECTIONSQUARANTINED FILES
+Monitoring may be grouped by:
+DOCUMENT TYPESOURCE MODULEHOSPITALDATE
+
+5.1266 DOCUMENT DOWNLOAD MONITORING
+CS-DOC-FR-068 — Monitor Document Downloads
+The system shall support document download monitoring.
+Potential indicators include:
+TOTAL DOWNLOADSDOWNLOADS BY DOCUMENT CATEGORYDOWNLOADS BY ROLEFAILED DOWNLOADSACCESS DENIALSHIGH-VOLUME DOWNLOAD ACTIVITY
+High-volume download activity may require security investigation.
+
+5.1267 STORAGE CAPACITY MONITORING
+CS-DOC-FR-069 — Monitor Storage Capacity
+The system shall support storage capacity monitoring.
+Potential indicators include:
+TOTAL STORAGE USEDAVAILABLE STORAGESTORAGE GROWTH RATEFILE COUNTAVERAGE FILE SIZESTORAGE BY DOCUMENT CATEGORY
+Conceptually:
+STORAGE USED80%   │   ▼CAPACITY WARNING
+The exact thresholds shall be defined during Infrastructure Architecture.
+
+5.1268 MISSING BINARY FILE DETECTION
+CS-DOC-FR-070 — Detect Missing Binary File Boundary
+The system shall support detection of metadata records whose binary file cannot be located.
+Example:
+POSTGRESQLDOC-0004821
+Storage reference:
+FIL-000009521
+Storage result:
+FILE NOT FOUND
+Conceptually:
+METADATA EXISTS      │      ▼FILE MISSING      │      ▼CONSISTENCY FAILURE
+The system shall record or surface the failure for approved operational handling.
+
+5.1269 ORPHAN FILE DETECTION
+CS-DOC-FR-071 — Detect Orphan File Boundary
+The system shall support detection of eligible stored files without valid document metadata references.
+Conceptually:
+STORAGE FILE EXISTS        │        ▼NO METADATA REFERENCE        │        ▼ORPHAN FILE
+An orphan file shall not be automatically deleted without approved reconciliation policy.
+Potential causes include:
+FAILED TRANSACTIONINTERRUPTED UPLOADMIGRATION ERRORMANUAL STORAGE CHANGE
+
+5.1270 METADATA-FILE CONSISTENCY VALIDATION
+CS-DOC-FR-072 — Support Metadata-File Consistency Validation
+The system shall support validation between document metadata and file storage.
+Conceptually:
+DOCUMENT METADATA        │        ▼STORAGE REFERENCE        │        ▼FILE EXISTS?        │        ▼CHECKSUM VALID?        │        ▼CONSISTENT
+Potential failure states include:
+FILE_MISSINGCHECKSUM_MISMATCHUNKNOWN_STORAGE_KEYORPHAN_FILEMETADATA_MISMATCH
+The final reconciliation strategy shall be defined during Data and Operational Architecture.
+
+5.1271 DOCUMENT BACKUP BOUNDARY
+CS-DOC-FR-073 — Support Document Backup Boundary
+The system shall support approved document backup requirements.
+Backup architecture shall consider both:
+DOCUMENT METADATA
+and:
+BINARY FILE CONTENT
+Backing up PostgreSQL alone may not be sufficient if file binaries are stored separately.
+Conceptually:
+DATABASE BACKUP      +FILE STORAGE BACKUP      │      ▼DOCUMENT RECOVERY CAPABILITY
+The final backup technology and schedule shall be defined during Infrastructure and Disaster Recovery Architecture.
+
+5.1272 DOCUMENT RESTORE BOUNDARY
+CS-DOC-FR-074 — Support Document Restore Boundary
+The system shall support approved document restore operations.
+Restore shall consider consistency between:
+DATABASE METADATAFILE STORAGEDOCUMENT VERSIONCHECKSUM
+Incorrect restore:
+DATABASE FROM MONDAYFILE STORAGE FROM FRIDAY
+without reconciliation.
+Potential impact:
+ORPHAN FILESMISSING FILESVERSION MISMATCHINVALID STORAGE REFERENCES
+The restore strategy shall define consistency and recovery validation.
+
+5.1273 FUTURE OCR INTEGRATION
+CS-DOC-FR-075 — Support Future OCR Integration
+Priority
+Should Have
+The architecture should support future Optical Character Recognition integration.
+Conceptually:
+SCANNED DOCUMENT       │       ▼DOC/FIL       │       ▼OCR REQUEST       │       ▼INT/API       │       ▼OCR PROVIDER       │       ▼EXTRACTED TEXT
+OCR output shall not automatically become verified clinical data.
+Critical Principle
+OCR EXTRACTED TEXT        ≠VERIFIED CLINICAL FACT
+
+5.1274 FUTURE DOCUMENT TEXT EXTRACTION
+CS-DOC-FR-076 — Support Future Document Text Extraction
+Priority
+Should Have
+The system should support future text extraction from eligible documents.
+Extracted text may support:
+SEARCH INDEXINGDOCUMENT CLASSIFICATIONREVIEW ASSISTANCEOCR WORKFLOW
+Extracted content shall follow document sensitivity and access policies.
+
+5.1275 FUTURE DOCUMENT CONTENT SEARCH
+CS-DOC-FR-077 — Support Future Document Content Search
+Priority
+Should Have
+The architecture should support future authorized document content search.
+Conceptually:
+DOCUMENT   │   ▼TEXT EXTRACTION   │   ▼AUTHORIZED INDEX   │   ▼CONTENT SEARCH
+Content search shall enforce the same or stronger access boundaries as the original document.
+A search index shall not become an unrestricted copy of clinical documents.
+
+5.1276 FUTURE ELECTRONIC SIGNATURE
+CS-DOC-FR-078 — Support Future Electronic Signature
+Priority
+Should Have
+The architecture should preserve a future electronic signature boundary.
+Potential use cases include:
+PATIENT CONSENTCLINICAL APPROVALADMINISTRATIVE APPROVALSTAFF DOCUMENT ACKNOWLEDGMENT
+The SRS shall not assume that a typed name automatically satisfies every legal signature requirement.
+Legal and compliance review shall define acceptable signature models.
+
+5.1277 FUTURE DIGITAL SIGNATURE VERIFICATION
+CS-DOC-FR-079 — Support Future Digital Signature Verification
+Priority
+Should Have
+The architecture should support future digital signature verification.
+Conceptually:
+SIGNED DOCUMENT       │       ▼SIGNATURE VERIFICATION       │       ▼VALID / INVALID / UNKNOWN
+Digital signature verification shall remain distinct from document review.
+Therefore:
+CRYPTOGRAPHIC SIGNATURE VALID              ≠CLINICAL CONTENT VERIFIED
+
+5.1278 FUTURE PATIENT DOCUMENT UPLOAD
+CS-DOC-FR-080 — Support Future Patient Document Upload
+Priority
+Should Have
+The architecture should support future patient document upload.
+Potential examples include:
+REFERRAL LETTERPREVIOUS REPORTINSURANCE DOCUMENTIDENTITY DOCUMENT
+Patient-uploaded documents may require:
+VALIDATIONMALWARE SCANNINGPATIENT SCOPEDOCUMENT CLASSIFICATIONSTAFF REVIEW
+A patient-uploaded document shall not automatically become a verified hospital clinical record.
+
+5.1279 FUTURE EXTERNAL DOCUMENT EXCHANGE
+CS-DOC-FR-081 — Support Future External Document Exchange
+Priority
+Should Have
+The architecture should support future approved external document exchange.
+Conceptually:
+CURASPHERE     │     ▼DOC/FIL     │     ▼INT/API     │     ▼EXTERNAL HEALTH SYSTEM
+Exchange shall consider:
+AUTHORIZATIONPATIENT CONSENTDOCUMENT SENSITIVITYINTEGRITYINTEROPERABILITY STANDARDAUDIT
+
+5.1280 FUTURE FHIR DOCUMENT REFERENCE
+CS-DOC-FR-082 — Support Future FHIR Document Reference
+Priority
+Should Have
+The architecture should support future healthcare interoperability mapping for document references.
+Conceptually:
+CURASPHERE DOCUMENT          │          ▼INTEROPERABILITY MAPPING          │          ▼FHIR DOCUMENT REFERENCE BOUNDARY
+No FHIR server implementation is finalized by this requirement.
+The exact mapping shall be defined during Interoperability Architecture.
+
+5.1281 FUTURE DICOM REFERENCE BOUNDARY
+CS-DOC-FR-083 — Support Future DICOM Reference Boundary
+Priority
+Should Have
+The architecture should preserve a future DICOM-related reference boundary for radiology.
+Large diagnostic images shall not automatically be treated as ordinary PDF attachments.
+Conceptually:
+RADIOLOGY MODULE       │       ▼DICOM STUDY REFERENCE       │       ▼PACS / IMAGING BOUNDARY
+DOC/FIL may manage approved document references and related attachments.
+The full PACS and DICOM imaging architecture shall be defined separately.
+
+5.1282 HOSPITAL-SPECIFIC STORAGE CONFIGURATION
+CS-DOC-FR-084 — Support Hospital-Specific Storage Configuration
+Priority
+Should Have
+The architecture should support future hospital-specific storage configuration.
+Example:
+HOSPITAL A    │    ▼STORAGE POLICY A
+Hospital B:
+HOSPITAL B    │    ▼STORAGE POLICY B
+Potential differences may include:
+STORAGE PROVIDERFILE SIZE POLICYRETENTION POLICYDOCUMENT TYPE POLICYARCHIVE POLICY
+The final configuration inheritance strategy shall be defined during Multi-Hospital Architecture.
+
+5.1283 DOCUMENT PROCESSING HISTORY
+CS-DOC-FR-085 — Maintain Document Processing History
+The system shall maintain eligible document processing history.
+Potential events include:
+DOCUMENT_CREATEDFILE_RECEIVEDFILE_NAME_VALIDATEDFILE_TYPE_VALIDATEDFILE_SIZE_VALIDATEDCHECKSUM_GENERATEDMALWARE_SCAN_STARTEDMALWARE_SCAN_COMPLETEDFILE_QUARANTINEDFILE_RELEASEDFILE_STOREDDOCUMENT_METADATA_STOREDDOCUMENT_REVIEWEDDOCUMENT_VERIFIEDDOCUMENT_REJECTEDDOCUMENT_ACTIVATEDDOCUMENT_VERSION_CREATEDDOCUMENT_SUPERSEDEDDOCUMENT_ARCHIVEDDOCUMENT_RESTOREDDOCUMENT_SOFT_DELETED
+Conceptually:
+DOCUMENT    │    ▼PROCESSING EVENT 1    │    ▼PROCESSING EVENT 2    │    ▼PROCESSING EVENT 3
+Processing history shall support technical and operational traceability.
+It shall not replace the centralized Audit system where formal audit requirements apply.
+
+5.1284 DOCUMENT UPLOAD DATA FLOW MODEL
+USER / MODULE      │      ▼UPLOAD REQUEST      │      ▼ASP.NET CORE API      │      ▼AUTHENTICATION      │      ▼AUTHORIZATION      │      ▼DOCUMENT SERVICE      │      ▼METADATA VALIDATION      │      ▼FILE POLICY VALIDATION      │      ▼MALWARE SCAN      │      ▼CHECKSUM      │      ▼STORAGE ABSTRACTION      │      ▼FILE STORAGE      │      ▼POSTGRESQL METADATA      │      ▼DOCUMENT REGISTERED
+
+5.1285 DOCUMENT DOWNLOAD DATA FLOW MODEL
+REACT CLIENT      │      ▼DOCUMENT REQUEST      │      ▼ASP.NET CORE API      │      ▼AUTHENTICATION      │      ▼AUTHORIZATION      │      ▼DOCUMENT SCOPE      │      ▼SENSITIVITY POLICY      │      ▼DOCUMENT METADATA      │      ▼STORAGE ABSTRACTION      │      ▼BINARY STREAM      │      ▼AUTHORIZED RESPONSE
+
+5.1286 DOCUMENT VERSIONING DATA FLOW MODEL
+CURRENT DOCUMENT       │       ▼NEW VERSION REQUEST       │       ▼AUTHORIZE       │       ▼VALIDATE NEW FILE       │       ▼SCAN FILE       │       ▼GENERATE CHECKSUM       │       ▼STORE NEW FILE       │       ▼CREATE VERSION N+1       │       ▼MARK VERSION N SUPERSEDED       │       ▼MARK VERSION N+1 CURRENT       │       ▼PRESERVE HISTORY
+
+5.1287 DOCUMENT UPLOAD SEQUENCE MODEL
+CLIENT       API       DOC SERVICE     SCANNER      STORAGE      DATABASE  │           │             │             │             │             │  │ Upload    │             │             │             │             │  ├──────────►│             │             │             │             │  │           │ Authorize   │             │             │             │  │           │             │             │             │             │  │           │ Register    │             │             │             │  │           ├────────────►│             │             │             │  │           │             │ Validate    │             │             │  │           │             │             │             │             │  │           │             │ Scan        │             │             │  │           │             ├────────────►│             │             │  │           │             │ Result      │             │             │  │           │             │◄────────────┤             │             │  │           │             │ Store File                │             │  │           │             ├──────────────────────────►│             │  │           │             │ Storage Key               │             │  │           │             │◄──────────────────────────┤             │  │           │             │ Save Metadata                           │  │           │             ├────────────────────────────────────────►│  │           │             │ Document ID                            │  │           │             │◄────────────────────────────────────────┤  │           │ Result      │             │             │             │  │           │◄────────────┤             │             │             │  │ Response  │             │             │             │             │  │◄──────────┤             │             │             │             │
+
+5.1288 DOCUMENT DOWNLOAD SEQUENCE MODEL
+CLIENT        API       DOC SERVICE      DATABASE       STORAGE  │            │             │               │              │  │ Download   │             │               │              │  ├───────────►│             │               │              │  │            │ Authorize   │               │              │  │            │             │               │              │  │            │ Get Doc     │               │              │  │            ├────────────►│               │              │  │            │             │ Load Metadata │              │  │            │             ├──────────────►│              │  │            │             │ Metadata      │              │  │            │             │◄──────────────┤              │  │            │             │ Validate Scope│              │  │            │             │               │              │  │            │             │ Get File                     │  │            │             ├─────────────────────────────►│  │            │             │ Stream                       │  │            │             │◄─────────────────────────────┤  │            │ Stream      │               │              │  │            │◄────────────┤               │              │  │ File       │             │               │              │  │◄───────────┤             │               │              │
+
+5.1289 DOCUMENT STATE MODEL
+REGISTERED     │     ▼UPLOADED     │     ▼VALIDATING     │ ┌───┴───────────────┐ │                   │ ▼                   ▼VALID              REJECTED │ ▼SCANNING │ ├──────────────► QUARANTINED │                    │ │                    ▼ │               SECURITY REVIEW │                    │ │               ┌────┴────┐ │               │         │ │               ▼         ▼ │            RELEASED   REJECTED │               │ └───────────────┘         │         ▼PENDING REVIEW         │    ┌────┴─────┐    │          │    ▼          ▼ VERIFIED    REJECTED    │    ▼ ACTIVE    │    ├────────► SUPERSEDED    │    ├────────► ARCHIVED    │    └────────► SOFT DELETED
+Not every document type shall require every state.
+
+5.1290 DOCUMENT VERSION STATE MODEL
+VERSION 1 CURRENT    │    ▼NEW VERSION CREATED    │    ├────────────────┐    │                │    ▼                ▼VERSION 1         VERSION 2SUPERSEDED         CURRENT                       │                       ▼               NEW VERSION CREATED                       │              ┌────────┴────────┐              ▼                 ▼          VERSION 2          VERSION 3         SUPERSEDED            CURRENT
+Historical versions remain traceable.
+
+5.1291 FILE SECURITY STATE MODEL
+RECEIVED   │   ▼VALIDATING   │ ┌─┴───────────────┐ │                 │ ▼                 ▼VALID            INVALID │ ▼SCANNING │ ├───────────────► INFECTED │                    │ │                    ▼ │                QUARANTINED │ ├───────────────► SCAN FAILED │                    │ │                    ▼ │              SECURITY POLICY │ ▼CLEAN │ ▼STORABLE
+
+5.1292 DOCUMENT BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-DOC-BR-001
+Document lifecycle shall remain separate from clinical and business record ownership
+CS-DOC-BR-002
+A document and a binary file shall remain distinct concepts
+CS-DOC-BR-003
+Document identifiers shall remain separate from file identifiers
+CS-DOC-BR-004
+Document metadata and binary storage shall use approved architectural boundaries
+CS-DOC-BR-005
+Protected hospital documents shall not be stored as React public assets
+CS-DOC-BR-006
+Original file names shall not automatically become physical storage paths
+CS-DOC-BR-007
+Storage keys shall be controlled by the server
+CS-DOC-BR-008
+Client-provided file metadata shall be treated as untrusted input
+CS-DOC-BR-009
+File extension alone shall not prove file type
+CS-DOC-BR-010
+File uploads shall follow approved size and count limits
+CS-DOC-BR-011
+Eligible files shall support checksum generation and integrity verification
+CS-DOC-BR-012
+Duplicate checksum detection shall not automatically cause file deletion
+CS-DOC-BR-013
+Eligible uploaded files shall follow approved malware scanning policy
+CS-DOC-BR-014
+Quarantined files shall not be available through normal download workflows
+CS-DOC-BR-015
+Storage implementation details shall not be scattered across business modules
+CS-DOC-BR-016
+Internal storage paths shall not automatically be exposed to clients
+CS-DOC-BR-017
+Knowledge of a document ID shall not grant document access
+CS-DOC-BR-018
+Document access shall consider the associated business-record scope
+CS-DOC-BR-019
+Patient document access shall be limited to eligible patient-scoped documents
+CS-DOC-BR-020
+Clinical document access shall follow approved clinical access policy
+CS-DOC-BR-021
+Sensitive document classification shall supplement normal authorization
+CS-DOC-BR-022
+New document versions shall not overwrite required historical versions
+CS-DOC-BR-023
+The server shall control document version sequencing
+CS-DOC-BR-024
+Superseded document versions shall not automatically be deleted
+CS-DOC-BR-025
+Document review shall remain distinct from clinical verification
+CS-DOC-BR-026
+Rejected documents shall not automatically become active records
+CS-DOC-BR-027
+Document activation requirements may vary by document type
+CS-DOC-BR-028
+Archival shall not automatically mean permanent deletion
+CS-DOC-BR-029
+Soft deletion shall respect retention and legal requirements
+CS-DOC-BR-030
+Permanent deletion shall require approved policy and authorization
+CS-DOC-BR-031
+Documents under legal hold shall not be deleted through normal cleanup
+CS-DOC-BR-032
+Document search shall respect authorization and record scope
+CS-DOC-BR-033
+Document collections shall be paginated
+CS-DOC-BR-034
+Eligible document access events shall be recorded
+CS-DOC-BR-035
+Document administration actions shall be audited
+CS-DOC-BR-036
+Malware detection and integrity failures shall support security event recording
+CS-DOC-BR-037
+Metadata-file consistency failures shall support operational investigation
+CS-DOC-BR-038
+Orphan files shall not be blindly deleted without reconciliation policy
+CS-DOC-BR-039
+Document backup shall consider both metadata and binary content
+CS-DOC-BR-040
+Document restore shall consider metadata and file-storage consistency
+CS-DOC-BR-041
+OCR output shall not automatically become verified clinical data
+CS-DOC-BR-042
+Document search indexes shall not bypass original document authorization
+CS-DOC-BR-043
+Electronic signature requirements shall require legal and compliance review
+CS-DOC-BR-044
+Cryptographic signature validity shall remain distinct from clinical content verification
+CS-DOC-BR-045
+Patient-uploaded documents shall not automatically become verified clinical records
+CS-DOC-BR-046
+External document exchange shall use approved integration boundaries
+CS-DOC-BR-047
+DICOM imaging shall not automatically be treated as ordinary document attachment storage
+CS-DOC-BR-048
+Future hospital-specific storage policies shall remain hospital-scoped
+
+5.1293 DOCUMENT PERMISSION CONCEPT
+Potential permissions include:
+DOC_DOCUMENT_VIEWDOC_DOCUMENT_VIEW_OWNDOC_DOCUMENT_UPLOADDOC_DOCUMENT_DOWNLOADDOC_DOCUMENT_PREVIEWDOC_DOCUMENT_VERSION_CREATEDOC_DOCUMENT_VERSION_VIEWDOC_DOCUMENT_REVIEWDOC_DOCUMENT_VERIFYDOC_DOCUMENT_REJECTDOC_DOCUMENT_ARCHIVEDOC_DOCUMENT_RESTOREDOC_DOCUMENT_SOFT_DELETEDOC_DOCUMENT_PERMANENT_DELETEDOC_QUARANTINE_VIEWDOC_QUARANTINE_RELEASEDOC_DOCUMENT_TYPE_VIEWDOC_DOCUMENT_TYPE_MANAGEDOC_RETENTION_POLICY_VIEWDOC_RETENTION_POLICY_MANAGEDOC_LEGAL_HOLD_VIEWDOC_LEGAL_HOLD_MANAGEDOC_STORAGE_MONITORING_VIEWDOC_DOCUMENT_HISTORY_VIEWDOC_DOCUMENT_ACCESS_EVENT_VIEWDOC_SECURITY_EVENT_VIEWDOC_ADMIN
+Example patient:
+PATIENT   │   ├── DOC_DOCUMENT_VIEW_OWN   └── DOC_DOCUMENT_DOWNLOAD
+Doctor:
+DOCTOR   │   ├── DOC_DOCUMENT_VIEW   ├── DOC_DOCUMENT_UPLOAD   ├── DOC_DOCUMENT_DOWNLOAD   └── DOC_DOCUMENT_VERSION_VIEW
+Document Administrator:
+DOCUMENT ADMINISTRATOR          │          ├── DOC_DOCUMENT_TYPE_VIEW          ├── DOC_DOCUMENT_TYPE_MANAGE          ├── DOC_STORAGE_MONITORING_VIEW          └── DOC_DOCUMENT_HISTORY_VIEW
+Security role:
+SECURITY ADMINISTRATOR          │          ├── DOC_QUARANTINE_VIEW          ├── DOC_QUARANTINE_RELEASE          └── DOC_SECURITY_EVENT_VIEW
+Critical Principle
+DOC_ADMIN
+shall not automatically grant:
+CLINICAL_NOTE_EDITLAB_RESULT_VERIFYRADIOLOGY_REPORT_APPROVEPRESCRIPTION_CREATEPAYMENT_REVERSESALARY_APPROVEIAM_PERMISSION_MANAGE
+Document administration shall not become universal hospital data access.
+
+5.1294 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Document registration
+CS-DOC-FR-001 to 003
+Document classification
+CS-DOC-FR-004 to 005
+Document source
+CS-DOC-FR-006 to 007
+Business record association
+CS-DOC-FR-008 to 013
+File upload
+CS-DOC-FR-014
+File naming
+CS-DOC-FR-015 to 017
+File type validation
+CS-DOC-FR-018 to 020
+Upload limits
+CS-DOC-FR-021 to 022
+File integrity
+CS-DOC-FR-023 to 024
+Duplicate file detection
+CS-DOC-FR-025
+Malware protection
+CS-DOC-FR-026 to 028
+File storage
+CS-DOC-FR-029 to 033
+Document retrieval
+CS-DOC-FR-034
+Document delivery
+CS-DOC-FR-035 to 037
+Document authorization
+CS-DOC-FR-038 to 041
+Sensitive document protection
+CS-DOC-FR-042 to 043
+Document versioning
+CS-DOC-FR-044 to 049
+Document review and verification
+CS-DOC-FR-050 to 053
+Document archive and restore
+CS-DOC-FR-054 to 055
+Document deletion
+CS-DOC-FR-056 to 057
+Retention and legal hold
+CS-DOC-FR-058 to 059
+Document search and filtering
+CS-DOC-FR-060 to 062
+Document history and access events
+CS-DOC-FR-063 to 064
+Document audit and security
+CS-DOC-FR-065 to 066
+Document monitoring
+CS-DOC-FR-067 to 069
+Storage consistency
+CS-DOC-FR-070 to 072
+Backup and restore
+CS-DOC-FR-073 to 074
+Future OCR
+CS-DOC-FR-075
+Future text extraction
+CS-DOC-FR-076
+Future content search
+CS-DOC-FR-077
+Future electronic signature
+CS-DOC-FR-078
+Future digital signature verification
+CS-DOC-FR-079
+Future patient upload
+CS-DOC-FR-080
+Future external document exchange
+CS-DOC-FR-081
+Future FHIR document reference
+CS-DOC-FR-082
+Future DICOM boundary
+CS-DOC-FR-083
+Hospital-specific storage
+CS-DOC-FR-084
+Document processing history
+CS-DOC-FR-085
+
+5.1295 DOCUMENT AND FILE MANAGEMENT RISK ANALYSIS
+Risk 1 — Patient Files Stored in React Public Folder
+Problem
+frontend/public/patients/
+contains medical documents.
+Impact
+Files may become directly accessible through public URLs.
+Mitigation
+Use authorized API and protected storage boundaries.
+
+Risk 2 — Large Files Stored Randomly in PostgreSQL
+Problem
+Every PDF, image, and scan is inserted directly into general application tables without storage architecture.
+Impact
+Database growth, backup complexity, restore complexity, and operational problems increase.
+Mitigation
+Separate document metadata from approved binary storage.
+
+Risk 3 — Physical File Paths Stored Everywhere
+Problem
+C:\HospitalFiles\Patients\108\report.pdf
+is used inside controllers and business services.
+Impact
+Storage migration becomes difficult.
+Mitigation
+Use storage abstraction and controlled storage references.
+
+Risk 4 — User File Name Becomes Server Path
+Problem
+Uploaded name:
+../../config/appsettings.json
+is used directly.
+Impact
+Path traversal and file overwrite risk.
+Mitigation
+Generate server-controlled storage keys.
+
+Risk 5 — Extension Is Trusted
+Problem
+virus.exe
+is renamed:
+report.pdf
+Impact
+Unsafe content may enter the document repository.
+Mitigation
+Validate extension, media type, and eligible file content characteristics.
+
+Risk 6 — No File Size Limit
+Problem
+User uploads:
+100 GB FILE
+Impact
+Storage exhaustion and denial of service.
+Mitigation
+Apply file size limits.
+
+Risk 7 — Unlimited Files Per Request
+Problem
+One HTTP request contains 50,000 files.
+Impact
+Application memory and processing resources are exhausted.
+Mitigation
+Apply upload count limits and dedicated batch workflows.
+
+Risk 8 — No Malware Scanning Boundary
+Problem
+Hospital staff upload externally received files directly into active document storage.
+Impact
+Malicious files may spread through hospital workflows.
+Mitigation
+Use approved malware scanning and quarantine boundaries.
+
+Risk 9 — Quarantined File Can Still Be Downloaded
+Problem
+Status:
+QUARANTINED
+but normal download endpoint ignores status.
+Impact
+Unsafe files remain accessible.
+Mitigation
+Enforce file security state during retrieval.
+
+Risk 10 — Document ID Grants Access
+Problem
+User changes:
+DOC-0004821
+to:
+DOC-0004822
+and downloads another patient’s document.
+Impact
+Medical information exposure.
+Mitigation
+Enforce permission and record scope on every document request.
+
+Risk 11 — Receptionist Can Download Every Clinical Document
+Problem
+Generic permission:
+DOC_VIEW
+grants access to every document.
+Impact
+Clinical confidentiality boundaries are lost.
+Mitigation
+Use category, business scope, and sensitivity-aware authorization.
+
+Risk 12 — Document Administrator Becomes Clinical Superuser
+Problem
+Storage administration permission grants access to all patient files.
+Impact
+Technical privilege becomes clinical privilege.
+Mitigation
+Separate document administration from document-content authorization.
+
+Risk 13 — New Upload Overwrites Old Document
+Problem
+Corrected report replaces the original binary file.
+Impact
+Historical evidence is lost.
+Mitigation
+Use document versioning.
+
+Risk 14 — Client Controls Version Number
+Problem
+Client sends:
+version = 100
+Impact
+Document history becomes inconsistent.
+Mitigation
+The server shall manage version sequencing.
+
+Risk 15 — Superseded Version Is Deleted
+Problem
+Version 2 becomes current.
+Version 1 is physically deleted immediately.
+Impact
+Historical traceability is lost.
+Mitigation
+Preserve required historical versions.
+
+Risk 16 — Review Equals Clinical Verification
+Problem
+Document administrator checks file readability.
+The system marks:
+CLINICALLY VERIFIED
+Impact
+Administrative review is misrepresented as clinical verification.
+Mitigation
+Separate document review and clinical verification concepts.
+
+Risk 17 — Delete Button Permanently Removes Medical Record
+Problem
+Normal user clicks:
+DELETE
+and the file is physically destroyed.
+Impact
+Retention, legal, and clinical record obligations may be violated.
+Mitigation
+Use controlled soft deletion and retention policies.
+
+Risk 18 — Legal Hold Is Ignored
+Problem
+Retention cleanup deletes a document under legal investigation.
+Impact
+Required evidence may be destroyed.
+Mitigation
+Apply legal hold before permanent deletion.
+
+Risk 19 — Search Reveals Restricted File Names
+Problem
+User cannot open a document but search results show:
+HIV-Positive-Report.pdf
+Impact
+Sensitive information leaks through metadata.
+Mitigation
+Apply authorization before search-result exposure.
+
+Risk 20 — Internal Storage Path Returned to React
+Problem
+API returns:
+C:\HospitalStorage\Patients\108\report.pdf
+Impact
+Infrastructure details are exposed.
+Mitigation
+Return document identifiers and approved metadata only.
+
+Risk 21 — Entire File Loaded Into Memory
+Problem
+A large file is loaded as one byte array for every download.
+Impact
+Application memory pressure increases.
+Mitigation
+Use streaming where appropriate.
+
+Risk 22 — Database Backup Excludes File Storage
+Problem
+PostgreSQL is backed up.
+Object storage is not.
+Impact
+Restored database references files that no longer exist.
+Mitigation
+Coordinate metadata and binary backup strategies.
+
+Risk 23 — File Storage Restored From Different Date
+Problem
+Database and storage recovery points are inconsistent.
+Impact
+Missing and orphan files appear.
+Mitigation
+Define recovery consistency and reconciliation.
+
+Risk 24 — Orphan Files Are Deleted Immediately
+Problem
+Storage scan finds an unreferenced file and deletes it.
+Impact
+A temporary transaction or migration issue may cause legitimate data loss.
+Mitigation
+Use controlled orphan reconciliation.
+
+Risk 25 — Missing File Is Hidden
+Problem
+Metadata exists but binary content is missing.
+The UI repeatedly returns generic:
+ERROR
+Impact
+Operational corruption remains undetected.
+Mitigation
+Detect and monitor metadata-file consistency failures.
+
+Risk 26 — Checksum Mismatch Is Ignored
+Problem
+Stored file content changes unexpectedly.
+Impact
+Document integrity may be compromised.
+Mitigation
+Support checksum verification and security event recording.
+
+Risk 27 — OCR Text Is Treated as Clinical Truth
+Problem
+OCR reads:
+10 mg
+as:
+100 mg
+The extracted value is automatically inserted into a prescription.
+Impact
+Patient safety may be affected.
+Mitigation
+OCR output shall not automatically become verified clinical data.
+
+Risk 28 — Search Index Bypasses Document Security
+Problem
+Users cannot open a document but can search all extracted text.
+Impact
+Sensitive clinical content is exposed.
+Mitigation
+Apply document authorization to content search.
+
+Risk 29 — Typed Name Is Treated as Universal Legal Signature
+Problem
+User types:
+Ali Khan
+The system declares the document legally digitally signed.
+Impact
+Legal validity may be misrepresented.
+Mitigation
+Define electronic and digital signature requirements through legal review.
+
+Risk 30 — DICOM Images Stored Like Normal PDFs
+Problem
+Large imaging studies are uploaded through the ordinary document attachment endpoint.
+Impact
+Storage, transfer, metadata, and clinical imaging workflows become unsuitable.
+Mitigation
+Preserve a separate DICOM/PACS architecture boundary.
+
+Risk 31 — Patient Upload Automatically Becomes Verified Record
+Problem
+Patient uploads an external report.
+The system marks:
+VERIFIED CLINICAL DOCUMENT
+Impact
+Unreviewed external content becomes official hospital information.
+Mitigation
+Require approved review or verification workflows.
+
+Risk 32 — Document Microservice Created Too Early
+Problem
+The RAD team immediately creates:
+DOCUMENT MICROSERVICEFILE MICROSERVICESTORAGE MICROSERVICEOCR MICROSERVICESIGNATURE MICROSERVICE
+Impact
+DISTRIBUTED TRANSACTIONSORPHAN FILE COMPLEXITYNETWORK FAILURE MODESDEPLOYMENT COMPLEXITYDEVOPS OVERHEAD
+Mitigation
+Begin with a well-isolated modular document domain and storage abstraction.
+Extract independent services only when architectural evidence requires them.
+
+5.1296 COMPLETE DOCUMENT CAPABILITY MODEL
+                    DOCUMENT PLATFORM                           │          ┌────────────────┼────────────────┐          │                │                │          ▼                ▼                ▼      REGISTRATION       FILES           SECURITY          │                │                │          ▼                ▼                ▼     CLASSIFICATION      UPLOAD          VALIDATION          │                │                │          ▼                ▼                ▼       SOURCES          FILE TYPE        MALWARE SCAN          │                │                │          ▼                ▼                ▼     ASSOCIATIONS       FILE SIZE        QUARANTINE          │                │                │          ▼                ▼                ▼       PATIENT          CHECKSUM         SENSITIVITY          │                │                │          ▼                ▼                ▼      ENCOUNTER        INTEGRITY          ACCESS          │                │                │          └────────────────┼────────────────┘                           ▼                         STORAGE                           │                 ┌─────────┼─────────┐                 │         │         │                 ▼         ▼         ▼              METADATA   BINARY    STORAGE KEY                 │         │         │                 └─────────┼─────────┘                           ▼                        VERSIONING                           │                           ▼                    REVIEW / VERIFY                           │                           ▼                         ACTIVE                           │                  ┌────────┼────────┐                  │        │        │                  ▼        ▼        ▼               ARCHIVE  RETENTION LEGAL HOLD                  │        │        │                  └────────┼────────┘                           ▼                         HISTORY                           │                           ▼                       MONITORING                           │                           ▼                          AUDIT
+
+5.1297 DOCUMENT MODULE COMPLETION STATUS
+Module: Document, File, Medical Attachment and Digital Record Management SystemModule Code: DOC/FILRequirement Range: CS-DOC-FR-001 to CS-DOC-FR-085Business Rule Range: CS-DOC-BR-001 to CS-DOC-BR-048
+Document Domain Boundary: DefinedDocument vs File Concept: DefinedDocument Storage Boundary: DefinedReact Public Folder Boundary: DefinedDocument Actors: DefinedDocument Registration: DefinedDocument Identifier: DefinedFile Identifier: DefinedDocument Type: DefinedDocument Category: DefinedDocument Source: DefinedSource Module: DefinedBusiness Reference Association: DefinedPatient Reference Association: DefinedEncounter Reference Association: DefinedClinical Order Reference: DefinedResult Reference Association: DefinedAdministrative Document Association: DefinedDocument File Upload: DefinedOriginal File Name Preservation: DefinedSafe Storage Name: DefinedFile Name Validation: DefinedFile Extension Validation: DefinedMedia Type Validation: DefinedFile Signature Validation Boundary: DefinedFile Size Validation: DefinedFile Count Validation: DefinedFile Checksum: DefinedFile Integrity Verification: DefinedDuplicate File Detection: DefinedMalware Scanning Boundary: DefinedFile Quarantine: DefinedQuarantine Release: DefinedStorage Abstraction: DefinedStorage Provider Recording: DefinedStorage Key: DefinedDocument Metadata Storage: DefinedDirect Public File Exposure Protection: DefinedDocument Metadata Retrieval: DefinedAuthorized Document Download: DefinedSecure Document Streaming: DefinedDocument Preview Boundary: DefinedDocument Access Control: DefinedDocument Record Scope: DefinedPatient Document Scope: DefinedClinical Document Scope: DefinedSensitive Document Classification: DefinedSensitive Document Access: DefinedDocument Version Creation: DefinedDocument Version Number: DefinedHistorical Version Preservation: DefinedCurrent Document Version: DefinedDocument Supersession: DefinedDocument Version History: DefinedDocument Review: DefinedDocument Verification: DefinedDocument Rejection: DefinedDocument Activation: DefinedDocument Archival: DefinedDocument Restore: DefinedDocument Soft Deletion: DefinedPermanent Document Deletion Restriction: DefinedDocument Retention Boundary: DefinedLegal Hold Boundary: DefinedDocument Search: DefinedDocument Filtering: DefinedDocument Pagination: DefinedDocument History: DefinedDocument Access Events: DefinedDocument Administration Audit: DefinedDocument Security Events: DefinedDocument Upload Monitoring: DefinedDocument Download Monitoring: DefinedStorage Capacity Monitoring: DefinedMissing Binary File Detection: DefinedOrphan File Detection: DefinedMetadata-File Consistency Validation: DefinedDocument Backup Boundary: DefinedDocument Restore Boundary: DefinedFuture OCR Integration: DefinedFuture Document Text Extraction: DefinedFuture Document Content Search: DefinedFuture Electronic Signature: DefinedFuture Digital Signature Verification: DefinedFuture Patient Document Upload: DefinedFuture External Document Exchange: DefinedFuture FHIR Document Reference: DefinedFuture DICOM Boundary: DefinedHospital-Specific Storage Configuration: DefinedDocument Processing History: DefinedDocument Upload Data Flow: DefinedDocument Download Data Flow: DefinedDocument Versioning Data Flow: DefinedDocument Upload Sequence Model: DefinedDocument Download Sequence Model: DefinedDocument State Model: DefinedDocument Version State Model: DefinedFile Security State Model: DefinedDocument Permission Concept: DefinedRequirement Traceability: EstablishedDocument and File Management Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The Document, File, Medical Attachment and Digital Record Management requirements establish the centralized digital document foundation of CuraSphere.
+These requirements shall later be transformed into:
+document domain architecture;
+file storage architecture;
+medical attachment architecture;
+document application architecture;
+document data architecture;
+document security architecture;
+document use case model;
+upload document use case;
+download document use case;
+preview document use case;
+create document version use case;
+review document use case;
+verify document use case;
+reject document use case;
+quarantine file use case;
+release quarantined file use case;
+archive document use case;
+restore document use case;
+apply legal hold use case;
+document upload activity diagram;
+document validation activity diagram;
+malware scanning activity diagram;
+document download activity diagram;
+document versioning activity diagram;
+document archive activity diagram;
+document deletion activity diagram;
+document upload sequence diagram;
+document download sequence diagram;
+document version sequence diagram;
+quarantine sequence diagram;
+document domain model;
+Document entity;
+Document Version entity;
+File Object entity;
+Document Association entity;
+Document Type entity;
+Document Category entity;
+Document Processing Event entity;
+Document Access Event entity;
+Document Retention Policy entity;
+Legal Hold entity;
+PostgreSQL document metadata schema;
+document identifier strategy;
+file identifier strategy;
+storage key strategy;
+document association strategy;
+document versioning strategy;
+document current-version strategy;
+document checksum strategy;
+duplicate file detection strategy;
+document retention strategy;
+legal hold strategy;
+document archival strategy;
+document soft-delete strategy;
+permanent deletion workflow;
+metadata-file reconciliation strategy;
+orphan file strategy;
+ASP.NET Core document application services;
+document request DTOs;
+document response DTOs;
+document mapping architecture;
+document policy evaluator;
+file validation service;
+file type validation service;
+checksum service;
+malware scanning abstraction;
+file quarantine service;
+file storage abstraction;
+local managed storage implementation evaluation;
+object storage implementation evaluation;
+cloud object storage evaluation;
+document repository boundary;
+document version service;
+document access policy;
+document scope evaluator;
+document sensitivity evaluator;
+document retention evaluator;
+legal hold evaluator;
+document processing history service;
+document access event service;
+file streaming architecture;
+HTTP range request evaluation;
+temporary document delivery evaluation;
+signed URL evaluation;
+secure download token evaluation;
+transactional file upload strategy;
+database-file consistency strategy;
+failed upload cleanup;
+file staging strategy;
+file promotion strategy;
+malware scanning workflow;
+background document processing;
+durable document work strategy;
+document failed-processing strategy;
+document monitoring metrics;
+storage monitoring metrics;
+document structured logging;
+document correlation strategy;
+document log redaction;
+React document list architecture;
+React document upload architecture;
+React upload progress architecture;
+React document preview architecture;
+React document download architecture;
+React document version history architecture;
+React document metadata UI;
+React document review UI;
+React quarantine administration UI;
+React document search;
+React document filters;
+React document pagination;
+document administration UI;
+document type management UI;
+document policy management UI;
+storage monitoring dashboard;
+document integrity dashboard;
+document access control tests;
+patient document scope tests;
+clinical document scope tests;
+sensitive document tests;
+document registration tests;
+file name validation tests;
+extension validation tests;
+media type validation tests;
+file signature tests;
+file size tests;
+file count tests;
+checksum tests;
+integrity tests;
+duplicate detection tests;
+malware scanning tests;
+quarantine tests;
+quarantine release tests;
+storage abstraction tests;
+storage key tests;
+public file exposure tests;
+document metadata tests;
+document download authorization tests;
+document streaming tests;
+document preview tests;
+document version creation tests;
+concurrent version creation tests;
+current version tests;
+historical version tests;
+document supersession tests;
+document review tests;
+document verification tests;
+document rejection tests;
+document activation tests;
+document archive tests;
+document restore tests;
+document soft-delete tests;
+permanent deletion tests;
+retention tests;
+legal hold tests;
+document search tests;
+document filter tests;
+document pagination tests;
+document history tests;
+document access event tests;
+document audit tests;
+document security event tests;
+missing file tests;
+orphan file tests;
+metadata-file consistency tests;
+backup validation tests;
+restore validation tests;
+application restart tests;
+interrupted upload tests;
+storage outage tests;
+malware scanner outage tests;
+document load tests;
+high-volume upload tests;
+concurrent download tests;
+storage capacity tests;
+future OCR security tests;
+future content search authorization tests;
+future patient upload tests;
+future external exchange tests;
+multi-hospital document scope tests.
+No document microservice, file microservice, storage microservice, OCR microservice, signature microservice, physical file storage provider, local disk production deployment, network-attached storage deployment, storage area network deployment, MinIO deployment, Azure Blob Storage deployment, Amazon S3 deployment, Google Cloud Storage deployment, PostgreSQL large object implementation, PostgreSQL bytea implementation, document binary database storage strategy, file system directory layout, storage key exact format, file name maximum length, file size limit, file count limit, allowed extension matrix, MIME allowlist, file signature library, checksum algorithm, antivirus engine, ClamAV deployment, malware scanner provider, malware scan timeout, quarantine storage implementation, quarantine retention period, file staging directory, temporary upload directory, failed upload cleanup interval, document transaction strategy, distributed transaction strategy, storage consistency implementation, orphan file scan interval, missing file scan interval, checksum verification interval, document retention period, clinical document retention period, administrative document retention period, workforce document retention period, legal hold workflow, permanent deletion approval workflow, backup provider, backup frequency, backup retention period, file storage recovery point objective, file storage recovery time objective, document encryption-at-rest implementation, storage encryption key strategy, document content encryption strategy, document-level encryption strategy, secure download token format, signed URL provider, signed URL expiration period, HTTP range request implementation, PDF preview library, image preview library, browser PDF viewer, React document viewer, OCR provider, OCR engine, Tesseract deployment, Azure AI Document Intelligence integration, AWS Textract integration, Google Document AI integration, extracted text storage model, search engine, Elasticsearch deployment, OpenSearch deployment, PostgreSQL full-text document indexing, electronic signature provider, digital signature provider, certificate authority, PKI architecture, DICOM server, PACS provider, FHIR server, FHIR DocumentReference mapping, patient upload workflow, external document exchange protocol, document service extraction strategy, document cache, Redis deployment, CDN deployment, public CDN document delivery, multi-hospital storage inheritance strategy, or cloud storage migration strategy has been finalized by this SRS section.
+Those decisions shall be made during Domain Architecture, Application Architecture, Data Architecture, Document Architecture, Storage Architecture, Security Architecture, Identity and Access Architecture, Clinical Architecture, Interoperability Architecture, Integration Architecture, Infrastructure Architecture, DevOps Architecture, Disaster Recovery Architecture, Legal and Compliance Review, Hospital Governance, UI Architecture, Detailed Design, storage provider evaluation, security testing, and approved operational planning.
+

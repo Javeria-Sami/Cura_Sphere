@@ -1,0 +1,375 @@
+﻿CuraSphere
+Document 1: Project Vision Document (PVD)
+Version: 1.0Project Name: JUH-Tech HealthDocument Type: Project Vision DocumentDevelopment Model: Rapid Application Development (RAD)Prepared By: Software Engineering TeamStatus: Draft Version 1
+
+Table of Contents
+Executive Summary
+Introduction
+What is a Hospital Management System?
+Vision Statement
+Mission Statement
+Project Purpose
+Project Objectives
+Problems in Traditional Hospital Systems
+Proposed Solution
+Expected Benefits
+Project Scope
+Stakeholders
+Business Value
+Success Criteria
+High-Level System Overview
+Core Modules
+Future Scalability
+Project Constraints
+Assumptions
+Risks
+Glossary
+
+1. Executive Summary
+JUH-Tech Health is a modern Hospital Management System (HMS) designed to digitize and integrate hospital operations into one secure, scalable platform.
+The system will replace manual paperwork and disconnected software by providing a centralized solution for patient management, appointments, medical records, pharmacy, laboratory, billing, inventory, human resources, and administration.
+The goal is to improve healthcare quality, operational efficiency, security, and decision-making through modern software engineering practices.
+
+2. Introduction
+Healthcare organizations generate and rely on large volumes of information every day. Managing patient records, appointments, billing, laboratory reports, pharmacy inventory, and staff manually or through disconnected systems often leads to delays, errors, and duplicated work.
+JUH-Tech Health aims to solve these challenges by providing a unified software platform that enables healthcare professionals to work efficiently while ensuring that patient information remains secure, accurate, and easily accessible to authorized users.
+
+3. What is a Hospital Management System (HMS)?
+A Hospital Management System is an integrated software solution used to manage the clinical, administrative, financial, and operational activities of a healthcare organization.
+It connects all departments through a shared database and standardized workflows.
+Instead of each department maintaining separate records, every authorized user works within the same secure ecosystem.
+Major Areas Covered
+Patient Registration
+Electronic Medical Records (EMR)
+Doctor Management
+Appointment Scheduling
+Pharmacy
+Laboratory
+Radiology
+Billing & Finance
+Inventory
+Human Resources
+Reporting & Analytics
+Administration
+
+4. Vision Statement
+To become a reliable, intelligent, secure, and scalable digital healthcare platform that empowers hospitals to deliver efficient, patient-centered care through modern technology.
+
+5. Mission Statement
+Our mission is to simplify hospital operations by developing an integrated management system that improves communication, reduces manual work, enhances patient care, and supports informed decision-making through accurate and real-time data.
+
+6. Project Purpose
+JUH-Tech Health is being developed to:
+Eliminate paper-based hospital processes.
+Reduce administrative workload.
+Improve communication between departments.
+Provide accurate patient records.
+Enhance patient safety.
+Improve financial transparency.
+Enable data-driven decision making.
+Standardize hospital workflows.
+Reduce medical and administrative errors.
+Build a scalable platform for future healthcare needs.
+
+7. Project Objectives
+Primary Objectives
+Develop a centralized hospital management platform.
+Provide secure authentication and role-based access.
+Digitize patient medical records.
+Streamline appointments and admissions.
+Automate billing and payment management.
+Improve medicine inventory management.
+Generate real-time reports.
+Ensure compliance with healthcare data security standards.
+Technical Objectives
+Build a modular and scalable system.
+Use Clean Architecture.
+Support future cloud deployment.
+Maintain high performance.
+Ensure maintainability.
+Provide RESTful APIs.
+Enable integration with external healthcare systems in the future.
+
+8. Problems in Traditional Hospital Systems
+Many hospitals still face challenges due to manual or fragmented processes.
+Problem
+Impact
+Paper-based records
+Data loss and difficult retrieval
+Long patient waiting times
+Reduced patient satisfaction
+Duplicate data entry
+Increased administrative workload
+Poor communication between departments
+Delayed treatments
+Billing errors
+Financial losses
+Medicine stock mismanagement
+Shortages or wastage
+Limited reporting capabilities
+Weak management decisions
+Lack of centralized data
+Inconsistent information
+Security vulnerabilities
+Patient privacy risks
+Manual appointment scheduling
+Missed or overlapping appointments
+
+9. Proposed Solution
+JUH-Tech Health will provide a centralized digital platform where every hospital department works within a unified ecosystem.
+Key Features
+Centralized database
+Secure login
+Role-based permissions
+Electronic Medical Records
+Online appointment scheduling
+Integrated pharmacy
+Laboratory management
+Billing automation
+Inventory tracking
+Reporting dashboards
+Notifications
+Audit logs
+
+10. Expected Benefits
+Benefits for Patients
+Faster registration
+Reduced waiting time
+Accurate medical history
+Better treatment continuity
+Improved communication
+Benefits for Doctors
+Instant access to patient records
+Better clinical decision-making
+Reduced paperwork
+Efficient scheduling
+Benefits for Nurses
+Easy patient monitoring
+Quick medication records
+Streamlined workflow
+Benefits for Hospital Administration
+Operational efficiency
+Better financial control
+Real-time analytics
+Resource optimization
+Benefits for Management
+Strategic reporting
+Data-driven decisions
+Performance monitoring
+Cost reduction
+
+11. Project Scope
+Included Features
+Clinical
+Patient Registration
+Medical Records
+OPD
+IPD
+Emergency
+ICU
+Surgery
+Nursing
+Administrative
+Staff Management
+User Management
+Departments
+Scheduling
+Attendance
+Financial
+Billing
+Payments
+Insurance
+Reports
+Inventory
+Pharmacy
+Medical Supplies
+Equipment
+Reporting
+Hospital Dashboard
+Financial Reports
+Patient Statistics
+Doctor Performance
+Inventory Reports
+
+12. Stakeholders
+Stakeholder
+Role
+Hospital Owner
+Strategic decisions
+Hospital Director
+Operational oversight
+System Administrator
+System configuration and user management
+Doctors
+Patient diagnosis and treatment
+Nurses
+Patient care and monitoring
+Receptionists
+Registration and appointments
+Pharmacists
+Medicine management
+Laboratory Staff
+Test management
+Radiologists
+Imaging services
+Accountants
+Billing and financial reporting
+Patients
+Receive healthcare services
+IT Support Team
+Maintenance and technical support
+Software Developers
+Development and enhancement
+Quality Assurance Team
+Testing and quality control
+
+13. Business Value
+JUH-Tech Health creates measurable value by:
+Increasing operational efficiency
+Reducing administrative costs
+Improving patient satisfaction
+Enhancing staff productivity
+Supporting regulatory compliance
+Enabling future digital transformation
+Providing reliable data for management decisions
+
+14. Success Criteria
+The project will be considered successful when:
+Patient registration time is significantly reduced.
+Appointment scheduling is streamlined.
+Billing errors are minimized.
+Medicine inventory is accurately tracked.
+All departments share consistent real-time data.
+System availability meets operational requirements.
+Users report improved productivity and satisfaction.
+
+15. High-Level System Overview
+                      JUH-Tech Health
+
+                    Hospital Management System
+
+                 +--------------------------+
+                 |      React Frontend      |
+                 +------------+-------------+
+                              |
+                              |
+                    REST API (HTTPS + JWT)
+                              |
+                 +------------+-------------+
+                 | ASP.NET Core Backend API |
+                 +------------+-------------+
+                              |
+              +---------------+----------------+
+              |                                |
+      Business Logic                   Authentication
+              |                                |
+              +---------------+----------------+
+                              |
+                 Entity Framework Core
+                              |
+                 +------------+-------------+
+                 |       PostgreSQL         |
+                 +------------+-------------+
+                              |
+          +-------------------+-------------------+
+          |                   |                   |
+      Reports            Audit Logs         Backups
+
+16. Core Modules
+JUH-Tech Health
+
+│
+├── Authentication
+├── Dashboard
+├── Patient Management
+├── Doctor Management
+├── Nurse Management
+├── Appointment Management
+├── OPD
+├── IPD
+├── Emergency
+├── Pharmacy
+├── Laboratory
+├── Radiology
+├── Billing
+├── Insurance
+├── Inventory
+├── HR
+├── Reports
+├── Notifications
+├── Audit Logs
+└── System Administration
+
+17. Future Scalability
+The architecture is designed to support future enhancements, including:
+Telemedicine
+Mobile applications (Android/iOS)
+AI-assisted diagnosis
+Wearable device integration
+Online patient portal
+Multi-hospital management
+Cloud-native deployment
+Microservices migration (if needed)
+Business intelligence dashboards
+Predictive analytics
+
+18. Project Constraints
+Initial deployment targets a single hospital.
+Reliable internet is required for web access.
+Users require basic training.
+Compliance with local healthcare regulations is necessary.
+Budget and timeline may influence feature prioritization.
+
+19. Assumptions
+The hospital will provide the required hardware and network infrastructure.
+Authorized staff will use the system according to defined roles.
+PostgreSQL will serve as the primary database.
+Daily database backups will be configured.
+The system will initially support English (with multilingual support planned later).
+
+20. Risks
+Risk
+Mitigation
+User resistance to new system
+Training and phased rollout
+Data migration issues
+Validation and backup strategy
+Security threats
+Encryption, MFA (future), regular updates
+Scope changes
+Formal change management
+Infrastructure failure
+Backup and disaster recovery planning
+Performance issues
+Load testing and optimization
+
+21. Glossary
+Term
+Meaning
+HMS
+Hospital Management System
+EMR
+Electronic Medical Record
+EHR
+Electronic Health Record
+OPD
+Outpatient Department
+IPD
+Inpatient Department
+ICU
+Intensive Care Unit
+JWT
+JSON Web Token
+REST API
+Representational State Transfer API
+ORM
+Object-Relational Mapping
+RAD
+Rapid Application Development
+UI
+User Interface
+UX
+User Experience
+
+
+

@@ -1,0 +1,388 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.16 - Usability & Accessibility Requirements (NFR-06 & NFR-07)
+
+6.16 Usability & Accessibility Requirements
+6.16.1 Introduction
+The Usability and Accessibility Requirements define how the CuraSphere Hospital Management System shall provide an intuitive, efficient, consistent, and inclusive user experience for all users, regardless of their technical expertise or physical abilities.
+Hospital staff often work in high-pressure environments where quick decision-making is essential. Therefore, CuraSphere shall minimize user effort, reduce errors, and ensure that important information is presented clearly and consistently.
+The system shall also support accessibility principles to enable users with disabilities to perform their responsibilities effectively.
+
+6.16.2 Objectives
+The Usability and Accessibility Requirements shall ensure that the system:
+Is easy to learn and use.
+Reduces user errors.
+Improves task completion speed.
+Maintains a consistent interface.
+Supports responsive design.
+Provides accessible interfaces.
+Improves user satisfaction.
+Supports multilingual environments.
+Simplifies navigation.
+Provides meaningful feedback to users.
+
+6.16.3 Usability Architecture
+                    User
+                      │
+                      ▼
+             Responsive Interface
+                      │
+        ┌─────────────┼─────────────┐
+        ▼             ▼             ▼
+ Navigation      Data Entry     Help System
+        │             │             │
+        └─────────────┼─────────────┘
+                      ▼
+             Business Functions
+
+6.16.4 User Experience (UX) Requirements
+The CuraSphere interface shall provide a consistent and efficient experience across all modules.
+UX Principles
+Simple interface design
+Consistent layout
+Minimal clicks for common tasks
+Clear visual hierarchy
+Fast page navigation
+Easy-to-understand terminology
+Consistent colors and icons
+Predictable workflows
+
+Business Rules
+NFR-USA-001
+Common tasks shall require the minimum practical number of user interactions.
+NFR-USA-002
+Frequently used functions shall be easily accessible from the main dashboard or navigation menu.
+
+6.16.5 User Interface Standards
+The user interface shall follow a consistent design system throughout the application.
+
+Standard Components
+Navigation Bar
+Sidebar Menu
+Breadcrumb Navigation
+Dashboard Cards
+Data Tables
+Search Bars
+Forms
+Buttons
+Dialog Boxes
+Notifications
+Status Indicators
+
+UI Standards
+Component
+Requirement
+Buttons
+Consistent size, color, and placement
+Icons
+Standard icon library throughout the application
+Forms
+Consistent spacing and alignment
+Tables
+Sortable, filterable, and paginated where applicable
+Colors
+Consistent design system
+Typography
+Uniform fonts and text hierarchy
+Error Messages
+Clear, concise, and actionable
+
+6.16.6 Navigation Requirements
+The navigation system shall allow users to locate required functions quickly.
+
+Navigation Features
+Global Navigation Menu
+Role-Based Menu
+Search Function
+Breadcrumb Navigation
+Quick Access Shortcuts
+Favorites (Optional)
+Recent Activities
+
+Navigation Workflow
+Dashboard
+     │
+     ▼
+Navigation Menu
+     │
+     ▼
+Selected Module
+     │
+     ▼
+Specific Function
+
+6.16.7 Responsive Design Requirements
+The user interface shall adapt to different screen sizes without losing functionality.
+
+Supported Devices
+Device
+Support
+Desktop
+Full Support
+Laptop
+Full Support
+Tablet
+Full Support
+Mobile Browser
+Core Features Supported
+
+Responsive Layout
+Desktop
+┌─────────────────────────────┐
+│ Sidebar │ Content │ Widgets │
+└─────────────────────────────┘
+
+Tablet
+┌──────────────────────────┐
+│ Navigation │ Content │
+└──────────────────────────┘
+
+Mobile
+┌───────────────┐
+│ Menu          │
+│ Content       │
+└───────────────┘
+
+6.16.8 Accessibility Requirements
+The system shall support accessibility principles based on recognized accessibility standards (such as WCAG) where applicable.
+
+Accessibility Features
+Keyboard Navigation
+Screen Reader Compatibility
+Adjustable Text Scaling
+Sufficient Color Contrast
+Focus Indicators
+Alternative Text for Images
+Accessible Form Labels
+Error Identification
+
+Accessibility Workflow
+User Action
+      │
+      ▼
+Accessible Interface
+      │
+      ▼
+Assistive Technology
+      │
+      ▼
+Successful Interaction
+
+Business Rules
+NFR-USA-003
+All essential system functions shall be operable using a keyboard.
+NFR-USA-004
+Information shall not rely solely on color to communicate meaning.
+
+6.16.9 Data Entry Requirements
+The system shall simplify data entry while reducing input errors.
+
+Features
+Auto-complete
+Drop-down Lists
+Date Pickers
+Default Values
+Smart Search
+Barcode Support (where applicable)
+Input Masks
+Field Validation
+
+Data Entry Workflow
+User Input
+      │
+      ▼
+Field Validation
+      │
+      ▼
+Valid?
+ │           │
+Yes         No
+ │           │
+Save     Show Error
+
+6.16.10 Error Handling & User Feedback
+The system shall provide immediate and meaningful feedback to users.
+
+Examples
+Success Messages
+Warning Messages
+Validation Errors
+Confirmation Dialogs
+Loading Indicators
+Progress Bars
+Informational Notifications
+
+Example Error Messages
+Scenario
+Example Message
+Required Field Missing
+"Patient Name is required."
+Invalid Date
+"Please enter a valid appointment date."
+Unauthorized Action
+"You do not have permission to perform this action."
+System Error
+"An unexpected error occurred. Please try again later."
+
+6.16.11 Help & User Documentation
+The system shall provide user assistance through integrated help features.
+
+Help Features
+User Manual
+Context-Sensitive Help
+Tooltips
+FAQs
+Searchable Help Center
+Training Videos (Optional)
+Contact Support Information
+
+Help Workflow
+User Needs Help
+        │
+        ▼
+Help Menu
+        │
+        ▼
+Documentation
+        │
+        ▼
+Resolve Issue
+
+6.16.12 Multilingual Support
+The system shall support multiple languages through configurable localization.
+
+Initial Language Support
+English
+Urdu
+Additional languages may be added without requiring application redesign.
+
+Localized Elements
+Menus
+Forms
+Messages
+Reports
+Notifications
+Help Content
+Date Formats
+Number Formats
+
+6.16.13 User Training Requirements
+The implementation team shall provide training materials for different user groups.
+
+Training Categories
+User Group
+Training Focus
+Doctors
+Clinical Workflows
+Nurses
+Patient Care Functions
+Receptionists
+Registration & Appointments
+Pharmacists
+Medication Management
+Laboratory Staff
+Test Management
+HR Staff
+Employee Management
+Finance Staff
+Billing & Payments
+System Administrators
+Configuration & Maintenance
+
+6.16.14 Usability Testing
+The usability of the system shall be validated through structured testing.
+
+Test Activities
+Navigation Testing
+Form Usability Testing
+Workflow Validation
+User Satisfaction Surveys
+Accessibility Evaluation
+Cross-Device Testing
+Cross-Browser Testing
+
+Testing Workflow
+User Testing
+      │
+      ▼
+Collect Feedback
+      │
+      ▼
+Identify Improvements
+      │
+      ▼
+Implement Changes
+
+6.16.15 Accessibility Testing
+Accessibility testing shall verify that users with disabilities can use the system effectively.
+
+Accessibility Test Areas
+Keyboard Navigation
+Screen Reader Compatibility
+Focus Order
+Color Contrast
+Form Labels
+Alternative Text
+Zoom Compatibility
+Responsive Accessibility
+
+6.16.16 Acceptance Criteria
+The system shall be accepted when:
+Users can complete common tasks efficiently with minimal training.
+The interface remains consistent across all modules.
+Responsive layouts function correctly on supported devices.
+Accessibility features operate as designed.
+User feedback messages are clear and actionable.
+Multilingual functionality displays supported languages correctly.
+Usability testing confirms that representative users can complete key workflows successfully.
+
+6.16.17 Usability & Accessibility Requirement Traceability Matrix
+Requirement ID
+Functional Area
+NFR-USA-001
+User Experience
+NFR-USA-002
+User Interface Standards
+NFR-USA-003
+Navigation
+NFR-USA-004
+Responsive Design
+NFR-USA-005
+Accessibility
+NFR-USA-006
+Data Entry
+NFR-USA-007
+Error Handling
+NFR-USA-008
+Help System
+NFR-USA-009
+Multilingual Support
+NFR-USA-010
+User Training
+NFR-USA-011
+Usability Testing
+NFR-USA-012
+Accessibility Testing
+NFR-USA-013
+Acceptance Criteria
+
+Module Architecture Summary
+                 User
+                   │
+                   ▼
+         Responsive User Interface
+                   │
+     ┌─────────────┼─────────────┐
+     ▼             ▼             ▼
+ Navigation    Data Entry   Help & Support
+     │             │             │
+     └─────────────┼─────────────┘
+                   ▼
+          Business Logic Layer
+                   │
+                   ▼
+          Database & Services
+
+
+

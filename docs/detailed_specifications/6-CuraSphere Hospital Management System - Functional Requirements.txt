@@ -1,0 +1,996 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.1 — IDENTITY AND ACCESS MANAGEMENT
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: IAMModule Name: Identity and Access ManagementProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5. FUNCTIONAL REQUIREMENTS
+5.1 Introduction
+Functional requirements define the specific behaviors and capabilities that CuraSphere shall provide.
+A functional requirement answers:
+What shall the system do?
+Examples include:
+authenticate a user;
+register a patient;
+schedule an appointment;
+record a diagnosis;
+create a prescription;
+collect a laboratory sample;
+generate an invoice;
+record a payment.
+Functional requirements shall form the primary implementation baseline for CuraSphere.
+The engineering relationship is:
+STAKEHOLDER REQUIREMENT          │          ▼FUNCTIONAL REQUIREMENT          │          ▼       USE CASE          │          ▼      USER STORY          │          ▼       UI FLOW          │          ▼     API OPERATION          │          ▼     DOMAIN LOGIC          │          ▼       DATA MODEL          │          ▼       TEST CASE
+
+5.2 Functional Requirement Documentation Standard
+Each detailed functional requirement shall use the following structure.
+Requirement ID:Requirement Name:Module:Requirement Type:Description:Source:Primary Actor:Secondary Actors:Priority:Preconditions:Trigger:Main Requirement:Main Flow:Alternate Flow:Exception Flow:Business Rules:Inputs:Outputs:Postconditions:Security Considerations:Audit Requirements:Acceptance Criteria:Dependencies:Traceability:Status:
+Not every field shall contain the same amount of detail.
+The level of detail shall depend on the requirement’s complexity and risk.
+
+5.3 Requirement Priority Classification
+CuraSphere shall use the MoSCoW priority model.
+Code
+Priority
+Meaning
+M
+Must Have
+Required for the approved core system
+S
+Should Have
+Important but may be deferred from an initial increment
+C
+Could Have
+Valuable optional capability
+W
+Won’t Have Now
+Explicitly outside the current release
+
+5.4 Functional Requirement Quality Rules
+A functional requirement should be:
+necessary;
+clear;
+uniquely identified;
+testable;
+traceable;
+implementation-neutral where appropriate;
+consistent;
+feasible;
+sufficiently detailed.
+A weak requirement is:
+The login should be good.
+This requirement is ambiguous and cannot be reliably tested.
+A stronger requirement is:
+The system shall allow an active user to submit valid authentication credentials and establish an authenticated application session after successful identity verification.
+The second requirement can be analyzed and tested.
+
+5.5 IAM — IDENTITY AND ACCESS MANAGEMENT
+5.5.1 Module Purpose
+The Identity and Access Management module shall manage digital user identities and control access to CuraSphere.
+The IAM module provides the security entry point for protected CuraSphere functionality.
+The module shall support:
+user account management;
+authentication;
+authorization support;
+role management;
+permission management;
+account lifecycle management;
+password management;
+account recovery;
+authentication event tracking.
+
+5.5.2 IAM Context Model
+                         CURASPHERE USER                                │                                ▼                       AUTHENTICATION                                │                     ┌──────────┴──────────┐                     │                     │                     ▼                     ▼                  FAILED                SUCCESS                     │                     │                     ▼                     ▼             SECURITY EVENT          USER IDENTITY                                           │                                           ▼                                         ROLES                                           │                                           ▼                                      PERMISSIONS                                           │                                           ▼                                    ACCESS DECISION                                           │                              ┌────────────┴────────────┐                              │                         │                              ▼                         ▼                           DENIED                     ALLOWED
+
+5.5.3 IAM Actors
+The IAM module interacts with the following primary actors:
+Actor
+IAM Responsibility
+System Administrator
+Manages users, roles, and permissions
+IT Support
+Supports approved account recovery processes
+Hospital User
+Authenticates and manages permitted account functions
+Security Reviewer
+Reviews authorized security information
+CuraSphere System
+Enforces access control
+
+5.5.4 IAM Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-IAM-FR-001
+Create User Account
+M
+CS-IAM-FR-002
+Authenticate User
+M
+CS-IAM-FR-003
+Reject Invalid Authentication
+M
+CS-IAM-FR-004
+Account Status Validation
+M
+CS-IAM-FR-005
+Retrieve Authenticated User Context
+M
+CS-IAM-FR-006
+Sign Out User
+M
+CS-IAM-FR-007
+Create Role
+M
+CS-IAM-FR-008
+Update Role
+M
+CS-IAM-FR-009
+Assign Role to User
+M
+CS-IAM-FR-010
+Remove Role from User
+M
+CS-IAM-FR-011
+Create Permission
+M
+CS-IAM-FR-012
+Assign Permission to Role
+M
+CS-IAM-FR-013
+Remove Permission from Role
+M
+CS-IAM-FR-014
+Evaluate User Permission
+M
+CS-IAM-FR-015
+Activate User Account
+M
+CS-IAM-FR-016
+Deactivate User Account
+M
+CS-IAM-FR-017
+Change Password
+M
+CS-IAM-FR-018
+Initiate Password Reset
+M
+CS-IAM-FR-019
+Complete Password Reset
+M
+CS-IAM-FR-020
+Manage Failed Login Attempts
+M
+CS-IAM-FR-021
+Lock User Account
+M
+CS-IAM-FR-022
+Unlock User Account
+M
+CS-IAM-FR-023
+Refresh Authentication Session
+M
+CS-IAM-FR-024
+Revoke Authentication Session
+M
+CS-IAM-FR-025
+View User Accounts
+M
+CS-IAM-FR-026
+Search User Accounts
+M
+CS-IAM-FR-027
+View User Access Assignment
+M
+CS-IAM-FR-028
+Record Authentication Events
+M
+CS-IAM-FR-029
+Record Access Denial Events
+S
+CS-IAM-FR-030
+Force Account Session Revocation
+S
+
+5.6 USER ACCOUNT MANAGEMENT REQUIREMENTS
+CS-IAM-FR-001 — Create User Account
+Requirement Name
+Create User Account
+Module
+IAM — Identity and Access Management
+Requirement Type
+Functional Requirement
+Description
+The system shall allow an authorized System Administrator to create a CuraSphere user account.
+Source
+CS-SAD-SR-001 — User Account Management
+Primary Actor
+System Administrator
+Secondary Actors
+IAM Module
+Priority
+Must Have
+Preconditions
+The System Administrator is authenticated.
+The System Administrator has user creation permission.
+Required account information is available.
+Trigger
+The System Administrator initiates the user account creation process.
+Main Requirement
+The system shall allow an authorized System Administrator to provide required user account information and create a new CuraSphere user account.
+Main Flow
+1. System Administrator opens user management.2. System Administrator selects Create User.3. CuraSphere presents the user creation interface.4. System Administrator provides required account information.5. CuraSphere validates the provided information.6. CuraSphere verifies applicable uniqueness rules.7. System Administrator confirms account creation.8. CuraSphere creates the user account.9. CuraSphere assigns the configured initial account status.10. CuraSphere records the administrative action.11. CuraSphere confirms successful account creation.
+Alternate Flow A — Optional Employee Association
+If the account belongs to an existing hospital employee:
+Administrator searches employee          │          ▼Selects employee          │          ▼CuraSphere associates user accountwith approved employee reference
+The IAM account and HR employee record shall remain logically separate.
+Exception Flow A — Duplicate Account Identifier
+If an account identifier required to be unique already exists:
+The system shall reject account creation.
+The system shall identify the conflicting field in an appropriate manner.
+The system shall not create a duplicate account.
+Exception Flow B — Invalid Required Information
+If required information is missing or invalid:
+The system shall reject the submission.
+The system shall identify validation problems.
+Valid entered information should be preserved where technically appropriate.
+Business Rules
+CS-IAM-BR-001
+Each user account shall have a unique internal system identifier.
+CS-IAM-BR-002
+Account identifiers configured as unique shall not be duplicated.
+CS-IAM-BR-003
+Creating a user account shall not automatically provide unrestricted system access.
+CS-IAM-BR-004
+Role or permission assignment shall follow approved authorization workflows.
+Inputs
+Potential inputs include:
+username or approved login identifier;
+account display information;
+employee reference where applicable;
+initial account status;
+approved role assignment information.
+The exact account fields shall be finalized during data requirements specification.
+Outputs
+new user account;
+unique user identifier;
+account creation confirmation;
+audit event.
+Postconditions
+A valid user account exists within the IAM domain.
+Security Considerations
+Only users with approved account creation permission shall perform this operation.
+Audit Requirements
+The system shall record:
+acting user identity;
+account creation action;
+created account identifier;
+event timestamp;
+operation result.
+Sensitive authentication secrets shall not be stored in audit logs.
+Acceptance Criteria
+AC-001
+Given an authenticated administrator with account creation permission, when valid unique account information is submitted, then a new user account shall be created.
+AC-002
+Given duplicate unique account information, when account creation is submitted, then the system shall reject the duplicate.
+AC-003
+Given a user without account creation permission, when the user attempts the protected operation, then the operation shall be denied.
+Dependencies
+AUD — Audit Management
+HR — Human Resource Management, where employee association is used
+Traceability
+CS-SAD-SR-001
+Future Use Case: UC-IAM-001
+Future Test Group: TG-IAM-USER
+Status
+Proposed
+
+CS-IAM-FR-002 — Authenticate User
+Requirement Name
+Authenticate User
+Description
+The system shall allow an eligible CuraSphere user to authenticate using approved credentials.
+Source
+CS-SEC-SR-005 — Authentication Security
+Primary Actor
+Hospital User
+Priority
+Must Have
+Preconditions
+The user account exists.
+The authentication service is available.
+The user has access to the CuraSphere authentication interface.
+Trigger
+The user submits authentication credentials.
+Main Requirement
+The system shall validate submitted credentials and establish an authenticated user context only after successful authentication.
+Main Flow
+USER  │  ▼OPEN LOGIN  │  ▼ENTER CREDENTIALS  │  ▼SUBMIT  │  ▼VALIDATE REQUEST  │  ▼FIND ACCOUNT  │  ▼VERIFY ACCOUNT STATUS  │  ▼VERIFY CREDENTIAL  │  ▼AUTHENTICATION SUCCESS  │  ▼CREATE AUTHENTICATED CONTEXT  │  ▼LOAD AUTHORIZED APPLICATION
+Business Rules
+CS-IAM-BR-005
+Authentication success shall require valid credentials.
+CS-IAM-BR-006
+An inactive account shall not establish a normal authenticated session.
+CS-IAM-BR-007
+A locked account shall be handled according to the account lock policy.
+CS-IAM-BR-008
+Authentication failure shall not expose sensitive account information.
+Inputs
+approved login identifier;
+password or approved authentication credential.
+Outputs
+On success:
+authenticated user context;
+authentication/session information.
+On failure:
+controlled authentication failure response.
+Postconditions
+Successful authentication creates an authorized authentication context.
+Failed authentication does not create an authenticated context.
+Security Considerations
+The system must not:
+return the stored password;
+log plaintext passwords;
+expose credential secrets;
+disclose unnecessary account existence information.
+Audit Requirements
+Authentication success shall be recorded as a security-relevant event.
+Authentication failure shall be recorded according to the security logging policy.
+Acceptance Criteria
+AC-001
+Given an active eligible account and valid credentials, when authentication is submitted, then the user shall be authenticated.
+AC-002
+Given invalid credentials, when authentication is submitted, then authentication shall fail.
+AC-003
+Given an inactive account, when otherwise valid credentials are submitted, then normal authentication shall not succeed.
+Dependencies
+IAM User Account Management
+AUD
+Security Configuration
+Traceability
+CS-SEC-SR-005
+UC-IAM-002
+Status
+Proposed
+
+CS-IAM-FR-003 — Reject Invalid Authentication
+Description
+The system shall reject authentication when submitted credentials cannot be successfully verified.
+Priority
+Must Have
+Primary Actor
+Hospital User
+Trigger
+Invalid authentication information is submitted.
+Main Requirement
+The system shall deny authentication and shall not establish an authenticated user context.
+Security Rule
+The failure response shall not unnecessarily reveal whether:
+the username exists;
+the password alone was incorrect;
+sensitive account details exist.
+An approved generic response may be used.
+Example conceptual message:
+Unable to authenticate with the provided credentials.
+Acceptance Criteria
+Given invalid authentication credentials, when authentication is attempted, then:
+authentication shall fail;
+no authenticated context shall be established;
+the event shall be handled according to failed authentication rules.
+Traceability
+CS-SEC-SR-005
+CS-IAM-FR-020
+Status
+Proposed
+
+CS-IAM-FR-004 — Account Status Validation
+Description
+The system shall evaluate applicable account status before completing authentication or protected account operations.
+Priority
+Must Have
+Potential Account Statuses
+PENDING   │   ▼ACTIVE   │   ├────► INACTIVE   │   ├────► LOCKED   │   └────► SUSPENDED
+The final status model shall be defined in IAM business rules and the domain model.
+Main Requirement
+The system shall determine whether the account is eligible for the requested authentication or account operation.
+Acceptance Criteria
+An account that is not eligible for authentication shall not establish a normal authenticated session.
+
+CS-IAM-FR-005 — Retrieve Authenticated User Context
+Description
+The system shall provide the authorized application with information required to identify the currently authenticated user and determine permitted application behavior.
+Priority
+Must Have
+User Context May Include
+user identifier;
+display information;
+assigned roles;
+effective permissions;
+account context.
+Security Consideration
+The user context shall not unnecessarily expose:
+password hashes;
+password reset secrets;
+authentication secrets;
+internal security values.
+Conceptual Model
+AUTHENTICATED USER        │        ▼    USER CONTEXT        │   ┌────┼────┐   │    │    │   ▼    ▼    ▼IDENTITY ROLE PERMISSIONS        │        ▼APPLICATION ACCESS
+
+CS-IAM-FR-006 — Sign Out User
+Description
+The system shall allow an authenticated user to sign out of CuraSphere.
+Priority
+Must Have
+Main Flow
+The authenticated user initiates sign-out.
+The system processes the sign-out request.
+The current authentication context is invalidated or removed according to the session model.
+Protected application access is no longer available through the signed-out context.
+The user is returned to the approved unauthenticated state.
+Acceptance Criteria
+After successful sign-out, the previous signed-out authentication context shall not provide normal access to protected functions.
+
+5.7 ROLE MANAGEMENT REQUIREMENTS
+CS-IAM-FR-007 — Create Role
+Description
+The system shall allow an authorized System Administrator to create a system role.
+Primary Actor
+System Administrator
+Priority
+Must Have
+Example Roles
+SYSTEM_ADMINISTRATORHOSPITAL_ADMINISTRATORDOCTORNURSERECEPTIONISTPHARMACISTLAB_TECHNICIANPATHOLOGISTRADIOLOGY_TECHNICIANRADIOLOGISTBILLING_OFFICERHR_OFFICERINVENTORY_OFFICER
+These names are conceptual examples.
+The final role model may support configurable roles.
+Main Flow
+ADMINISTRATOR      │      ▼ROLE MANAGEMENT      │      ▼CREATE ROLE      │      ▼ENTER ROLE INFORMATION      │      ▼VALIDATE      │      ▼CREATE ROLE      │      ▼AUDIT EVENT
+Business Rules
+CS-IAM-BR-009
+Each role shall have a unique internal identifier.
+CS-IAM-BR-010
+Role names configured as unique shall not be duplicated within the applicable role namespace.
+Audit Requirements
+Role creation shall be auditable.
+Acceptance Criteria
+An authorized administrator shall be able to create a valid unique role.
+
+CS-IAM-FR-008 — Update Role
+Description
+The system shall allow an authorized administrator to update permitted role information.
+Priority
+Must Have
+Business Rules
+Protected system roles may have restricted modification rules.
+Role modification shall not bypass permission management controls.
+Audit Requirements
+The system shall record security-relevant role modifications.
+
+CS-IAM-FR-009 — Assign Role to User
+Description
+The system shall allow an authorized administrator to assign an eligible role to a user account.
+Priority
+Must Have
+Preconditions
+user exists;
+role exists;
+administrator is authorized.
+Main Flow
+SELECT USER     │     ▼VIEW CURRENT ACCESS     │     ▼SELECT ROLE     │     ▼VALIDATE ASSIGNMENT     │     ▼CONFIRM     │     ▼ASSIGN ROLE     │     ▼UPDATE EFFECTIVE ACCESS     │     ▼AUDIT
+Business Rules
+CS-IAM-BR-011
+Role assignment shall require appropriate administrative permission.
+CS-IAM-BR-012
+The system shall prevent invalid duplicate role assignment where the same assignment already exists.
+CS-IAM-BR-013
+Sensitive role assignments may require additional approval in future security configurations.
+Security Consideration
+A user shall not gain a role merely by modifying client-side React state or a browser request.
+Role assignment authority shall be enforced by the backend security boundary.
+Acceptance Criteria
+Given an authorized administrator, valid user, and valid role, the system shall assign the role and update the user’s effective access according to system rules.
+
+CS-IAM-FR-010 — Remove Role from User
+Description
+The system shall allow an authorized administrator to remove an eligible role assignment from a user.
+Priority
+Must Have
+Business Rules
+The system should prevent administrative actions that violate protected system access rules.
+Example:
+The system may prevent removal of the final required administrative authority without an approved recovery process.
+Audit Requirements
+Role removal shall be auditable.
+
+5.8 PERMISSION MANAGEMENT REQUIREMENTS
+CS-IAM-FR-011 — Create Permission
+Description
+The system shall support identifiable permissions representing protected system capabilities.
+Priority
+Must Have
+Conceptual Permission Examples
+PATIENT_VIEWPATIENT_CREATEPATIENT_UPDATE_DEMOGRAPHICSAPPOINTMENT_CREATEAPPOINTMENT_CANCELCLINICAL_NOTE_CREATEDIAGNOSIS_CREATEPRESCRIPTION_CREATELAB_RESULT_RECORDLAB_RESULT_VERIFYRADIOLOGY_REPORT_CREATERADIOLOGY_REPORT_VERIFYINVOICE_CREATEPAYMENT_RECORDREFUND_REQUESTREFUND_APPROVEUSER_CREATEROLE_ASSIGN
+Permission Design Principle
+Permissions should represent business capabilities.
+Weak permission:
+BUTTON_17_ACCESS
+Better permission:
+PATIENT_CREATE
+The permission model shall not be designed around individual UI buttons.
+
+CS-IAM-FR-012 — Assign Permission to Role
+Description
+The system shall allow an authorized administrator to assign an eligible permission to a role.
+Priority
+Must Have
+Conceptual Relationship
+USER │ ▼ROLE │ ▼PERMISSION │ ▼BUSINESS CAPABILITY
+Example:
+USERUzairROLEReceptionistPERMISSIONSPATIENT_VIEWPATIENT_CREATEPATIENT_UPDATE_DEMOGRAPHICSAPPOINTMENT_CREATEAPPOINTMENT_RESCHEDULEAPPOINTMENT_CANCEL
+This does not automatically provide:
+DIAGNOSIS_CREATELAB_RESULT_VERIFYREFUND_APPROVE
+Audit Requirements
+Permission assignment shall be auditable.
+
+CS-IAM-FR-013 — Remove Permission from Role
+Description
+The system shall allow an authorized administrator to remove an eligible permission from a role.
+Priority
+Must Have
+Expected Result
+Users receiving the affected permission through that role shall have their effective access recalculated according to the authorization model.
+A user may still receive the same permission through another valid role.
+Example:
+USER │ ├── ROLE A ───► PATIENT_VIEW │ └── ROLE B ───► PATIENT_VIEW
+Removing PATIENT_VIEW from Role A does not necessarily remove the user’s effective permission if Role B still provides it.
+
+CS-IAM-FR-014 — Evaluate User Permission
+Description
+The system shall determine whether an authenticated user has the required permission before performing a protected operation.
+Priority
+Must Have
+Main Requirement
+For a protected operation:
+REQUEST   │   ▼AUTHENTICATED?   │   ├──── NO ─────► REJECT   │   ▼  YES   │   ▼REQUIRED PERMISSION   │   ▼USER HAS EFFECTIVE PERMISSION?   │   ├──── NO ─────► DENY   │   ▼  YES   │   ▼CONTINUE TO BUSINESS RULES
+Important Engineering Rule
+Permission success does not automatically mean the business operation is valid.
+Example:
+A doctor may have:
+PRESCRIPTION_CREATE
+However, the doctor may still be prevented from prescribing in an invalid clinical context.
+Therefore:
+AUTHORIZATION      │      ▼BUSINESS VALIDATION      │      ▼DOMAIN OPERATION
+not:
+AUTHORIZATION      │      ▼AUTOMATIC SUCCESS
+Acceptance Criteria
+A protected operation shall not execute when the authenticated user lacks the required effective permission.
+
+5.9 ACCOUNT LIFECYCLE REQUIREMENTS
+CS-IAM-FR-015 — Activate User Account
+Description
+The system shall allow an authorized administrator to activate an eligible user account.
+Priority
+Must Have
+Preconditions
+account exists;
+administrator has activation permission;
+account is eligible for activation.
+Postcondition
+The account status shall reflect active status.
+Activation does not automatically guarantee access to every CuraSphere capability.
+Roles and permissions remain applicable.
+
+CS-IAM-FR-016 — Deactivate User Account
+Description
+The system shall allow an authorized administrator to deactivate an eligible user account.
+Priority
+Must Have
+Main Requirement
+A deactivated account shall not establish a normal new authenticated session.
+Session Consideration
+The system shall support revocation of applicable existing authentication sessions according to the approved security model.
+Audit Requirements
+The system shall record:
+acting administrator;
+affected account;
+deactivation action;
+timestamp;
+result.
+Example Flow
+ACTIVE USER     │     ▼ADMIN DEACTIVATES ACCOUNT     │     ▼ACCOUNT = INACTIVE     │     ▼REVOKE APPLICABLE SESSIONS     │     ▼FUTURE LOGIN DENIED
+
+5.10 PASSWORD MANAGEMENT REQUIREMENTS
+CS-IAM-FR-017 — Change Password
+Description
+The system shall allow an authenticated eligible user to change the user’s password through an approved password change process.
+Priority
+Must Have
+Preconditions
+user is authenticated;
+account is eligible;
+password change operation is available.
+Main Flow
+User opens account security.
+User initiates password change.
+System requests required password change information.
+User submits the information.
+System validates the request.
+System verifies required current authentication information.
+System validates the new password against the password policy.
+System securely updates the password credential.
+System records the security event.
+System confirms successful password change.
+Business Rules
+CS-IAM-BR-014
+The system shall not store passwords in plaintext.
+CS-IAM-BR-015
+The new password shall satisfy the configured password policy.
+CS-IAM-BR-016
+The password confirmation value shall match the new password where confirmation is required.
+Security Considerations
+Passwords must not be:
+logged;
+returned through APIs;
+stored in browser application state longer than required;
+displayed in administrative reports.
+
+CS-IAM-FR-018 — Initiate Password Reset
+Description
+The system shall support an approved password reset initiation process.
+Priority
+Must Have
+Potential Initiators
+Depending on the approved workflow:
+account user;
+IT Support;
+System Administrator.
+Main Requirement
+The system shall initiate a controlled recovery process without revealing existing password information.
+Important Rule
+The system shall never provide the user’s current password.
+Conceptually:
+FORGOT PASSWORD       │       ▼VERIFY RECOVERY ELIGIBILITY       │       ▼CREATE RECOVERY PROCESS       │       ▼VERIFY RECOVERY AUTHORITY       │       ▼ALLOW NEW PASSWORD
+
+CS-IAM-FR-019 — Complete Password Reset
+Description
+The system shall allow an eligible user or approved recovery workflow to establish a new password after successful recovery verification.
+Priority
+Must Have
+Business Rules
+A recovery token or recovery mechanism shall:
+be difficult to predict;
+have limited validity;
+be validated before use;
+become unusable according to approved consumption rules.
+Postconditions
+the new password credential is securely stored;
+the previous password credential is no longer valid;
+applicable recovery information is invalidated;
+the event is recorded.
+
+5.11 FAILED AUTHENTICATION AND ACCOUNT LOCK REQUIREMENTS
+CS-IAM-FR-020 — Manage Failed Login Attempts
+Description
+The system shall track failed authentication attempts according to the configured security policy.
+Priority
+Must Have
+Conceptual Flow
+LOGIN ATTEMPT      │      ▼VALID?  │       │ YES      NO  │       │  ▼       ▼LOGIN   FAILED ATTEMPT          │          ▼     UPDATE SECURITY STATE          │          ▼    THRESHOLD REACHED?       │          │      NO         YES       │          │       ▼          ▼    CONTINUE    LOCK / CONTROL
+Security Consideration
+The failure tracking design shall consider:
+brute-force attacks;
+account denial-of-service risks;
+distributed authentication attempts.
+Detailed numeric thresholds shall be defined in security configuration requirements.
+
+CS-IAM-FR-021 — Lock User Account
+Description
+The system shall support locking an account according to approved security rules.
+Priority
+Must Have
+Lock Triggers May Include
+failed authentication threshold;
+administrative security action;
+security investigation.
+Postcondition
+The locked account shall not establish a normal authenticated session until the applicable unlock condition is satisfied.
+
+CS-IAM-FR-022 — Unlock User Account
+Description
+The system shall support an approved account unlock process.
+Priority
+Must Have
+Potential Unlock Mechanisms
+authorized administrator action;
+approved automatic lock expiration;
+approved account recovery process.
+Audit Requirements
+Administrative account unlock shall be auditable.
+
+5.12 AUTHENTICATION SESSION REQUIREMENTS
+CS-IAM-FR-023 — Refresh Authentication Session
+Description
+The system shall support controlled continuation of an eligible authenticated session according to the selected authentication architecture.
+Priority
+Must Have
+Conceptual Model
+AUTHENTICATION      │      ▼SHORT-LIVED ACCESS CONTEXT      │      ▼ACCESS EXPIRES      │      ▼VALID REFRESH CONTEXT?      │   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼RENEW   REAUTHENTICATE
+Security Rules
+Session refresh shall not bypass:
+account status checks;
+session revocation rules;
+applicable security policies.
+The exact JWT and refresh token design shall be documented in the Security Architecture and API Specification.
+
+CS-IAM-FR-024 — Revoke Authentication Session
+Description
+The system shall support invalidating an applicable authentication session.
+Priority
+Must Have
+Revocation May Occur When
+user signs out;
+account is deactivated;
+account is locked;
+security administrator revokes sessions;
+security policy requires revocation.
+Expected Result
+A revoked session shall not continue to provide normal protected access.
+
+5.13 USER ADMINISTRATION QUERY REQUIREMENTS
+CS-IAM-FR-025 — View User Accounts
+Description
+The system shall allow an authorized administrator to review user account information.
+Priority
+Must Have
+Information May Include
+user identifier;
+display name;
+account status;
+associated employee reference;
+assigned roles;
+account creation information.
+Excluded Information
+The interface shall not expose:
+plaintext passwords;
+password hashes;
+refresh token secrets;
+recovery secrets.
+
+CS-IAM-FR-026 — Search User Accounts
+Description
+The system shall allow an authorized administrator to search user accounts using approved search criteria.
+Priority
+Must Have
+Potential Search Criteria
+user identifier;
+username;
+display name;
+employee reference;
+account status;
+role.
+Search Flow
+ENTER SEARCH CRITERIA          │          ▼VALIDATE SEARCH          │          ▼APPLY AUTHORIZED FILTERS          │          ▼QUERY USER ACCOUNTS          │          ▼RETURN PERMITTED RESULTS
+Security Requirement
+Search results shall only expose information the requesting user is authorized to view.
+
+CS-IAM-FR-027 — View User Access Assignment
+Description
+The system shall allow an authorized administrator to review the roles and effective access assignments of a user.
+Priority
+Must Have
+Conceptual Access View
+USER: USER-1042ASSIGNED ROLES│├── RECEPTIONIST└── APPOINTMENT_COORDINATOREFFECTIVE PERMISSIONS│├── PATIENT_VIEW├── PATIENT_CREATE├── APPOINTMENT_VIEW├── APPOINTMENT_CREATE├── APPOINTMENT_RESCHEDULE└── APPOINTMENT_CANCEL
+The interface should distinguish:
+DIRECT ASSIGNMENT
+from:
+EFFECTIVE ACCESS
+where the final authorization model supports both concepts.
+
+5.14 SECURITY EVENT REQUIREMENTS
+CS-IAM-FR-028 — Record Authentication Events
+Description
+The system shall generate appropriate security event information for authentication activities.
+Priority
+Must Have
+Event Categories May Include
+authentication success;
+authentication failure;
+sign-out;
+account lock;
+account unlock;
+password change;
+password reset.
+Audit Model
+EVENT │ ├── Event Type ├── User Context ├── Timestamp ├── Result ├── Technical Context └── Correlation Information
+Sensitive credentials must not be stored in the event record.
+
+CS-IAM-FR-029 — Record Access Denial Events
+Description
+The system should record selected security-relevant access denial events.
+Priority
+Should Have
+Example
+USERReceptionist 102ATTEMPTED ACTIONVerify Laboratory ResultREQUIRED PERMISSIONLAB_RESULT_VERIFYRESULTACCESS DENIED
+Not every harmless UI visibility decision requires a high-severity security audit event.
+The logging strategy shall distinguish between:
+normal authorization denial;
+suspicious access behavior;
+security incidents.
+
+CS-IAM-FR-030 — Force Account Session Revocation
+Description
+The system should allow an authorized security administrator to revoke active authentication sessions associated with an eligible user account.
+Priority
+Should Have
+Example Use Cases
+compromised account;
+terminated employee;
+suspicious authentication activity;
+emergency security response.
+Main Flow
+SECURITY ADMINISTRATOR          │          ▼SELECT USER ACCOUNT          │          ▼REVIEW ACCOUNT SECURITY          │          ▼SELECT REVOKE SESSIONS          │          ▼CONFIRM SECURITY ACTION          │          ▼REVOKE APPLICABLE SESSIONS          │          ▼RECORD AUDIT EVENT
+
+5.15 IAM BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-IAM-BR-001
+Each user shall have a unique internal identifier
+CS-IAM-BR-002
+Configured unique account identifiers shall not be duplicated
+CS-IAM-BR-003
+Account creation shall not automatically provide unrestricted access
+CS-IAM-BR-004
+Access assignment shall follow authorization workflows
+CS-IAM-BR-005
+Authentication requires valid credentials
+CS-IAM-BR-006
+Inactive accounts shall not establish normal authenticated sessions
+CS-IAM-BR-007
+Locked accounts shall follow account lock policy
+CS-IAM-BR-008
+Authentication failure shall not expose sensitive account information
+CS-IAM-BR-009
+Each role shall have a unique internal identifier
+CS-IAM-BR-010
+Applicable unique role names shall not be duplicated
+CS-IAM-BR-011
+Role assignment requires administrative authorization
+CS-IAM-BR-012
+Invalid duplicate role assignments shall be prevented
+CS-IAM-BR-013
+Sensitive access assignments may require enhanced approval
+CS-IAM-BR-014
+Passwords shall not be stored in plaintext
+CS-IAM-BR-015
+New passwords shall satisfy password policy
+CS-IAM-BR-016
+Password confirmation shall match where required
+
+5.16 IAM FUNCTIONAL FLOW MODEL
+                           USER ACCOUNT                                │                                ▼                         ACCOUNT STATUS                                │                     ┌──────────┴──────────┐                     │                     │                  ELIGIBLE              INELIGIBLE                     │                     │                     ▼                     ▼                AUTHENTICATION          DENY LOGIN                     │             ┌───────┴───────┐             │               │           SUCCESS          FAILURE             │               │             ▼               ▼      AUTHENTICATED      FAILED ATTEMPT         CONTEXT              │             │                ▼             │          SECURITY POLICY             │                │             │                ▼             │             LOCK?             │             ▼           ROLES             │             ▼        PERMISSIONS             │             ▼     AUTHORIZATION CHECK             │       ┌─────┴─────┐       │           │     ALLOW        DENY       │           │       ▼           ▼ BUSINESS RULE   SECURITY /   VALIDATION    ACCESS EVENT       │       ▼ DOMAIN OPERATION
+
+5.17 IAM ROLE-PERMISSION CONCEPTUAL MODEL
+                         USER                          │                          │ M:N                          ▼                    USER ROLE                          │                          ▼                         ROLE                          │                          │ M:N                          ▼                   ROLE PERMISSION                          │                          ▼                      PERMISSION                          │                          ▼                 PROTECTED CAPABILITY
+Conceptually:
+DOCTOR  │  ├── PATIENT_VIEW  ├── CLINICAL_HISTORY_VIEW  ├── CLINICAL_NOTE_CREATE  ├── DIAGNOSIS_CREATE  ├── PRESCRIPTION_CREATE  ├── LAB_REQUEST_CREATE  └── RADIOLOGY_REQUEST_CREATE
+Compared with:
+RECEPTIONIST  │  ├── PATIENT_VIEW  ├── PATIENT_CREATE  ├── PATIENT_DEMOGRAPHICS_UPDATE  ├── APPOINTMENT_VIEW  ├── APPOINTMENT_CREATE  ├── APPOINTMENT_RESCHEDULE  └── APPOINTMENT_CANCEL
+This illustrates why CuraSphere shall use business capability permissions instead of only checking:
+if role == "admin"
+throughout the application.
+
+5.18 IAM STATE MODEL
+User Account State Model
+                         ACCOUNT CREATED                                │                                ▼                             PENDING                                │                                ▼                              ACTIVE                                │             ┌──────────────────┼──────────────────┐             │                  │                  │             ▼                  ▼                  ▼          INACTIVE           LOCKED            SUSPENDED             │                  │                  │             │                  ▼                  │             │               UNLOCKED             │             │                  │                  │             └──────────────────┼──────────────────┘                                │                                ▼                              ACTIVE
+The exact valid transitions shall be defined in the IAM state transition specification.
+A status shall not be changed through an invalid transition merely because a client sends a status value.
+For example:
+React sends:status = "ACTIVE"
+does not mean the backend shall blindly accept the value.
+The domain operation shall validate the transition.
+
+5.19 IAM DATA FLOW — LEVEL 1
+                         HOSPITAL USER                               │                               │ Credentials                               ▼                    ┌──────────────────────┐                    │  1. AUTHENTICATE     │                    │       USER           │                    └──────────┬───────────┘                               │                               │ Account Query                               ▼                       USER ACCOUNT DATA                               │                               ▼                    ┌──────────────────────┐                    │ VERIFY CREDENTIAL    │                    └──────────┬───────────┘                               │                        Authentication Result                               │                               ▼                    ┌──────────────────────┐                    │ CREATE USER CONTEXT  │                    └──────────┬───────────┘                               │                               ▼                       ROLE ASSIGNMENTS                               │                               ▼                          PERMISSIONS                               │                               ▼                      AUTHORIZATION RESULT
+
+5.20 IAM REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Requirement
+Functional Requirement
+CS-SAD-SR-001
+CS-IAM-FR-001, 025, 026
+CS-SAD-SR-002
+CS-IAM-FR-007, 008, 009, 010
+CS-SAD-SR-003
+CS-IAM-FR-011, 012, 013, 014
+CS-SAD-SR-004
+CS-IAM-FR-015, 016
+CS-SAD-SR-005
+CS-IAM-FR-028, 029
+CS-SAD-SR-006
+CS-IAM-FR-018, 019
+CS-SAD-SR-007
+CS-IAM-FR-014
+CS-SEC-SR-001
+CS-IAM-FR-014
+CS-SEC-SR-002
+CS-IAM-FR-009, 012, 014
+CS-SEC-SR-003
+CS-IAM-FR-028, 029
+CS-SEC-SR-005
+CS-IAM-FR-002, 003, 004
+CS-SEC-SR-006
+CS-IAM-FR-028, 029, 030
+
+5.21 IAM ACCEPTANCE SUMMARY
+The IAM module shall be considered functionally ready for detailed design when the approved requirements support the following complete capability chain:
+CREATE USER     │     ▼ACTIVATE ACCOUNT     │     ▼ASSIGN ROLE     │     ▼ROLE HAS PERMISSIONS     │     ▼USER AUTHENTICATES     │     ▼CREATE AUTHENTICATED CONTEXT     │     ▼EVALUATE PERMISSION     │     ├────► DENY UNAUTHORIZED ACTION     │     ▼ALLOW AUTHORIZED REQUEST     │     ▼APPLY BUSINESS RULE     │     ▼EXECUTE OPERATION     │     ▼AUDIT SENSITIVE ACTIVITY
+The module shall also support:
+account deactivation;
+password change;
+password reset;
+failed login handling;
+account locking;
+account unlocking;
+session refresh;
+session revocation;
+user search;
+access assignment review.
+
+5.22 IAM REQUIREMENT RISKS
+Risk 1 — Overly Simple Role Checking
+A design based entirely on:
+AdminUser
+would be insufficient for CuraSphere.
+Mitigation
+Use role and business capability permission concepts.
+
+Risk 2 — Frontend-Only Authorization
+Hiding a React button is not sufficient security.
+Example:
+Button hidden
+does not mean:
+API protected
+Mitigation
+Protected business operations shall enforce authorization at the trusted backend boundary.
+
+Risk 3 — Excessive Administrator Authority
+A technical administrator may accidentally receive unrestricted clinical authority.
+Mitigation
+Separate:
+SYSTEM ADMINISTRATION
+from:
+CLINICAL AUTHORITY
+
+Risk 4 — Credential Exposure
+Passwords or tokens may accidentally appear in:
+logs;
+API responses;
+debugging output;
+source code.
+Mitigation
+Sensitive authentication information shall be handled according to the security architecture.
+
+Risk 5 — Stale Access
+A deactivated user may retain an existing session.
+Mitigation
+The authentication architecture shall support applicable session revocation and account eligibility checks.
+
+5.23 IAM MODULE COMPLETION STATUS
+Module: Identity and Access ManagementModule Code: IAMRequirement Range: CS-IAM-FR-001 to CS-IAM-FR-030Business Rule Range: CS-IAM-BR-001 to CS-IAM-BR-016Priority Model: MoSCoWTraceability: EstablishedFunctional Flow: DefinedConceptual Authorization Model: DefinedAccount State Model: DefinedData Flow Model: DefinedRisk Model: DefinedStatus: Functional Requirements Draft Completed
+The IAM functional requirements establish the security and user access foundation for CuraSphere.
+These requirements shall later be transformed into:
+IAM use cases;
+authentication sequence diagrams;
+authorization sequence diagrams;
+account state diagrams;
+IAM domain model;
+security architecture;
+React authentication UI requirements;
+ASP.NET Core authentication and authorization design;
+PostgreSQL identity-related data requirements;
+API specification;
+unit tests;
+integration tests;
+security tests.
+No implementation-specific authentication library, JWT storage mechanism, password hashing implementation, or database table design is finalized by this section.
+Those decisions shall be made in the appropriate architecture and detailed design documentation.
+

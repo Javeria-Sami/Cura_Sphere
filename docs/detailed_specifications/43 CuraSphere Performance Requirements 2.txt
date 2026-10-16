@@ -1,0 +1,312 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.12 - Performance Requirements (NFR-01)
+
+6.12 Performance Requirements
+6.12.1 Introduction
+Performance is one of the most critical quality attributes of the CuraSphere Hospital Management System. Since hospital operations run 24 hours a day, 7 days a week, the system must process requests quickly while maintaining accuracy, stability, and reliability.
+Performance requirements ensure that users experience minimal waiting time during patient registration, appointment scheduling, billing, laboratory processing, pharmacy operations, reporting, and other hospital services.
+The system shall be designed to maintain consistent performance under both normal and peak workloads.
+
+6.12.2 Objectives
+The Performance Requirements shall ensure that the system:
+Provides fast response times.
+Supports multiple concurrent users.
+Minimizes waiting time.
+Processes transactions efficiently.
+Maintains stable performance during peak hospital hours.
+Supports future scalability.
+Prevents resource bottlenecks.
+Delivers consistent user experience.
+
+6.12.3 Performance Architecture
+                    Users
+                      │
+                      ▼
+               React Frontend
+                      │
+                      ▼
+         ASP.NET / Java API Layer
+                      │
+          ┌───────────┼────────────┐
+          ▼           ▼            ▼
+     Business     Cache Layer   Background Jobs
+      Services                     Workers
+          │
+          ▼
+      PostgreSQL Database
+          │
+          ▼
+   Monitoring & Performance Logs
+
+6.12.4 Response Time Requirements
+The system shall respond within acceptable time limits under normal operating conditions.
+Operation
+Target Response Time
+User Login
+≤ 3 seconds
+Dashboard Loading
+≤ 3 seconds
+Patient Registration
+≤ 3 seconds
+Patient Search
+≤ 2 seconds
+Appointment Booking
+≤ 3 seconds
+OPD Consultation Record Save
+≤ 3 seconds
+Laboratory Test Order
+≤ 3 seconds
+Laboratory Result Retrieval
+≤ 2 seconds
+Radiology Image Metadata Retrieval
+≤ 3 seconds
+Pharmacy Prescription Processing
+≤ 3 seconds
+Billing Invoice Generation
+≤ 4 seconds
+Payment Processing (excluding external gateway delays)
+≤ 5 seconds
+Inventory Search
+≤ 2 seconds
+Report Generation (Standard)
+≤ 5 seconds
+Complex Analytical Reports
+≤ 30 seconds
+Notification Generation
+≤ 5 seconds
+
+6.12.5 Concurrent User Requirements
+The system shall support simultaneous users without significant degradation in performance.
+Requirement
+Target
+Concurrent Active Users
+500+
+Concurrent Login Requests
+100+
+Simultaneous OPD Registrations
+50+
+Simultaneous Billing Transactions
+100+
+Simultaneous Laboratory Requests
+100+
+Simultaneous Pharmacy Transactions
+100+
+Note: These values represent the initial deployment target and may be increased through infrastructure scaling.
+
+6.12.6 Throughput Requirements
+The system shall process a high volume of transactions efficiently.
+Transaction Type
+Target Capacity
+Patient Registrations
+2,000 per day
+Appointments
+5,000 per day
+Laboratory Orders
+3,000 per day
+Pharmacy Transactions
+5,000 per day
+Billing Transactions
+5,000 per day
+Notifications
+20,000 per day
+API Requests
+100,000 per day
+
+6.12.7 Resource Utilization
+The application shall efficiently utilize available system resources.
+Resource
+Target Utilization
+CPU
+≤ 70% under normal load
+Memory
+≤ 75% under normal load
+Database Connections
+Managed using connection pooling
+Disk Usage
+Continuous monitoring with configurable alerts
+Network Usage
+Optimized to reduce unnecessary traffic
+
+6.12.8 Database Performance
+The PostgreSQL database shall support efficient data retrieval and storage.
+The system shall:
+Use indexed searches for frequently queried fields.
+Use optimized SQL queries.
+Use database transactions for critical operations.
+Support connection pooling.
+Support query optimization.
+Archive historical records according to retention policies.
+Avoid unnecessary duplicate data.
+
+Database Performance Flow
+User Request
+      │
+      ▼
+Business Service
+      │
+      ▼
+Optimized SQL Query
+      │
+      ▼
+Indexed Database Search
+      │
+      ▼
+PostgreSQL
+      │
+      ▼
+Return Result
+
+6.12.9 Caching Strategy
+The system may implement caching for frequently accessed data to improve response time.
+Examples include:
+Hospital Departments
+Doctor Lists
+Laboratory Test Catalog
+Medicine Catalog
+Configuration Settings
+Lookup Tables
+User Permissions
+System Parameters
+
+Cache Architecture
+Client Request
+      │
+      ▼
+Cache Available?
+   ┌────┴─────┐
+   │          │
+ Yes         No
+   │          │
+Return      Database
+Result        │
+              ▼
+        Update Cache
+
+6.12.10 Background Processing
+Long-running operations shall be executed asynchronously where appropriate.
+Examples:
+Email Sending
+SMS Sending
+Report Generation
+Backup Operations
+Data Synchronization
+Audit Processing
+Notification Distribution
+
+Background Job Flow
+User Action
+      │
+      ▼
+Queue Job
+      │
+      ▼
+Background Worker
+      │
+      ▼
+Process Task
+      │
+      ▼
+Update Status
+
+6.12.11 Performance Monitoring
+The system shall continuously monitor performance metrics.
+Metrics include:
+API Response Time
+Database Query Time
+CPU Utilization
+Memory Usage
+Disk Usage
+Network Latency
+Active Sessions
+Error Rate
+Queue Length
+Background Job Status
+
+Monitoring Workflow
+Application
+      │
+      ▼
+Performance Collector
+      │
+      ▼
+Monitoring Dashboard
+      │
+      ▼
+Administrator Alerts
+
+6.12.12 Performance Optimization Techniques
+The system shall support:
+Connection Pooling
+Lazy Loading
+Pagination
+Query Optimization
+Compression
+Browser Caching
+Image Optimization
+Static File Caching
+Asynchronous Processing
+Load Balancing (for multi-server deployments)
+
+6.12.13 Performance Testing
+Performance testing shall include:
+Load Testing
+Stress Testing
+Spike Testing
+Endurance (Soak) Testing
+Volume Testing
+Scalability Testing
+
+Testing Workflow
+Test Environment
+       │
+       ▼
+Load Generator
+       │
+       ▼
+Application Server
+       │
+       ▼
+Database Server
+       │
+       ▼
+Performance Metrics
+
+6.12.14 Performance Acceptance Criteria
+The system shall be accepted when:
+Standard user operations meet the defined response time targets.
+Performance remains stable during expected peak usage.
+No critical performance bottlenecks are identified during testing.
+Resource utilization remains within defined thresholds under target load.
+Background jobs complete successfully without negatively affecting interactive users.
+Monitoring data confirms acceptable system performance.
+
+6.12.15 Performance Requirement Traceability Matrix
+Requirement ID
+Functional Area
+NFR-PERF-001
+Response Time
+NFR-PERF-002
+Concurrent Users
+NFR-PERF-003
+Throughput
+NFR-PERF-004
+Resource Utilization
+NFR-PERF-005
+Database Performance
+NFR-PERF-006
+Caching
+NFR-PERF-007
+Background Processing
+NFR-PERF-008
+Performance Monitoring
+NFR-PERF-009
+Performance Optimization
+NFR-PERF-010
+Performance Testing
+NFR-PERF-011
+Acceptance Criteria
+
+
+

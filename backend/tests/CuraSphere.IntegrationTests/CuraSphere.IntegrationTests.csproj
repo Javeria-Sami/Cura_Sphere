@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+    <RollForward>LatestMajor</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+    <PackageReference Include="Moq" Version="4.20.70" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\CuraSphere.Api\CuraSphere.Api.csproj" />
+    <ProjectReference Include="..\..\CuraSphere.Domain\CuraSphere.Domain.csproj" />
+    <ProjectReference Include="..\..\CuraSphere.Application\CuraSphere.Application.csproj" />
+    <ProjectReference Include="..\..\CuraSphere.Infrastructure\CuraSphere.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

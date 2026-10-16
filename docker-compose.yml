@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Engine
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: curasphere-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: curasphere_hms_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: curasphere_secure_db_pass_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d curasphere_hms_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ASP.NET Core 8 Backend API Service
+  curasphere-api:
+    build:
+      context: ./backend
+      dockerfile: CuraSphere.Api/Dockerfile
+    container_name: curasphere-api-server
+    restart: always
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres-db;Database=curasphere_hms_db;Username=postgres;Password=curasphere_secure_db_pass_2026;Port=5432
+      - JwtSettings__Secret=CuraSphereHMS_Secure_Authentication_Secret_Key_2026_DoubleStrong!
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  # React Vite Frontend SPA Web Server
+  curasphere-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: curasphere-web-app
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - curasphere-api
+
+volumes:
+  postgres_data:

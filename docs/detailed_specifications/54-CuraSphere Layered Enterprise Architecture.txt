@@ -1,0 +1,1176 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 7 - System Architecture
+Part 7.2A - Layered Enterprise Architecture
+
+7.2 Layered Enterprise Architecture
+
+7.2.1 Introduction
+The Layered Enterprise Architecture defines how the CuraSphere Hospital Management System is logically organized into independent architectural layers, each with a specific responsibility. This approach separates user interface concerns from business logic, integration services, data access, and infrastructure management, making the system easier to develop, test, deploy, secure, and maintain.
+In a large-scale hospital environment, multiple users—including doctors, nurses, pharmacists, laboratory technicians, administrators, accountants, receptionists, and patients—may access the system simultaneously. To ensure reliability and scalability, requests flow through well-defined layers rather than allowing direct interaction between the user interface and the database.
+The layered architecture minimizes coupling between components, promotes code reusability, and allows future enhancements without requiring significant modifications to unrelated modules.
+
+7.2.2 Objectives
+The Layered Enterprise Architecture shall:
+Separate presentation from business logic.
+Improve maintainability and readability.
+Support independent module development.
+Enable horizontal scalability.
+Facilitate unit and integration testing.
+Simplify deployment and updates.
+Enhance security by isolating responsibilities.
+Improve interoperability with external systems.
+Support cloud-native deployments.
+Ensure consistent communication between all modules.
+
+7.2.3 Architectural Layers
+The CuraSphere architecture consists of the following logical layers:
+Layer No.
+Layer Name
+Primary Responsibility
+Layer 1
+Presentation Layer
+User interaction and interface
+Layer 2
+Authentication & Authorization Layer
+Identity verification and access control
+Layer 3
+API Gateway Layer
+Central request routing and API management
+Layer 4
+Business Service Layer
+Business rules and workflows
+Layer 5
+Integration Layer
+Communication with external systems
+Layer 6
+Data Access Layer
+Database interaction
+Layer 7
+Database Layer
+Persistent data storage
+Layer 8
+Infrastructure Layer
+Logging, monitoring, caching, messaging, backup
+
+7.2.4 Complete Layered Architecture
+                    USERS
+                       │
+       ┌───────────────┼────────────────┐
+       │               │                │
+ Patients         Hospital Staff    Administrators
+       │               │                │
+       └───────────────┼────────────────┘
+                       ▼
+====================================================
+            PRESENTATION LAYER
+====================================================
+React Web Portal
+Patient Portal
+Doctor Dashboard
+Nurse Dashboard
+Reception Dashboard
+Admin Dashboard
+Mobile Interface
+====================================================
+                       │
+                       ▼
+====================================================
+ AUTHENTICATION & AUTHORIZATION LAYER
+====================================================
+JWT Authentication
+Multi-Factor Authentication
+Role Based Access Control
+Session Management
+Single Sign-On
+====================================================
+                       │
+                       ▼
+====================================================
+              API GATEWAY
+====================================================
+Routing
+Load Balancing
+Rate Limiting
+Authentication Validation
+API Versioning
+====================================================
+                       │
+                       ▼
+====================================================
+           BUSINESS SERVICE LAYER
+====================================================
+Patient
+Appointment
+Emergency
+OPD
+IPD
+Laboratory
+Radiology
+Pharmacy
+Billing
+Inventory
+HR
+Reporting
+Notification
+Administration
+====================================================
+                       │
+                       ▼
+====================================================
+           INTEGRATION LAYER
+====================================================
+FHIR
+HL7
+DICOM
+Insurance
+SMS
+Email
+Payment Gateway
+Medical Devices
+====================================================
+                       │
+                       ▼
+====================================================
+           DATA ACCESS LAYER
+====================================================
+Repositories
+ORM
+Transactions
+Query Processing
+Caching
+====================================================
+                       │
+                       ▼
+====================================================
+          POSTGRESQL DATABASE
+====================================================
+                       │
+                       ▼
+====================================================
+        INFRASTRUCTURE SERVICES
+====================================================
+Logging
+Monitoring
+Backup
+Cache
+Message Queue
+Security
+Disaster Recovery
+====================================================
+
+7.2.5 Request Processing Flow
+Every user request shall travel through the architectural layers in a controlled sequence.
+Workflow
+User Request
+      │
+      ▼
+Presentation Layer
+      │
+      ▼
+Authentication Layer
+      │
+      ▼
+API Gateway
+      │
+      ▼
+Business Service
+      │
+      ▼
+Repository
+      │
+      ▼
+PostgreSQL Database
+      │
+      ▼
+Repository
+      │
+      ▼
+Business Layer
+      │
+      ▼
+Presentation Layer
+      │
+      ▼
+User Response
+
+7.2.6 Layer 1 — Presentation Layer
+
+Purpose
+The Presentation Layer provides all graphical interfaces through which users interact with CuraSphere.
+It is responsible only for:
+Displaying information
+Accepting user input
+Performing basic client-side validation
+Communicating with backend APIs
+It shall never contain business logic.
+
+Supported Interfaces
+Web Portal
+Mobile Portal
+Patient Portal
+Doctor Portal
+Nurse Portal
+Pharmacist Portal
+Reception Portal
+HR Portal
+Finance Portal
+Laboratory Portal
+Radiology Portal
+Administrator Portal
+
+Technology Stack
+Component
+Technology
+Framework
+React.js
+Language
+TypeScript
+Styling
+Tailwind CSS
+UI Components
+shadcn/ui
+State Management
+Zustand
+Server State
+TanStack Query
+Routing
+React Router
+Charts
+Recharts
+Icons
+Lucide React
+
+Responsibilities
+The Presentation Layer shall:
+Render dashboards.
+Display forms.
+Perform input validation.
+Display notifications.
+Display reports.
+Upload files.
+Download reports.
+Handle responsive layouts.
+Maintain UI state.
+Call backend APIs.
+
+Responsibilities NOT Allowed
+The Presentation Layer shall NOT:
+Access the database.
+Perform billing calculations.
+Calculate prescriptions.
+Authenticate users directly.
+Store sensitive business logic.
+Communicate with external services directly.
+
+Benefits
+Better maintainability
+Better scalability
+Easier UI redesign
+Improved testing
+Independent frontend deployment
+
+7.2.7 Presentation Layer Components
+Presentation Layer
+      │
+      ├── Login Module
+      ├── Dashboard
+      ├── Registration
+      ├── Appointments
+      ├── Emergency
+      ├── Pharmacy
+      ├── Laboratory
+      ├── Billing
+      ├── Reports
+      ├── Notifications
+      ├── Settings
+      └── Profile
+
+7.2.8 UI Communication Rules
+Every UI request shall follow these rules:
+Validate user input.
+Attach authentication token.
+Send HTTPS request.
+Receive JSON response.
+Display success or error message.
+Update UI state.
+Record client-side logs where appropriate.
+
+7.2.9 Presentation Layer Security
+The frontend shall implement:
+JWT Storage
+Session Timeout
+Automatic Logout
+CSRF Protection (where applicable)
+XSS Prevention
+Input Sanitization
+Route Protection
+Role-Based Navigation
+Secure File Upload Validation
+
+7.2.10 Example Request
+Patient books appointment.
+Patient Clicks Book Appointment
+            │
+            ▼
+React Form Validation
+            │
+            ▼
+JWT Attached
+            │
+            ▼
+POST /appointments
+            │
+            ▼
+API Gateway
+
+7.2.11 Acceptance Criteria
+The Presentation Layer shall be accepted when:
+All supported user roles have dedicated interfaces.
+Business logic remains outside the frontend.
+All communication uses HTTPS.
+UI is responsive across supported devices.
+Client-side validation improves usability without replacing server-side validation.
+Protected routes enforce authentication and authorization.
+API interactions are consistent and error handling is user-friendly.
+
+7.2.12 Layer 2 — Authentication & Authorization Layer
+
+7.2.12.1 Introduction
+The Authentication and Authorization Layer is responsible for ensuring that only authenticated and authorized users can access the CuraSphere Hospital Management System. Since the application stores confidential patient records, financial information, prescriptions, laboratory reports, diagnostic images, and administrative data, access control must be implemented at every level of the application.
+This layer acts as the first security boundary after the Presentation Layer. Every incoming request shall pass through this layer before reaching the Business Service Layer.
+The Authentication and Authorization Layer shall support enterprise identity management, session control, secure token validation, multi-factor authentication (MFA), role-based access control (RBAC), password policies, and audit logging.
+
+7.2.12.2 Objectives
+The Authentication and Authorization Layer shall:
+Verify user identity.
+Authenticate users securely.
+Prevent unauthorized access.
+Enforce role-based permissions.
+Support Multi-Factor Authentication (MFA).
+Manage secure sessions.
+Issue and validate JWT tokens.
+Log authentication events.
+Detect suspicious login activities.
+Support future Single Sign-On (SSO).
+
+7.2.12.3 Authentication Architecture
+                   User Login
+                        │
+                        ▼
+                Login API Endpoint
+                        │
+                        ▼
+          Username & Password Validation
+                        │
+         ┌──────────────┴──────────────┐
+         │                             │
+     Invalid Credentials          Valid Credentials
+         │                             │
+         ▼                             ▼
+ Authentication Failed          MFA Verification
+                                      │
+                                      ▼
+                             JWT Token Generation
+                                      │
+                                      ▼
+                           Store Secure Session
+                                      │
+                                      ▼
+                            Access Protected APIs
+
+7.2.12.4 Authentication Workflow
+User Opens Login Page
+         │
+         ▼
+Enter Credentials
+         │
+         ▼
+Frontend Validation
+         │
+         ▼
+POST /api/auth/login
+         │
+         ▼
+Authentication Service
+         │
+         ▼
+Password Verification
+         │
+         ▼
+MFA Verification
+         │
+         ▼
+Generate JWT
+         │
+         ▼
+Return Token
+         │
+         ▼
+Access Dashboard
+
+7.2.12.5 Authentication Components
+Component
+Responsibility
+Login Service
+User authentication
+JWT Service
+Token generation and validation
+Password Manager
+Password hashing and verification
+MFA Service
+OTP generation and verification
+Session Manager
+Session lifecycle
+Audit Logger
+Authentication audit trail
+Security Monitor
+Detect suspicious activities
+
+7.2.12.6 Password Policy
+Passwords shall satisfy configurable organizational requirements.
+Default Requirements
+Minimum length: 12 characters
+Uppercase letters
+Lowercase letters
+Numeric digits
+Special characters
+Password history enforcement
+Password expiration (configurable)
+Account lockout after configurable failed attempts
+
+7.2.12.7 Multi-Factor Authentication
+Supported authentication factors include:
+Email OTP
+SMS OTP
+Authenticator Applications
+Hardware Tokens (future support)
+MFA shall be configurable based on user role and organizational policy.
+
+7.2.12.8 Session Management
+Sessions shall include:
+Session Identifier
+User Identifier
+Login Time
+Last Activity Time
+Device Information
+IP Address
+Browser Information
+Session Expiration
+Sessions shall automatically expire after a configurable period of inactivity.
+
+7.2.12.9 Role-Based Access Control (RBAC)
+Every authenticated user shall be assigned one or more roles.
+Example roles include:
+Super Administrator
+Hospital Administrator
+Receptionist
+Doctor
+Nurse
+Laboratory Technician
+Radiologist
+Pharmacist
+Cashier
+HR Manager
+Inventory Officer
+Patient
+Permissions shall be managed centrally and evaluated before granting access to protected resources.
+
+7.2.12.10 Authentication Security Controls
+Security measures include:
+TLS encryption
+Secure password hashing
+JWT signature validation
+Refresh token rotation
+Account lockout
+Login throttling
+IP-based restrictions (configurable)
+Device tracking
+Session revocation
+Audit logging
+
+7.2.13 Layer 3 — API Gateway Layer
+
+7.2.13.1 Introduction
+The API Gateway Layer serves as the single entry point for all client requests. It centralizes routing, authentication validation, request filtering, rate limiting, API versioning, logging, and load balancing.
+Clients shall never communicate directly with internal services.
+
+API Gateway Responsibilities
+The API Gateway shall:
+Route requests.
+Validate JWT tokens.
+Enforce rate limits.
+Handle API versioning.
+Balance traffic.
+Aggregate responses where required.
+Log API requests.
+Reject malformed requests.
+Forward authorized requests.
+
+API Gateway Architecture
+Client Request
+      │
+      ▼
+ API Gateway
+      │
+ ┌────┼───────────────┐
+ ▼    ▼               ▼
+Auth Validation
+Rate Limiting
+Logging
+      │
+      ▼
+Request Routing
+      │
+      ▼
+Business Services
+
+API Routing Example
+/api/patients
+        │
+        ▼
+Patient Service
+
+/api/appointments
+        │
+        ▼
+Appointment Service
+
+/api/pharmacy
+        │
+        ▼
+Pharmacy Service
+
+/api/laboratory
+        │
+        ▼
+Laboratory Service
+
+Gateway Features
+HTTPS Enforcement
+API Versioning
+Request Validation
+Response Compression
+Request Correlation IDs
+Centralized Error Handling
+Traffic Monitoring
+Health Checks
+
+7.2.14 Layer 4 — Business Service Layer
+
+7.2.14.1 Introduction
+The Business Service Layer is the core of the CuraSphere Hospital Management System. It contains all business rules, workflows, validations, calculations, and domain logic.
+No other layer shall directly implement business rules.
+This layer coordinates operations across modules while ensuring transactional consistency and enforcing organizational policies.
+
+7.2.14.2 Responsibilities
+The Business Service Layer shall:
+Execute business logic.
+Validate workflows.
+Enforce business rules.
+Coordinate transactions.
+Call repositories.
+Communicate with external integrations.
+Generate audit events.
+Trigger notifications.
+Handle exceptions.
+
+7.2.14.3 Service Architecture
+                Business Layer
+                      │
+ ┌────────────────────┼────────────────────┐
+ ▼                    ▼                    ▼
+Patient Service   Appointment Service   Billing Service
+ ▼                    ▼                    ▼
+Pharmacy Service  Laboratory Service   Inventory Service
+ ▼                    ▼                    ▼
+Notification Service    Reporting Service
+
+7.2.14.4 Core Business Services
+Service
+Responsibility
+Patient Service
+Patient lifecycle management
+Appointment Service
+Scheduling and calendar management
+OPD Service
+Outpatient workflow
+IPD Service
+Admission and discharge
+Emergency Service
+Emergency patient handling
+Laboratory Service
+Test ordering and results
+Radiology Service
+Imaging workflow
+Pharmacy Service
+Prescription dispensing
+Billing Service
+Financial transactions
+Inventory Service
+Stock management
+HR Service
+Staff management
+Reporting Service
+Reports and analytics
+Notification Service
+Email, SMS, and alerts
+Administration Service
+System configuration
+
+7.2.14.5 Business Workflow Example
+Patient Appointment Booking
+Patient Requests Appointment
+            │
+            ▼
+Appointment Service
+            │
+            ▼
+Validate Doctor Availability
+            │
+            ▼
+Validate Time Slot
+            │
+            ▼
+Reserve Slot
+            │
+            ▼
+Create Appointment
+            │
+            ▼
+Generate Notification
+            │
+            ▼
+Return Confirmation
+
+7.2.14.6 Service Communication Rules
+Business services shall communicate through well-defined interfaces.
+Rules include:
+No direct database access from UI.
+Services communicate using internal APIs or interfaces.
+Business rules remain centralized.
+Cross-service dependencies shall be minimized.
+Circular dependencies are prohibited.
+Shared entities shall use common contracts.
+
+7.2.14.7 Dependency Injection
+All business services shall be instantiated through Dependency Injection (DI).
+Benefits include:
+Loose coupling
+Improved testability
+Easier maintenance
+Configurable implementations
+Mock services for testing
+
+Example Dependency Flow
+Appointment Controller
+          │
+          ▼
+Appointment Service
+          │
+ ┌────────┼────────┐
+ ▼        ▼        ▼
+Repository Notification Payment Service
+
+7.2.14.8 Transaction Management
+Business transactions shall maintain data consistency.
+Examples:
+Patient Registration
+Billing Generation
+Pharmacy Dispensing
+Inventory Updates
+Laboratory Order Processing
+Each transaction shall follow ACID principles where applicable.
+
+7.2.14.9 Error Handling
+The Business Layer shall:
+Validate input.
+Return standardized error codes.
+Log exceptions.
+Roll back failed transactions.
+Notify monitoring systems.
+Prevent partial updates.
+
+Error Flow
+Business Request
+       │
+       ▼
+Validation
+       │
+ ┌─────┴─────┐
+ │           │
+Valid      Invalid
+ │           │
+ ▼           ▼
+Execute    Return Error
+ │
+ ▼
+Commit Transaction
+
+7.2.14.10 Acceptance Criteria
+The Authentication, API Gateway, and Business Service Layers shall be accepted when:
+All requests require authentication before accessing protected resources.
+RBAC correctly enforces permissions.
+API Gateway routes requests accurately and securely.
+Business logic is centralized within the Business Service Layer.
+Services communicate through defined interfaces without tight coupling.
+Transactions maintain data consistency and support rollback on failure.
+Security events, authentication attempts, and business operations are logged according to audit requirements.
+
+7.2.15 Layer 5 — Integration Layer
+
+7.2.15.1 Introduction
+The Integration Layer enables CuraSphere to communicate securely and reliably with external systems, medical devices, government health services, insurance providers, payment gateways, notification providers, laboratory analyzers, radiology systems, and future third-party healthcare applications.
+Hospitals rarely operate as isolated systems. Patient information often flows between laboratories, imaging centers, pharmacies, insurance companies, national health databases, and financial institutions. Therefore, the Integration Layer acts as a controlled gateway that isolates the core business services from external dependencies.
+This layer ensures that changes to third-party systems do not directly affect the internal architecture of CuraSphere.
+
+7.2.15.2 Objectives
+The Integration Layer shall:
+Integrate with external healthcare systems.
+Provide standardized APIs.
+Transform external data into internal formats.
+Support secure communication.
+Handle communication failures gracefully.
+Retry temporary failures automatically.
+Log all integration events.
+Maintain interoperability with healthcare standards.
+
+7.2.15.3 External Systems
+External System
+Purpose
+HL7 Systems
+Clinical messaging
+HL7 FHIR Services
+Healthcare interoperability
+DICOM PACS
+Medical imaging
+Insurance Providers
+Claim processing
+Payment Gateways
+Financial transactions
+SMS Gateway
+OTP and notifications
+Email Server
+Email communication
+Government Health Systems
+Reporting and compliance
+Biometric Devices
+Staff attendance (optional)
+Medical Equipment
+Laboratory and diagnostic integration
+
+7.2.15.4 Integration Architecture
+                    Business Services
+                           │
+                           ▼
+                 Integration Layer
+                           │
+        ┌──────────────────┼──────────────────┐
+        ▼                  ▼                  ▼
+    REST APIs         HL7 / FHIR         DICOM
+        ▼                  ▼                  ▼
+ Insurance          Government        PACS/RIS
+ Systems             Systems          Imaging
+        ▼                  ▼                  ▼
+ SMS/Email       Payment Gateway   Medical Devices
+
+7.2.15.5 Communication Protocols
+The Integration Layer shall support:
+HTTPS
+REST APIs
+JSON
+XML
+HL7 Messages
+HL7 FHIR Resources
+DICOM Communication
+SMTP
+SMPP (optional)
+Secure Webhooks
+
+7.2.15.6 Integration Workflow
+Business Service
+        │
+        ▼
+Integration Service
+        │
+        ▼
+Data Transformation
+        │
+        ▼
+Authentication
+        │
+        ▼
+External API
+        │
+        ▼
+Receive Response
+        │
+        ▼
+Business Service
+
+7.2.15.7 Error Handling
+If external systems become unavailable, the Integration Layer shall:
+Retry configurable number of times.
+Record detailed logs.
+Notify administrators.
+Queue requests where applicable.
+Return standardized errors.
+Avoid application crashes.
+
+7.2.16 Layer 6 — Data Access Layer
+
+7.2.16.1 Introduction
+The Data Access Layer (DAL) provides controlled interaction with the PostgreSQL database. No application component other than the DAL shall directly execute SQL statements against the database.
+This abstraction improves maintainability, testability, security, and consistency.
+
+Responsibilities
+The DAL shall:
+Execute CRUD operations.
+Manage database connections.
+Handle transactions.
+Execute stored procedures (where applicable).
+Apply optimistic or pessimistic concurrency controls as needed.
+Prevent SQL Injection through parameterized queries or ORM mechanisms.
+Manage connection pooling.
+Translate database exceptions into application exceptions.
+
+Repository Pattern
+Repositories encapsulate persistence logic for each aggregate or entity.
+Example repositories include:
+PatientRepository
+AppointmentRepository
+BillingRepository
+PharmacyRepository
+InventoryRepository
+LaboratoryRepository
+UserRepository
+RoleRepository
+NotificationRepository
+
+Repository Architecture
+Business Service
+        │
+        ▼
+Repository
+        │
+        ▼
+ORM
+        │
+        ▼
+PostgreSQL
+
+Unit of Work Pattern
+The Unit of Work coordinates multiple repository operations within a single transaction.
+Example:
+Patient Registration
+      │
+      ▼
+Patient Repository
+      │
+Appointment Repository
+      │
+Billing Repository
+      │
+Audit Repository
+      │
+Commit Transaction
+If any operation fails, the Unit of Work shall roll back the entire transaction to maintain data consistency.
+
+ORM Framework
+The Data Access Layer may use an Object-Relational Mapping (ORM) framework to simplify persistence and reduce boilerplate code.
+Responsibilities include:
+Entity mapping.
+Relationship management.
+Change tracking.
+Lazy/Eager loading (as appropriate).
+Query generation.
+Migration support.
+
+Database Connection Management
+The DAL shall:
+Use secure connection strings.
+Encrypt connections where supported.
+Reuse pooled connections.
+Monitor connection health.
+Close unused connections automatically.
+
+Transaction Workflow
+Begin Transaction
+        │
+        ▼
+Repository Operation 1
+        │
+        ▼
+Repository Operation 2
+        │
+        ▼
+Repository Operation 3
+        │
+        ▼
+Commit
+        │
+        ▼
+Success
+
+OR
+
+Rollback
+
+7.2.17 Layer 7 — PostgreSQL Database Layer
+
+Introduction
+The Database Layer stores all persistent information required by CuraSphere. PostgreSQL has been selected due to its reliability, ACID compliance, advanced indexing, replication support, extensibility, and enterprise-grade features.
+The database shall be considered the authoritative source for all transactional and historical healthcare data.
+
+Primary Data Domains
+Patient Records
+Appointments
+Admissions
+Medical History
+Clinical Notes
+Laboratory Results
+Radiology Reports
+Pharmacy Inventory
+Billing Transactions
+Payments
+Human Resources
+Inventory
+Audit Logs
+Notifications
+System Configuration
+
+Database Architecture
+Application
+      │
+      ▼
+Data Access Layer
+      │
+      ▼
+PostgreSQL Cluster
+      │
+ ┌────┼──────────┐
+ ▼    ▼          ▼
+Primary Replica Backup
+
+Database Responsibilities
+Persistent storage.
+Data integrity.
+Constraint enforcement.
+Backup support.
+Replication.
+Query optimization.
+High availability.
+Recovery.
+
+Database Constraints
+Examples include:
+Primary Keys
+Foreign Keys
+Unique Constraints
+Check Constraints
+NOT NULL Constraints
+Referential Integrity
+
+Indexing Strategy
+Indexes shall be created for:
+Patient ID
+National ID
+Appointment Date
+Invoice Number
+Laboratory Order Number
+Prescription Number
+Employee ID
+Medicine Code
+
+Replication
+The database architecture shall support:
+Primary Database
+Read Replicas
+Failover Replica
+Continuous Backup
+
+7.2.18 Layer 8 — Infrastructure Layer
+
+Introduction
+The Infrastructure Layer provides technical services required by all other architectural layers. It does not contain business logic but supports system reliability, scalability, observability, security, and operational management.
+
+Infrastructure Services
+Service
+Purpose
+Logging
+Centralized log collection
+Monitoring
+System health monitoring
+Caching
+Performance optimization
+Message Queue
+Asynchronous processing
+File Storage
+Documents and attachments
+Backup
+Data protection
+Configuration
+Environment management
+Scheduler
+Background jobs
+Notification Engine
+Email/SMS dispatch
+Security Services
+Encryption and secrets
+
+Infrastructure Architecture
+Business Services
+        │
+        ▼
+Infrastructure Layer
+        │
+ ┌──────┼─────────────┬──────────────┐
+ ▼      ▼             ▼              ▼
+Cache Logging Monitoring Message Queue
+        │
+        ▼
+Notification
+        │
+        ▼
+Storage
+
+7.2.19 Caching Architecture
+Caching improves performance by reducing repetitive database queries.
+
+Cached Data
+Hospital Settings
+User Permissions
+Lookup Tables
+Medicine Catalog
+Department List
+Doctor Schedule
+Configuration Data
+
+Cache Flow
+Request
+    │
+    ▼
+Cache?
+ │      │
+Yes     No
+ │       │
+ ▼       ▼
+Return  Database
+          │
+          ▼
+Store Cache
+
+7.2.20 Message Queue Architecture
+Asynchronous tasks shall be processed through a message queue.
+
+Example Background Tasks
+Email notifications
+SMS delivery
+Report generation
+PDF generation
+Insurance synchronization
+Backup scheduling
+Audit archival
+Data export
+
+Queue Workflow
+Business Service
+       │
+       ▼
+Publish Message
+       │
+       ▼
+Message Queue
+       │
+       ▼
+Background Worker
+       │
+       ▼
+Execute Task
+
+7.2.21 Background Job Processing
+Background workers shall execute long-running operations independently from user requests.
+Examples include:
+Nightly database backups.
+Daily report generation.
+Appointment reminder notifications.
+Inventory reconciliation.
+Audit log archival.
+Performance metric aggregation.
+
+7.2.22 Configuration Management
+Configuration values shall be externalized and environment-specific.
+Examples:
+Database connections.
+API endpoints.
+SMTP configuration.
+SMS credentials.
+Payment gateway settings.
+Logging levels.
+Cache expiration.
+Feature flags.
+
+7.2.23 Layer Communication Rules
+From Layer
+Allowed Communication
+Presentation
+Authentication Layer only
+Authentication
+API Gateway
+API Gateway
+Business Services
+Business Services
+Integration & Data Access
+Integration
+External Systems
+Data Access
+Database
+Infrastructure
+Shared by all layers
+Database
+No direct outward communication
+Direct communication that bypasses architectural layers shall not be permitted unless explicitly justified and documented.
+
+7.2.24 Enterprise Design Patterns
+The following design patterns shall be used where appropriate:
+Pattern
+Purpose
+Repository
+Data access abstraction
+Unit of Work
+Transaction coordination
+Dependency Injection
+Loose coupling
+Factory
+Object creation
+Strategy
+Configurable algorithms
+Adapter
+External system integration
+Facade
+Simplified subsystem access
+Observer
+Event notification
+Builder
+Complex object construction
+Singleton
+Shared infrastructure services
+CQRS (where appropriate)
+Separate read/write operations
+Mediator (optional)
+Service coordination
+
+7.2.25 Acceptance Criteria
+The Layered Enterprise Architecture shall be accepted when:
+External integrations communicate through the Integration Layer only.
+Database access is exclusively performed via the Data Access Layer.
+Repositories encapsulate persistence logic.
+Transactions maintain ACID properties.
+Infrastructure services remain independent of business logic.
+Background processing is handled asynchronously where appropriate.
+Configuration is externalized and environment-specific.
+Layer communication adheres to defined dependency rules.
+Design patterns are consistently applied to improve maintainability, extensibility, and testability.
+
+
+

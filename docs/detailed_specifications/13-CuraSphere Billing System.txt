@@ -1,0 +1,1949 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.8 — BILLING, INVOICING AND PATIENT FINANCIAL MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: BILModule Name: Billing, Invoicing and Patient Financial Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.340 MODULE PURPOSE
+The Billing, Invoicing and Patient Financial Management System shall manage patient-related financial workflows generated from eligible hospital services and approved financial activities.
+The module shall support:
+chargeable service configuration;
+charge capture;
+patient financial accounts;
+invoice creation;
+invoice item management;
+invoice finalization;
+payment collection;
+payment allocation;
+partial payments;
+outstanding balances;
+receipts;
+payment reversals;
+refunds;
+approved discounts;
+approved financial adjustments;
+invoice cancellation and credit workflows;
+patient financial history;
+financial audit traceability.
+The high-level workflow shall be:
+CLINICAL OR OPERATIONAL EVENT              │              ▼     CHARGEABLE EVENT?              │         ┌────┴────┐         │         │        NO        YES         │         │         ▼         ▼     NO CHARGE   CHARGE CAPTURE                       │                       ▼                 PATIENT ACCOUNT                       │                       ▼                    INVOICE                       │                       ▼                 INVOICE ITEMS                       │                       ▼               INVOICE FINALIZATION                       │                       ▼                 AMOUNT PAYABLE                       │                       ▼                    PAYMENT                       │                       ▼               PAYMENT ALLOCATION                       │                ┌──────┴──────┐                │             │                ▼             ▼          PARTIAL PAYMENT   FULL PAYMENT                │             │                ▼             ▼          BALANCE DUE         PAID                │             │                └──────┬──────┘                       ▼                    RECEIPT                       │                       ▼            PATIENT FINANCIAL HISTORY
+The module shall provide traceability for the following questions:
+WHICH PATIENT?      │      ▼WHICH ENCOUNTER?      │      ▼WHICH SERVICE OCCURRED?      │      ▼WHY WAS A CHARGE CREATED?      │      ▼WHICH CHARGE WAS INVOICED?      │      ▼WHAT AMOUNT WAS BILLED?      │      ▼WAS A DISCOUNT APPLIED?      │      ▼WHO AUTHORIZED THE DISCOUNT?      │      ▼HOW MUCH WAS PAID?      │      ▼WHICH PAYMENT SETTLED WHICH INVOICE?      │      ▼WHAT BALANCE REMAINS?      │      ▼WAS ANY PAYMENT REVERSED?      │      ▼WAS ANY REFUND ISSUED?      │      ▼WHO PERFORMED THE FINANCIAL ACTION?
+Financial traceability shall be considered a fundamental CuraSphere requirement.
+
+5.341 BILLING DOMAIN BOUNDARY
+The Billing module shall manage patient financial workflow.
+It shall not own clinical diagnosis, laboratory interpretation, radiology reporting, medication prescribing, or clinical treatment decisions.
+Conceptually:
+OPD │ ├──────────────┐ │              │ ▼              │SERVICE EVENT   │                │IPD             │ │              │ ▼              │SERVICE EVENT   │                │LABORATORY      │ │              │ ▼              │LAB SERVICE     │                ├──────────────► BILLINGRADIOLOGY       │                     │ │              │                     ├── Charge Capture ▼              │                     ├── Patient AccountIMAGING SERVICE │                     ├── Invoice                │                     ├── PaymentPHARMACY        │                     ├── Allocation │              │                     ├── Receipt ▼              │                     ├── RefundDISPENSING      │                     └── Adjustment                │OTHER SERVICES  │ │              │ ▼              │SERVICE EVENT ──┘
+Responsibilities shall conceptually be divided as follows:
+CLINICAL MODULEAnswers:"What clinical service,order, procedure, ortreatment occurred?"
+BILLING MODULEAnswers:"Does the eligible eventcreate a financial charge,and how is the patient'sfinancial obligation managed?"
+PAYMENT WORKFLOWAnswers:"What money was received,through which method,and against which financialobligation?"
+FINANCIAL AUDITAnswers:"Which actions explain thecurrent financial state?"
+The Billing module shall not be designed as:
+patient_idtotal_billpaid
+This model is insufficient for a real hospital financial system.
+
+5.342 CRITICAL BILLING ARCHITECTURE CONCEPT
+CuraSphere shall distinguish:
+SERVICE DEFINITION
+PRICE CONFIGURATION
+CHARGE
+PATIENT FINANCIAL ACCOUNT
+INVOICE
+INVOICE ITEM
+PAYMENT
+PAYMENT ALLOCATION
+RECEIPT
+REFUND
+FINANCIAL ADJUSTMENT
+These concepts shall not automatically be treated as identical.
+Conceptually:
+SERVICE DEFINITION        │        ▼WHAT SERVICE EXISTS?
+PRICE CONFIGURATION        │        ▼WHAT PRICING RULE ORAMOUNT APPLIES?
+CHARGE        │        ▼WHAT FINANCIAL OBLIGATIONWAS GENERATED BY ANELIGIBLE EVENT?
+PATIENT FINANCIAL ACCOUNT        │        ▼WHERE IS THE PATIENT'SFINANCIAL ACTIVITY GROUPED?
+INVOICE        │        ▼WHAT AMOUNT WAS FORMALLYPRESENTED FOR PAYMENT?
+INVOICE ITEM        │        ▼WHICH CHARGES OR FINANCIALLINES EXPLAIN THE INVOICE?
+PAYMENT        │        ▼WHAT MONEY WAS RECEIVED?
+PAYMENT ALLOCATION        │        ▼WHERE WAS THE PAYMENTAMOUNT APPLIED?
+RECEIPT        │        ▼WHAT ACKNOWLEDGEMENT OFPAYMENT WAS ISSUED?
+REFUND        │        ▼WHAT ELIGIBLE MONEY WASRETURNED?
+Therefore:
+SERVICE   =CHARGE   =INVOICE   =PAYMENT   =RECEIPT
+is an incorrect architectural assumption.
+
+5.343 SERVICE EVENT VS FINANCIAL CHARGE
+This distinction is fundamental.
+Example:
+CLINICAL EVENTLaboratory CBC Test Ordered
+The clinical module records:
+LAB ORDERLAB-ORD-00192
+Billing may generate:
+CHARGECHG-000501
+The charge may reference:
+SOURCE TYPELAB_ORDER
+SOURCE REFERENCELAB-ORD-00192
+Conceptually:
+LAB ORDER    │    ▼ELIGIBLE BILLING EVENT    │    ▼CHARGE
+The clinical event answers:
+What happened clinically?
+The charge answers:
+What financial obligation was generated?
+The system shall preserve this distinction.
+Weak architecture:
+lab_order.price = 1500lab_order.paid = true
+This tightly couples laboratory workflow with financial workflow.
+A stronger architecture is:
+LABORATORY DOMAIN        │        ▼LAB ORDER        │        ▼BILLING INTEGRATION CONTRACT        │        ▼CHARGE        │        ▼INVOICE        │        ▼PAYMENT
+
+5.344 BILLING ACTORS
+Actor
+Responsibility
+Billing Officer
+Manages eligible billing activities
+Cashier
+Collects authorized patient payments
+Billing Supervisor
+Performs approved billing supervision
+Finance Officer
+Reviews authorized financial information
+Hospital Administrator
+Manages approved financial configuration
+Doctor
+Initiates clinical events that may generate charges
+Nurse
+Initiates permitted operational events
+Laboratory User
+Performs laboratory workflow linked to eligible charges
+Radiology User
+Performs imaging workflow linked to eligible charges
+Pharmacist
+Performs pharmacy workflow linked to eligible charges
+Receptionist
+Views permitted patient financial status
+Patient
+Has eligible financial obligations and payments
+OPD Module
+Provides eligible outpatient charge events
+IPD Module
+Provides eligible inpatient charge events
+Emergency Module
+Provides eligible emergency charge events
+Laboratory Module
+Provides eligible laboratory charge events
+Radiology Module
+Provides eligible imaging charge events
+Pharmacy Module
+Provides eligible medication charge events
+Inventory Module
+Provides applicable financial source information
+Insurance Module
+Provides future coverage and payer context
+CuraSphere System
+Enforces validation, authorization, state, and traceability
+
+5.345 BILLING FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-BIL-FR-001
+Maintain Chargeable Service Catalog
+M
+CS-BIL-FR-002
+Create Chargeable Service
+M
+CS-BIL-FR-003
+Update Chargeable Service
+M
+CS-BIL-FR-004
+Activate or Deactivate Chargeable Service
+M
+CS-BIL-FR-005
+Search Chargeable Services
+M
+CS-BIL-FR-006
+Maintain Price Configuration
+M
+CS-BIL-FR-007
+Create Service Price
+M
+CS-BIL-FR-008
+Update Eligible Service Price
+M
+CS-BIL-FR-009
+Maintain Price Effective Period
+M
+CS-BIL-FR-010
+Preserve Historical Price Context
+M
+CS-BIL-FR-011
+Create Patient Financial Account
+M
+CS-BIL-FR-012
+Generate Patient Account Identifier
+M
+CS-BIL-FR-013
+Associate Financial Account With Patient
+M
+CS-BIL-FR-014
+Associate Financial Account With Encounter
+M
+CS-BIL-FR-015
+View Patient Financial Account
+M
+CS-BIL-FR-016
+Capture Eligible Charge
+M
+CS-BIL-FR-017
+Generate Charge Identifier
+M
+CS-BIL-FR-018
+Link Charge to Source Event
+M
+CS-BIL-FR-019
+Prevent Duplicate Charge Capture
+M
+CS-BIL-FR-020
+Record Charge Quantity
+M
+CS-BIL-FR-021
+Record Charge Unit Price
+M
+CS-BIL-FR-022
+Calculate Charge Gross Amount
+M
+CS-BIL-FR-023
+Track Charge Status
+M
+CS-BIL-FR-024
+Cancel Eligible Charge
+M
+CS-BIL-FR-025
+Reverse Eligible Charge
+M
+CS-BIL-FR-026
+Create Invoice
+M
+CS-BIL-FR-027
+Generate Invoice Identifier
+M
+CS-BIL-FR-028
+Add Eligible Charge to Invoice
+M
+CS-BIL-FR-029
+Create Invoice Item
+M
+CS-BIL-FR-030
+Calculate Invoice Subtotal
+M
+CS-BIL-FR-031
+Apply Authorized Discount
+M
+CS-BIL-FR-032
+Record Discount Reason
+M
+CS-BIL-FR-033
+Record Discount Authorization
+M
+CS-BIL-FR-034
+Calculate Invoice Net Amount
+M
+CS-BIL-FR-035
+Finalize Invoice
+M
+CS-BIL-FR-036
+Prevent Invalid Finalized Invoice Modification
+M
+CS-BIL-FR-037
+View Invoice
+M
+CS-BIL-FR-038
+Track Invoice Status
+M
+CS-BIL-FR-039
+Cancel Eligible Invoice
+M
+CS-BIL-FR-040
+Create Invoice Credit or Reversal Workflow
+M
+CS-BIL-FR-041
+Record Payment
+M
+CS-BIL-FR-042
+Generate Payment Identifier
+M
+CS-BIL-FR-043
+Record Payment Method
+M
+CS-BIL-FR-044
+Record Payment Amount
+M
+CS-BIL-FR-045
+Validate Payment Amount
+M
+CS-BIL-FR-046
+Allocate Payment
+M
+CS-BIL-FR-047
+Support Partial Payment
+M
+CS-BIL-FR-048
+Support Multi-Invoice Payment Allocation
+S
+CS-BIL-FR-049
+Calculate Outstanding Balance
+M
+CS-BIL-FR-050
+Prevent Invalid Over-Allocation
+M
+CS-BIL-FR-051
+Complete Payment
+M
+CS-BIL-FR-052
+Generate Receipt
+M
+CS-BIL-FR-053
+Generate Receipt Identifier
+M
+CS-BIL-FR-054
+View Receipt
+M
+CS-BIL-FR-055
+Reprint Eligible Receipt
+M
+CS-BIL-FR-056
+Reverse Eligible Payment
+M
+CS-BIL-FR-057
+Record Payment Reversal Reason
+M
+CS-BIL-FR-058
+Reverse Payment Allocation
+M
+CS-BIL-FR-059
+Create Refund
+M
+CS-BIL-FR-060
+Validate Refund Eligibility
+M
+CS-BIL-FR-061
+Record Refund Amount
+M
+CS-BIL-FR-062
+Record Refund Method
+M
+CS-BIL-FR-063
+Complete Refund
+M
+CS-BIL-FR-064
+Record Financial Adjustment
+M
+CS-BIL-FR-065
+Record Adjustment Reason
+M
+CS-BIL-FR-066
+Record Adjustment Authorization
+M
+CS-BIL-FR-067
+View Patient Outstanding Balance
+M
+CS-BIL-FR-068
+View Patient Financial History
+M
+CS-BIL-FR-069
+Search Charges
+M
+CS-BIL-FR-070
+Search Invoices
+M
+CS-BIL-FR-071
+Search Payments
+M
+CS-BIL-FR-072
+Search Receipts
+M
+CS-BIL-FR-073
+Search Refunds
+M
+CS-BIL-FR-074
+Record Billing Audit Events
+M
+CS-BIL-FR-075
+Prevent Invalid Billing State Transition
+M
+CS-BIL-FR-076
+Support Tax and Levy Configuration Architecture
+S
+CS-BIL-FR-077
+Support Insurance and Third-Party Payer Architecture
+S
+CS-BIL-FR-078
+Support Digital Payment Integration Architecture
+S
+CS-BIL-FR-079
+Support Financial Posting Integration Architecture
+S
+CS-BIL-FR-080
+Support Financial Reporting Read Models
+M
+
+5.346 CHARGEABLE SERVICE CATALOG
+CS-BIL-FR-001 — Maintain Chargeable Service Catalog
+Description
+The system shall maintain a controlled catalog of services and items eligible for billing configuration.
+Priority
+Must Have
+Conceptual Model
+CHARGEABLE SERVICE        │        ├── Service Code        ├── Service Name        ├── Service Category        ├── Source Domain        ├── Billing Unit        ├── Active Status        └── Chargeable Status
+Examples
+SERVICE CODEOPD-GEN-CONSULT
+SERVICE NAMEGeneral OPD Consultation
+Another:
+SERVICE CODELAB-CBC
+SERVICE NAMEComplete Blood Count
+Another:
+SERVICE CODERAD-CHEST-XRAY
+SERVICE NAMEChest X-Ray
+Business Rules
+CS-BIL-BR-001
+Each chargeable service shall have a unique internal identity.
+CS-BIL-BR-002
+Service codes shall be unique within the applicable billing scope.
+CS-BIL-BR-003
+Only eligible active chargeable services shall normally generate new charges.
+
+CS-BIL-FR-002 — Create Chargeable Service
+The system shall allow an authorized user to create an eligible chargeable service.
+Main Flow
+AUTHORIZED USER       │       ▼OPEN BILLING CONFIGURATION       │       ▼CREATE SERVICE       │       ▼ENTER SERVICE INFORMATION       │       ▼VALIDATE SERVICE CODE       │       ▼VALIDATE SOURCE DOMAIN       │       ▼SAVE       │       ▼AUDIT EVENT
+
+CS-BIL-FR-003 — Update Chargeable Service
+The system shall allow authorized users to update eligible chargeable service configuration.
+Historical financial records shall preserve applicable service context.
+The following shall not occur:
+OLD INVOICECBC = 1,200 PKR
+Administrator changes the current service name or configuration.
+Historical invoice unexpectedly changes its original financial meaning.
+Historical financial context shall remain appropriately preserved.
+
+CS-BIL-FR-004 — Activate or Deactivate Chargeable Service
+The system shall allow authorized users to activate or deactivate eligible chargeable services.
+ACTIVE   │   ▼AVAILABLE FOR ELIGIBLENEW CHARGE WORKFLOW
+INACTIVE   │   ▼NOT NORMALLY AVAILABLEFOR NEW CHARGES   │   ▼HISTORICAL RECORDS REMAIN
+Deactivation shall not delete historical charges.
+
+CS-BIL-FR-005 — Search Chargeable Services
+Authorized users shall be able to search chargeable services using applicable criteria.
+Search criteria may include:
+service code;
+service name;
+service category;
+source domain;
+active status;
+chargeable status.
+
+5.347 PRICE CONFIGURATION
+CS-BIL-FR-006 — Maintain Price Configuration
+Description
+The system shall maintain controlled pricing information for eligible chargeable services.
+Priority
+Must Have
+Critical Architecture Principle
+The following design is weak:
+servicesidnameprice
+Why?
+Suppose:
+CBC PRICE01 JAN 2026PKR 1,000
+The hospital changes the price:
+01 JUL 2026PKR 1,200
+If the developer executes:
+UPDATE servicesSET price = 1200WHERE service_code = 'LAB-CBC';
+and historical invoices dynamically read the current service price, an old invoice may incorrectly appear as:
+PKR 1,200
+instead of:
+PKR 1,000
+A stronger concept is:
+CHARGEABLE SERVICE        │        ▼PRICE CONFIGURATION        │        ├── Amount        ├── Currency        ├── Effective From        ├── Effective To        └── Status
+
+CS-BIL-FR-007 — Create Service Price
+The system shall allow an authorized user to create an eligible price configuration for a chargeable service.
+Price Information May Include
+service;
+amount;
+currency;
+effective from;
+effective to;
+price category;
+configuration status.
+Example
+SERVICELAB-CBCAMOUNT1,200CURRENCYPKREFFECTIVE FROM2026-07-01
+
+CS-BIL-FR-008 — Update Eligible Service Price
+The system shall allow authorized users to update eligible price configuration according to approved financial policy.
+Important Principle
+A price already used for a completed historical financial transaction shall not be silently rewritten in a manner that changes the historical transaction.
+A new price period may be required.
+Conceptually:
+PRICE VERSION 1PKR 1,00001 JAN 2026 → 30 JUN 2026
+PRICE VERSION 2PKR 1,20001 JUL 2026 → CURRENT
+
+CS-BIL-FR-009 — Maintain Price Effective Period
+The system shall support applicable effective periods for service price configuration.
+Conceptual Model
+PRICE │ ├── EFFECTIVE_FROM └── EFFECTIVE_TO
+The final temporal pricing architecture shall be defined during Billing Domain Design.
+Business Rule
+CS-BIL-BR-004
+The system shall determine the applicable eligible price according to approved pricing rules and financial event context.
+
+CS-BIL-FR-010 — Preserve Historical Price Context
+The system shall preserve the financial price context applied to a historical charge or invoice item.
+Example
+Current catalog price:
+PKR 1,500
+Historical charge:
+CHARGE DATE01 MAY 2026APPLIED UNIT PRICEPKR 1,000
+The historical charge remains:
+PKR 1,000
+It shall not automatically become:
+PKR 1,500
+Business Rule
+CS-BIL-BR-005
+Historical transaction values shall not be recalculated using unrelated future price changes.
+
+5.348 PATIENT FINANCIAL ACCOUNT
+CS-BIL-FR-011 — Create Patient Financial Account
+Description
+The system shall create an eligible financial account context for patient-related financial activity.
+Priority
+Must Have
+Conceptual Account
+PATIENT FINANCIAL ACCOUNT          │          ├── Account ID          ├── Patient          ├── Encounter Context          ├── Account Type          ├── Account Status          └── Financial Activity
+Important Architecture Question
+Should CuraSphere use:
+ONE FINANCIAL ACCOUNTPER PATIENT
+or:
+ONE FINANCIAL ACCOUNTPER ENCOUNTER
+or:
+PATIENT MASTER ACCOUNT        │        ▼ENCOUNTER FINANCIAL ACCOUNTS
+The final account hierarchy shall be decided during Billing Domain Architecture.
+For SRS purposes, the system shall maintain sufficient patient and encounter financial traceability.
+
+CS-BIL-FR-012 — Generate Patient Account Identifier
+The system shall generate a unique identifier for each financial account.
+Example:
+ACC-00000192
+Financial account identifiers shall not be reused for unrelated accounts.
+
+CS-BIL-FR-013 — Associate Financial Account With Patient
+Each patient financial account shall reference an identifiable patient.
+Business Rule
+CS-BIL-BR-006
+A patient financial account shall not exist without an eligible patient relationship where the account is patient-specific.
+
+CS-BIL-FR-014 — Associate Financial Account With Encounter
+The system shall support associating applicable financial accounts or financial activity with eligible clinical encounters.
+Conceptually:
+PATIENT   │   ▼ENCOUNTER   │   ▼FINANCIAL ACCOUNT CONTEXT
+This allows the hospital to answer:
+HOW MUCH FINANCIAL ACTIVITYWAS GENERATED DURINGTHIS ADMISSION?
+or:
+WHICH CHARGES BELONG TOTHIS OPD VISIT?
+
+CS-BIL-FR-015 — View Patient Financial Account
+Authorized users shall be able to view eligible patient financial account information.
+The view may include:
+PatientMRNAccount IDEncounterTotal ChargesTotal InvoicedTotal PaidTotal RefundedTotal AdjustmentsOutstanding BalanceAccount Status
+The values shall be calculated or projected using approved financial logic.
+
+5.349 CHARGE CAPTURE
+CS-BIL-FR-016 — Capture Eligible Charge
+Requirement Name
+Capture Eligible Charge
+Description
+The system shall create a financial charge for an eligible chargeable event.
+Priority
+Must Have
+Example Sources
+OPD CONSULTATION       │       ▼CHARGE
+LAB ORDER       │       ▼CHARGE
+RADIOLOGY ORDER       │       ▼CHARGE
+PHARMACY DISPENSING       │       ▼CHARGE
+IPD ROOM USAGE       │       ▼CHARGE
+Main Flow
+SOURCE EVENT     │     ▼BILLING ELIGIBILITY CHECK     │     ▼RESOLVE CHARGEABLE SERVICE     │     ▼RESOLVE APPLICABLE PRICE     │     ▼RESOLVE PATIENT ACCOUNT     │     ▼CREATE CHARGE     │     ▼RECORD SOURCE REFERENCE     │     ▼AUDIT EVENT
+Charge Information May Include
+charge identifier;
+patient financial account;
+patient;
+encounter;
+chargeable service;
+source domain;
+source event type;
+source event identifier;
+quantity;
+unit price;
+gross amount;
+charge date and time;
+charge status.
+Business Rules
+CS-BIL-BR-007
+Each charge shall maintain applicable patient financial context.
+CS-BIL-BR-008
+A charge generated from another domain shall maintain source event traceability.
+
+CS-BIL-FR-017 — Generate Charge Identifier
+The system shall generate a unique identifier for each charge.
+Example:
+CHG-00000501
+
+5.350 SOURCE EVENT TRACEABILITY
+CS-BIL-FR-018 — Link Charge to Source Event
+Description
+The system shall maintain traceability between an eligible charge and its source business event.
+Priority
+Must Have
+Example
+CHARGECHG-501   │   ▼SOURCE DOMAINLABORATORY   │   ▼SOURCE TYPELAB_ORDER   │   ▼SOURCE IDLAB-ORD-192
+Another:
+CHG-700   │   ▼SOURCE DOMAINPHARMACY   │   ▼SOURCE TYPEDISPENSING   │   ▼SOURCE IDDSP-921
+Engineering Principle
+Do not create financial charges that cannot explain their business origin.
+
+5.351 DUPLICATE CHARGE PREVENTION
+CS-BIL-FR-019 — Prevent Duplicate Charge Capture
+Description
+The system shall prevent unintended duplicate charge creation for a single source event where the billing rule permits only one applicable charge.
+Priority
+Must Have
+Example
+Laboratory order:
+LAB-ORD-192
+creates:
+CHG-501
+The integration request is accidentally retried.
+Weak result:
+CHG-501 → CBC → 1,200CHG-502 → CBC → 1,200
+Patient incorrectly owes:
+2,400
+Required Concept
+SOURCE EVENT      │      ▼HAS ELIGIBLE CHARGEALREADY BEEN CAPTURED?      │   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼REJECT / CREATEIDEMPOTENT RESPONSE
+Business Rule
+CS-BIL-BR-009
+Charge capture shall support appropriate duplicate prevention and integration idempotency.
+
+5.352 CHARGE QUANTITY
+CS-BIL-FR-020 — Record Charge Quantity
+The system shall record applicable charge quantity.
+Example:
+SERVICEHospital Bed DayQUANTITY3
+Another:
+MEDICATION PRODUCTProduct AQUANTITY20
+The applicable billing unit shall be defined by service configuration.
+
+5.353 CHARGE UNIT PRICE
+CS-BIL-FR-021 — Record Charge Unit Price
+The system shall record the applicable unit price used for a charge.
+Example:
+QUANTITY3UNIT PRICE5,000 PKR
+The charge shall preserve the applied price context.
+
+5.354 CHARGE GROSS AMOUNT
+CS-BIL-FR-022 — Calculate Charge Gross Amount
+The system shall calculate the gross charge amount according to approved financial calculation rules.
+Conceptually:
+GROSS AMOUNT      =QUANTITY      ×UNIT PRICE
+Example:
+3 × 5,000     │     ▼15,000 PKR
+Important Requirement
+Financial calculation shall use appropriate decimal monetary representation.
+The system shall not rely on binary floating-point values for authoritative monetary calculations where decimal precision is required.
+Conceptually in C#:
+decimal
+shall be evaluated for financial amounts rather than:
+float
+or careless use of:
+double
+The exact monetary precision strategy shall be defined during Data Architecture.
+
+5.355 CHARGE STATUS
+CS-BIL-FR-023 — Track Charge Status
+The system shall track the financial state of each charge.
+Conceptual State Model
+CAPTURED   │   ▼AVAILABLE_FOR_INVOICE   │   ▼INVOICED
+Alternative states may include:
+CANCELLED
+REVERSED
+ON_HOLD
+The final state vocabulary shall be defined during Billing Domain Architecture.
+
+5.356 CHARGE CANCELLATION
+CS-BIL-FR-024 — Cancel Eligible Charge
+The system shall allow an authorized user to cancel an eligible charge before prohibited downstream financial processing occurs.
+Example
+CHARGECAPTURED   │   ▼NOT YET INVOICED   │   ▼CANCELLATION MAY BE ELIGIBLE
+Compared with:
+CHARGE   │   ▼FINALIZED INVOICE   │   ▼PAID
+Ordinary charge cancellation may no longer be appropriate.
+Business Rules
+CS-BIL-BR-010
+Only eligible charges may be cancelled.
+CS-BIL-BR-011
+Charge cancellation shall maintain actor, time, and reason.
+
+5.357 CHARGE REVERSAL
+CS-BIL-FR-025 — Reverse Eligible Charge
+The system shall support controlled reversal of eligible financial charges.
+Weak Design
+DELETE FROM chargesWHERE id = 501;
+This destroys financial history.
+Stronger Concept
+ORIGINAL CHARGE+1,200
+Then:
+REVERSAL-1,200
+with:
+REVERSAL OFCHG-501
+Traceability
+ORIGINAL CHARGE       │       ▼REVERSAL EVENT       │       ├── Reason       ├── Actor       ├── Timestamp       └── Original Reference
+The final accounting representation shall be defined during Financial Architecture.
+
+5.358 INVOICE CREATION
+CS-BIL-FR-026 — Create Invoice
+Requirement Name
+Create Invoice
+Description
+The system shall allow an authorized user or approved automated workflow to create an invoice for eligible patient financial activity.
+Priority
+Must Have
+Conceptual Invoice
+INVOICE   │   ├── Invoice ID   ├── Patient Account   ├── Patient   ├── Encounter Context   ├── Invoice Date   ├── Subtotal   ├── Discount   ├── Other Approved Amounts   ├── Net Amount   ├── Paid Amount   ├── Outstanding Amount   └── Status
+Main Flow
+PATIENT ACCOUNT      │      ▼ELIGIBLE UNINVOICED CHARGES      │      ▼CREATE INVOICE      │      ▼ADD CHARGES      │      ▼CREATE INVOICE ITEMS      │      ▼CALCULATE SUBTOTAL      │      ▼APPLY APPROVED FINANCIAL RULES      │      ▼CALCULATE NET AMOUNT      │      ▼REVIEW      │      ▼FINALIZE
+
+CS-BIL-FR-027 — Generate Invoice Identifier
+The system shall generate a unique invoice identifier.
+Example:
+INV-00001092
+Invoice identifiers shall not be reused for unrelated invoices.
+
+5.359 ADD CHARGE TO INVOICE
+CS-BIL-FR-028 — Add Eligible Charge to Invoice
+The system shall allow eligible charges to be included in an applicable invoice.
+Validation May Include
+CHARGE EXISTS?PATIENT ACCOUNT MATCHES?CHARGE ELIGIBLE?CHARGE NOT CANCELLED?CHARGE NOT REVERSED?CHARGE NOT ALREADY INVOICED?INVOICE EDITABLE?
+Business Rule
+CS-BIL-BR-012
+A charge shall not be unintentionally invoiced more than once.
+
+5.360 INVOICE ITEM
+CS-BIL-FR-029 — Create Invoice Item
+Description
+The system shall create invoice items representing applicable financial lines included in an invoice.
+Priority
+Must Have
+Conceptual Model
+INVOICE   │   ▼INVOICE ITEM   │   ├── Description Context   ├── Charge Reference   ├── Quantity   ├── Unit Price   ├── Gross Amount   ├── Discount Context   └── Net Line Amount
+Relationship
+INVOICE   │   ├── Invoice Item 1   ├── Invoice Item 2   ├── Invoice Item 3   └── Invoice Item N
+Do not build:
+invoiceitem1price1item2price2item3price3
+This is not a scalable relational design.
+
+5.361 INVOICE SUBTOTAL
+CS-BIL-FR-030 — Calculate Invoice Subtotal
+The system shall calculate the invoice subtotal from eligible invoice items.
+Conceptually:
+ITEM 11,200
+ITEM 22,500
+ITEM 3500
+Calculation:
+1,2002,500  500─────4,200
+Therefore:
+INVOICE SUBTOTAL4,200 PKR
+The calculation shall be authoritative on the backend.
+React may display a preview but shall not be the sole financial calculation authority.
+
+5.362 DISCOUNT MANAGEMENT
+CS-BIL-FR-031 — Apply Authorized Discount
+The system shall allow authorized users or approved financial rules to apply eligible discounts.
+Priority
+Must Have
+Potential Discount Concepts
+FIXED AMOUNT
+Example:
+500 PKR
+or:
+PERCENTAGE
+Example:
+10%
+The final discount model shall be defined during Billing Domain Architecture.
+Critical Security Requirement
+A user shall not receive discount authority merely because React displays a discount input field.
+The ASP.NET Core authorization layer shall enforce discount permission.
+
+CS-BIL-FR-032 — Record Discount Reason
+The system shall record an approved reason for applicable manual discounts.
+Example:
+DISCOUNT REASONApproved Staff Benefit
+The final reason catalog shall be defined by hospital financial policy.
+
+CS-BIL-FR-033 — Record Discount Authorization
+The system shall identify the applicable actor or authorization context for an approved discount.
+Conceptual Traceability
+DISCOUNT2,000 PKR   │   ▼REASONApproved Financial Assistance   │   ▼AUTHORIZED BYUSER / APPROVAL CONTEXT   │   ▼AUTHORIZED ATTIMESTAMP
+Business Rule
+CS-BIL-BR-013
+Manual discounts above applicable authorization rules shall require approved authority.
+The detailed approval hierarchy shall be defined during Security and Financial Architecture.
+
+5.363 INVOICE NET AMOUNT
+CS-BIL-FR-034 — Calculate Invoice Net Amount
+The system shall calculate the applicable net invoice amount.
+Simplified conceptual model:
+SUBTOTAL    │    ▼10,000DISCOUNT    │    ▼1,000NET AMOUNT    │    ▼9,000
+Conceptually:
+NET AMOUNT     =SUBTOTAL     -ELIGIBLE DISCOUNTS     +APPLICABLE APPROVED AMOUNTS
+The final formula shall depend on tax, levy, payer, and financial policy architecture.
+
+5.364 INVOICE FINALIZATION
+CS-BIL-FR-035 — Finalize Invoice
+Requirement Name
+Finalize Invoice
+Description
+The system shall allow an authorized user or approved workflow to finalize an eligible invoice.
+Priority
+Must Have
+Preconditions
+Invoice exists.
+Patient financial context is valid.
+Invoice contains eligible items.
+Financial calculations are valid.
+Discount authorization requirements are satisfied.
+Invoice is in an eligible state.
+User or workflow is authorized.
+Main Flow
+DRAFT INVOICE      │      ▼VALIDATE PATIENT ACCOUNT      │      ▼VALIDATE INVOICE ITEMS      │      ▼VALIDATE CHARGES      │      ▼CALCULATE SUBTOTAL      │      ▼VALIDATE DISCOUNTS      │      ▼CALCULATE NET AMOUNT      │      ▼BEGIN TRANSACTION      │      ▼FINALIZE INVOICE      │      ▼MARK APPLICABLE CHARGESAS INVOICED      │      ▼COMMIT      │      ▼AUDIT EVENT
+Acceptance Criteria
+AC-001
+An authorized user shall be able to finalize an eligible invoice.
+AC-002
+An invoice without eligible items shall be rejected where empty invoices are prohibited.
+AC-003
+Invalid discounts shall prevent finalization.
+AC-004
+Final financial amounts shall be calculated by trusted backend logic.
+AC-005
+Applicable charges shall not be unintentionally finalized into multiple invoices.
+
+5.365 FINALIZED INVOICE IMMUTABILITY
+CS-BIL-FR-036 — Prevent Invalid Finalized Invoice Modification
+The system shall prevent unauthorized or uncontrolled modification of finalized invoice financial content.
+Weak Design
+UPDATE invoice_itemsSET amount = 100WHERE invoice_id = 1092;
+The invoice was previously:
+10,000 PKR
+Now it silently becomes:
+100 PKR
+No financial event explains the change.
+Required Principle
+DRAFT INVOICE      │      ▼EDITABLE
+Compared with:
+FINALIZED INVOICE      │      ▼CONTROLLED FINANCIAL CORRECTIONWORKFLOW REQUIRED
+Possible correction concepts include:
+cancellation where eligible;
+credit;
+reversal;
+adjustment.
+The exact accounting treatment shall be defined during Financial Architecture.
+
+5.366 VIEW INVOICE
+CS-BIL-FR-037 — View Invoice
+Authorized users shall be able to view eligible invoice information.
+Invoice View May Include
+CuraSphereInvoice IDPatientMRNAccount IDEncounterInvoice Date──────────────────────────────ServiceQuantityUnit PriceGross AmountDiscountNet Amount──────────────────────────────SubtotalDiscountNet AmountPaid AmountOutstanding BalanceInvoice Status
+The interface shall clearly distinguish:
+NET AMOUNT
+from:
+PAID AMOUNT
+and:
+OUTSTANDING BALANCE
+
+5.367 INVOICE STATUS
+CS-BIL-FR-038 — Track Invoice Status
+The system shall track invoice status.
+Conceptual State Model
+DRAFT  │  ▼FINALIZED  │  ├────────────► PARTIALLY_PAID  │                    │  │                    ▼  │                   PAID  │  ├────────────► PAID  │  ├────────────► CANCELLED  │  └────────────► CREDITED / REVERSED
+The final financial state machine shall be defined during Billing Domain Architecture.
+
+5.368 INVOICE CANCELLATION
+CS-BIL-FR-039 — Cancel Eligible Invoice
+The system shall allow authorized users to cancel eligible invoices according to approved financial workflow.
+Example
+DRAFT  │  ▼CANCEL
+may be straightforward.
+However:
+FINALIZED    │    ▼PAYMENT RECEIVED
+shall not normally use simple deletion or uncontrolled cancellation.
+Business Rules
+CS-BIL-BR-014
+Only eligible invoices may be cancelled.
+CS-BIL-BR-015
+Invoice cancellation shall record actor, time, and reason.
+
+5.369 INVOICE CREDIT OR REVERSAL
+CS-BIL-FR-040 — Create Invoice Credit or Reversal Workflow
+The system shall support controlled financial correction for eligible finalized invoices.
+Conceptual Model
+ORIGINAL INVOICE+10,000
+Correction:
+CREDIT / REVERSAL-2,000
+Resulting financial effect:
+8,000
+Important Principle
+The system shall preserve:
+ORIGINAL FINANCIAL RECORD
+and:
+CORRECTIVE FINANCIAL EVENT
+instead of silently rewriting history.
+The exact credit note architecture shall be documented during Financial Detailed Design.
+
+5.370 PAYMENT RECORDING
+CS-BIL-FR-041 — Record Payment
+Requirement Name
+Record Payment
+Description
+The system shall allow an authorized cashier or approved payment workflow to record an eligible payment.
+Priority
+Must Have
+Conceptual Payment
+PAYMENT   │   ├── Payment ID   ├── Patient Account   ├── Payer Context   ├── Payment Amount   ├── Payment Method   ├── Payment Reference   ├── Received By   ├── Received At   └── Payment Status
+Main Flow
+PATIENT ACCOUNT      │      ▼VIEW FINANCIAL OBLIGATION      │      ▼ENTER PAYMENT AMOUNT      │      ▼SELECT PAYMENT METHOD      │      ▼ENTER APPLICABLE REFERENCE      │      ▼VALIDATE PAYMENT      │      ▼CREATE PAYMENT      │      ▼ALLOCATE PAYMENT      │      ▼COMPLETE PAYMENT      │      ▼GENERATE RECEIPT
+
+CS-BIL-FR-042 — Generate Payment Identifier
+The system shall generate a unique payment identifier.
+Example:
+PAY-00000821
+Payment identifiers shall not be reused.
+
+5.371 PAYMENT METHOD
+CS-BIL-FR-043 — Record Payment Method
+The system shall record the applicable payment method.
+Conceptual Methods May Include
+CASHCARDBANK TRANSFERDIGITAL PAYMENTOTHER APPROVED METHOD
+The exact payment method catalog shall be configurable according to approved hospital policy.
+Important Principle
+Do not repeatedly hardcode:
+const methods = [  "Cash",  "Card",  "Bank"];
+across React pages.
+Payment methods shall be managed through an appropriate controlled configuration strategy.
+
+5.372 PAYMENT AMOUNT
+CS-BIL-FR-044 — Record Payment Amount
+The system shall record the actual amount received.
+Example:
+INVOICE NET AMOUNT10,000
+Patient pays:
+4,000
+The payment amount is:
+4,000
+The system shall not automatically record:
+10,000
+merely because that is the invoice amount.
+
+5.373 PAYMENT VALIDATION
+CS-BIL-FR-045 — Validate Payment Amount
+The system shall validate payment amounts according to approved financial rules.
+Validation May Include
+AMOUNT > 0?CURRENCY VALID?PAYMENT METHOD VALID?ACCOUNT VALID?INVOICE ELIGIBLE?ALLOCATION VALID?USER AUTHORIZED?
+Business Rule
+CS-BIL-BR-016
+A completed payment shall have a valid positive monetary amount unless a separately defined financial event type permits another representation.
+
+5.374 PAYMENT ALLOCATION
+CS-BIL-FR-046 — Allocate Payment
+Description
+The system shall allocate an eligible payment amount to applicable financial obligations.
+Priority
+Must Have
+Critical Architecture Concept
+A payment is not automatically the same as an invoice.
+Example:
+INVOICEINV-1092NET AMOUNT10,000
+Payment:
+PAY-8214,000
+Allocation:
+PAYMENT ALLOCATIONPAY-821    │    ▼INV-10924,000
+Conceptually:
+PAYMENT   │   ▼PAYMENT ALLOCATION   │   ▼INVOICE
+Why Separate Allocation?
+Future workflow may support:
+ONE PAYMENT    │    ├── Invoice A → 5,000    └── Invoice B → 3,000
+or:
+ONE INVOICE    │    ├── Payment A → 4,000    ├── Payment B → 3,000    └── Payment C → 3,000
+Therefore:
+PAYMENT ≠ INVOICE
+and:
+PAYMENT ALLOCATION
+is an important financial concept.
+
+5.375 PARTIAL PAYMENT
+CS-BIL-FR-047 — Support Partial Payment
+The system shall support partial payment of eligible invoices.
+Example
+INVOICE10,000
+First payment:
+4,000
+Result:
+PAID4,000
+OUTSTANDING6,000
+Status:
+PARTIALLY_PAID
+Second payment:
+6,000
+Result:
+PAID10,000
+OUTSTANDING0
+Status:
+PAID
+Important Principle
+Do not use:
+paid = true
+as the complete invoice payment model.
+A Boolean cannot represent:
+UNPAIDPARTIALLY PAIDFULLY PAID
+
+5.376 MULTI-INVOICE PAYMENT ALLOCATION
+CS-BIL-FR-048 — Support Multi-Invoice Payment Allocation
+The system should support allocating an eligible payment across multiple invoices.
+Priority
+Should Have
+Example
+Payment:
+PAY-90010,000 PKR
+Allocations:
+INV-1006,000
+INV-1014,000
+Conceptually:
+PAY-900   │   ├── ALLOCATION 1 → INV-100 → 6,000   └── ALLOCATION 2 → INV-101 → 4,000
+The final allocation rules shall be defined during Financial Architecture.
+
+5.377 OUTSTANDING BALANCE CALCULATION
+CS-BIL-FR-049 — Calculate Outstanding Balance
+The system shall calculate or derive the applicable outstanding financial balance.
+Simplified invoice concept:
+NET INVOICE AMOUNT10,000
+Valid payment allocations:
+4,000
+Outstanding:
+6,000
+Conceptually:
+OUTSTANDING BALANCE        =NET FINANCIAL OBLIGATION        -VALID PAYMENT ALLOCATIONS        -ELIGIBLE CREDITS        +APPLICABLE ADJUSTMENTS
+The final financial calculation model shall be defined during Financial Architecture.
+Important Requirement
+Refunds and payment reversals may affect the financial state.
+Therefore, the developer shall not assume:
+outstanding = invoice.total - payment.total
+is universally sufficient.
+
+5.378 PREVENT PAYMENT OVER-ALLOCATION
+CS-BIL-FR-050 — Prevent Invalid Over-Allocation
+The system shall prevent allocating more payment value than permitted by approved financial rules.
+Example
+Payment amount:
+5,000
+Allocation 1:
+3,000
+Remaining unallocated:
+2,000
+New allocation request:
+4,000
+Validation:
+4,000 > 2,000       │       ▼REJECT
+Business Rule
+CS-BIL-BR-017
+Total valid payment allocations shall not exceed the applicable payment amount.
+
+5.379 COMPLETE PAYMENT
+CS-BIL-FR-051 — Complete Payment
+The system shall allow an authorized user to complete an eligible payment transaction.
+Preconditions
+Patient financial context exists.
+Payment amount is valid.
+Payment method is valid.
+Required payment reference information is available.
+Allocation is valid.
+User is authorized.
+Main Flow
+PAYMENT DRAFT      │      ▼VALIDATE ACCOUNT      │      ▼VALIDATE AMOUNT      │      ▼VALIDATE METHOD      │      ▼VALIDATE ALLOCATION      │      ▼BEGIN TRANSACTION      │      ▼COMPLETE PAYMENT      │      ▼COMPLETE ALLOCATION      │      ▼UPDATE FINANCIAL PROJECTION      │      ▼GENERATE RECEIPT RECORD      │      ▼COMMIT      │      ▼AUDIT EVENT
+Transaction Requirement
+Payment completion and applicable allocation shall use an appropriate transactional consistency boundary.
+Weak workflow:
+SAVE PAYMENT
+Server fails before:
+SAVE ALLOCATION
+Result:
+PAYMENT EXISTSBUTNO INVOICE WAS PAID
+Another weak sequence:
+MARK INVOICE PAID
+Then payment creation fails.
+Result:
+INVOICE PAIDBUTNO PAYMENT EXISTS
+The architecture shall prevent inconsistent partial financial completion where possible.
+
+5.380 RECEIPT GENERATION
+CS-BIL-FR-052 — Generate Receipt
+Requirement Name
+Generate Receipt
+Description
+The system shall generate a receipt record for an eligible completed payment.
+Priority
+Must Have
+Conceptual Relationship
+PAYMENT   │   ▼RECEIPT
+Receipt Information May Include
+CURASPHEREReceipt IDPayment IDPatientMRNAccount IDPayment DatePayment MethodPayment AmountApplicable Invoice ReferencesReceived By
+Important Principle
+The receipt acknowledges payment.
+The receipt is not the payment transaction itself.
+PAYMENT   ≠RECEIPT
+
+CS-BIL-FR-053 — Generate Receipt Identifier
+The system shall generate a unique receipt identifier.
+Example:
+RCT-00000981
+Receipt identifiers shall not be reused for unrelated receipts.
+
+CS-BIL-FR-054 — View Receipt
+Authorized users shall be able to view eligible receipt information.
+Patient identity and payment context shall be clearly visible.
+
+CS-BIL-FR-055 — Reprint Eligible Receipt
+The system shall allow authorized users to reproduce an eligible receipt representation.
+Important Requirement
+A reprinted receipt shall not create a second payment.
+Conceptually:
+ORIGINAL PAYMENTPAY-821
+Original receipt:
+RCT-981
+Reprint:
+RCT-981REPRINTED COPY
+Not:
+NEW PAYMENTPAY-822
+Business Rule
+CS-BIL-BR-018
+Receipt reproduction shall not duplicate the underlying payment transaction.
+
+5.381 PAYMENT REVERSAL
+CS-BIL-FR-056 — Reverse Eligible Payment
+Description
+The system shall allow authorized users to reverse an eligible payment according to approved financial policy.
+Priority
+Must Have
+Weak Design
+DELETE FROM paymentsWHERE payment_id = 'PAY-821';
+This destroys the financial trail.
+Required Concept
+ORIGINAL PAYMENT+4,000
+Then:
+PAYMENT REVERSAL-4,000 FINANCIAL EFFECT
+with:
+REVERSAL OFPAY-821
+Conceptual Workflow
+COMPLETED PAYMENT       │       ▼REVERSAL REQUEST       │       ▼VALIDATE ELIGIBILITY       │       ▼RECORD REASON       │       ▼VALIDATE AUTHORITY       │       ▼BEGIN TRANSACTION       │       ▼CREATE REVERSAL       │       ▼REVERSE ALLOCATION EFFECT       │       ▼UPDATE FINANCIAL PROJECTION       │       ▼COMMIT       │       ▼AUDIT EVENT
+
+CS-BIL-FR-057 — Record Payment Reversal Reason
+The system shall record the approved reason for payment reversal.
+Potential reasons may include:
+duplicate payment;
+incorrect amount;
+failed external settlement;
+incorrect patient account;
+authorized cashier correction;
+other approved financial reason.
+The final reversal reason catalog shall be controlled by financial governance.
+
+CS-BIL-FR-058 — Reverse Payment Allocation
+The system shall reverse applicable payment allocation effects when an eligible payment is reversed.
+Example:
+Original:
+INVOICE10,000
+Payment allocation:
+4,000
+Outstanding:
+6,000
+Payment reversed:
+-4,000 PAYMENT EFFECT
+The invoice financial projection may return to:
+OUTSTANDING10,000
+depending on applicable credits and adjustments.
+Business Rule
+CS-BIL-BR-019
+Payment reversal shall maintain consistency between payment and allocation financial effects.
+
+5.382 REFUND MANAGEMENT
+CS-BIL-FR-059 — Create Refund
+Requirement Name
+Create Refund
+Description
+The system shall allow an authorized user to create an eligible refund transaction.
+Priority
+Must Have
+Critical Distinction
+PAYMENT REVERSAL
+and:
+REFUND
+shall not automatically be treated as identical.
+Conceptually:
+PAYMENT REVERSAL"The original payment transactionis being financially reversedaccording to approved workflow."
+Compared with:
+REFUND"Eligible money is being returnedto a payer."
+The final accounting distinction shall be approved during Financial Architecture.
+Refund Model
+REFUND   │   ├── Refund ID   ├── Patient Account   ├── Original Financial Reference   ├── Refund Amount   ├── Refund Method   ├── Refund Reason   ├── Authorized By   ├── Processed By   ├── Refunded At   └── Status
+
+CS-BIL-FR-060 — Validate Refund Eligibility
+The system shall validate refund eligibility.
+Validation May Include
+ORIGINAL PAYMENT EXISTS?PAYMENT COMPLETED?PAYMENT NOT INVALIDATED?REFUNDABLE AMOUNT EXISTS?PREVIOUS REFUNDS CONSIDERED?REFUND AMOUNT VALID?USER AUTHORIZED?APPROVAL REQUIREMENT SATISFIED?
+Example
+Payment:
+10,000
+Previous refund:
+3,000
+Remaining potentially refundable context:
+7,000
+New refund request:
+8,000
+Validation:
+8,000 > 7,000       │       ▼REJECT
+
+CS-BIL-FR-061 — Record Refund Amount
+The system shall record the actual amount refunded.
+The refund amount shall use approved monetary precision.
+
+CS-BIL-FR-062 — Record Refund Method
+The system shall record the applicable refund method.
+Potential methods may include:
+CASHBANK TRANSFERCARD REVERSALDIGITAL PAYMENT REVERSALOTHER APPROVED METHOD
+The exact methods shall depend on financial and payment integration policy.
+
+CS-BIL-FR-063 — Complete Refund
+The system shall allow an authorized user to complete an eligible refund.
+Main Flow
+REFUND DRAFT     │     ▼VALIDATE ORIGINAL FINANCIAL EVENT     │     ▼CALCULATE REFUNDABLE CONTEXT     │     ▼VALIDATE AMOUNT     │     ▼VALIDATE AUTHORIZATION     │     ▼VALIDATE REFUND METHOD     │     ▼BEGIN TRANSACTION     │     ▼COMPLETE REFUND     │     ▼UPDATE FINANCIAL PROJECTION     │     ▼COMMIT     │     ▼AUDIT EVENT
+Business Rule
+CS-BIL-BR-020
+Completed refunds shall maintain original financial reference and actor traceability.
+
+5.383 FINANCIAL ADJUSTMENT
+CS-BIL-FR-064 — Record Financial Adjustment
+The system shall support controlled financial adjustments according to approved hospital policy.
+Potential Adjustment Concepts
+DEBIT ADJUSTMENT
+or:
+CREDIT ADJUSTMENT
+The exact accounting vocabulary shall be approved during Financial Architecture.
+Weak Design
+patient.balance = 0;
+This removes the financial obligation without explanation.
+Required Concept
+FINANCIAL ADJUSTMENT        │        ├── Adjustment ID        ├── Account        ├── Amount        ├── Direction / Type        ├── Reason        ├── Authorization        ├── Actor        └── Timestamp
+
+CS-BIL-FR-065 — Record Adjustment Reason
+Each applicable financial adjustment shall record an approved reason.
+The reason shall be sufficiently meaningful for financial review.
+Weak reason:
+Changed
+Stronger reason context:
+Approved billing correction followingduplicate room charge investigation.
+
+CS-BIL-FR-066 — Record Adjustment Authorization
+The system shall record applicable authorization for controlled financial adjustments.
+Conceptual Model
+ADJUSTMENT REQUEST       │       ▼AUTHORIZATION REQUIRED?       │   ┌───┴───┐   │       │  YES      NO   │       │   ▼       ▼APPROVAL  PROCESS   │   ▼PROCESS
+The final approval hierarchy shall be defined during Security and Financial Architecture.
+
+5.384 PATIENT OUTSTANDING BALANCE
+CS-BIL-FR-067 — View Patient Outstanding Balance
+Authorized users shall be able to view the patient’s eligible outstanding financial balance.
+Conceptual View
+PATIENTAhmad KhanMRNMRN-000102────────────────────────────TOTAL FINANCIAL OBLIGATION45,000 PKRVALID PAYMENTS30,000 PKRELIGIBLE CREDITS2,000 PKRAPPLICABLE ADJUSTMENTS0 PKROUTSTANDING BALANCE13,000 PKR
+Important Principle
+The displayed balance shall be based on trusted financial logic.
+React shall not calculate the authoritative patient balance by downloading every transaction and performing uncontrolled browser-side arithmetic.
+
+5.385 PATIENT FINANCIAL HISTORY
+CS-BIL-FR-068 — View Patient Financial History
+The system shall allow authorized users to view eligible patient financial history.
+Conceptual Timeline
+PATIENT FINANCIAL HISTORY14 JUL 2026CHARGECBC+1,20014 JUL 2026CHARGEChest X-Ray+2,50014 JUL 2026INVOICEINV-10923,70014 JUL 2026PAYMENTPAY-8213,00014 JUL 2026RECEIPTRCT-98115 JUL 2026PAYMENTPAY-830700
+The history shall distinguish:
+CHARGEINVOICEPAYMENTALLOCATIONREFUNDREVERSALADJUSTMENT
+These financial events shall not be collapsed into one ambiguous “transaction” description without type context.
+
+5.386 SEARCH CHARGES
+CS-BIL-FR-069 — Search Charges
+Authorized users shall be able to search eligible charges.
+Search criteria may include:
+charge identifier;
+MRN;
+patient;
+account identifier;
+encounter;
+service;
+source domain;
+source event identifier;
+charge date;
+charge status.
+
+5.387 SEARCH INVOICES
+CS-BIL-FR-070 — Search Invoices
+Authorized users shall be able to search eligible invoices.
+Search criteria may include:
+INVOICE IDMRNPATIENTACCOUNT IDENCOUNTERINVOICE DATESTATUSOUTSTANDING STATUS
+
+5.388 SEARCH PAYMENTS
+CS-BIL-FR-071 — Search Payments
+Authorized users shall be able to search eligible payments.
+Search criteria may include:
+payment identifier;
+MRN;
+patient;
+account;
+payment date;
+payment method;
+payment reference;
+cashier;
+payment status.
+
+5.389 SEARCH RECEIPTS
+CS-BIL-FR-072 — Search Receipts
+Authorized users shall be able to search eligible receipts.
+Search criteria may include:
+RECEIPT IDPAYMENT IDMRNPATIENTPAYMENT DATERECEIVED BY
+
+5.390 SEARCH REFUNDS
+CS-BIL-FR-073 — Search Refunds
+Authorized users shall be able to search eligible refund records.
+Search criteria may include:
+refund identifier;
+patient;
+MRN;
+payment reference;
+refund date;
+refund method;
+refund status;
+processing user.
+
+5.391 BILLING AUDIT EVENTS
+CS-BIL-FR-074 — Record Billing Audit Events
+The system shall record appropriate audit events for significant financial operations.
+Events May Include
+CHARGEABLE_SERVICE_CREATEDCHARGEABLE_SERVICE_UPDATEDCHARGEABLE_SERVICE_DEACTIVATEDSERVICE_PRICE_CREATEDSERVICE_PRICE_UPDATEDPATIENT_ACCOUNT_CREATEDCHARGE_CAPTUREDCHARGE_CANCELLEDCHARGE_REVERSEDINVOICE_CREATEDINVOICE_ITEM_ADDEDDISCOUNT_APPLIEDDISCOUNT_AUTHORIZEDINVOICE_FINALIZEDINVOICE_CANCELLEDINVOICE_CREDIT_CREATEDPAYMENT_CREATEDPAYMENT_COMPLETEDPAYMENT_ALLOCATEDPAYMENT_REVERSEDPAYMENT_ALLOCATION_REVERSEDRECEIPT_GENERATEDRECEIPT_REPRINTEDREFUND_CREATEDREFUND_COMPLETEDFINANCIAL_ADJUSTMENT_CREATEDFINANCIAL_ADJUSTMENT_AUTHORIZED
+Example
+EVENTPAYMENT_COMPLETEDTARGETPAY-821PATIENTMRN-000102ACCOUNTACC-192AMOUNT4,000 PKRACTORUSR-CASH-020TIME2026-07-14 17:10RESULTSUCCESS
+Audit Requirement
+Financial audit events shall maintain sufficient traceability without storing sensitive payment information unnecessarily.
+
+5.392 BILLING STATE TRANSITION VALIDATION
+CS-BIL-FR-075 — Prevent Invalid Billing State Transition
+The system shall enforce approved billing workflow state transitions.
+Invoice Example
+Valid:
+DRAFT  │  ▼FINALIZED  │  ▼PARTIALLY_PAID  │  ▼PAID
+Invalid:
+DRAFT  │  ▼PAID
+without an applicable finalized financial obligation and valid payment workflow.
+Another invalid transition:
+CANCELLED   │   ▼PAID
+through ordinary payment processing.
+Payment Example
+Valid:
+DRAFT  │  ▼COMPLETED  │  ▼REVERSED
+Invalid:
+REVERSED   │   ▼COMPLETED
+by directly changing the status field.
+Business Rules
+CS-BIL-BR-021
+Billing states shall follow approved transitions.
+CS-BIL-BR-022
+The ASP.NET Core backend shall reject invalid state transition requests.
+CS-BIL-BR-023
+React shall not be the authoritative billing workflow state engine.
+
+5.393 TAX AND LEVY CONFIGURATION ARCHITECTURE
+CS-BIL-FR-076 — Support Tax and Levy Configuration Architecture
+The CuraSphere architecture should permit approved tax, levy, or additional financial amount configuration where required.
+Priority
+Should Have
+Conceptual Architecture
+FINANCIAL CALCULATION        │        ▼TAX / LEVY POLICY CONTRACT        │        ▼APPROVED CONFIGURATION        │        ▼CALCULATED FINANCIAL EFFECT
+Scope Statement
+This SRS does not define:
+Pakistani tax rules;
+provincial tax requirements;
+healthcare tax exemptions;
+government levy requirements.
+These shall require legal and financial governance review.
+Developers shall not invent tax rules.
+Weak design:
+var tax = total * 0.17m;
+because:
+“17% seems common.”
+This is not acceptable financial governance.
+
+5.394 INSURANCE AND THIRD-PARTY PAYER ARCHITECTURE
+CS-BIL-FR-077 — Support Insurance and Third-Party Payer Architecture
+The system should permit future integration with insurance and third-party payer workflows.
+Priority
+Should Have
+Future Concept
+PATIENT FINANCIAL OBLIGATION            │            ▼        PAYER CONTEXT            │       ┌────┴────┐       │         │       ▼         ▼    PATIENT    THIRD PARTY       │         │       ▼         ▼PATIENT SHARE  PAYER SHARE
+Potential future concepts include:
+insurance policy;
+payer;
+coverage;
+benefit eligibility;
+preauthorization;
+claim;
+claim item;
+claim submission;
+claim adjudication;
+approved amount;
+denied amount;
+patient responsibility.
+Scope Statement
+Detailed insurance requirements shall be documented in a separate Insurance and Claims SRS section.
+The Billing module shall not assume:
+PATIENT = ONLY PAYER
+as a permanent architecture constraint.
+
+5.395 DIGITAL PAYMENT INTEGRATION ARCHITECTURE
+CS-BIL-FR-078 — Support Digital Payment Integration Architecture
+The CuraSphere architecture should permit integration with approved digital payment services.
+Priority
+Should Have
+Conceptual Architecture
+CURASPHERE     │     ▼PAYMENT APPLICATION SERVICE     │     ▼PAYMENT PROVIDER CONTRACT     │     ▼PAYMENT PROVIDER ADAPTER     │     ▼APPROVED PAYMENT PROVIDER
+Potential Flow
+CREATE PAYMENT INTENT       │       ▼SEND TO PAYMENT PROVIDER       │       ▼PROVIDER PROCESSING       │       ▼CALLBACK / STATUS QUERY       │       ▼VERIFY PROVIDER RESPONSE       │       ▼COMPLETE OR FAIL PAYMENT
+Critical Security Principle
+The React frontend shall not determine:
+payment.status = "PAID"
+based only on:
+"Payment Successful"
+displayed by a browser.
+The backend shall verify the applicable provider transaction according to approved integration rules.
+Scope Statement
+No payment provider has been selected by this SRS.
+
+5.396 FINANCIAL POSTING INTEGRATION ARCHITECTURE
+CS-BIL-FR-079 — Support Financial Posting Integration Architecture
+The system should permit future integration with an approved accounting or enterprise financial system.
+Priority
+Should Have
+Conceptual Architecture
+CURASPHERE BILLING        │        ▼FINANCIAL POSTING CONTRACT        │        ▼POSTING ADAPTER        │        ▼ACCOUNTING / ERP SYSTEM
+Potential posting events may include:
+INVOICE FINALIZEDPAYMENT COMPLETEDPAYMENT REVERSEDREFUND COMPLETEDFINANCIAL ADJUSTMENT COMPLETED
+Important Architecture Principle
+CuraSphere patient billing records and general accounting ledger records shall not automatically be treated as the same domain model.
+Conceptually:
+PATIENT BILLING SUBLEDGER            │            ▼FINANCIAL POSTING            │            ▼GENERAL ACCOUNTING SYSTEM
+The detailed general ledger integration architecture shall be documented separately.
+
+5.397 FINANCIAL REPORTING READ MODELS
+CS-BIL-FR-080 — Support Financial Reporting Read Models
+The system shall support authorized financial reporting read models derived from trusted financial data.
+Priority
+Must Have
+Potential read models may include:
+DAILY COLLECTION SUMMARYOUTSTANDING BALANCE SUMMARYPAYMENT METHOD SUMMARYCASHIER COLLECTION SUMMARYREFUND SUMMARYDISCOUNT SUMMARYCHARGE SUMMARYSERVICE REVENUE SUMMARY
+Important Principle
+Operational transaction tables shall not automatically be used directly for every complex dashboard query.
+Conceptually:
+FINANCIAL TRANSACTION DATA           │           ▼REPORTING PROJECTION / READ MODEL           │           ▼FINANCIAL DASHBOARD
+The detailed reporting architecture shall be defined during System Architecture.
+
+5.398 BILLING ENTITY RELATIONSHIP CONCEPT
+The following is a conceptual domain relationship.
+It is not the final PostgreSQL ERD.
+                         PATIENT                            │                            ▼                  PATIENT FINANCIAL ACCOUNT                            │                ┌───────────┼────────────┐                │           │            │                ▼           ▼            ▼             CHARGE       INVOICE      PAYMENT                │           │            │                │           ▼            ▼                │      INVOICE ITEM  PAYMENT ALLOCATION                │           │            │                └───────────┘            │                                         ▼                                      INVOICE
+Additional relationships:
+PAYMENT   │   ├── RECEIPT   ├── PAYMENT REVERSAL   └── REFUND CONTEXT
+And:
+PATIENT FINANCIAL ACCOUNT          │          ▼FINANCIAL ADJUSTMENT
+
+5.399 CHARGE SOURCE RELATIONSHIP MODEL
+CLINICAL / OPERATIONAL EVENT             │             ▼          CHARGE
+Examples:
+OPD ENCOUNTER      │      ▼CONSULTATION CHARGE
+LAB ORDER      │      ▼LABORATORY CHARGE
+RADIOLOGY ORDER      │      ▼IMAGING CHARGE
+PHARMACY DISPENSING      │      ▼MEDICATION CHARGE
+IPD STAY EVENT      │      ▼ROOM / BED CHARGE
+The final event integration strategy shall be defined during Integration Architecture.
+
+5.400 INVOICE RELATIONSHIP MODEL
+PATIENT FINANCIAL ACCOUNT           │           ▼         INVOICE           │           ▼      INVOICE ITEMS           │           ▼         CHARGES
+Conceptually:
+ONE INVOICE     │     ▼ONE OR MORE INVOICE ITEMS
+Each invoice item may maintain an applicable relationship to a source charge.
+This prevents:
+invoiceservice1amount1service2amount2service3amount3
+
+5.401 PAYMENT ALLOCATION RELATIONSHIP MODEL
+PAYMENT   │   ▼PAYMENT ALLOCATION   │   ▼INVOICE
+The architecture shall support:
+ONE PAYMENT    │    ▼MULTIPLE ALLOCATIONS
+and potentially:
+ONE INVOICE    │    ▼MULTIPLE PAYMENT ALLOCATIONS
+Example:
+INV-10010,000   │   ├── PAY-001 → 4,000   ├── PAY-002 → 3,000   └── PAY-003 → 3,000
+Therefore:
+INVOICE ≠ PAYMENT
+
+5.402 FINANCIAL CORRECTION MODEL
+CuraSphere shall favor traceable corrective financial events.
+Weak architecture:
+WRONG VALUE    │    ▼EDIT DATABASE ROW    │    ▼HISTORY DISAPPEARS
+Required conceptual architecture:
+ORIGINAL FINANCIAL EVENT           │           ▼CORRECTION REQUIRED           │           ▼AUTHORIZED CORRECTIVE EVENT           │      ┌────┼────────┐      │    │        │      ▼    ▼        ▼ REVERSAL CREDIT ADJUSTMENT      │    │        │      └────┼────────┘           ▼UPDATED FINANCIAL POSITION           │           ▼FULL TRACEABILITY
+
+5.403 COMPLETE BILLING WORKFLOW MODEL
+                   CLINICAL / OPERATIONAL MODULE                               │                               ▼                         SOURCE EVENT                               │                               ▼                      BILLING ELIGIBILITY                               │                               ▼                    RESOLVE CHARGEABLE SERVICE                               │                               ▼                     RESOLVE APPLICABLE PRICE                               │                               ▼                        CAPTURE CHARGE                               │                               ▼                  PATIENT FINANCIAL ACCOUNT                               │                               ▼                    SELECT ELIGIBLE CHARGES                               │                               ▼                        CREATE INVOICE                               │                               ▼                    CREATE INVOICE ITEMS                               │                               ▼                    CALCULATE SUBTOTAL                               │                               ▼                   APPLY APPROVED DISCOUNT                               │                               ▼                   CALCULATE NET AMOUNT                               │                               ▼                       FINALIZE INVOICE                               │                               ▼                       PAYMENT REQUIRED                               │                               ▼                        RECORD PAYMENT                               │                               ▼                       VALIDATE PAYMENT                               │                               ▼                      ALLOCATE PAYMENT                               │                     ┌─────────┴─────────┐                     │                   │                     ▼                   ▼               PARTIAL PAYMENT       FULL PAYMENT                     │                   │                     ▼                   ▼              OUTSTANDING BALANCE       PAID                     │                   │                     └─────────┬─────────┘                               ▼                         GENERATE RECEIPT                               │                               ▼                    PATIENT FINANCIAL HISTORY
+Correction workflow:
+FINANCIAL EVENT      │      ▼CORRECTION REQUIRED?      │   ┌──┴──┐   │     │  NO    YES   │     │   ▼     ▼END   AUTHORIZATION          │          ▼   SELECT CORRECTION TYPE          │    ┌─────┼─────────┐    │     │         │    ▼     ▼         ▼REVERSAL REFUND  ADJUSTMENT    │     │         │    └─────┼─────────┘          ▼ UPDATE FINANCIAL POSITION          │          ▼       AUDIT EVENT
+
+5.404 BILLING SEQUENCE MODEL
+CLINICAL   BILLING API   DATABASE   CASHIER   PAYMENT   REPORTING MODULE                                │       PROVIDER   │            │            │         │          │         │   │ Event      │            │         │          │         │   ├───────────►│            │         │          │         │   │            │ Validate   │         │          │         │   │            │ Charge     │         │          │         │   │            ├───────────►│         │          │         │   │            │            │         │          │         │   │            │ Create     │         │          │         │   │            │ Charge     │         │          │         │   │            ├───────────►│         │          │         │   │            │            │         │          │         │   │            │◄─────────────────────┤ Open Account       │   │            │            │         │          │         │   │            │ Create Invoice       │          │         │   │            ├───────────►│         │          │         │   │            │            │         │          │         │   │            │◄─────────────────────┤ Payment            │   │            │            │         │          │         │   │            │ Validate Payment     │          │         │   │            │            │         │          │         │   │            │────────────────────────────────►│         │   │            │            │         │          │         │   │            │◄────────────────────────────────│         │   │            │            │         │          │         │   │            │ Complete Payment     │          │         │   │            ├───────────►│         │          │         │   │            │            │         │          │         │   │            │ Financial Projection                     │   │            ├─────────────────────────────────────────►│
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.405 BILLING STATE MODELS
+Charge State
+CAPTURED   │   ▼AVAILABLE_FOR_INVOICE   │   ▼INVOICED
+Alternative paths:
+CAPTURED   │   ├────────► CANCELLED   │   └────────► REVERSED
+
+Invoice State
+DRAFT  │  ▼FINALIZED  │  ├────────────► UNPAID  │                  │  │                  ▼  │            PARTIALLY_PAID  │                  │  │                  ▼  │                 PAID  │  ├────────────► PAID  │  ├────────────► CANCELLED  │  └────────────► CREDITED / REVERSED
+
+Payment State
+DRAFT  │  ▼PENDING  │  ▼COMPLETED  │  └────────────► REVERSED
+Potential external payment path:
+PENDING  │  ├────────► COMPLETED  │  ├────────► FAILED  │  └────────► EXPIRED
+
+Refund State
+DRAFT  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼PROCESSING  │  ├────────► FAILED  │  ▼COMPLETED
+The exact state models shall be finalized during Billing Domain Architecture.
+
+5.406 BILLING BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-BIL-BR-001
+Each chargeable service shall have a unique identity
+CS-BIL-BR-002
+Service codes shall be unique within applicable scope
+CS-BIL-BR-003
+Only eligible active services shall normally generate charges
+CS-BIL-BR-004
+Applicable service price shall follow approved pricing rules
+CS-BIL-BR-005
+Future price changes shall not rewrite historical financial values
+CS-BIL-BR-006
+Patient-specific financial accounts shall reference eligible patients
+CS-BIL-BR-007
+Charges shall maintain applicable patient financial context
+CS-BIL-BR-008
+Source-generated charges shall maintain source event traceability
+CS-BIL-BR-009
+Charge capture shall prevent unintended duplicate charges
+CS-BIL-BR-010
+Only eligible charges may be cancelled
+CS-BIL-BR-011
+Charge cancellation shall maintain reason and provenance
+CS-BIL-BR-012
+Charges shall not be unintentionally invoiced more than once
+CS-BIL-BR-013
+Manual discounts shall follow approved authorization rules
+CS-BIL-BR-014
+Only eligible invoices may be cancelled
+CS-BIL-BR-015
+Invoice cancellation shall maintain reason and provenance
+CS-BIL-BR-016
+Completed payments shall contain valid monetary amounts
+CS-BIL-BR-017
+Payment allocations shall not exceed applicable payment value
+CS-BIL-BR-018
+Receipt reproduction shall not duplicate payment
+CS-BIL-BR-019
+Payment reversal shall preserve payment-allocation consistency
+CS-BIL-BR-020
+Refunds shall maintain original financial reference and provenance
+CS-BIL-BR-021
+Billing states shall follow approved transitions
+CS-BIL-BR-022
+Backend shall reject invalid billing state transitions
+CS-BIL-BR-023
+React shall not be the authoritative billing state engine
+
+5.407 BILLING PERMISSION CONCEPT
+Potential billing permissions include:
+BIL_SERVICE_VIEWBIL_SERVICE_CREATEBIL_SERVICE_UPDATEBIL_SERVICE_ACTIVATEBIL_PRICE_VIEWBIL_PRICE_CREATEBIL_PRICE_UPDATEBIL_ACCOUNT_VIEWBIL_CHARGE_VIEWBIL_CHARGE_CREATEBIL_CHARGE_CANCELBIL_CHARGE_REVERSEBIL_INVOICE_VIEWBIL_INVOICE_CREATEBIL_INVOICE_UPDATEBIL_INVOICE_FINALIZEBIL_INVOICE_CANCELBIL_INVOICE_CREDITBIL_DISCOUNT_APPLYBIL_DISCOUNT_AUTHORIZEBIL_PAYMENT_VIEWBIL_PAYMENT_CREATEBIL_PAYMENT_COMPLETEBIL_PAYMENT_REVERSEBIL_RECEIPT_VIEWBIL_RECEIPT_REPRINTBIL_REFUND_VIEWBIL_REFUND_CREATEBIL_REFUND_APPROVEBIL_REFUND_COMPLETEBIL_ADJUSTMENT_VIEWBIL_ADJUSTMENT_CREATEBIL_ADJUSTMENT_AUTHORIZEBIL_FINANCIAL_HISTORY_VIEWBIL_REPORT_VIEW
+Example Cashier Concept
+CASHIER   │   ├── BIL_ACCOUNT_VIEW   ├── BIL_INVOICE_VIEW   ├── BIL_PAYMENT_VIEW   ├── BIL_PAYMENT_CREATE   ├── BIL_PAYMENT_COMPLETE   ├── BIL_RECEIPT_VIEW   └── BIL_RECEIPT_REPRINT
+A cashier shall not automatically receive:
+BIL_DISCOUNT_AUTHORIZE
+or:
+BIL_ADJUSTMENT_AUTHORIZE
+or:
+BIL_REFUND_APPROVE
+Example Billing Supervisor Concept
+BILLING SUPERVISOR        │        ├── BIL_ACCOUNT_VIEW        ├── BIL_CHARGE_VIEW        ├── BIL_CHARGE_REVERSE        ├── BIL_INVOICE_VIEW        ├── BIL_INVOICE_FINALIZE        ├── BIL_INVOICE_CREDIT        ├── BIL_DISCOUNT_AUTHORIZE        ├── BIL_PAYMENT_VIEW        ├── BIL_PAYMENT_REVERSE        ├── BIL_REFUND_VIEW        ├── BIL_REFUND_APPROVE        ├── BIL_ADJUSTMENT_VIEW        ├── BIL_ADJUSTMENT_AUTHORIZE        └── BIL_REPORT_VIEW
+The final role-permission matrix shall be defined during Security Architecture.
+
+5.408 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Maintain chargeable services
+CS-BIL-FR-001 to 005
+Maintain service prices
+CS-BIL-FR-006 to 010
+Manage patient financial accounts
+CS-BIL-FR-011 to 015
+Capture charges
+CS-BIL-FR-016 to 023
+Prevent duplicate charges
+CS-BIL-FR-019
+Cancel or reverse charges
+CS-BIL-FR-024 to 025
+Create invoices
+CS-BIL-FR-026 to 029
+Calculate invoice amounts
+CS-BIL-FR-030 to 034
+Manage discounts
+CS-BIL-FR-031 to 033
+Finalize invoice
+CS-BIL-FR-035 to 036
+View and track invoices
+CS-BIL-FR-037 to 038
+Correct invoice financial records
+CS-BIL-FR-039 to 040
+Record payments
+CS-BIL-FR-041 to 045
+Allocate payments
+CS-BIL-FR-046
+Support partial payment
+CS-BIL-FR-047
+Support multi-invoice allocation
+CS-BIL-FR-048
+Calculate outstanding balance
+CS-BIL-FR-049
+Prevent over-allocation
+CS-BIL-FR-050
+Complete payment
+CS-BIL-FR-051
+Generate receipts
+CS-BIL-FR-052 to 055
+Reverse payments
+CS-BIL-FR-056 to 058
+Process refunds
+CS-BIL-FR-059 to 063
+Manage financial adjustments
+CS-BIL-FR-064 to 066
+View outstanding balance
+CS-BIL-FR-067
+View patient financial history
+CS-BIL-FR-068
+Search financial records
+CS-BIL-FR-069 to 073
+Financial auditing
+CS-BIL-FR-074
+Billing state integrity
+CS-BIL-FR-075
+Tax and levy architecture
+CS-BIL-FR-076
+Insurance and payer architecture
+CS-BIL-FR-077
+Digital payment integration
+CS-BIL-FR-078
+Accounting integration
+CS-BIL-FR-079
+Financial reporting
+CS-BIL-FR-080
+
+5.409 BILLING MODULE RISK ANALYSIS
+Risk 1 — Clinical Service and Charge Are the Same Record
+Problem
+The laboratory order contains:
+pricepaidreceipt_number
+Impact
+Clinical and financial domains become tightly coupled.
+Mitigation
+Separate source clinical events from billing charges.
+
+Risk 2 — Current Service Price Rewrites History
+Problem
+The price catalog changes from:
+1,000
+to:
+1,500
+Old invoices dynamically show the new price.
+Impact
+Historical financial records become inaccurate.
+Mitigation
+Preserve applied transaction price context.
+
+Risk 3 — Duplicate Charge From Integration Retry
+Problem
+A laboratory event is sent twice.
+Two charges are created.
+Impact
+The patient is overbilled.
+Mitigation
+Implement source event traceability and idempotent charge capture.
+
+Risk 4 — Invoice Total Entered Manually
+Problem
+User enters:
+Total = 20,000
+Invoice items actually total:
+17,500
+Impact
+Financial inconsistency.
+Mitigation
+Calculate authoritative totals using trusted backend rules.
+
+Risk 5 — Money Stored Using Inappropriate Floating Point
+Problem
+Financial values use careless binary floating-point arithmetic.
+Impact
+Rounding and precision errors may occur.
+Mitigation
+Use approved decimal monetary representation and rounding policy.
+
+Risk 6 — Boolean Paid Field
+Problem
+paid = true
+Impact
+Partial payment cannot be represented.
+Mitigation
+Use payment transactions, allocations, balances, and invoice states.
+
+Risk 7 — Payment and Invoice Are the Same Entity
+Problem
+Each invoice has:
+payment_amountpayment_methodpayment_date
+and assumes exactly one payment.
+Impact
+Multiple payments and multi-invoice allocations become difficult.
+Mitigation
+Separate Payment and Payment Allocation.
+
+Risk 8 — Payment Saved Without Allocation
+Problem
+Payment is saved.
+System fails before invoice allocation.
+Impact
+Cash exists in the system but no obligation reflects payment.
+Mitigation
+Use appropriate transaction boundaries.
+
+Risk 9 — Invoice Marked Paid Without Payment
+Problem
+A user directly changes:
+status = 'PAID'
+Impact
+No payment explains the paid status.
+Mitigation
+Derive or control invoice financial state from valid financial workflow.
+
+Risk 10 — Discounts Controlled by React
+Problem
+The browser allows:
+discount = 100%
+Impact
+A malicious request bypasses UI restrictions.
+Mitigation
+Backend authorization and discount validation.
+
+Risk 11 — Payment Deleted During Correction
+Problem
+Cashier deletes an incorrect payment.
+Impact
+Financial audit history disappears.
+Mitigation
+Use payment reversal.
+
+Risk 12 — Refund Exceeds Paid Amount
+Problem
+Patient paid:
+5,000
+System refunds:
+8,000
+Impact
+Invalid financial loss.
+Mitigation
+Calculate and validate refundable financial context.
+
+Risk 13 — Receipt Reprint Creates New Payment
+Problem
+Each receipt print action inserts another payment.
+Impact
+Financial totals increase incorrectly.
+Mitigation
+Separate receipt representation from payment transaction.
+
+Risk 14 — Patient Balance Calculated Only in React
+Problem
+React downloads records and calculates the balance.
+Impact
+Different clients may display inconsistent financial values.
+Mitigation
+Trusted backend financial calculations and reporting projections.
+
+Risk 15 — Financial Records Physically Deleted
+Problem
+Charges, invoices, and payments are deleted to “fix” errors.
+Impact
+Financial traceability is destroyed.
+Mitigation
+Use controlled cancellation, reversal, credit, refund, and adjustment workflows.
+
+Risk 16 — Tax Rules Invented by Developers
+Problem
+A developer hardcodes an assumed tax percentage.
+Impact
+Incorrect legal and financial calculations.
+Mitigation
+Use approved financial and legal policy configuration.
+
+Risk 17 — Digital Payment Browser Success Treated as Payment Confirmation
+Problem
+Frontend receives a success page and marks the invoice paid.
+Impact
+A failed or manipulated payment may appear completed.
+Mitigation
+Backend provider verification and approved callback processing.
+
+Risk 18 — No Financial Authorization Separation
+Problem
+One cashier can:
+CREATE PAYMENTREVERSE PAYMENTAPPROVE REFUNDAUTHORIZE DISCOUNTCREATE ADJUSTMENT
+Impact
+Fraud and financial control risk increases.
+Mitigation
+Use permission separation and approval workflows.
+
+5.410 COMPLETE BILLING CAPABILITY MODEL
+                  BILLING AND PATIENT FINANCE                              │       ┌──────────────────────┼───────────────────────┐       │                      │                       │       ▼                      ▼                       ▼SERVICE CONFIGURATION     CHARGE CAPTURE       PATIENT ACCOUNT       │                      │                       │       ├── Service            ├── Source Event        ├── Patient       ├── Price              ├── Quantity            ├── Encounter       ├── Effective Date     ├── Unit Price          ├── Charges       └── Status             └── Gross Amount        └── Balance                                      │                                      ▼                                   INVOICE                                      │                         ┌────────────┼────────────┐                         │            │            │                         ▼            ▼            ▼                    INVOICE ITEM   DISCOUNT     FINALIZATION                         │                         ▼                     NET AMOUNT                         │                         ▼                       PAYMENT                         │             ┌───────────┼────────────┐             │           │            │             ▼           ▼            ▼           METHOD      AMOUNT      ALLOCATION                                      │                                      ▼                                   INVOICE                                      │                         ┌────────────┴────────────┐                         │                         │                         ▼                         ▼                  PARTIALLY PAID                  PAID                         │                         │                         └────────────┬────────────┘                                      ▼                                   RECEIPT                                      │                                      ▼                           FINANCIAL CORRECTION                                      │                         ┌────────────┼────────────┐                         │            │            │                         ▼            ▼            ▼                     REVERSAL       REFUND      ADJUSTMENT                         │            │            │                         └────────────┼────────────┘                                      ▼                          PATIENT FINANCIAL HISTORY                                      │                                      ▼                              REPORTING READ MODEL
+
+5.411 BILLING MODULE COMPLETION STATUS
+Module: Billing, Invoicing and Patient Financial Management SystemModule Code: BILRequirement Range: CS-BIL-FR-001 to CS-BIL-FR-080Business Rule Range: CS-BIL-BR-001 to CS-BIL-BR-023
+Billing Domain Boundary: DefinedChargeable Service Catalog: DefinedService Price Configuration: DefinedEffective Price Period Concept: DefinedHistorical Price Preservation: DefinedPatient Financial Account: DefinedPatient Financial Account Identity: DefinedPatient-to-Account Relationship: DefinedEncounter Financial Context: DefinedPatient Account View: DefinedCharge Capture: DefinedCharge Identity: DefinedSource Event Traceability: DefinedDuplicate Charge Prevention: DefinedCharge Quantity: DefinedCharge Unit Price: DefinedCharge Gross Amount: DefinedCharge State Model: DefinedCharge Cancellation: DefinedCharge Reversal: DefinedInvoice Creation: DefinedInvoice Identity: DefinedCharge-to-Invoice Relationship: DefinedInvoice Item Model: DefinedInvoice Subtotal: DefinedDiscount Workflow: DefinedDiscount Reason: DefinedDiscount Authorization: DefinedInvoice Net Amount: DefinedInvoice Finalization: DefinedFinalized Invoice Integrity: DefinedInvoice View: DefinedInvoice State Model: DefinedInvoice Cancellation: DefinedInvoice Credit and Reversal Boundary: DefinedPayment Model: DefinedPayment Identity: DefinedPayment Method: DefinedPayment Amount: DefinedPayment Validation: DefinedPayment Allocation: DefinedPartial Payment: DefinedMulti-Invoice Payment Allocation Boundary: DefinedOutstanding Balance: DefinedPayment Over-Allocation Prevention: DefinedPayment Completion Transaction Boundary: DefinedReceipt Generation: DefinedReceipt Identity: DefinedReceipt View: DefinedReceipt Reprint: DefinedPayment Reversal: DefinedPayment Reversal Reason: DefinedPayment Allocation Reversal: DefinedRefund Model: DefinedRefund Eligibility: DefinedRefund Amount: DefinedRefund Method: DefinedRefund Completion: DefinedFinancial Adjustment: DefinedAdjustment Reason: DefinedAdjustment Authorization: DefinedPatient Outstanding Balance: DefinedPatient Financial History: DefinedCharge Search: DefinedInvoice Search: DefinedPayment Search: DefinedReceipt Search: DefinedRefund Search: DefinedBilling Audit Events: DefinedBilling State Integrity: DefinedTax and Levy Integration Boundary: DefinedInsurance and Third-Party Payer Boundary: DefinedDigital Payment Integration Boundary: DefinedFinancial Posting Integration Boundary: DefinedFinancial Reporting Read Models: DefinedBilling Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The Billing, Invoicing and Patient Financial Management requirements establish the patient financial transaction workflow of CuraSphere.
+These requirements shall later be transformed into:
+Billing use case specification;
+chargeable service configuration use case;
+price configuration use case;
+patient financial account use case;
+charge capture use case;
+charge cancellation use case;
+charge reversal use case;
+create invoice use case;
+finalize invoice use case;
+apply discount use case;
+invoice correction use case;
+collect payment use case;
+payment allocation use case;
+partial payment use case;
+receipt generation use case;
+payment reversal use case;
+refund use case;
+financial adjustment use case;
+charge capture activity diagram;
+invoice creation activity diagram;
+invoice finalization activity diagram;
+payment collection activity diagram;
+payment allocation activity diagram;
+payment reversal activity diagram;
+refund activity diagram;
+financial adjustment activity diagram;
+Charge state machine;
+Invoice state machine;
+Payment state machine;
+Refund state machine;
+Capture Charge sequence diagram;
+Create Invoice sequence diagram;
+Finalize Invoice sequence diagram;
+Record Payment sequence diagram;
+Allocate Payment sequence diagram;
+Reverse Payment sequence diagram;
+Complete Refund sequence diagram;
+Service Definition domain model;
+Price Configuration domain model;
+Patient Financial Account domain model;
+Charge domain model;
+Invoice domain model;
+Invoice Item domain model;
+Payment domain model;
+Payment Allocation domain model;
+Receipt domain model;
+Payment Reversal domain model;
+Refund domain model;
+Financial Adjustment domain model;
+PostgreSQL billing schema;
+monetary precision strategy;
+financial rounding policy;
+historical price strategy;
+charge idempotency strategy;
+invoice numbering architecture;
+receipt numbering architecture;
+payment allocation architecture;
+outstanding balance projection strategy;
+financial correction architecture;
+digital payment adapter architecture;
+insurance payer architecture;
+financial posting architecture;
+React Billing Work Queue requirements;
+React Patient Financial Account requirements;
+React Charge Review requirements;
+React Invoice Builder requirements;
+React Invoice Detail requirements;
+React Cashier Payment Workspace requirements;
+React Receipt requirements;
+React Refund Workspace requirements;
+React Financial Adjustment requirements;
+React Billing Dashboard requirements;
+ASP.NET Core Charge API;
+ASP.NET Core Patient Account API;
+ASP.NET Core Invoice API;
+ASP.NET Core Payment API;
+ASP.NET Core Payment Allocation API;
+ASP.NET Core Receipt API;
+ASP.NET Core Refund API;
+ASP.NET Core Financial Adjustment API;
+billing authorization policies;
+charge capture integration tests;
+duplicate charge tests;
+historical pricing tests;
+invoice calculation tests;
+discount authorization tests;
+invoice finalization tests;
+partial payment tests;
+payment allocation tests;
+payment transaction consistency tests;
+payment reversal tests;
+refund eligibility tests;
+financial adjustment authorization tests;
+monetary rounding tests;
+financial concurrency tests.
+No React billing interface, tax rate, levy rule, insurance provider, insurance claim standard, digital payment provider, bank integration, payment gateway, accounting software, ERP system, general ledger chart of accounts, financial posting format, invoice numbering legal policy, receipt numbering legal policy, discount approval threshold, refund approval threshold, currency conversion system, PostgreSQL billing table structure, Entity Framework Core financial entity structure, financial reporting warehouse, or payment hardware has been finalized by this SRS section.
+Those decisions shall be made during Architecture, Financial Governance, Security Architecture, and Detailed Design.
+

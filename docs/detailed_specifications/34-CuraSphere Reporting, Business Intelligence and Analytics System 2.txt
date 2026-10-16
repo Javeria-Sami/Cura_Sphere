@@ -1,0 +1,464 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.12 - Reporting, Business Intelligence and Analytics System (RBI)
+
+5.12.10 Functional Requirement RBI-FR-006
+Custom Report Builder
+
+Requirement ID
+RBI-FR-006
+Requirement Name
+Custom Report Builder
+
+Description
+The system shall provide an advanced Custom Report Builder that enables authorized users to create, modify, save, and execute customized reports without requiring software development.
+Users shall be able to select data sources, fields, filters, sorting rules, grouping options, calculated fields, and visualization formats.
+
+Actors
+Hospital Administrator
+Department Manager
+Finance Manager
+HR Manager
+Data Analyst
+Authorized Users
+
+Preconditions
+User must have report creation permission.
+Selected data source must be accessible.
+
+Trigger
+User selects Create Custom Report.
+
+Main Workflow
+Select Data Source
+        │
+        ▼
+Choose Fields
+        │
+        ▼
+Apply Filters
+        │
+        ▼
+Group & Sort Data
+        │
+        ▼
+Preview Report
+        │
+        ▼
+Save Report Template
+        │
+        ▼
+Generate Report
+
+Supported Features
+Drag-and-drop field selection
+Multi-table reports
+Date filters
+Department filters
+Doctor filters
+Patient filters
+Dynamic grouping
+Aggregation functions
+Calculated fields
+Conditional formatting
+Saved templates
+
+Business Rules
+RBI-BR-021
+Users shall only access authorized datasets.
+RBI-BR-022
+Saved reports shall be reusable.
+RBI-BR-023
+Custom reports shall respect role-based permissions.
+
+Acceptance Criteria
+Users can build reports without programming.
+Saved templates can be reused.
+Security restrictions enforced.
+
+5.12.11 Functional Requirement RBI-FR-007
+Scheduled Report Generation
+
+Requirement ID
+RBI-FR-007
+Requirement Name
+Automatic Scheduled Reports
+
+Description
+The system shall automatically generate reports according to predefined schedules.
+Reports may be generated:
+Hourly
+Daily
+Weekly
+Monthly
+Quarterly
+Yearly
+
+Workflow
+Report Template
+        │
+        ▼
+Schedule Created
+        │
+        ▼
+Scheduler Engine
+        │
+        ▼
+Automatic Generation
+        │
+        ▼
+Email / Dashboard / Archive
+
+Schedule Information
+Schedule ID
+Report Name
+Frequency
+Execution Time
+Recipient List
+Output Format
+Status
+
+Business Rules
+Failed report generation shall be logged and administrators notified.
+
+Acceptance Criteria
+Scheduled reports generated automatically.
+
+5.12.12 Functional Requirement RBI-FR-008
+Data Visualization and Dashboard Charts
+
+Requirement ID
+RBI-FR-008
+
+Description
+The system shall provide interactive visualizations to improve data interpretation.
+
+Supported Visualizations
+Line Charts
+Bar Charts
+Pie Charts
+Donut Charts
+Area Charts
+Heat Maps
+KPI Cards
+Trend Graphs
+Tables
+Geographic Maps (if location data exists)
+
+Visualization Workflow
+Database
+     │
+     ▼
+Analytics Engine
+     │
+     ▼
+Chart Generator
+     │
+     ▼
+Dashboard
+
+Business Rules
+Visualizations shall update according to configured refresh intervals.
+
+Acceptance Criteria
+Interactive charts displayed successfully.
+
+5.12.13 Functional Requirement RBI-FR-009
+Predictive Analytics
+
+Requirement ID
+RBI-FR-009
+
+Description
+The system shall support predictive analytics using historical hospital data to assist management in planning and resource allocation.
+
+Predictive Models
+The module may provide predictions for:
+Patient admissions
+OPD workload
+Emergency demand
+Bed occupancy
+Inventory consumption
+Pharmacy demand
+Revenue forecasting
+Staff requirements
+
+Workflow
+Historical Data
+        │
+        ▼
+Analytics Engine
+        │
+        ▼
+Prediction Model
+        │
+        ▼
+Forecast Dashboard
+
+Business Rules
+Predictions are advisory and shall not automatically modify operational data.
+
+Acceptance Criteria
+Forecasts generated using historical trends.
+
+5.12.14 Functional Requirement RBI-FR-010
+Report Export and Distribution
+
+Requirement ID
+RBI-FR-010
+
+Description
+The system shall allow users to export reports in multiple formats and distribute them securely.
+
+Supported Formats
+PDF
+Excel (.xlsx)
+CSV
+Word (.docx)
+HTML
+
+Distribution Methods
+Email
+Secure Download
+Internal Dashboard
+Shared Report Repository
+Print
+
+Workflow
+Generate Report
+      │
+      ▼
+Choose Format
+      │
+      ▼
+Export
+      │
+      ▼
+Download / Send
+
+Business Rules
+Sensitive reports shall only be shared with authorized recipients.
+
+Acceptance Criteria
+Reports exported successfully.
+
+5.12.15 Functional Requirement RBI-FR-011
+Regulatory Reporting
+
+Requirement ID
+RBI-FR-011
+
+Description
+The system shall generate reports required by healthcare regulatory authorities.
+Examples include:
+Disease surveillance
+Vaccination statistics
+Mortality reports
+Birth registration
+Infection surveillance
+Occupational health reports
+Financial compliance reports
+
+Business Rules
+Report formats shall comply with applicable national healthcare regulations.
+
+Acceptance Criteria
+Regulatory reports generated correctly.
+
+5.12.16 Functional Requirement RBI-FR-012
+Audit and Compliance Reports
+
+Requirement ID
+RBI-FR-012
+
+Description
+The system shall provide audit reports for monitoring system activities and regulatory compliance.
+
+Audit Reports
+Login History
+User Activity
+Patient Record Access
+Financial Transactions
+Inventory Adjustments
+Prescription Changes
+HR Activities
+Security Events
+
+Workflow
+Audit Database
+       │
+       ▼
+Filter Records
+       │
+       ▼
+Generate Audit Report
+
+Business Rules
+Audit reports shall be read-only.
+
+Acceptance Criteria
+Audit reports generated successfully.
+
+5.12.17 Functional Requirement RBI-FR-013
+Reporting Security
+
+Requirement ID
+RBI-FR-013
+
+Description
+The Reporting module shall implement role-based security to protect confidential information.
+
+Security Controls
+Role-Based Access Control (RBAC)
+Data masking
+Report permissions
+Export restrictions
+Audit logging
+Secure authentication
+Session timeout
+
+Security Workflow
+User Login
+      │
+      ▼
+Authentication
+      │
+      ▼
+Role Validation
+      │
+      ▼
+Report Access
+      │
+      ▼
+Audit Log
+
+Business Rules
+Users shall only access reports authorized for their role.
+
+Acceptance Criteria
+Unauthorized report access prevented.
+
+5.12.18 Functional Requirement RBI-FR-014
+Reporting Integration Requirements
+The Reporting System shall integrate with:
+Module
+Purpose
+Patient Registration
+Patient reports
+Appointment
+Appointment analytics
+EMR
+Clinical reports
+Laboratory
+Laboratory statistics
+Radiology
+Imaging reports
+Pharmacy
+Pharmacy analytics
+Billing
+Financial reports
+Inventory
+Stock analytics
+HR
+Employee analytics
+Audit
+Compliance reports
+Notification
+Scheduled report delivery
+
+Integration Architecture
+Hospital Modules
+       │
+       ▼
+Reporting Engine
+       │
+       ▼
+Analytics Database
+       │
+       ▼
+Dashboards & Reports
+
+5.12.19 Functional Requirement RBI-FR-015
+Reporting Non-Functional Requirements
+The Reporting module shall satisfy the following quality requirements.
+Performance
+Standard reports should typically generate within 5 seconds under normal operating conditions.
+Complex analytical reports should complete within an acceptable configurable threshold.
+Availability
+Target availability: 99.9%, excluding planned maintenance.
+Scalability
+Support millions of historical records.
+Support concurrent report execution by multiple users.
+Reliability
+Report generation shall not affect operational system performance beyond configured thresholds.
+Security
+All report access shall be audited.
+Sensitive information shall be encrypted during transmission.
+Backup
+Report templates and scheduled configurations shall be included in system backups.
+
+5.12.20 Functional Requirement RBI-FR-016
+Reporting Requirement Traceability Matrix
+Requirement ID
+Functional Area
+RBI-FR-001
+Operational Reports
+RBI-FR-002
+Clinical Reports
+RBI-FR-003
+Financial Reports
+RBI-FR-004
+Executive Dashboard
+RBI-FR-005
+KPI Monitoring
+RBI-FR-006
+Custom Report Builder
+RBI-FR-007
+Scheduled Reports
+RBI-FR-008
+Data Visualization
+RBI-FR-009
+Predictive Analytics
+RBI-FR-010
+Export & Distribution
+RBI-FR-011
+Regulatory Reporting
+RBI-FR-012
+Audit Reports
+RBI-FR-013
+Reporting Security
+RBI-FR-014
+Integration Requirements
+RBI-FR-015
+Non-Functional Requirements
+RBI-FR-016
+Requirement Traceability
+
+5.12.21 Reporting Module Architecture Summary
+              Hospital Modules
+                     │
+                     ▼
+          Reporting Data Repository
+                     │
+        ┌────────────┼────────────┐
+        ▼            ▼            ▼
+ Operational   Clinical     Financial
+   Reports      Reports       Reports
+        │            │            │
+        └────────────┼────────────┘
+                     ▼
+           Business Intelligence
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+      Dashboards   KPIs    Predictive Analytics
+                     │
+                     ▼
+          Export & Distribution
+                     │
+                     ▼
+              Executive Decision
+
+
+

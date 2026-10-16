@@ -1,0 +1,2082 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.7 — PHARMACY AND MEDICATION MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: PHRModule Name: Pharmacy and Medication Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.273 MODULE PURPOSE
+The Pharmacy and Medication Management System shall manage the operational workflow associated with medication catalog management, medication ordering, prescription processing, pharmacy verification, medication dispensing, pharmacy inventory, medication batches, expiry tracking, stock movements, medication returns, dispensing cancellation, and authorized medication history availability.
+The Pharmacy module shall support the following high-level workflow:
+CLINICAL ENCOUNTER        │        ▼MEDICATION ORDER        │        ▼ORDER VALIDATION        │        ▼PRESCRIPTION        │        ▼PHARMACY WORK QUEUE        │        ▼PHARMACY VERIFICATION        │        ├── CLARIFICATION REQUIRED        │        ├── REJECTED / CANCELLED        │        ▼READY FOR DISPENSING        │        ▼STOCK AVAILABILITY CHECK        │        ▼BATCH SELECTION        │        ▼MEDICATION DISPENSING        │        ▼STOCK MOVEMENT        │        ▼DISPENSING COMPLETION        │        ▼PATIENT MEDICATION HISTORY        │        ▼EMR
+The module shall provide traceability from the original clinical medication request to the actual medication quantity dispensed.
+Conceptually:
+WHO ORDERED THE MEDICATION?        │        ▼FOR WHICH PATIENT?        │        ▼DURING WHICH ENCOUNTER?        │        ▼WHICH MEDICATION WAS ORDERED?        │        ▼WHAT DOSE WAS ORDERED?        │        ▼WHAT ROUTE WAS ORDERED?        │        ▼WHAT FREQUENCY WAS ORDERED?        │        ▼FOR WHAT DURATION?        │        ▼WHO VERIFIED THE PRESCRIPTION?        │        ▼WHICH MEDICATION PRODUCT WAS DISPENSED?        │        ▼FROM WHICH INVENTORY BATCH?        │        ▼WHAT QUANTITY WAS DISPENSED?        │        ▼WHO DISPENSED IT?        │        ▼WHEN WAS IT DISPENSED?
+This traceability shall be considered a fundamental pharmacy requirement.
+
+5.274 PHARMACY DOMAIN BOUNDARY
+The Pharmacy module shall manage pharmacy operational workflow and medication dispensing information.
+It shall not own the complete clinical encounter.
+The conceptual relationship is:
+OPD / IPD / EMERGENCY          │          ▼    MEDICATION ORDER          │          ▼       PHARMACY          │          ├── Medication Catalog          ├── Prescription Queue          ├── Pharmacy Verification          ├── Dispensing          ├── Pharmacy Inventory          ├── Medication Batches          ├── Expiry Management          ├── Stock Movements          └── Returns          │          ▼          EMR
+Responsibilities shall conceptually be divided as follows:
+CLINICAL MODULEDoctor decides:"The patient requiresthis medication underthis clinical order."
+PHARMACY MODULEPharmacy manages:"Can the eligible medicationorder proceed through pharmacyverification and dispensing?"
+INVENTORY DOMAINInventory answers:"What physical stock exists,in which batch, at whichlocation, and what movementchanged that stock?"
+EMRClinical record provides:"What eligible medicationinformation belongs to thepatient's longitudinal record?"
+The Pharmacy module shall not be designed as:
+patient_idmedicine_namequantity
+A real medication workflow contains clinical, operational, and inventory states.
+
+5.275 CRITICAL PHARMACY ARCHITECTURE CONCEPT
+CuraSphere shall distinguish the following concepts:
+MEDICATION DEFINITION
+MEDICATION PRODUCT
+MEDICATION ORDER
+PRESCRIPTION
+PHARMACY VERIFICATION
+DISPENSING EVENT
+MEDICATION BATCH
+STOCK MOVEMENT
+These concepts shall not automatically be treated as identical.
+Conceptually:
+MEDICATION DEFINITION        │        ▼WHAT CLINICAL MEDICATIONCONCEPT EXISTS?
+MEDICATION PRODUCT        │        ▼WHAT DISPENSABLE PRODUCTIS AVAILABLE?
+MEDICATION ORDER        │        ▼WHAT DID THE AUTHORIZEDCLINICIAN ORDER?
+PRESCRIPTION        │        ▼WHAT MEDICATION INSTRUCTIONSARE PRESENTED FOR PHARMACYPROCESSING?
+PHARMACY VERIFICATION        │        ▼WAS THE PRESCRIPTION REVIEWEDBY AN AUTHORIZED PHARMACY USER?
+DISPENSING EVENT        │        ▼WHAT WAS ACTUALLY DISPENSED?
+MEDICATION BATCH        │        ▼FROM WHICH PHYSICAL STOCKBATCH DID THE PRODUCT COME?
+STOCK MOVEMENT        │        ▼WHY DID INVENTORY QUANTITYCHANGE?
+Therefore:
+MEDICATION     =PRESCRIPTION     =DISPENSING     =STOCK
+is an incorrect architectural assumption.
+
+5.276 CLINICAL MEDICATION VS DISPENSABLE PRODUCT
+This distinction is fundamental to CuraSphere.
+Example:
+CLINICAL MEDICATIONParacetamol
+A doctor may order:
+ParacetamolDose:500 mgRoute:OralFrequency:Every 8 hours
+The pharmacy may hold a specific product:
+PRODUCTParacetamol 500 mg TabletDosage Form:TabletStrength:500 mgManufacturer:Configured ManufacturerPackage:100 Tablets
+Another product may exist:
+Paracetamol 120 mg / 5 mLDosage Form:Oral Suspension
+Therefore:
+MEDICATION CONCEPT        │        ▼CLINICAL ORDERING CONTEXT
+is not always identical to:
+MEDICATION PRODUCT        │        ▼PHYSICAL DISPENSABLE STOCK
+The detailed terminology and medication coding architecture shall be defined during Clinical Data Architecture.
+
+5.277 PHARMACY ACTORS
+Actor
+Responsibility
+Doctor / Authorized Prescriber
+Creates eligible medication orders
+Pharmacist
+Reviews and verifies eligible prescriptions
+Pharmacy Technician
+Performs permitted pharmacy operational activities
+Pharmacy Storekeeper
+Manages authorized stock workflows
+Pharmacy Supervisor
+Manages approved pharmacy operations
+Nurse
+Views or participates in permitted medication workflow
+Hospital Administrator
+Performs approved configuration activities
+Patient
+Receives eligible medication
+OPD Module
+Provides outpatient medication order context
+IPD Module
+Provides inpatient medication order context
+Emergency Module
+Provides emergency medication order context
+Billing Module
+Manages applicable financial workflow
+Inventory Module
+Provides applicable inventory capability
+EMR Module
+Provides authorized medication history
+Procurement Module
+Provides approved stock receipt context where integrated
+CuraSphere System
+Enforces authorization, workflow, validation, and traceability
+
+5.278 PHARMACY FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-PHR-FR-001
+Maintain Medication Catalog
+M
+CS-PHR-FR-002
+Create Medication Definition
+M
+CS-PHR-FR-003
+Update Medication Definition
+M
+CS-PHR-FR-004
+Activate or Deactivate Medication
+M
+CS-PHR-FR-005
+Search Medication Catalog
+M
+CS-PHR-FR-006
+Maintain Medication Product Catalog
+M
+CS-PHR-FR-007
+Create Medication Product
+M
+CS-PHR-FR-008
+Update Medication Product
+M
+CS-PHR-FR-009
+Activate or Deactivate Medication Product
+M
+CS-PHR-FR-010
+Associate Product With Medication Definition
+M
+CS-PHR-FR-011
+Receive Medication Order
+M
+CS-PHR-FR-012
+Validate Medication Order
+M
+CS-PHR-FR-013
+Generate Medication Order Identifier
+M
+CS-PHR-FR-014
+View Medication Order
+M
+CS-PHR-FR-015
+Cancel Eligible Medication Order
+M
+CS-PHR-FR-016
+Track Medication Order Status
+M
+CS-PHR-FR-017
+Record Medication Dose
+M
+CS-PHR-FR-018
+Record Medication Route
+M
+CS-PHR-FR-019
+Record Medication Frequency
+M
+CS-PHR-FR-020
+Record Medication Duration
+M
+CS-PHR-FR-021
+Record Medication Instructions
+M
+CS-PHR-FR-022
+Generate Prescription
+M
+CS-PHR-FR-023
+Generate Prescription Identifier
+M
+CS-PHR-FR-024
+View Prescription
+M
+CS-PHR-FR-025
+Create Pharmacy Work Queue
+M
+CS-PHR-FR-026
+Filter Pharmacy Work Queue
+M
+CS-PHR-FR-027
+Open Pharmacy Verification Context
+M
+CS-PHR-FR-028
+Verify Eligible Prescription
+M
+CS-PHR-FR-029
+Request Prescription Clarification
+M
+CS-PHR-FR-030
+Record Clarification Resolution
+M
+CS-PHR-FR-031
+Reject Eligible Prescription
+M
+CS-PHR-FR-032
+Track Pharmacy Verification Status
+M
+CS-PHR-FR-033
+Check Medication Stock Availability
+M
+CS-PHR-FR-034
+Identify Eligible Medication Product
+M
+CS-PHR-FR-035
+Prevent Invalid Product Selection
+M
+CS-PHR-FR-036
+Create Medication Batch
+M
+CS-PHR-FR-037
+Generate Medication Batch Identifier
+M
+CS-PHR-FR-038
+Record Manufacturer Batch Number
+M
+CS-PHR-FR-039
+Record Medication Expiry Date
+M
+CS-PHR-FR-040
+Record Batch Quantity
+M
+CS-PHR-FR-041
+Record Batch Storage Location
+M
+CS-PHR-FR-042
+Activate, Block, or Quarantine Batch
+M
+CS-PHR-FR-043
+Search Medication Batches
+M
+CS-PHR-FR-044
+Track Batch Status
+M
+CS-PHR-FR-045
+Prevent Expired Batch Dispensing
+M
+CS-PHR-FR-046
+Identify Near-Expiry Medication Batches
+M
+CS-PHR-FR-047
+Select Eligible Dispensing Batch
+M
+CS-PHR-FR-048
+Support FEFO Batch Selection
+S
+CS-PHR-FR-049
+Create Dispensing Event
+M
+CS-PHR-FR-050
+Generate Dispensing Identifier
+M
+CS-PHR-FR-051
+Record Dispensed Medication Product
+M
+CS-PHR-FR-052
+Record Dispensed Quantity
+M
+CS-PHR-FR-053
+Record Dispensing Batch
+M
+CS-PHR-FR-054
+Record Dispensing User
+M
+CS-PHR-FR-055
+Complete Medication Dispensing
+M
+CS-PHR-FR-056
+Prevent Over-Dispensing
+M
+CS-PHR-FR-057
+Support Partial Dispensing
+M
+CS-PHR-FR-058
+Track Remaining Prescription Quantity
+M
+CS-PHR-FR-059
+Create Stock Movement
+M
+CS-PHR-FR-060
+Record Stock Receipt Movement
+M
+CS-PHR-FR-061
+Record Dispensing Stock Movement
+M
+CS-PHR-FR-062
+Record Return Stock Movement
+M
+CS-PHR-FR-063
+Record Adjustment Stock Movement
+M
+CS-PHR-FR-064
+Prevent Negative Stock
+M
+CS-PHR-FR-065
+View Medication Stock Balance
+M
+CS-PHR-FR-066
+View Medication Stock Ledger
+M
+CS-PHR-FR-067
+Record Medication Return
+M
+CS-PHR-FR-068
+Validate Medication Return
+M
+CS-PHR-FR-069
+Determine Return Stock Disposition
+M
+CS-PHR-FR-070
+Cancel Eligible Dispensing
+M
+CS-PHR-FR-071
+Reverse Eligible Stock Effect
+M
+CS-PHR-FR-072
+View Patient Medication History
+M
+CS-PHR-FR-073
+Make Eligible Medication Information Available to EMR
+M
+CS-PHR-FR-074
+Search Prescriptions
+M
+CS-PHR-FR-075
+Search Dispensing Records
+M
+CS-PHR-FR-076
+Record Pharmacy Audit Events
+M
+CS-PHR-FR-077
+Prevent Invalid Pharmacy State Transition
+M
+CS-PHR-FR-078
+Support Medication Coding Integration Architecture
+S
+CS-PHR-FR-079
+Support Pharmacy Barcode Architecture
+S
+CS-PHR-FR-080
+Support Future Medication Safety Service Integration
+S
+
+5.279 MEDICATION CATALOG
+CS-PHR-FR-001 — Maintain Medication Catalog
+Requirement Name
+Maintain Medication Catalog
+Description
+The system shall maintain a controlled catalog of medication definitions available within CuraSphere.
+Priority
+Must Have
+Problem With Free Text
+Weak design:
+Doctor 1:Paracetamol
+Doctor 2:Panadol
+Doctor 3:PCM
+Doctor 4:Paracetmol
+The system may incorrectly create unrelated medication identities.
+A controlled medication catalog provides:
+MEDICATION CODEMED-PARACETAMOL
+MEDICATION NAMEParacetamol
+Conceptual Medication Definition
+MEDICATION DEFINITION        │        ├── Medication Code        ├── Generic Name        ├── Medication Category        ├── Orderable Status        └── Active Status
+Business Rules
+CS-PHR-BR-001
+Each medication definition shall have a unique internal identity.
+CS-PHR-BR-002
+Medication codes shall be unique within the applicable coding scope.
+CS-PHR-BR-003
+Only eligible active medication definitions shall normally be available for new medication orders.
+CS-PHR-BR-004
+Historical medication records shall preserve applicable medication relationships.
+
+CS-PHR-FR-002 — Create Medication Definition
+Description
+The system shall allow an authorized user to create an eligible medication definition.
+Priority
+Must Have
+Main Flow
+AUTHORIZED USER       │       ▼OPEN MEDICATION CATALOG       │       ▼CREATE MEDICATION       │       ▼ENTER MEDICATION DATA       │       ▼VALIDATE CODE       │       ▼VALIDATE REQUIRED INFORMATION       │       ▼SAVE       │       ▼AUDIT EVENT
+
+CS-PHR-FR-003 — Update Medication Definition
+Description
+The system shall allow an authorized user to update eligible medication definition information.
+Priority
+Must Have
+Historical Requirement
+Changes to the medication catalog shall not silently rewrite the meaning of historical medication orders.
+
+CS-PHR-FR-004 — Activate or Deactivate Medication
+Description
+The system shall allow authorized users to activate or deactivate an eligible medication definition.
+Priority
+Must Have
+ACTIVE MEDICATION       │       ▼AVAILABLE FOR ELIGIBLENEW ORDERS
+Compared with:
+INACTIVE MEDICATION       │       ▼NOT NORMALLY AVAILABLEFOR NEW ORDERS       │       ▼HISTORICAL RECORDS REMAIN
+Deactivation shall not delete medication history.
+
+CS-PHR-FR-005 — Search Medication Catalog
+Description
+The system shall allow authorized users to search the medication catalog.
+Priority
+Must Have
+Search Criteria May Include
+medication code;
+generic name;
+medication category;
+active status.
+
+5.280 MEDICATION PRODUCT CATALOG
+CS-PHR-FR-006 — Maintain Medication Product Catalog
+Description
+The system shall maintain a controlled catalog of eligible medication products.
+Priority
+Must Have
+Conceptual Product
+MEDICATION PRODUCT        │        ├── Product Code        ├── Product Name        ├── Medication Definition        ├── Strength        ├── Strength Unit        ├── Dosage Form        ├── Manufacturer Context        ├── Package Information        ├── Active Status        └── Dispensing Status
+Example
+Medication DefinitionParacetamol
+Medication ProductParacetamol 500 mg Tablet
+Another:
+Medication ProductParacetamol 120 mg / 5 mLOral Suspension
+Important Principle
+Do not build one table:
+medicinesidnamequantityprice
+and assume the pharmacy domain is complete.
+The medication definition describes a clinical medication concept.
+The medication product describes a dispensable product configuration.
+The medication batch represents physical inventory.
+
+CS-PHR-FR-007 — Create Medication Product
+Description
+The system shall allow an authorized user to create an eligible medication product.
+Priority
+Must Have
+Product Information May Include
+product code;
+product name;
+medication definition;
+strength;
+strength unit;
+dosage form;
+manufacturer context;
+package information.
+
+CS-PHR-FR-008 — Update Medication Product
+Description
+The system shall allow authorized users to update eligible medication product configuration.
+Priority
+Must Have
+Historical dispensing records shall preserve appropriate product identity and traceability.
+
+CS-PHR-FR-009 — Activate or Deactivate Medication Product
+Description
+The system shall allow authorized users to activate or deactivate an eligible medication product.
+Priority
+Must Have
+An inactive product shall not normally be selected for new dispensing activity.
+Historical batch and dispensing records shall remain traceable.
+
+CS-PHR-FR-010 — Associate Product With Medication Definition
+Description
+The system shall associate an eligible medication product with its applicable medication definition.
+Priority
+Must Have
+Conceptual Relationship
+MEDICATION DEFINITIONParacetamol        │        ├── Paracetamol 500 mg Tablet        ├── Paracetamol 250 mg Tablet        └── Paracetamol Oral Suspension
+Business Rule
+CS-PHR-BR-005
+A medication product shall reference an eligible medication definition.
+
+5.281 MEDICATION ORDER RECEIPT
+CS-PHR-FR-011 — Receive Medication Order
+Requirement Name
+Receive Medication Order
+Description
+The Pharmacy module shall receive eligible medication orders from approved clinical workflows.
+Priority
+Must Have
+Potential Sources
+OPD │ ▼MEDICATION ORDER
+IPD │ ▼MEDICATION ORDER
+EMERGENCY │ ▼MEDICATION ORDER
+Conceptual Flow
+AUTHORIZED PRESCRIBER          │          ▼CLINICAL ENCOUNTER          │          ▼CREATE MEDICATION ORDER          │          ▼PHARMACY RECEIVES ORDER          │          ▼VALIDATE ORDER          │          ▼PRESCRIPTION WORKFLOW
+Medication Order Information May Include
+medication order identifier;
+patient;
+encounter;
+ordering clinician;
+medication;
+dose;
+dose unit;
+route;
+frequency;
+duration;
+quantity context;
+medication instructions;
+order date and time;
+priority;
+order status.
+Business Rules
+CS-PHR-BR-006
+A medication order shall reference an identifiable patient.
+CS-PHR-BR-007
+A medication order shall maintain ordering provenance.
+CS-PHR-BR-008
+A medication order shall reference an eligible medication definition.
+
+CS-PHR-FR-012 — Validate Medication Order
+Description
+The system shall validate a medication order before it proceeds through the applicable pharmacy workflow.
+Priority
+Must Have
+Validation May Include
+PATIENT EXISTS?ENCOUNTER VALID?ORDERING USER AUTHORIZED?MEDICATION SELECTED?MEDICATION ACTIVE?DOSE INFORMATION VALID?ROUTE AVAILABLE?FREQUENCY AVAILABLE?DURATION INFORMATION VALID?ORDER STATE VALID?
+Additional clinical medication safety validation shall depend on approved clinical policy and medication safety architecture.
+Security Requirement
+The ASP.NET Core backend shall perform authoritative medication order validation.
+React shall not be the final clinical or authorization authority.
+
+CS-PHR-FR-013 — Generate Medication Order Identifier
+Description
+The system shall generate a unique identifier for each medication order.
+Priority
+Must Have
+Example
+MED-ORD-00000291
+Medication order identifiers shall not be reused for unrelated orders.
+
+CS-PHR-FR-014 — View Medication Order
+Description
+The system shall allow authorized users to view eligible medication order information.
+Priority
+Must Have
+Medication Order View May Include
+Patient IdentityMRNMedication Order IDEncounterOrdering ClinicianMedicationDoseRouteFrequencyDurationInstructionsPriorityOrder Date / TimeOrder Status
+
+CS-PHR-FR-015 — Cancel Eligible Medication Order
+Description
+The system shall allow an authorized user to cancel an eligible medication order.
+Priority
+Must Have
+State Consideration
+ORDERED   │   ▼CANCELLATION MAY BE ELIGIBLE
+Compared with:
+FULLY DISPENSED       │       ▼ORDINARY ORDER CANCELLATIONMAY NOT BE APPROPRIATE
+Business Rules
+CS-PHR-BR-009
+Only eligible medication orders may be cancelled.
+CS-PHR-BR-010
+Medication order cancellation shall record applicable actor, time, and reason.
+
+CS-PHR-FR-016 — Track Medication Order Status
+Description
+The system shall track medication order status.
+Priority
+Must Have
+Conceptual State Model
+ORDERED   │   ▼PHARMACY_PENDING   │   ▼UNDER_REVIEW   │   ▼VERIFIED   │   ▼READY_FOR_DISPENSING   │   ▼PARTIALLY_DISPENSED   │   ▼DISPENSED
+Alternative states may include:
+CLARIFICATION_REQUIRED
+REJECTED
+CANCELLED
+The exact aggregate state vocabulary shall be finalized during Pharmacy Domain Architecture.
+
+5.282 MEDICATION DOSE
+CS-PHR-FR-017 — Record Medication Dose
+Description
+The system shall record applicable medication dose information.
+Priority
+Must Have
+Conceptual Model
+DOSE VALUE    +DOSE UNIT
+Example:
+Dose Value500Dose Unitmg
+Weak design:
+dose = "500mg twice daily"
+This combines multiple concepts.
+A stronger model distinguishes:
+DOSE500 mg
+FREQUENCYTwice Daily
+Important Requirement
+The exact medication dose model shall be defined during Clinical Data Architecture.
+The SRS shall not force all medication dosing into one free-text field.
+
+5.283 MEDICATION ROUTE
+CS-PHR-FR-018 — Record Medication Route
+Description
+The system shall record the applicable route of medication administration.
+Priority
+Must Have
+Route Examples
+ORALINTRAVENOUSINTRAMUSCULARSUBCUTANEOUSTOPICAL
+Additional routes shall be managed according to approved clinical terminology.
+Example
+MEDICATION ORDERParacetamol       │       ▼ROUTEORAL
+Architecture Principle
+Medication route values shall be controlled clinical terminology where appropriate.
+Do not repeatedly hardcode route arrays inside React components.
+
+5.284 MEDICATION FREQUENCY
+CS-PHR-FR-019 — Record Medication Frequency
+Description
+The system shall record applicable medication frequency information.
+Priority
+Must Have
+Conceptual Examples
+ONCE DAILYTWICE DAILYEVERY 8 HOURSEVERY 12 HOURS
+The detailed frequency representation shall be defined during Clinical Data Architecture.
+Important Warning
+The following values are not always semantically identical:
+THREE TIMES DAILY
+and:
+EVERY 8 HOURS
+The architecture shall not casually treat all frequency text as mathematically interchangeable.
+
+5.285 MEDICATION DURATION
+CS-PHR-FR-020 — Record Medication Duration
+Description
+The system shall record applicable medication duration information.
+Priority
+Must Have
+Example
+Duration Value5Duration UnitDays
+Conceptually:
+DURATION   │   ├── Value   └── Unit
+Some medication orders may require alternative duration models.
+The final clinical model shall be approved during Medication Domain Design.
+
+5.286 MEDICATION INSTRUCTIONS
+CS-PHR-FR-021 — Record Medication Instructions
+Description
+The system shall allow an authorized prescriber to record applicable medication instructions.
+Priority
+Must Have
+Example
+Take after food.
+Medication instructions shall not replace structured dose, route, and frequency information where those fields are required.
+Weak model:
+instructions ="500mg orally every 8 hours for 5 days after food"
+as the only medication order representation.
+Stronger concept:
+DOSE       → 500 mgROUTE      → OralFREQUENCY  → Every 8 HoursDURATION   → 5 DaysINSTRUCTION → Take after food
+
+5.287 PRESCRIPTION GENERATION
+CS-PHR-FR-022 — Generate Prescription
+Requirement Name
+Generate Prescription
+Description
+The system shall generate an identifiable prescription context from eligible medication orders according to approved clinical workflow.
+Priority
+Must Have
+Conceptual Relationship
+CLINICAL ENCOUNTER        │        ▼PRESCRIPTION        │        ├── Medication Order A        ├── Medication Order B        └── Medication Order C
+Example
+PRESCRIPTIONRX-0000192      │      ├── Paracetamol Order      ├── Medication B Order      └── Medication C Order
+Important Architecture Principle
+A prescription may contain multiple medication orders.
+Do not build:
+prescriptionmedicine1medicine2medicine3medicine4medicine5
+The final cardinality shall be defined during Data Architecture.
+
+CS-PHR-FR-023 — Generate Prescription Identifier
+Description
+The system shall generate a unique identifier for each prescription.
+Priority
+Must Have
+Example
+RX-00000192
+Prescription identifiers shall not be reused for unrelated prescriptions.
+
+CS-PHR-FR-024 — View Prescription
+Description
+The system shall allow authorized users to view eligible prescription information.
+Priority
+Must Have
+Prescription View May Include
+PatientMRNPrescription IDEncounterPrescriberPrescription Date / TimeMedication OrdersDose InformationRouteFrequencyDurationInstructionsPrescription Status
+
+5.288 PHARMACY WORK QUEUE
+CS-PHR-FR-025 — Create Pharmacy Work Queue
+Description
+The system shall provide authorized pharmacy users with a queue of eligible prescriptions requiring pharmacy action.
+Priority
+Must Have
+Example
+PHARMACY WORK QUEUE┌────────────┬────────────┬──────────────┬────────────────────┐│ RX ID      │ Patient    │ Priority     │ Status             │├────────────┼────────────┼──────────────┼────────────────────┤│ RX-1001    │ MRN-100    │ ROUTINE      │ PENDING_REVIEW     ││ RX-1002    │ MRN-205    │ URGENT       │ CLARIFICATION      ││ RX-1003    │ MRN-310    │ ROUTINE      │ READY_DISPENSE     │└────────────┴────────────┴──────────────┴────────────────────┘
+Queue Information May Include
+prescription identifier;
+patient context;
+prescriber;
+encounter type;
+priority;
+order count;
+pharmacy status;
+waiting time.
+
+CS-PHR-FR-026 — Filter Pharmacy Work Queue
+Description
+The system shall allow authorized users to filter the pharmacy work queue.
+Priority
+Must Have
+Potential Filters
+STATUSPRIORITYDATEENCOUNTER TYPEPHARMACY LOCATIONPRESCRIBER
+
+5.289 PHARMACY VERIFICATION CONTEXT
+CS-PHR-FR-027 — Open Pharmacy Verification Context
+Description
+The system shall allow an authorized pharmacy user to open an eligible prescription in a pharmacy verification context.
+Priority
+Must Have
+Verification Context May Include
+PATIENT IDENTITYMRNAGE / RELEVANT DEMOGRAPHIC CONTEXTENCOUNTERPRESCRIBERMEDICATION ORDERMEDICATIONDOSEROUTEFREQUENCYDURATIONINSTRUCTIONSRELEVANT CLINICAL INFORMATIONAS AUTHORIZEDKNOWN MEDICATION INFORMATIONAS AVAILABLEORDER STATUSPHARMACY STATUS
+Patient Safety Requirement
+The patient identity and prescription context shall remain appropriately visible during pharmacy verification.
+
+5.290 PHARMACY VERIFICATION
+CS-PHR-FR-028 — Verify Eligible Prescription
+Requirement Name
+Verify Eligible Prescription
+Description
+The system shall allow an authorized pharmacist to verify an eligible prescription or medication order for pharmacy processing.
+Priority
+Must Have
+Preconditions
+Prescription exists.
+Patient context is valid.
+Medication order exists.
+Prescription is in an eligible state.
+User has pharmacy verification authority.
+Main Flow
+PHARMACY WORK QUEUE        │        ▼SELECT PRESCRIPTION        │        ▼LOAD PATIENT CONTEXT        │        ▼LOAD MEDICATION ORDERS        │        ▼REVIEW ORDER INFORMATION        │        ▼REVIEW AVAILABLE AUTHORIZEDCLINICAL CONTEXT        │        ▼PHARMACIST DECISION        │   ┌────┼──────────────┐   │    │              │   ▼    ▼              ▼VERIFY  CLARIFY       REJECT   │   ▼STATUS = VERIFIED   │   ▼READY FOR DISPENSING
+Business Rules
+CS-PHR-BR-011
+Pharmacy verification shall require appropriate authority.
+CS-PHR-BR-012
+The system shall identify the pharmacy verifier.
+CS-PHR-BR-013
+Pharmacy verification time shall be recorded.
+Acceptance Criteria
+AC-001
+An authorized pharmacist shall be able to verify an eligible prescription.
+AC-002
+An unauthorized user shall not perform pharmacy verification.
+AC-003
+Verification shall maintain actor and timestamp information.
+AC-004
+Only eligible verified medication work shall proceed to ordinary dispensing workflow.
+
+5.291 PRESCRIPTION CLARIFICATION
+CS-PHR-FR-029 — Request Prescription Clarification
+Description
+The system shall allow an authorized pharmacy user to mark an eligible medication order or prescription as requiring clarification.
+Priority
+Must Have
+Conceptual Flow
+PRESCRIPTION REVIEW        │        ▼ISSUE IDENTIFIED        │        ▼CLARIFICATION REQUIRED        │        ▼RECORD CLARIFICATION REASON        │        ▼PHARMACY PROCESSING HELD        │        ▼AUTHORIZED RESOLUTION WORKFLOW
+Clarification Reasons May Include
+incomplete order information;
+unclear instruction;
+medication order inconsistency;
+product or formulation clarification;
+other approved pharmacy reason.
+Important Requirement
+CuraSphere shall not automatically rewrite the prescriber’s medication order to make the issue disappear.
+
+CS-PHR-FR-030 — Record Clarification Resolution
+Description
+The system shall record the resolution of an eligible prescription clarification workflow.
+Priority
+Must Have
+Resolution Information May Include
+clarification case;
+original issue;
+resolution information;
+resolving actor;
+resolution time;
+resulting workflow status.
+Traceability Model
+ORIGINAL ORDER      │      ▼CLARIFICATION REQUEST      │      ▼RESOLUTION      │      ▼AUTHORIZED ORDER WORKFLOW
+The original medication ordering provenance shall remain appropriately traceable.
+
+5.292 PRESCRIPTION REJECTION
+CS-PHR-FR-031 — Reject Eligible Prescription
+Description
+The system shall allow an authorized pharmacy user to reject an eligible prescription from ordinary pharmacy processing according to approved workflow.
+Priority
+Must Have
+Main Flow
+UNDER REVIEW      │      ▼REJECT      │      ▼RECORD REASON      │      ▼STATUS = REJECTED      │      ▼AUDIT EVENT
+Important Requirement
+Prescription rejection shall not delete the original medication order.
+
+CS-PHR-FR-032 — Track Pharmacy Verification Status
+Description
+The system shall track the pharmacy verification state of eligible prescriptions.
+Priority
+Must Have
+Conceptual States
+PENDING_REVIEW       │       ▼UNDER_REVIEW       │   ┌───┼────────────┐   │   │            │   ▼   ▼            ▼VERIFIED CLARIFICATION REJECTED           │           ▼        RESOLVED           │           ▼      PENDING_REVIEW
+The final state model shall be defined during Pharmacy Domain Architecture.
+
+5.293 MEDICATION STOCK AVAILABILITY
+CS-PHR-FR-033 — Check Medication Stock Availability
+Description
+The system shall allow authorized pharmacy users to determine eligible stock availability for medication dispensing.
+Priority
+Must Have
+Conceptual Flow
+VERIFIED MEDICATION ORDER          │          ▼MEDICATION DEFINITION          │          ▼ELIGIBLE PRODUCTS          │          ▼ELIGIBLE BATCHES          │          ▼AVAILABLE QUANTITY
+Example
+MedicationParacetamol
+Eligible product:
+Paracetamol 500 mg Tablet
+Inventory:
+Batch AAvailable: 100Expiry: 2026-12-31
+Batch BAvailable: 200Expiry: 2027-05-31
+Important Principle
+Stock availability shall be determined from trusted inventory information.
+Do not maintain:
+const stock = 300;
+inside React as an authoritative pharmacy stock balance.
+
+5.294 ELIGIBLE MEDICATION PRODUCT
+CS-PHR-FR-034 — Identify Eligible Medication Product
+Description
+The system shall identify medication products eligible for the applicable dispensing workflow.
+Priority
+Must Have
+Conceptual Relationship
+MEDICATION ORDER      │      ▼MEDICATION DEFINITION      │      ▼ELIGIBLE MEDICATION PRODUCTS
+The detailed product substitution and equivalence rules shall be defined with pharmacy governance stakeholders.
+Scope Limitation
+CuraSphere shall not independently assume that two medication products are clinically interchangeable merely because their names appear similar.
+
+CS-PHR-FR-035 — Prevent Invalid Product Selection
+Description
+The system shall prevent ordinary dispensing workflow from selecting an ineligible medication product.
+Priority
+Must Have
+Example
+ORDERED MEDICATIONParacetamol       │       ▼SELECTED PRODUCTUnrelated Medication Product       │       ▼DISPENSE?       │       ▼REJECT
+Business Rule
+CS-PHR-BR-014
+The dispensed product shall be eligible for the applicable medication order according to approved medication configuration and workflow.
+
+5.295 MEDICATION BATCH MANAGEMENT
+CS-PHR-FR-036 — Create Medication Batch
+Requirement Name
+Create Medication Batch
+Description
+The system shall allow an authorized user to create a medication batch record for eligible pharmacy inventory.
+Priority
+Must Have
+Conceptual Batch
+MEDICATION BATCH       │       ├── Internal Batch ID       ├── Medication Product       ├── Manufacturer Batch Number       ├── Expiry Date       ├── Received Quantity Context       ├── Storage Location       ├── Batch Status       └── Inventory Context
+Important Principle
+The product is not the batch.
+PRODUCTParacetamol 500 mg Tablet
+may have:
+BATCH AManufacturer Batch:PA-2026-100Expiry:DEC 2026
+and:
+BATCH BManufacturer Batch:PA-2027-050Expiry:MAY 2027
+Therefore:
+MEDICATION PRODUCT ≠ MEDICATION BATCH
+
+CS-PHR-FR-037 — Generate Medication Batch Identifier
+Description
+The system shall generate a unique internal identifier for each medication batch record.
+Priority
+Must Have
+Example
+PHR-BAT-0000192
+The internal identifier shall be distinguishable from the manufacturer batch or lot number.
+
+CS-PHR-FR-038 — Record Manufacturer Batch Number
+Description
+The system shall record applicable manufacturer batch or lot information for a medication batch.
+Priority
+Must Have
+Example
+Internal Batch IDPHR-BAT-192
+Manufacturer Batch NumberPCM-A26-9182
+These are different identifiers.
+
+CS-PHR-FR-039 — Record Medication Expiry Date
+Description
+The system shall record the applicable expiry date of a medication batch.
+Priority
+Must Have
+Concept
+MEDICATION BATCH       │       ▼EXPIRY DATE
+Expiry information shall be stored using an appropriate date representation.
+Do not store:
+expiry = "next year"
+as authoritative batch expiry information.
+
+CS-PHR-FR-040 — Record Batch Quantity
+Description
+The system shall record applicable quantity information associated with pharmacy stock receipt and batch inventory workflow.
+Priority
+Must Have
+Important Inventory Principle
+The current stock balance shall not rely only on a manually edited field:
+batch.quantity = 500
+with no explanation of how the quantity changed.
+The inventory architecture shall support stock movement traceability.
+Conceptually:
+OPENING / RECEIPT       │       ▼+1000       │       ▼DISPENSING       │       ▼-20       │       ▼RETURN       │       ▼+5       │       ▼ADJUSTMENT       │       ▼-2
+Result:
+CURRENT BALANCE983
+The final balance strategy shall be defined during Data Architecture.
+
+CS-PHR-FR-041 — Record Batch Storage Location
+Description
+The system shall associate an eligible medication batch with applicable pharmacy storage or inventory location information.
+Priority
+Must Have
+Example
+PHARMACY LOCATIONMAIN PHARMACY       │       ▼STORAGE AREASHELF A
+The detailed warehouse and storage model shall be defined during Inventory Architecture.
+
+CS-PHR-FR-042 — Activate, Block, or Quarantine Batch
+Description
+The system shall allow authorized users to control the operational status of an eligible medication batch.
+Priority
+Must Have
+Conceptual Statuses
+ACTIVE
+BLOCKED
+QUARANTINED
+EXPIRED
+DEPLETED
+Additional states may be defined during Pharmacy Domain Design.
+Example
+BATCH  │  ▼QUARANTINED  │  ▼NOT ELIGIBLE FORORDINARY DISPENSING
+Business Rule
+CS-PHR-BR-015
+Only eligible medication batches shall be available for ordinary dispensing.
+
+CS-PHR-FR-043 — Search Medication Batches
+Description
+The system shall allow authorized users to search medication batches.
+Priority
+Must Have
+Search Criteria May Include
+internal batch identifier;
+manufacturer batch number;
+medication product;
+expiry date;
+storage location;
+batch status.
+
+CS-PHR-FR-044 — Track Batch Status
+Description
+The system shall track the operational state of medication batches.
+Priority
+Must Have
+Conceptual State Model
+RECEIVED   │   ▼ACTIVE   │   ├────────────► BLOCKED   │                 │   │                 ▼   │               ACTIVE   │   ├────────────► QUARANTINED   │   ├────────────► EXPIRED   │   └────────────► DEPLETED
+The final state transition model shall be defined during Pharmacy Domain Architecture.
+
+5.296 EXPIRED MEDICATION CONTROL
+CS-PHR-FR-045 — Prevent Expired Batch Dispensing
+Description
+The system shall prevent ordinary dispensing from an expired medication batch.
+Priority
+Must Have
+Conceptual Validation
+SELECT BATCH     │     ▼EXPIRY DATE     │     ▼EXPIRED?  ┌──┴──┐  │     │ YES    NO  │     │  ▼     ▼REJECT CONTINUE
+Business Rule
+CS-PHR-BR-016
+Expired medication batches shall not be eligible for ordinary dispensing.
+Backend Requirement
+Expiry validation shall be enforced by trusted backend logic.
+The React interface may hide expired batches, but API validation remains required.
+
+CS-PHR-FR-046 — Identify Near-Expiry Medication Batches
+Description
+The system shall identify medication batches approaching expiry according to configurable operational policy.
+Priority
+Must Have
+Example
+TODAY14 JUL 2026NEAR-EXPIRY THRESHOLD90 DAYS
+The system may identify:
+BATCH AExpiry:10 AUG 2026Status:NEAR EXPIRY
+Important Requirement
+The threshold shall be configurable according to approved pharmacy policy.
+Do not hardcode:
+if (daysRemaining < 30)
+throughout React components.
+
+5.297 DISPENSING BATCH SELECTION
+CS-PHR-FR-047 — Select Eligible Dispensing Batch
+Description
+The system shall allow eligible medication inventory batches to be selected for dispensing.
+Priority
+Must Have
+Validation May Include
+PRODUCT MATCH?BATCH ACTIVE?BATCH NOT EXPIRED?BATCH NOT BLOCKED?BATCH NOT QUARANTINED?STOCK AVAILABLE?LOCATION ELIGIBLE?
+Conceptual Flow
+MEDICATION PRODUCT        │        ▼AVAILABLE BATCHES        │        ▼FILTER INELIGIBLE BATCHES        │        ▼ELIGIBLE DISPENSING BATCHES
+
+CS-PHR-FR-048 — Support FEFO Batch Selection
+Description
+The system should support First Expired, First Out batch selection guidance where approved by pharmacy policy.
+Priority
+Should Have
+Conceptual Model
+BATCH AExpiry:DEC 2026
+BATCH BExpiry:MAY 2027
+If both batches are eligible:
+FEFO GUIDANCE      │      ▼BATCH A FIRST
+because it expires earlier.
+Important Distinction
+FIFO
+means:
+First In, First Out.
+FEFO
+means:
+First Expired, First Out.
+For medication inventory, expiry can be operationally critical.
+Scope Requirement
+The final batch allocation policy shall be approved during Pharmacy and Inventory Architecture.
+
+5.298 CREATE DISPENSING EVENT
+CS-PHR-FR-049 — Create Dispensing Event
+Requirement Name
+Create Dispensing Event
+Description
+The system shall create an identifiable dispensing event for eligible medication dispensing activity.
+Priority
+Must Have
+Conceptual Dispensing Event
+DISPENSING EVENT       │       ├── Dispensing ID       ├── Patient       ├── Prescription       ├── Medication Order       ├── Medication Product       ├── Quantity       ├── Batch Allocation       ├── Dispensing User       ├── Dispensed At       └── Status
+Main Flow
+VERIFIED PRESCRIPTION        │        ▼SELECT MEDICATION ORDER        │        ▼IDENTIFY ELIGIBLE PRODUCT        │        ▼CHECK STOCK        │        ▼SELECT ELIGIBLE BATCH        │        ▼ENTER DISPENSING QUANTITY        │        ▼VALIDATE REMAINING QUANTITY        │        ▼VALIDATE STOCK        │        ▼CREATE DISPENSING EVENT        │        ▼CREATE STOCK MOVEMENT        │        ▼COMPLETE DISPENSING
+Business Rules
+CS-PHR-BR-017
+A dispensing event shall reference eligible medication work.
+CS-PHR-BR-018
+A dispensing event shall identify the medication product actually dispensed.
+CS-PHR-BR-019
+Dispensing shall maintain applicable batch traceability.
+
+CS-PHR-FR-050 — Generate Dispensing Identifier
+Description
+The system shall generate a unique identifier for each dispensing event.
+Priority
+Must Have
+Example
+DSP-00000921
+
+5.299 DISPENSED PRODUCT
+CS-PHR-FR-051 — Record Dispensed Medication Product
+Description
+The system shall record the medication product actually dispensed.
+Priority
+Must Have
+Important Traceability Concept
+ORDERED MEDICATIONParacetamol
+DISPENSED PRODUCTParacetamol 500 mg Tablet
+The system shall preserve both applicable contexts.
+Weak design:
+medicine_name = "Paracetamol"
+does not answer:
+WHICH PRODUCT?WHICH STRENGTH?WHICH DOSAGE FORM?WHICH BATCH?
+
+5.300 DISPENSED QUANTITY
+CS-PHR-FR-052 — Record Dispensed Quantity
+Description
+The system shall record the actual quantity dispensed.
+Priority
+Must Have
+Example
+PRESCRIBED QUANTITY30 Tablets
+Actual dispensing:
+DISPENSED QUANTITY20 Tablets
+This may represent partial dispensing.
+The system shall not automatically mark the complete prescription as fully dispensed.
+
+5.301 DISPENSING BATCH TRACEABILITY
+CS-PHR-FR-053 — Record Dispensing Batch
+Description
+The system shall record the medication batch or batch allocations used for eligible dispensing.
+Priority
+Must Have
+Simple Example
+DISPENSING EVENTDSP-921     │     ▼BATCHPHR-BAT-192
+Multi-Batch Concept
+A dispensing requirement may potentially be fulfilled from more than one eligible batch.
+Example:
+Required Quantity30
+Batch AAvailable:10
+Batch BAvailable:100
+Possible allocation:
+DISPENSING EVENT        │        ├── Batch A → 10        └── Batch B → 20
+Therefore, the final Data Architecture shall evaluate:
+DISPENSING EVENT        │        ▼DISPENSING BATCH ALLOCATION        │        ▼MEDICATION BATCH
+rather than forcing:
+dispensing.batch_id
+as the only universal design.
+
+5.302 DISPENSING USER
+CS-PHR-FR-054 — Record Dispensing User
+Description
+The system shall identify the authorized user responsible for completing eligible medication dispensing.
+Priority
+Must Have
+Traceability
+WHO DISPENSED?      │      ▼AUTHORIZED USER ID
+and:
+WHEN?      │      ▼DISPENSED_AT
+The system shall not use:
+dispensed_by = "Pharmacy"
+where individual user traceability is required.
+
+5.303 COMPLETE MEDICATION DISPENSING
+CS-PHR-FR-055 — Complete Medication Dispensing
+Description
+The system shall allow an authorized pharmacy user to complete an eligible dispensing event.
+Priority
+Must Have
+Preconditions
+Prescription exists.
+Medication order exists.
+Pharmacy verification requirements are satisfied.
+Eligible medication product is selected.
+Dispensing quantity is valid.
+Eligible batch allocation exists.
+Sufficient stock exists.
+User is authorized.
+Main Flow
+DISPENSING DRAFT       │       ▼VALIDATE PATIENT       │       ▼VALIDATE PRESCRIPTION       │       ▼VALIDATE MEDICATION ORDER       │       ▼VALIDATE PHARMACY VERIFICATION       │       ▼VALIDATE PRODUCT       │       ▼VALIDATE QUANTITY       │       ▼VALIDATE BATCH       │       ▼VALIDATE STOCK       │       ▼BEGIN TRANSACTION       │       ▼CREATE / FINALIZE DISPENSING       │       ▼CREATE STOCK MOVEMENT       │       ▼UPDATE DISPENSING STATE       │       ▼COMMIT TRANSACTION       │       ▼AUDIT EVENT
+Transaction Requirement
+The dispensing event and its applicable stock effect shall be processed using an appropriate transactional boundary.
+Weak workflow:
+STEP 1Save dispensing
+Then:
+SERVER CRASHES
+Before:
+STEP 2Reduce stock
+Result:
+MEDICATION DISPENSEDBUTSTOCK NOT REDUCED
+Another weak sequence:
+Reduce stock
+then the dispensing save fails.
+Result:
+STOCK REDUCEDBUTNO DISPENSING RECORD
+The architecture shall prevent inconsistent partial completion where possible.
+Acceptance Criteria
+AC-001
+An authorized user shall be able to complete eligible medication dispensing.
+AC-002
+The system shall reject insufficient stock.
+AC-003
+The system shall reject expired batch dispensing.
+AC-004
+The dispensing event shall maintain batch traceability.
+AC-005
+The stock effect shall be traceable to the dispensing event.
+
+5.304 PREVENT OVER-DISPENSING
+CS-PHR-FR-056 — Prevent Over-Dispensing
+Description
+The system shall prevent ordinary dispensing beyond the eligible remaining prescription quantity.
+Priority
+Must Have
+Example
+PRESCRIBED QUANTITY30
+Previous dispensing:
+20
+Remaining:
+10
+New request:
+DISPENSE 15
+Validation:
+15 > 10   │   ▼REJECT
+Business Rule
+CS-PHR-BR-020
+Ordinary dispensing shall not exceed the eligible remaining quantity.
+Exceptions, if clinically and operationally required, shall use separately approved workflows.
+
+5.305 PARTIAL DISPENSING
+CS-PHR-FR-057 — Support Partial Dispensing
+Description
+The system shall support partial dispensing of eligible medication orders.
+Priority
+Must Have
+Example
+PRESCRIBED30 Tablets
+Available stock:
+20 Tablets
+Authorized pharmacy workflow may record:
+DISPENSED20
+REMAINING10
+Status:
+PARTIALLY_DISPENSED
+Important Principle
+Do not use:
+dispensed = true
+as the entire dispensing model.
+A Boolean cannot accurately represent:
+NOT DISPENSEDPARTIALLY DISPENSEDFULLY DISPENSED
+
+CS-PHR-FR-058 — Track Remaining Prescription Quantity
+Description
+The system shall track or derive the eligible remaining quantity for medication dispensing.
+Priority
+Must Have
+Conceptual Calculation
+PRESCRIBED QUANTITY        │        ▼30TOTAL VALID DISPENSED        │        ▼20REMAINING        │        ▼10
+Conceptually:
+REMAINING QUANTITY        =ELIGIBLE PRESCRIBED QUANTITY        -VALID COMPLETED DISPENSING
+The final quantity calculation and reversal rules shall be defined during Pharmacy Domain Design.
+
+5.306 STOCK MOVEMENT MODEL
+CS-PHR-FR-059 — Create Stock Movement
+Requirement Name
+Create Stock Movement
+Description
+The system shall create an identifiable stock movement for eligible pharmacy inventory changes.
+Priority
+Must Have
+Conceptual Stock Movement
+STOCK MOVEMENT       │       ├── Movement ID       ├── Medication Batch       ├── Inventory Location       ├── Movement Type       ├── Quantity       ├── Direction       ├── Source Reference       ├── Actor       └── Timestamp
+Example
+MOVEMENTSTK-MOV-1001TypeDISPENSINGBatchPHR-BAT-192DirectionOUTQuantity20SourceDSP-921
+Fundamental Inventory Principle
+Do not ask only:
+WHAT IS THE CURRENT STOCK?
+The system must also support answering:
+WHY IS THIS THE CURRENT STOCK?
+Conceptually:
+STOCK BALANCE      │      ▼STOCK MOVEMENT HISTORY
+
+5.307 STOCK RECEIPT MOVEMENT
+CS-PHR-FR-060 — Record Stock Receipt Movement
+Description
+The system shall record an eligible stock receipt as a pharmacy inventory movement.
+Priority
+Must Have
+Conceptual Example
+MEDICATION BATCHPHR-BAT-192       │       ▼STOCK RECEIPT+1000
+Movement
+TYPERECEIPTDIRECTIONINQUANTITY1000
+The detailed procurement and goods receipt workflow shall be defined in the Procurement and Inventory SRS section.
+
+5.308 DISPENSING STOCK MOVEMENT
+CS-PHR-FR-061 — Record Dispensing Stock Movement
+Description
+The system shall record applicable medication dispensing as an inventory stock movement.
+Priority
+Must Have
+Conceptual Relationship
+DISPENSING EVENT       │       ▼STOCK MOVEMENT       │       ▼MEDICATION BATCH
+Example:
+DSP-921   │   ▼DISPENSE 20 TABLETS   │   ▼STOCK MOVEMENT-20
+Business Rule
+CS-PHR-BR-021
+A completed dispensing stock effect shall be traceable to the applicable dispensing event.
+
+5.309 RETURN STOCK MOVEMENT
+CS-PHR-FR-062 — Record Return Stock Movement
+Description
+The system shall record an eligible medication return stock effect using an appropriate stock movement.
+Priority
+Must Have
+Important Requirement
+A return does not automatically mean:
+STOCK + QUANTITY
+The medication may require:
+RETURNED TO SALEABLE STOCK
+or:
+QUARANTINED
+or:
+DISPOSAL WORKFLOW
+depending on approved pharmacy policy.
+Therefore:
+RETURN   │   ▼EVALUATE DISPOSITION   │   ├── RETURN TO ELIGIBLE STOCK   ├── QUARANTINE   └── OTHER APPROVED WORKFLOW
+
+5.310 STOCK ADJUSTMENT
+CS-PHR-FR-063 — Record Adjustment Stock Movement
+Description
+The system shall allow authorized users to record approved pharmacy inventory adjustments.
+Priority
+Must Have
+Adjustment Reasons May Include
+verified stock count difference;
+damaged stock;
+approved write-off;
+data correction workflow;
+other approved inventory reason.
+Important Control
+Weak design:
+UPDATE batchSET quantity = 500WHERE id = 10;
+No one knows:
+WHY WAS STOCK CHANGED?WHO CHANGED IT?WHAT WAS THE PREVIOUS BALANCE?WHEN DID IT CHANGE?
+Required concept:
+STOCK ADJUSTMENT       │       ├── Batch       ├── Quantity Effect       ├── Reason       ├── Actor       ├── Timestamp       └── Authorization Context
+Business Rule
+CS-PHR-BR-022
+Inventory adjustments shall require appropriate authority and traceability.
+
+5.311 PREVENT NEGATIVE STOCK
+CS-PHR-FR-064 — Prevent Negative Stock
+Description
+The system shall prevent ordinary pharmacy inventory operations from producing an invalid negative stock balance.
+Priority
+Must Have
+Example
+AVAILABLE STOCK10
+Dispensing request:
+20
+Validation:
+20 > 10   │   ▼REJECT
+Concurrency Risk
+User A sees:
+STOCK = 10
+User B sees:
+STOCK = 10
+User A dispenses:
+8
+User B simultaneously dispenses:
+8
+If both rely on old browser state:
+TOTAL DISPENSED = 16ORIGINAL STOCK = 10INVALID RESULT
+Engineering Requirement
+Stock validation shall use trusted backend processing, appropriate transaction handling, and concurrency control.
+React availability checks alone shall not be sufficient.
+
+5.312 MEDICATION STOCK BALANCE
+CS-PHR-FR-065 — View Medication Stock Balance
+Description
+The system shall allow authorized users to view eligible medication stock balances.
+Priority
+Must Have
+Stock View May Include
+Medication ProductBatchLocationAvailable QuantityExpiry DateBatch Status
+Example
+PARACETAMOL 500 MG TABLET┌──────────────┬────────────┬──────────┬─────────────┐│ Batch        │ Expiry     │ Quantity │ Status      │├──────────────┼────────────┼──────────┼─────────────┤│ BAT-192      │ DEC 2026   │ 100      │ ACTIVE      ││ BAT-221      │ MAY 2027   │ 200      │ ACTIVE      ││ BAT-250      │ JUN 2026   │ 20       │ EXPIRED     │└──────────────┴────────────┴──────────┴─────────────┘
+Expired quantity shall not be represented as ordinary available dispensing stock.
+
+5.313 MEDICATION STOCK LEDGER
+CS-PHR-FR-066 — View Medication Stock Ledger
+Description
+The system shall allow authorized users to view eligible pharmacy stock movement history.
+Priority
+Must Have
+Example
+STOCK LEDGERBatch: PHR-BAT-192┌────────────┬────────────┬───────────┬──────────┬─────────┐│ Date       │ Type       │ Reference │ In       │ Out     │├────────────┼────────────┼───────────┼──────────┼─────────┤│ 01 JUL     │ RECEIPT    │ GRN-100   │ 1000     │ -       ││ 02 JUL     │ DISPENSE   │ DSP-101   │ -        │ 20      ││ 03 JUL     │ DISPENSE   │ DSP-120   │ -        │ 10      ││ 04 JUL     │ RETURN     │ RET-010   │ 5        │ -       ││ 05 JUL     │ ADJUSTMENT │ ADJ-005   │ -        │ 2       │└────────────┴────────────┴───────────┴──────────┴─────────┘
+Conceptual balance:
+1000- 20- 10+ 5- 2─────973
+Important Principle
+The stock ledger is not the same as the current stock screen.
+STOCK BALANCE
+answers:
+How much eligible stock is available?
+STOCK LEDGER
+answers:
+Which movements explain inventory changes?
+
+5.314 MEDICATION RETURN
+CS-PHR-FR-067 — Record Medication Return
+Description
+The system shall allow an authorized user to record an eligible medication return.
+Priority
+Must Have
+Conceptual Return
+MEDICATION RETURN       │       ├── Return ID       ├── Original Dispensing       ├── Patient Context       ├── Medication Product       ├── Quantity       ├── Batch Context       ├── Return Reason       ├── Disposition       ├── Actor       └── Returned At
+Main Flow
+SEARCH DISPENSING       │       ▼SELECT DISPENSING EVENT       │       ▼VALIDATE RETURN ELIGIBILITY       │       ▼SELECT DISPENSED ITEM       │       ▼ENTER RETURN QUANTITY       │       ▼RECORD RETURN REASON       │       ▼DETERMINE DISPOSITION       │       ▼CREATE RETURN       │       ▼CREATE APPLICABLE STOCK MOVEMENT       │       ▼AUDIT EVENT
+
+CS-PHR-FR-068 — Validate Medication Return
+Description
+The system shall validate an eligible medication return.
+Priority
+Must Have
+Validation May Include
+ORIGINAL DISPENSING EXISTS?DISPENSING COMPLETED?PRODUCT WAS DISPENSED?RETURN QUANTITY VALID?RETURN QUANTITY NOT GREATERTHAN ELIGIBLE DISPENSED QUANTITY?BATCH TRACEABLE?RETURN WORKFLOW ALLOWED?
+Example
+Dispensed:
+20 Tablets
+Previously returned:
+5 Tablets
+Remaining eligible return context:
+15 Tablets
+New return request:
+20 Tablets
+Validation:
+20 > 15   │   ▼REJECT
+
+CS-PHR-FR-069 — Determine Return Stock Disposition
+Description
+The system shall record the approved disposition of eligible returned medication.
+Priority
+Must Have
+Conceptual Dispositions
+RETURN TO ELIGIBLE STOCK
+QUARANTINE
+DAMAGED
+DISPOSAL REQUIRED
+The final disposition vocabulary and clinical rules shall be defined with pharmacy governance stakeholders.
+Safety Principle
+The system shall not automatically return every patient-returned medication to available dispensing stock.
+
+5.315 DISPENSING CANCELLATION
+CS-PHR-FR-070 — Cancel Eligible Dispensing
+Description
+The system shall allow an authorized user to cancel or void an eligible dispensing event according to approved workflow.
+Priority
+Must Have
+Important Principle
+Do not implement:
+DELETE FROM dispensingWHERE id = 921;
+The dispensing history may already have created a stock effect.
+Required concept:
+ORIGINAL DISPENSING       │       ▼CANCELLATION / VOID WORKFLOW       │       ▼REASON       │       ▼ACTOR       │       ▼TIME       │       ▼STOCK EFFECT EVALUATION
+Business Rule
+CS-PHR-BR-023
+Completed dispensing records shall not normally be physically deleted as a cancellation mechanism.
+
+CS-PHR-FR-071 — Reverse Eligible Stock Effect
+Description
+The system shall support controlled reversal of an eligible dispensing stock effect when approved by pharmacy workflow.
+Priority
+Must Have
+Weak Design
+Original movement:
+DISPENSING-20
+Developer deletes it.
+The historical stock ledger changes silently.
+Stronger concept:
+ORIGINAL MOVEMENT-20
+Then:
+REVERSAL MOVEMENT+20
+with reference:
+REVERSAL OFSTK-MOV-1001
+Important Requirement
+The final reversal architecture shall preserve stock movement traceability.
+
+5.316 PATIENT MEDICATION HISTORY
+CS-PHR-FR-072 — View Patient Medication History
+Description
+The system shall allow authorized clinical users to view eligible patient medication history.
+Priority
+Must Have
+Example
+PATIENT MEDICATION HISTORYPatientAhmad KhanMRNMRN-000102────────────────────────────────────────────14 JUL 2026Medication:ParacetamolDose:500 mgRoute:OralFrequency:Every 8 HoursPrescription:RX-192Dispensing Status:DISPENSED────────────────────────────────────────────10 JUL 2026Medication:Medication BPrescription:RX-180Dispensing Status:PARTIALLY DISPENSED
+Important Distinction
+MEDICATION ORDER HISTORY
+answers:
+What medication was clinically ordered?
+PHARMACY VERIFICATION HISTORY
+answers:
+What pharmacy review occurred?
+DISPENSING HISTORY
+answers:
+What medication product and quantity were actually dispensed?
+These shall not be represented as one identical concept.
+
+5.317 EMR MEDICATION AVAILABILITY
+CS-PHR-FR-073 — Make Eligible Medication Information Available to EMR
+Description
+The system shall make eligible medication information available to the Electronic Medical Record according to approved clinical access rules.
+Priority
+Must Have
+Conceptual Integration
+MEDICATION ORDER       │       ▼PRESCRIPTION       │       ▼PHARMACY VERIFICATION       │       ▼DISPENSING       │       ▼MEDICATION CLINICAL READ MODEL       │       ▼EMR
+EMR Medication Context May Include
+ordered medication;
+dose;
+route;
+frequency;
+duration;
+instructions;
+order status;
+prescription reference;
+dispensing status;
+eligible dispensing information.
+Important Requirement
+The EMR shall not incorrectly present:
+ORDERED
+as:
+DISPENSED
+A medication may have been ordered but never dispensed.
+Business Rules
+CS-PHR-BR-024
+Medication order status and dispensing status shall remain distinguishable.
+CS-PHR-BR-025
+Only eligible medication information shall be exposed through EMR clinical views.
+
+5.318 SEARCH PRESCRIPTIONS
+CS-PHR-FR-074 — Search Prescriptions
+Description
+The system shall allow authorized users to search eligible prescriptions.
+Priority
+Must Have
+Search Criteria May Include
+prescription identifier;
+medication order identifier;
+MRN;
+patient name;
+prescriber;
+prescription date;
+medication;
+pharmacy status.
+Security Requirement
+Search results shall respect applicable clinical authorization and pharmacy access policies.
+
+5.319 SEARCH DISPENSING RECORDS
+CS-PHR-FR-075 — Search Dispensing Records
+Description
+The system shall allow authorized users to search eligible medication dispensing records.
+Priority
+Must Have
+Search Criteria May Include
+DISPENSING IDPRESCRIPTION IDMRNPATIENTMEDICATION PRODUCTMEDICATION BATCHDISPENSING USERDISPENSING DATESTATUS
+This capability shall support medication and batch traceability.
+Example question:
+WHICH PATIENT DISPENSING EVENTSUSED BATCH PHR-BAT-192?
+The architecture shall support an authorized traceability workflow.
+
+5.320 PHARMACY AUDIT EVENTS
+CS-PHR-FR-076 — Record Pharmacy Audit Events
+Description
+The system shall record appropriate audit events for significant pharmacy operations.
+Priority
+Must Have
+Events May Include
+MEDICATION_CREATEDMEDICATION_UPDATEDMEDICATION_DEACTIVATEDMEDICATION_PRODUCT_CREATEDMEDICATION_PRODUCT_UPDATEDMEDICATION_ORDER_RECEIVEDMEDICATION_ORDER_CANCELLEDPRESCRIPTION_CREATEDPHARMACY_VERIFICATION_STARTEDPRESCRIPTION_VERIFIEDPRESCRIPTION_CLARIFICATION_REQUESTEDPRESCRIPTION_CLARIFICATION_RESOLVEDPRESCRIPTION_REJECTEDMEDICATION_BATCH_CREATEDMEDICATION_BATCH_BLOCKEDMEDICATION_BATCH_QUARANTINEDMEDICATION_BATCH_EXPIREDDISPENSING_CREATEDDISPENSING_COMPLETEDDISPENSING_CANCELLEDMEDICATION_RETURN_RECORDEDSTOCK_RECEIPT_RECORDEDSTOCK_DISPENSING_RECORDEDSTOCK_RETURN_RECORDEDSTOCK_ADJUSTMENT_RECORDEDSTOCK_REVERSAL_RECORDED
+Example
+EVENTDISPENSING_COMPLETEDTARGETDSP-921PATIENTMRN-000102PRESCRIPTIONRX-192ACTORPHR-USR-020TIME2026-07-14 16:20RESULTSUCCESS
+Privacy Requirement
+Audit records shall maintain sufficient traceability without unnecessarily duplicating complete medication or clinical content.
+
+5.321 PHARMACY STATE TRANSITION VALIDATION
+CS-PHR-FR-077 — Prevent Invalid Pharmacy State Transition
+Description
+The system shall enforce approved pharmacy workflow state transitions.
+Priority
+Must Have
+Conceptual Medication Order Workflow
+ORDERED   │   ▼PHARMACY_PENDING   │   ▼UNDER_REVIEW   │   ▼VERIFIED   │   ▼READY_FOR_DISPENSING   │   ▼PARTIALLY_DISPENSED   │   ▼DISPENSED
+Invalid Transition
+ORDERED   │   ▼DISPENSED
+without required pharmacy workflow where pharmacy verification is mandatory.
+Another invalid transition:
+REJECTED   │   ▼DISPENSED
+through an ordinary dispensing request.
+Business Rules
+CS-PHR-BR-026
+Pharmacy workflow states shall follow approved transitions.
+CS-PHR-BR-027
+The trusted backend shall reject invalid client-requested state transitions.
+CS-PHR-BR-028
+React shall not be the authoritative pharmacy workflow state engine.
+
+5.322 MEDICATION CODING INTEGRATION ARCHITECTURE
+CS-PHR-FR-078 — Support Medication Coding Integration Architecture
+Description
+The CuraSphere architecture should permit future integration with approved medication terminology or coding services.
+Priority
+Should Have
+Conceptual Architecture
+CURASPHERE     │     ▼MEDICATION TERMINOLOGY CONTRACT     │     ▼TERMINOLOGY ADAPTER     │     ▼APPROVED MEDICATIONCODING SERVICE
+Scope Statement
+This requirement does not select:
+medication terminology vendor;
+national medication coding system;
+international medication terminology;
+drug database provider;
+formulary vendor.
+These decisions shall be made during Clinical Terminology Architecture.
+Architecture Principle
+Do not spread vendor-specific medication identifiers throughout the core domain without an approved terminology mapping strategy.
+
+5.323 PHARMACY BARCODE ARCHITECTURE
+CS-PHR-FR-079 — Support Pharmacy Barcode Architecture
+Description
+The CuraSphere architecture should permit future use of approved barcode-supported pharmacy workflows.
+Priority
+Should Have
+Potential Workflow
+PHARMACY USER      │      ▼OPEN DISPENSING      │      ▼SELECT PRESCRIPTION      │      ▼SCAN MEDICATION PRODUCT / BATCH      │      ▼RESOLVE BARCODE      │      ▼VALIDATE PRODUCT      │      ▼VALIDATE BATCH      │      ▼VALIDATE EXPIRY      │      ▼VALIDATE ORDER RELATIONSHIP      │      ▼CONTINUE DISPENSING
+Important Safety Principle
+Barcode scanning shall support validation.
+It shall not mean:
+BARCODE SCANNED      │      ▼AUTOMATICALLY CORRECT
+The system shall still validate applicable medication, product, batch, and workflow relationships.
+Scope Statement
+The final barcode standard, scanner technology, and product identification architecture shall be defined during Detailed Design.
+
+5.324 FUTURE MEDICATION SAFETY SERVICE INTEGRATION
+CS-PHR-FR-080 — Support Future Medication Safety Service Integration
+Description
+The CuraSphere architecture should permit future integration with approved medication safety services.
+Priority
+Should Have
+Potential Future Capabilities
+drug-allergy checking;
+duplicate medication checking;
+drug-drug interaction checking;
+dose range checking;
+medication contraindication support;
+renal dosing support;
+formulary decision support.
+Conceptual Architecture
+MEDICATION ORDER       │       ▼CURASPHERE MEDICATION DOMAIN       │       ▼MEDICATION SAFETY CONTRACT       │       ▼APPROVED SAFETY SERVICE       │       ▼SAFETY RESPONSE       │       ▼CLINICAL WORKFLOW
+Critical Scope Statement
+CuraSphere shall not invent medical interaction or dosing rules from developer assumptions.
+For example:
+if (medicineA == "X" && medicineB == "Y"){    return "Dangerous";}
+is not an acceptable enterprise medication safety knowledge architecture.
+Medication safety knowledge shall come from approved clinical governance and validated knowledge sources or services.
+The exact medication safety decision support architecture shall be documented separately.
+
+5.325 PHARMACY ENTITY RELATIONSHIP CONCEPT
+The following is a conceptual domain relationship.
+It is not the final PostgreSQL ERD.
+                              PATIENT                                 │                                 ▼                         CLINICAL ENCOUNTER                                 │                                 ▼                           PRESCRIPTION                                 │                                 ▼                         MEDICATION ORDER                                 │                                 ▼                      MEDICATION DEFINITION                                 │                                 ▼                      PHARMACY VERIFICATION                                 │                                 ▼                         DISPENSING EVENT                                 │                                 ▼                  DISPENSING BATCH ALLOCATION                                 │                                 ▼                        MEDICATION BATCH                                 │                                 ▼                       MEDICATION PRODUCT                                 │                                 ▼                         STOCK MOVEMENT
+Additional relationships include:
+DISPENSING EVENT       │       ▼MEDICATION RETURN       │       ▼RETURN DISPOSITION       │       ▼STOCK MOVEMENT
+
+5.326 MEDICATION CATALOG RELATIONSHIP MODEL
+MEDICATION DEFINITION        │        ├── Medication Product A        ├── Medication Product B        └── Medication Product C
+Example:
+PARACETAMOL      │      ├── Paracetamol 500 mg Tablet      ├── Paracetamol 250 mg Tablet      └── Paracetamol Oral Suspension
+The detailed medication concept and product mapping model shall be finalized during Clinical Data Architecture.
+
+5.327 PRESCRIPTION RELATIONSHIP MODEL
+PRESCRIPTION      │      ├── MEDICATION ORDER A      ├── MEDICATION ORDER B      └── MEDICATION ORDER C
+Conceptually:
+ONE PRESCRIPTION       │       ▼ONE OR MORE MEDICATION ORDERS
+Each medication order may contain:
+MEDICATIONDOSEROUTEFREQUENCYDURATIONINSTRUCTIONS
+This prevents the weak design:
+prescriptionsmedicine_1dose_1medicine_2dose_2medicine_3dose_3
+
+5.328 DISPENSING RELATIONSHIP MODEL
+MEDICATION ORDER       │       ▼DISPENSING EVENT
+The architecture shall support:
+ONE MEDICATION ORDER       │       ▼MULTIPLE DISPENSING EVENTS
+where partial dispensing is permitted.
+Example:
+ORDER30 Tablets     │     ├── Dispensing 1 → 20     └── Dispensing 2 → 10
+Therefore:
+MEDICATION ORDER ≠ DISPENSING EVENT
+
+5.329 BATCH ALLOCATION RELATIONSHIP MODEL
+DISPENSING EVENT       │       ▼DISPENSING BATCH ALLOCATION       │       ├── Batch A → Quantity 10       └── Batch B → Quantity 20
+Conceptually:
+DISPENSING EVENT       │       ▼ONE OR MORE BATCH ALLOCATIONS
+Each allocation identifies:
+MEDICATION BATCHALLOCATED QUANTITY
+The final cardinality shall be determined during Data Architecture.
+
+5.330 STOCK MOVEMENT RELATIONSHIP MODEL
+MEDICATION BATCH       │       ▼STOCK MOVEMENTS       │       ├── RECEIPT       ├── DISPENSING       ├── RETURN       ├── ADJUSTMENT       └── REVERSAL
+Conceptually:
+CURRENT STOCK       │       ▼DERIVED / CONTROLLED THROUGH       │       ▼VALID STOCK MOVEMENTS
+The final inventory consistency strategy may use:
+movement ledger;
+controlled balance projection;
+transactional balance record;
+event-derived balance;
+hybrid ledger and balance architecture.
+The final decision shall be documented during Data and Inventory Architecture.
+
+5.331 COMPLETE PHARMACY WORKFLOW MODEL
+                         AUTHORIZED PRESCRIBER                                  │                                  ▼                           CLINICAL ENCOUNTER                                  │                                  ▼                         CREATE PRESCRIPTION                                  │                                  ▼                      CREATE MEDICATION ORDER                                  │                                  ▼                         SELECT MEDICATION                                  │                                  ▼                            RECORD DOSE                                  │                                  ▼                           RECORD ROUTE                                  │                                  ▼                         RECORD FREQUENCY                                  │                                  ▼                          RECORD DURATION                                  │                                  ▼                        RECORD INSTRUCTIONS                                  │                                  ▼                      VALIDATE MEDICATION ORDER                                  │                                  ▼                         PHARMACY WORK QUEUE                                  │                                  ▼                       PHARMACIST OPENS ORDER                                  │                                  ▼                       PHARMACY VERIFICATION                                  │                      ┌───────────┼───────────┐                      │           │           │                      ▼           ▼           ▼                 CLARIFY       REJECT       VERIFY                      │                       │                      ▼                       ▼                 RESOLUTION            READY TO DISPENSE                                              │                                              ▼                                      CHECK STOCK                                              │                                              ▼                                   IDENTIFY ELIGIBLE PRODUCT                                              │                                              ▼                                      SELECT BATCH                                              │                                              ▼                                    VALIDATE EXPIRY                                              │                                              ▼                                     VALIDATE QUANTITY                                              │                                              ▼                                    CREATE DISPENSING                                              │                                              ▼                                  CREATE STOCK MOVEMENT                                              │                                              ▼                                   COMPLETE DISPENSING                                              │                              ┌───────────────┴───────────────┐                              │                               │                              ▼                               ▼                     MEDICATION HISTORY                  STOCK LEDGER                              │                              ▼                             EMR
+
+5.332 PHARMACY SEQUENCE MODEL
+DOCTOR   CLINICAL   PHARMACY API   PHARMACIST   INVENTORY   EMR  │         │             │             │            │        │  │ Order   │             │             │            │        │  ├────────►│             │             │            │        │  │         │ Create      │             │            │        │  │         │ Medication  │             │            │        │  │         │ Order       │             │            │        │  │         ├────────────►│             │            │        │  │         │             │             │            │        │  │         │             │ Review Work │            │        │  │         │             ├────────────►│            │        │  │         │             │             │            │        │  │         │             │◄────────────┤ Verify     │        │  │         │             │             │            │        │  │         │             │ Check Stock              │        │  │         │             ├─────────────────────────►│        │  │         │             │                          │        │  │         │             │◄─────────────────────────┤ Stock  │  │         │             │                          │        │  │         │             │ Dispense / Stock Move    │        │  │         │             ├─────────────────────────►│        │  │         │             │                          │        │  │         │             │ Medication Information            │  │         │             ├──────────────────────────────────►│
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.333 PHARMACY STATE MODELS
+Medication Order State
+ORDERED   │   ▼PHARMACY_PENDING   │   ▼UNDER_REVIEW   │   ├──────────────► CLARIFICATION_REQUIRED   │                         │   │                         ▼   │                      RESOLVED   │                         │   │                         ▼   │                   UNDER_REVIEW   │   ├──────────────► REJECTED   │   ▼VERIFIED   │   ▼READY_FOR_DISPENSING   │   ▼PARTIALLY_DISPENSED   │   ▼DISPENSED
+Prescription State
+CREATED   │   ▼PHARMACY_PENDING   │   ▼UNDER_PROCESSING   │   ├────────────► CLARIFICATION   │   ├────────────► REJECTED   │   ▼VERIFIED   │   ▼DISPENSING   │   ▼COMPLETED
+Dispensing State
+DRAFT  │  ▼VALIDATED  │  ▼COMPLETED  │  ├────────────► RETURN_RECORDED  │  └────────────► CANCELLED / VOIDED
+Medication Batch State
+RECEIVED   │   ▼ACTIVE   │   ├────────────► BLOCKED   │                  │   │                  ▼   │                ACTIVE   │   ├────────────► QUARANTINED   │   ├────────────► EXPIRED   │   └────────────► DEPLETED
+The exact aggregate state boundaries shall be finalized during Domain Architecture.
+
+5.334 PHARMACY BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-PHR-BR-001
+Each medication definition shall have a unique identity
+CS-PHR-BR-002
+Medication codes shall be unique within applicable scope
+CS-PHR-BR-003
+Only eligible active medications shall normally be orderable
+CS-PHR-BR-004
+Historical medication relationships shall remain traceable
+CS-PHR-BR-005
+Medication product shall reference an eligible medication definition
+CS-PHR-BR-006
+Medication order shall reference an identifiable patient
+CS-PHR-BR-007
+Medication order shall maintain ordering provenance
+CS-PHR-BR-008
+Medication order shall reference an eligible medication
+CS-PHR-BR-009
+Only eligible medication orders may be cancelled
+CS-PHR-BR-010
+Order cancellation shall maintain reason and provenance
+CS-PHR-BR-011
+Pharmacy verification shall require appropriate authority
+CS-PHR-BR-012
+Pharmacy verifier shall be identifiable
+CS-PHR-BR-013
+Pharmacy verification time shall be recorded
+CS-PHR-BR-014
+Dispensed product shall be eligible for the medication order
+CS-PHR-BR-015
+Only eligible medication batches shall be available for ordinary dispensing
+CS-PHR-BR-016
+Expired medication batches shall not be ordinarily dispensed
+CS-PHR-BR-017
+Dispensing shall reference eligible medication work
+CS-PHR-BR-018
+Dispensed product shall be identifiable
+CS-PHR-BR-019
+Dispensing shall maintain batch traceability
+CS-PHR-BR-020
+Ordinary dispensing shall not exceed eligible remaining quantity
+CS-PHR-BR-021
+Dispensing stock effect shall be traceable to dispensing
+CS-PHR-BR-022
+Stock adjustment shall require authority and traceability
+CS-PHR-BR-023
+Completed dispensing shall not normally be physically deleted
+CS-PHR-BR-024
+Medication order and dispensing statuses shall remain distinguishable
+CS-PHR-BR-025
+Only eligible medication information shall be exposed to EMR
+CS-PHR-BR-026
+Pharmacy workflow shall follow approved state transitions
+CS-PHR-BR-027
+Backend shall reject invalid pharmacy state transitions
+CS-PHR-BR-028
+React shall not be the authoritative pharmacy state engine
+
+5.335 PHARMACY PERMISSION CONCEPT
+Potential pharmacy permissions include:
+PHR_MEDICATION_CATALOG_VIEWPHR_MEDICATION_CATALOG_CREATEPHR_MEDICATION_CATALOG_UPDATEPHR_MEDICATION_CATALOG_ACTIVATEPHR_PRODUCT_CATALOG_VIEWPHR_PRODUCT_CATALOG_CREATEPHR_PRODUCT_CATALOG_UPDATEPHR_PRODUCT_CATALOG_ACTIVATEPHR_ORDER_VIEWPHR_ORDER_CANCELPHR_PRESCRIPTION_VIEWPHR_WORK_QUEUE_VIEWPHR_VERIFICATION_VIEWPHR_VERIFYPHR_CLARIFICATION_REQUESTPHR_CLARIFICATION_RESOLVEPHR_REJECTPHR_BATCH_VIEWPHR_BATCH_CREATEPHR_BATCH_UPDATEPHR_BATCH_BLOCKPHR_BATCH_QUARANTINEPHR_STOCK_VIEWPHR_STOCK_LEDGER_VIEWPHR_STOCK_RECEIVEPHR_STOCK_ADJUSTPHR_DISPENSING_VIEWPHR_DISPENSING_CREATEPHR_DISPENSING_COMPLETEPHR_DISPENSING_CANCELPHR_RETURN_VIEWPHR_RETURN_CREATEPHR_MEDICATION_HISTORY_VIEW
+Example Pharmacist Concept
+PHARMACIST     │     ├── PHR_ORDER_VIEW     ├── PHR_PRESCRIPTION_VIEW     ├── PHR_WORK_QUEUE_VIEW     ├── PHR_VERIFICATION_VIEW     ├── PHR_VERIFY     ├── PHR_CLARIFICATION_REQUEST     ├── PHR_REJECT     ├── PHR_BATCH_VIEW     ├── PHR_STOCK_VIEW     ├── PHR_DISPENSING_VIEW     ├── PHR_DISPENSING_CREATE     ├── PHR_DISPENSING_COMPLETE     └── PHR_MEDICATION_HISTORY_VIEW
+Example Pharmacy Technician Concept
+PHARMACY TECHNICIAN        │        ├── PHR_PRESCRIPTION_VIEW        ├── PHR_WORK_QUEUE_VIEW        ├── PHR_BATCH_VIEW        ├── PHR_STOCK_VIEW        ├── PHR_DISPENSING_VIEW        └── PHR_DISPENSING_CREATE
+A pharmacy technician shall not automatically receive:
+PHR_VERIFY
+or:
+PHR_STOCK_ADJUST
+The final role-permission matrix shall be defined during Security Architecture.
+
+5.336 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Maintain medication catalog
+CS-PHR-FR-001 to 005
+Maintain medication products
+CS-PHR-FR-006 to 010
+Receive medication order
+CS-PHR-FR-011 to 016
+Record dose
+CS-PHR-FR-017
+Record route
+CS-PHR-FR-018
+Record frequency
+CS-PHR-FR-019
+Record duration
+CS-PHR-FR-020
+Record medication instructions
+CS-PHR-FR-021
+Generate prescription
+CS-PHR-FR-022 to 024
+Pharmacy work queue
+CS-PHR-FR-025 to 026
+Pharmacy verification
+CS-PHR-FR-027 to 028
+Prescription clarification
+CS-PHR-FR-029 to 030
+Prescription rejection
+CS-PHR-FR-031 to 032
+Check medication stock
+CS-PHR-FR-033
+Identify dispensing product
+CS-PHR-FR-034 to 035
+Manage medication batches
+CS-PHR-FR-036 to 044
+Prevent expired dispensing
+CS-PHR-FR-045
+Identify near-expiry stock
+CS-PHR-FR-046
+Select dispensing batch
+CS-PHR-FR-047 to 048
+Create dispensing event
+CS-PHR-FR-049 to 050
+Record dispensed product
+CS-PHR-FR-051
+Record dispensing quantity
+CS-PHR-FR-052
+Batch traceability
+CS-PHR-FR-053
+Record dispensing user
+CS-PHR-FR-054
+Complete dispensing
+CS-PHR-FR-055
+Prevent over-dispensing
+CS-PHR-FR-056
+Partial dispensing
+CS-PHR-FR-057 to 058
+Stock movement ledger
+CS-PHR-FR-059 to 066
+Medication returns
+CS-PHR-FR-067 to 069
+Dispensing cancellation
+CS-PHR-FR-070 to 071
+Patient medication history
+CS-PHR-FR-072
+EMR medication integration
+CS-PHR-FR-073
+Search prescriptions
+CS-PHR-FR-074
+Search dispensing records
+CS-PHR-FR-075
+Pharmacy auditing
+CS-PHR-FR-076
+Pharmacy state integrity
+CS-PHR-FR-077
+Medication terminology integration
+CS-PHR-FR-078
+Pharmacy barcode architecture
+CS-PHR-FR-079
+Medication safety service architecture
+CS-PHR-FR-080
+
+5.337 PHARMACY MODULE RISK ANALYSIS
+Risk 1 — Medication Name Used as Complete Medication Model
+Problem
+The system stores:
+medicine_name = "Paracetamol"
+Impact
+The system cannot reliably represent:
+clinical medication identity;
+strength;
+dosage form;
+dispensable product;
+medication batch.
+Mitigation
+Separate medication definition, medication product, and medication batch concepts.
+
+Risk 2 — Ordered Medication Treated as Dispensed Medication
+Problem
+The EMR shows:
+Paracetamol — Dispensed
+because a doctor ordered it.
+Impact
+Clinical users may incorrectly believe the patient received the medication.
+Mitigation
+Preserve medication order and dispensing states separately.
+
+Risk 3 — Dose Stored as One Free-Text String
+Problem
+The system stores:
+500mg oral 3 times for 5 days
+as the only order representation.
+Impact
+The system cannot reliably reason about dose, route, frequency, or duration.
+Mitigation
+Use structured medication order concepts with permitted additional instructions.
+
+Risk 4 — Medication Safety Rules Invented by Developers
+Problem
+Developers manually create drug interaction rules from internet searches or assumptions.
+Impact
+Incorrect clinical decision support may cause patient harm.
+Mitigation
+Use approved clinical governance and validated medication knowledge services.
+
+Risk 5 — Product and Batch Treated as Same Record
+Problem
+The system stores:
+Paracetamol 500 mgQuantity: 500Expiry: DEC 2026
+Then a second batch arrives with a different expiry.
+Impact
+The data model cannot represent multiple physical batches.
+Mitigation
+Separate medication product and medication batch.
+
+Risk 6 — Expired Batch Hidden Only in React
+Problem
+React removes expired batches from a dropdown.
+A user manually calls the API with an expired batch ID.
+Impact
+Expired medication may be recorded as dispensed.
+Mitigation
+Backend expiry validation shall be authoritative.
+
+Risk 7 — Stock Stored as a Manually Editable Number
+Problem
+A user changes:
+quantity = 500
+to:
+quantity = 900
+Impact
+No movement explains the 400-unit increase.
+Mitigation
+Use controlled stock movement and adjustment workflows.
+
+Risk 8 — Concurrent Dispensing Creates Negative Stock
+Problem
+Two pharmacy users dispense the same remaining inventory simultaneously.
+Impact
+The system records more medication as dispensed than physically available.
+Mitigation
+Use database transactions and appropriate concurrency control.
+
+Risk 9 — Boolean Dispensed Field
+Problem
+The system stores:
+dispensed = true
+Impact
+Partial dispensing cannot be represented.
+Mitigation
+Use dispensing events, quantities, and explicit workflow states.
+
+Risk 10 — Batch Traceability Lost
+Problem
+The system records the product but not the batch used for dispensing.
+Impact
+The hospital cannot reliably determine which dispensing events used an affected batch.
+Mitigation
+Maintain dispensing-to-batch allocation traceability.
+
+Risk 11 — Return Automatically Added to Saleable Stock
+Problem
+Every returned medication creates:
+stock + quantity
+Impact
+Potentially unsuitable returned medication may become available for dispensing.
+Mitigation
+Use return disposition workflow.
+
+Risk 12 — Dispensing Deleted During Cancellation
+Problem
+A completed dispensing row is deleted.
+Impact
+Medication and stock history become inconsistent.
+Mitigation
+Use controlled cancellation and stock reversal workflow.
+
+Risk 13 — Stock Update and Dispensing Save Are Separate
+Problem
+Dispensing succeeds but stock update fails.
+Impact
+Inventory is incorrect.
+Mitigation
+Use appropriate transactional consistency boundaries.
+
+Risk 14 — React Controls Pharmacy Authorization
+Problem
+Frontend code:
+if (user.role === "Pharmacist") {    showVerifyButton();}
+is treated as security.
+Impact
+API requests may bypass the interface.
+Mitigation
+ASP.NET Core authorization shall enforce pharmacy permissions.
+
+Risk 15 — Drug Database Vendor Embedded in Core Domain
+Problem
+Every medication entity directly depends on one vendor’s API and identifier model.
+Impact
+Vendor replacement becomes expensive and risky.
+Mitigation
+Use medication terminology and safety integration contracts.
+
+5.338 COMPLETE PHARMACY CAPABILITY MODEL
+                     PHARMACY MANAGEMENT                              │       ┌──────────────────────┼──────────────────────┐       │                      │                      │       ▼                      ▼                      ▼MEDICATION CATALOG      MEDICATION ORDERS       PHARMACY QUEUE       │                      │                      │       ├── Definition         ├── Patient            ├── Pending       ├── Product            ├── Encounter          ├── Review       ├── Strength           ├── Prescriber         ├── Clarification       ├── Dosage Form        ├── Dose               └── Verified       └── Status             ├── Route                              ├── Frequency                              └── Duration                                      │                                      ▼                           PHARMACY VERIFICATION                                      │                         ┌────────────┼────────────┐                         │            │            │                         ▼            ▼            ▼                     VERIFY       CLARIFY       REJECT                         │                         ▼                       STOCK                         │              ┌──────────┼──────────┐              │          │          │              ▼          ▼          ▼            PRODUCT     BATCH      EXPIRY                         │                         ▼                    DISPENSING                         │             ┌───────────┼───────────┐             │           │           │             ▼           ▼           ▼          PRODUCT     QUANTITY      BATCH                         │                         ▼                   STOCK MOVEMENT                         │              ┌──────────┼──────────┐              │          │          │              ▼          ▼          ▼           RECEIPT    DISPENSE     RETURN                                      │                                      ▼                                 DISPOSITION                                      │                                      ▼                           MEDICATION HISTORY                                      │                                      ▼                                     EMR
+
+5.339 PHARMACY MODULE COMPLETION STATUS
+Module: Pharmacy and Medication Management SystemModule Code: PHRRequirement Range: CS-PHR-FR-001 to CS-PHR-FR-080Business Rule Range: CS-PHR-BR-001 to CS-PHR-BR-028
+Pharmacy Domain Boundary: DefinedMedication Catalog: DefinedMedication Definition: DefinedMedication Product Catalog: DefinedMedication Definition-to-Product Relationship: DefinedMedication Order Workflow: DefinedMedication Order Validation: DefinedMedication Dose Concept: DefinedMedication Route Concept: DefinedMedication Frequency Concept: DefinedMedication Duration Concept: DefinedMedication Instructions: DefinedPrescription Concept: DefinedPrescription-to-Medication Order Relationship: DefinedPharmacy Work Queue: DefinedPharmacy Verification Context: DefinedPharmacy Verification Workflow: DefinedPrescription Clarification Workflow: DefinedClarification Resolution: DefinedPrescription Rejection: DefinedMedication Stock Availability: DefinedEligible Medication Product Concept: DefinedMedication Product Validation: DefinedMedication Batch Model: DefinedInternal Batch Identity: DefinedManufacturer Batch Number: DefinedMedication Expiry Tracking: DefinedBatch Quantity Context: DefinedBatch Storage Location: DefinedBatch Operational Status: DefinedExpired Batch Control: DefinedNear-Expiry Identification: DefinedEligible Batch Selection: DefinedFEFO Concept: DefinedDispensing Event: DefinedDispensing Identifier: DefinedDispensed Product: DefinedDispensed Quantity: DefinedBatch Allocation Traceability: DefinedDispensing User Traceability: DefinedDispensing Completion Workflow: DefinedDispensing Transaction Boundary: DefinedOver-Dispensing Prevention: DefinedPartial Dispensing: DefinedRemaining Prescription Quantity: DefinedStock Movement Model: DefinedStock Receipt Movement: DefinedDispensing Stock Movement: DefinedReturn Stock Movement: DefinedStock Adjustment: DefinedNegative Stock Prevention: DefinedStock Concurrency Risk: DefinedMedication Stock Balance: DefinedMedication Stock Ledger: DefinedMedication Return Workflow: DefinedReturn Validation: DefinedReturn Disposition: DefinedDispensing Cancellation: DefinedStock Reversal Concept: DefinedPatient Medication History: DefinedEMR Medication Availability: DefinedPrescription Search: DefinedDispensing Search: DefinedPharmacy Audit Events: DefinedPharmacy State Models: DefinedMedication Coding Integration Boundary: DefinedPharmacy Barcode Architecture Boundary: DefinedFuture Medication Safety Service Boundary: DefinedPharmacy Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The Pharmacy and Medication Management System requirements establish the medication processing and dispensing workflow of CuraSphere.
+These requirements shall later be transformed into:
+Pharmacy use case specification;
+medication catalog use case;
+medication product use case;
+create medication order use case;
+prescription processing use case;
+pharmacy verification use case;
+clarification workflow use case;
+medication batch use case;
+pharmacy dispensing use case;
+partial dispensing use case;
+medication return use case;
+stock adjustment use case;
+dispensing cancellation use case;
+medication order activity diagram;
+pharmacy verification activity diagram;
+dispensing activity diagram;
+batch selection activity diagram;
+medication return activity diagram;
+stock adjustment activity diagram;
+Medication Order state machine;
+Prescription state machine;
+Dispensing state machine;
+Medication Batch state machine;
+Create Medication Order sequence diagram;
+Verify Prescription sequence diagram;
+Request Clarification sequence diagram;
+Complete Dispensing sequence diagram;
+Partial Dispensing sequence diagram;
+Record Medication Return sequence diagram;
+Reverse Dispensing Stock Effect sequence diagram;
+Medication Definition domain model;
+Medication Product domain model;
+Prescription domain model;
+Medication Order domain model;
+Pharmacy Verification domain model;
+Medication Batch domain model;
+Dispensing Event domain model;
+Dispensing Batch Allocation domain model;
+Stock Movement domain model;
+Medication Return domain model;
+PostgreSQL pharmacy schema;
+pharmacy stock ledger strategy;
+inventory concurrency strategy;
+medication quantity architecture;
+medication terminology architecture;
+pharmacy barcode architecture;
+medication safety integration architecture;
+React Pharmacy Work Queue requirements;
+React Pharmacy Verification Workspace requirements;
+React Dispensing Workspace requirements;
+React Medication Catalog requirements;
+React Medication Batch Management requirements;
+React Pharmacy Stock Dashboard requirements;
+React Expiry Dashboard requirements;
+React Stock Ledger requirements;
+React Medication Return requirements;
+ASP.NET Core Medication Catalog API;
+ASP.NET Core Medication Order API;
+ASP.NET Core Prescription API;
+ASP.NET Core Pharmacy Verification API;
+ASP.NET Core Medication Batch API;
+ASP.NET Core Dispensing API;
+ASP.NET Core Stock Movement API;
+ASP.NET Core Medication Return API;
+pharmacy authorization policies;
+medication order validation tests;
+pharmacy state transition tests;
+expired batch tests;
+batch allocation tests;
+over-dispensing tests;
+partial dispensing tests;
+stock concurrency tests;
+stock ledger integrity tests;
+dispensing transaction tests;
+return disposition tests;
+dispensing reversal tests.
+No React pharmacy interface, medication terminology vendor, medication coding standard, drug interaction database, formulary provider, pharmacy barcode standard, barcode scanner, stock concurrency mechanism, PostgreSQL table structure, Entity Framework Core entity structure, medication substitution algorithm, medication safety rule engine, automated dosing system, AI medication recommendation model, pharmacy hardware, or procurement integration implementation has been finalized by this SRS section.
+Those decisions shall be made during Architecture and Detailed Design.
+

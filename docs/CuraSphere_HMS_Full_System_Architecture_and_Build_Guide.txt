@@ -1,0 +1,1037 @@
+CURASPHERE HOSPITAL MANAGEMENT SYSTEM
+COMPLETE HOW-TO-BUILD / IMPLEMENTATION BLUEPRINT
+A master engineering document explaining what to build, why it is needed, how each module works, how frontend/backend/database communicate, how UI is designed, how security and testing are implemented, and how the complete system is deployed.
+Baseline sources: CuraSphere Project Vision Document and the existing CuraSphere Product, Functional, Technical, UI/UX & Build Documentation. The original vision defines the hospital scope including clinical, administrative, financial, inventory and reporting areas. fileciteturn4file0L1-L15
+This document expands that material into a practical build plan. The selected implementation stack follows the existing build documentation: React/TypeScript/Vite, Tailwind, shadcn/ui, Zustand, TanStack Query, ASP.NET Core/C#, EF Core, PostgreSQL, SignalR, Docker, GitHub and related tooling. fileciteturn4file2L1-L17
+
+DOCUMENT PURPOSE
+This is not another requirements document. The SRS defines what CuraSphere must do. This document explains how the development team should turn those requirements into a working product.
+Document
+Question answered
+Project Vision Document
+Why are we building CuraSphere?
+SRS
+What must CuraSphere do?
+This document
+How do we build every part?
+Figma/UI documentation
+What should each screen look and behave like?
+Database Design
+How is information stored?
+API Documentation
+How do frontend and backend communicate?
+Testing Documentation
+How do we prove it works?
+Deployment Guide
+How do we run it safely?
+1. PRODUCT BASELINE
+The original CuraSphere vision describes a centralized HMS connecting clinical, administrative, financial, inventory and reporting operations. Its stated included scope covers patient registration, medical records, OPD, IPD, emergency, ICU, surgery, nursing, staff/user/department management, scheduling, attendance, billing, payments, insurance, pharmacy, medical supplies, equipment and management reports. fileciteturn4file17L1-L15
+1.1 Core Product
+CuraSphere├── Clinical├── Administrative├── Financial├── Inventory├── Reporting├── Notifications├── Security / Audit└── System Administration
+1.2 Product Principle
+One patient record, one controlled workflow, shared authorized data, complete auditability.
+1.3 Original Success Targets
+Reduce registration time and manual work.
+Streamline appointment scheduling.
+Minimize billing errors.
+Track medicine and supply inventory accurately.
+Share consistent data across departments.
+Provide operational reports and management visibility.
+Maintain security and availability.
+These success criteria are part of the original project vision. fileciteturn4file0L1-L15
+2. TECHNOLOGY STACK
+Layer
+Technology
+Use
+UI
+React + TypeScript
+Application interface
+Build
+Vite
+Fast development/build
+CSS
+Tailwind CSS
+Styling and responsive layout
+Components
+shadcn/ui
+Reusable accessible components
+Icons
+Lucide React
+Interface icons
+Client state
+Zustand
+UI/session-related state
+Server state
+TanStack Query
+API data/cache/mutations
+Forms
+React Hook Form + Zod
+Forms and validation
+Charts
+Recharts
+Analytics
+Backend
+ASP.NET Core Web API
+REST API
+Language
+C#
+Backend language
+ORM
+Entity Framework Core
+Database access/migrations
+Database
+PostgreSQL
+Persistent relational data
+Identity
+ASP.NET Core Identity
+Users/identity
+Auth
+JWT / secure session strategy
+Authentication
+Real-time
+SignalR
+Live updates
+API docs
+Swagger/OpenAPI
+API exploration/documentation
+Logging
+Serilog
+Structured logging
+Testing
+xUnit, Vitest, RTL, Playwright
+Automated testing
+Design
+Figma + Figma AI
+UI/UX
+Version control
+Git + GitHub
+Source control
+Containers
+Docker
+Deployment consistency
+Proxy
+Nginx
+HTTPS/reverse proxy
+CI/CD
+GitHub Actions
+Automation
+DB admin
+pgAdmin
+Database administration
+API testing
+Postman
+API testing
+The existing build blueprint explicitly recommends this stack and development order. fileciteturn4file4L1-L18
+3. COMPLETE ARCHITECTURE
+Browser  │  ▼React + TypeScript + Tailwind + shadcn/ui  │  ├── TanStack Query ─── Server State  ├── Zustand ────────── UI/Session State  └── React Router ───── Navigation  │  ▼ HTTPS RESTASP.NET Core API  │  ├── Authentication / Authorization  ├── Controllers / Endpoints  ├── Application Services  ├── Domain / Business Rules  ├── Validation  ├── Audit  └── SignalR  │  ▼Entity Framework Core  │  ▼PostgreSQL  │  ├── Core Data  ├── Audit Logs  └── Reports
+3.1 Architecture Rules
+Frontend never connects directly to PostgreSQL.
+Backend owns business rules.
+Database owns persistence and transaction integrity.
+Sensitive actions require authorization and auditing.
+Real-time events are emitted after successful persistence.
+Server state belongs in TanStack Query rather than duplicating it in Zustand.
+These rules are consistent with the current CuraSphere build blueprint. fileciteturn4file12L1-L14
+4. PROJECT REPOSITORY STRUCTURE
+curasphere/├── frontend/│   ├── src/│   │   ├── app/│   │   ├── assets/│   │   ├── components/│   │   │   ├── ui/│   │   │   ├── layout/│   │   │   ├── forms/│   │   │   └── data-display/│   │   ├── features/│   │   │   ├── auth/│   │   │   ├── dashboard/│   │   │   ├── patients/│   │   │   ├── doctors/│   │   │   ├── nurses/│   │   │   ├── appointments/│   │   │   ├── opd/│   │   │   ├── ipd/│   │   │   ├── emergency/│   │   │   ├── icu/│   │   │   ├── surgery/│   │   │   ├── emr/│   │   │   ├── laboratory/│   │   │   ├── radiology/│   │   │   ├── pharmacy/│   │   │   ├── billing/│   │   │   ├── insurance/│   │   │   ├── inventory/│   │   │   ├── hr/│   │   │   ├── reports/│   │   │   └── administration/│   │   ├── hooks/│   │   ├── lib/│   │   ├── routes/│   │   ├── services/│   │   ├── stores/│   │   ├── types/│   │   └── main.tsx│   └── tests/├── backend/│   ├── CuraSphere.Api/│   ├── CuraSphere.Application/│   ├── CuraSphere.Domain/│   ├── CuraSphere.Infrastructure/│   └── tests/├── database/│   ├── migrations/│   ├── seeds/│   └── scripts/├── docs/│   ├── SRS/│   ├── BUILD/│   ├── UI-UX/│   ├── DATABASE/│   ├── API/│   ├── TESTING/│   └── DEPLOYMENT/├── docker/├── .github/workflows/├── docker-compose.yml├── .env.example└── README.md
+5. USER ROLES & PERMISSIONS
+Role
+Main work
+Super Admin
+System configuration, users, roles, permissions, audit
+Hospital Administrator
+Operations, departments, staff, approvals, reports
+Doctor
+Appointments, EMR, diagnosis, treatment, prescriptions
+Nurse
+Vitals, nursing care, assigned patients, monitoring
+Receptionist
+Registration, appointments, check-in
+Laboratory Technician
+Lab requests, samples, results
+Radiologist
+Radiology studies and reports
+Pharmacist
+Prescriptions, dispensing, medication
+Accountant/Cashier
+Invoices, payments, refunds, finance
+HR
+Staff, attendance, employee records
+Manager
+Dashboards, KPIs, reports
+Patient
+Optional portal and patient-facing services
+IT Support
+Technical support and operational maintenance
+The original project vision lists hospital owners/directors, administrators, doctors, nurses, receptionists, pharmacists, laboratory staff, radiologists, accountants, patients, IT support, developers and QA as stakeholders. fileciteturn4file0L1-L15
+5.1 Permission Design
+Permission = RESOURCE + ACTIONpatients.readpatients.createpatients.updatepatients.exportappointments.readappointments.createappointments.updateappointments.cancelemr.reademr.createemr.amendemr.signbilling.readbilling.createbilling.paybilling.refundusers.readusers.createusers.updateusers.disable
+Roles are collections of permissions. Pages should check capabilities rather than hard-code assumptions about specific roles.
+6. COMPLETE HOSPITAL MODULE MAP
+CuraSphere HMS├── Authentication├── Dashboard├── Patient Management├── Doctor Management├── Nurse Management├── Appointment Management├── OPD├── IPD├── Emergency├── ICU├── Surgery├── Nursing├── Laboratory├── Radiology├── Pharmacy├── Billing├── Payments├── Insurance├── Inventory├── Medical Supplies├── Equipment├── HR├── Attendance├── Reports├── Notifications├── Audit Logs└── System Administration
+This expanded module map preserves the wider scope from the original CuraSphere vision, rather than limiting the implementation blueprint to the smaller MVP set. fileciteturn4file5L1-L15
+7. MASTER PATIENT JOURNEY
+Registration / Existing Patient Search        ↓Appointment / Walk-In        ↓Check-In        ↓Triage / Nursing        ↓OPD / Emergency / IPD        ↓Doctor Encounter        ↓Diagnosis + Treatment        ├── Laboratory        ├── Radiology        ├── Pharmacy        └── Surgery / Admission        ↓Billing / Insurance        ↓Discharge / Follow-Up        ↓Reports + Audit
+8. AUTHENTICATION — HOW TO BUILD
+8.1 Frontend
+Create login page in Figma.
+Create React form using React Hook Form + Zod.
+POST credentials to the authentication endpoint.
+Show loading state and prevent duplicate submission.
+Store only the minimum client session state.
+Redirect to role-permitted dashboard.
+Protect application routes.
+8.2 Backend
+Receive login request.
+Validate credentials using Identity.
+Create access/session response.
+Apply lockout/rate-limit policy where appropriate.
+Return user identity and permissions needed by the client.
+Write security audit events for important authentication actions.
+8.3 Route Guard
+Public├── /login├── /forgot-password└── /reset-passwordProtected├── /dashboard├── /patients├── /appointments├── /emr├── /laboratory├── /pharmacy├── /billing├── /reports└── /admin
+9. DASHBOARD — HOW TO BUILD
+9.1 Admin/Management Dashboard
+Total patients
+Today's appointments
+Admissions
+Discharges
+Bed occupancy when IPD is enabled
+Revenue
+Pending payments
+Lab pending
+Pharmacy pending
+Alerts
+Department performance
+9.2 Doctor Dashboard
+Today's appointments
+Waiting patients
+Active encounters
+Pending lab results
+Recent patient timeline
+Follow-ups
+9.3 Reception Dashboard
+Today's appointments
+Waiting patients
+Quick registration
+Check-in queue
+No-shows
+9.4 Rule
+Dashboards are role-specific. Do not create one huge dashboard containing information every user cannot use.
+10. PATIENT MANAGEMENT — COMPLETE BUILD
+10.1 Data
+Group
+Fields
+Identity
+MRN, first name, last name, DOB, gender, national ID where applicable
+Contact
+Phone, email, address
+Emergency
+Contact name, relationship, phone
+Clinical safety
+Allergies, alerts, blood group
+Administrative
+Registration date, status, source
+Documents
+Consents and permitted attachments
+10.2 Screens
+Patient list
+Search/filter
+Registration
+Patient profile
+Edit profile
+Patient timeline
+Documents
+Appointment history
+Encounter history
+Billing history
+10.3 Backend
+POST   /api/patientsGET    /api/patientsGET    /api/patients/{id}PUT    /api/patients/{id}GET    /api/patients/{id}/timelineGET    /api/patients/{id}/appointmentsGET    /api/patients/{id}/encounters
+10.4 Complete Registration Flow
+Search for existing patient.
+Run duplicate warning logic.
+Open registration if no valid match.
+Validate fields.
+Generate MRN.
+Persist patient.
+Write audit event.
+Show patient profile.
+Offer appointment/check-in action.
+11. APPOINTMENT MANAGEMENT
+11.1 Build
+Doctor schedules
+Department schedules
+Availability
+Calendar
+Appointment types
+Priority
+Conflict detection
+Reschedule
+Cancel with reason
+Check-in
+No-show
+11.2 Status
+SCHEDULED↓CHECKED_IN↓IN_PROGRESS↓READY_FOR_BILLING↓BILLED↓PAID↓DISCHARGEDExceptions:CANCELLED / NO_SHOW / ON_HOLD
+11.3 API
+POST   /api/appointmentsGET    /api/appointmentsGET    /api/appointments/{id}PATCH  /api/appointments/{id}POST   /api/appointments/{id}/check-inPOST   /api/appointments/{id}/cancel
+12. OPD — OUTPATIENT DEPARTMENT
+12.1 Workflow
+Patient Check-In↓OPD Queue↓Nurse Triage↓Doctor Consultation↓Diagnosis↓Orders / Prescription↓Billing↓Discharge / Follow-Up
+12.2 Screens
+OPD queue
+Triage
+Doctor queue
+Encounter
+Diagnosis
+Treatment plan
+Prescription
+Lab/Radiology order
+Follow-up
+12.3 Business Rules
+Only checked-in patients enter the active queue.
+A doctor can only access encounters permitted by policy.
+Finalized clinical notes require controlled amendment.
+Orders are linked to the encounter and patient.
+13. IPD — INPATIENT DEPARTMENT
+13.1 Workflow
+Admission Request↓Bed/Ward Availability↓Admission↓Nursing Care↓Doctor Rounds↓Orders / Lab / Radiology / Medication↓Daily Charges↓Discharge Planning↓Final Billing↓Discharge
+13.2 Data
+Admission ID
+Ward
+Room
+Bed
+Admitting doctor
+Admission reason
+Admission date/time
+Discharge date/time
+Status
+Daily charges
+13.3 Future-Ready Design
+Even if bed management is implemented after the MVP, admission records should be modeled independently from patient demographics so the system can later support wards, rooms and beds.
+14. EMERGENCY DEPARTMENT
+14.1 Workflow
+Emergency Arrival↓Rapid Registration↓Triage / Acuity↓Immediate Clinical Assessment↓Orders / Treatment↓Disposition├── Discharge├── OPD Follow-Up├── IPD Admission└── ICU / Surgery
+14.2 Requirements
+Priority/acuity
+Arrival time
+Triage notes
+Vitals
+Emergency encounter
+Disposition
+Critical alerts
+Audit
+15. ICU
+15.1 Workflow
+ICU Admission↓Bed Assignment↓Continuous Monitoring↓Vitals / Nursing Notes↓Doctor Rounds↓Orders / Medications / Labs↓Daily Clinical Review↓Transfer / Discharge / Death Workflow as applicable
+15.2 Design
+High-frequency observation entries
+Strict role permissions
+Timestamped clinical records
+Audit trail
+Future device integration point
+16. SURGERY / OPERATING THEATRE
+16.1 Workflow
+Surgery Request↓Clinical Review↓Schedule OT↓Pre-Op Checklist↓Procedure↓Post-Op Notes↓Recovery↓Ward / ICU / Discharge
+16.2 Data
+Procedure
+Surgeon
+Team
+Scheduled date/time
+Pre-op notes
+Procedure notes
+Post-op notes
+Complications
+Disposition
+17. NURSING
+17.1 Screens
+Assigned patients
+Vitals
+Nursing notes
+Care tasks
+Medication record
+Alerts
+Shift handover
+17.2 Rule
+Nursing data should be timestamped and attributed to the responsible user. Clinical edits must be traceable.
+18. ELECTRONIC MEDICAL RECORD
+18.1 Sections
+Overview
+Timeline
+Allergies
+Vitals
+History
+Examination
+Diagnoses
+Treatment plans
+Medications
+Lab results
+Radiology reports
+Clinical notes
+Follow-up
+18.2 Encounter Flow
+Create Encounter↓Vitals↓History / Complaint↓Examination↓Assessment↓Diagnosis↓Treatment↓Orders↓Sign / Finalize↓Follow-Up
+19. LABORATORY MANAGEMENT
+19.1 Tables
+lab_tests
+lab_requests
+lab_request_items
+samples
+lab_results
+result_reference_ranges
+result_verifications
+19.2 Flow
+Doctor Order↓Lab Queue↓Sample Collection↓Sample Received↓Processing↓Result Entry↓Verification↓Publish↓Doctor Views Result
+19.3 API
+GET  /api/lab/requestsPOST /api/lab/requestsPATCH /api/lab/requests/{id}/statusPOST /api/lab/requests/{id}/resultsPOST /api/lab/results/{id}/verify
+20. RADIOLOGY
+20.1 Workflow
+Doctor Order↓Radiology Queue↓Scheduling↓Study Performed↓Image/Study Reference↓Radiologist Report↓Verification↓Result Available to Authorized Users
+20.2 Architecture
+For the MVP, store study metadata and report references. PACS/DICOM integration can be introduced later. The original project vision identifies radiology as a core stakeholder/service area and future integration can be added. fileciteturn4file0L1-L15
+21. PHARMACY
+21.1 Flow
+Prescription↓Pharmacy Queue↓Validation↓Availability↓Dispensing↓Dispense Record↓Charge / Billing Link↓Complete
+21.2 Medication Model
+Field
+Purpose
+Medication ID
+Unique medication
+Name
+Generic/brand name
+Strength
+e.g. 500 mg
+Form
+Tablet, injection, etc.
+Unit
+Pack/tablet/etc.
+Stock
+Current quantity if inventory enabled
+Reorder Level
+Alert threshold
+Expiry
+Batch/expiry when inventory enabled
+21.3 Safety
+No dispensing without valid authorized prescription.
+Record dispenser and time.
+Support partial/exception workflow if enabled.
+Never silently change historical dispensing records.
+22. INVENTORY — PHARMACY, SUPPLIES & EQUIPMENT
+22.1 Inventory Areas
+Medicines
+Medical supplies
+Consumables
+Equipment
+22.2 Stock Flow
+Purchase / Receive↓Stock Entry↓Storage↓Issue / Dispense↓Stock Movement↓Reorder Alert↓Reporting
+22.3 Stock Transaction Model
+StockMovement- movement_id- item_id- type (RECEIPT / ISSUE / ADJUSTMENT / RETURN)- quantity- reference- performed_by- created_at
+The original scope explicitly includes pharmacy, medical supplies and equipment. fileciteturn4file0L1-L15
+23. BILLING & PAYMENTS
+23.1 Flow
+Approved Services↓Charge Capture↓Invoice↓Discount / Tax↓Total↓Payment↓Receipt↓Financial Report
+23.2 Payment Transaction
+Validate invoice.
+Validate amount.
+Create payment.
+Update invoice balance.
+Update invoice status.
+Write audit event.
+Commit transaction.
+Emit payment.completed.
+23.3 Payment States
+PENDINGPARTIALLY_PAIDPAIDFAILEDREFUNDEDPARTIALLY_REFUNDED
+24. INSURANCE
+24.1 MVP Design
+Insurance provider
+Policy number
+Patient linkage
+Coverage information
+Claim/reference number
+Eligible amount
+Patient responsibility
+24.2 Future
+Complex insurance adjudication and advanced claims integration remain future scope unless explicitly added to the MVP.
+25. HR & ATTENDANCE
+25.1 HR
+Employee profile
+Department
+Designation
+Employment status
+Contact
+Joining date
+25.2 Attendance
+Shift↓Check In↓Work Period↓Check Out↓Attendance Record↓HR Report
+25.3 Access
+HR data must be separated from clinical access. A doctor should not automatically have access to employee HR records.
+26. REPORTING & ANALYTICS
+26.1 Reports
+Category
+Reports
+Hospital
+Patient statistics, admissions, discharges, department activity
+Clinical
+Encounters, diagnoses, lab volumes, doctor performance
+Financial
+Revenue, payments, outstanding invoices, refunds
+Inventory
+Stock, low stock, movement, expiry
+HR
+Attendance and staff performance
+Security
+Audit and user activity
+26.2 Report Flow
+User selects report↓Validate permission↓Apply filters↓Backend query↓Aggregate / paginate↓Return data↓Chart / table↓Export if authorized
+27. NOTIFICATIONS & REAL-TIME
+27.1 Events
+appointment.createdappointment.updatedpatient.checked_inlab.request.createdlab.result.verifiedprescription.createdprescription.readypayment.completedinventory.low_stocknotification.created
+27.2 Technical Rule
+User Action↓API↓Validation↓Database Transaction↓COMMIT↓SignalR Event↓Connected Clients↓TanStack Query Cache Update↓UI
+The current build documentation specifically states that SignalR events should occur after successful persistence and that the database remains the source of truth. fileciteturn4file8L1-L14
+28. DATABASE DESIGN
+28.1 Identity
+usersrolespermissionsuser_rolesrole_permissions
+28.2 Hospital
+departmentsstaffdoctorsnursesdoctor_schedulesattendanceshifts
+28.3 Patient
+patientspatient_contactspatient_allergiespatient_documentspatient_identifiers
+28.4 Clinical
+encountersvitalsclinical_notesdiagnosestreatment_plansmedicationsprescriptionsprescription_items
+28.5 Laboratory
+lab_testslab_requestslab_request_itemssampleslab_resultsresult_verifications
+28.6 Radiology
+radiology_ordersradiology_studiesradiology_reports
+28.7 Hospitalization
+admissionswardsroomsbedsbed_assignmentsnursing_notes
+28.8 Finance
+invoicesinvoice_itemspaymentsrefundsinsurance_providersinsurance_claims
+28.9 Inventory
+inventory_itemsinventory_batchesstock_movementsequipmentequipment_assignments
+28.10 System
+notificationsaudit_logssystem_settingsattachments
+29. DATABASE RELATIONSHIPS
+Patient 1 ─── * AppointmentsPatient 1 ─── * EncountersPatient 1 ─── * AdmissionsEncounter 1 ─── * ClinicalNotesEncounter 1 ─── * DiagnosesEncounter 1 ─── * PrescriptionsPrescription 1 ─── * PrescriptionItemsEncounter 1 ─── * LabRequestsLabRequest 1 ─── * ResultsEncounter 1 ─── * RadiologyOrdersPatient 1 ─── * InvoicesInvoice 1 ─── * PaymentsUser * ─── * RolesRole * ─── * PermissionsUser 1 ─── * AuditLogsItem 1 ─── * StockMovements
+29.1 Database Rules
+Use foreign keys.
+Index foreign keys and common search fields.
+Use transactions for financial/critical workflows.
+Preserve historical transaction prices/amounts.
+Add created_at and updated_at to major entities.
+Use migrations under source control.
+Use seed data only for safe reference/test data.
+Never expose database credentials to the frontend.
+30. ENTITY FRAMEWORK CORE
+30.1 Backend Data Flow
+Controller↓DTO↓Application Service↓Domain Rule↓DbContext↓Entity↓PostgreSQL
+30.2 Migration Workflow
+Change domain/entity model.
+Create EF migration.
+Review generated migration.
+Apply to development database.
+Run integration tests.
+Commit migration.
+Apply through controlled deployment pipeline.
+31. API DESIGN
+31.1 Standard Response
+{  "success": true,  "data": {},  "message": null,  "traceId": "..."}
+31.2 Standard Error
+{  "success": false,  "error": {    "code": "VALIDATION_ERROR",    "message": "Please correct the highlighted fields.",    "details": []  },  "traceId": "..."}
+31.3 Endpoint Groups
+/api/auth/*/api/users/*/api/roles/*/api/patients/*/api/doctors/*/api/nurses/*/api/appointments/*/api/opd/*/api/ipd/*/api/emergency/*/api/icu/*/api/surgery/*/api/laboratory/*/api/radiology/*/api/pharmacy/*/api/billing/*/api/payments/*/api/insurance/*/api/inventory/*/api/hr/*/api/reports/*/api/notifications/*
+32. FRONTEND ARCHITECTURE
+32.1 Feature-Based Pattern
+Each feature owns its pages, API hooks, types, validation and local UI pieces where practical. Shared primitives live under components/ui.
+32.2 Data Ownership
+Need
+Use
+API/server data
+TanStack Query
+Form state
+React Hook Form
+Schema validation
+Zod
+Global UI state
+Zustand
+URL filters
+React Router search params
+Static config
+Config/constants
+32.3 Feature Example
+features/patients/├── pages/├── components/├── api/├── hooks/├── schemas/├── types/└── routes.ts
+33. UI/UX — FIGMA BUILD PROCESS
+33.1 Figma Structure
+CuraSphere HMS├── Cover├── Design System├── Components├── Authentication├── Admin Dashboard├── Patients├── Doctors & Staff├── Appointments├── OPD├── IPD├── Emergency├── ICU├── Surgery├── EMR├── Laboratory├── Radiology├── Pharmacy├── Billing├── Insurance├── Inventory├── HR├── Reports├── Settings├── Responsive└── Prototypes / Flows
+33.2 Design System
+Token
+Recommendation
+Primary
+#2563EB
+Success
+#16A34A
+Warning
+#D97706
+Danger
+#DC2626
+Info
+#0891B2
+Background
+#F8FAFC
+Surface
+#FFFFFF
+Text
+#111827
+Muted
+#64748B
+Border
+#E2E8F0
+Font
+Inter or equivalent
+33.3 Figma AI Method
+Give Figma the hospital context.
+Specify the role using the screen.
+Specify the workflow.
+Specify required data density.
+Generate first draft.
+Manually refine spacing, hierarchy and component consistency.
+Convert repeated elements to components.
+Create variants/states.
+Prototype the workflow.
+Hand off measurements/tokens to development.
+The existing build documentation recommends using Figma AI for the first visual draft and manual refinement for the final design, and specifically recommends generating one module at a time. fileciteturn4file8L1-L18
+34. SECURITY — HOW TO BUILD
+ASP.NET Identity for identity management.
+Strong password hashing.
+Short-lived access/session strategy.
+Backend permission checks.
+Server-side validation.
+Rate limiting for authentication/sensitive operations.
+HTTPS outside local development.
+Secure headers.
+Audit logs.
+Least-privilege service/database accounts.
+External secret management.
+Secure attachment/file handling.
+Session expiration.
+Sensitive record access logging.
+34.1 Security Boundaries
+Browser  ↓ untrusted inputAPI Validation  ↓Authorization  ↓Business Rules  ↓Database
+34.2 Sensitive Actions
+Patient record access
+Clinical amendments
+Prescription actions
+Lab verification
+Refunds
+Discount overrides
+Role changes
+Configuration changes
+Sensitive exports
+35. VALIDATION
+35.1 Frontend Validation
+Required fields
+Format
+Length
+Date
+Numeric values
+Immediate user feedback
+35.2 Backend Validation
+Required fields
+Business rules
+Authorization
+Database constraints
+Cross-field rules
+Duplicate prevention
+35.3 Principle
+Frontend validation improves UX. Backend validation provides actual security and correctness.
+36. ERROR HANDLING
+HTTP 400 → ValidationHTTP 401 → UnauthenticatedHTTP 403 → UnauthorizedHTTP 404 → Not FoundHTTP 409 → Business ConflictHTTP 422 → Semantic ValidationHTTP 429 → Rate LimitedHTTP 500 → Unexpected Server Error
+Never expose stack traces, SQL, credentials or internal implementation details to users.
+37. AUDIT LOGGING
+Action
+Audit information
+Patient access
+Actor, patient, timestamp, action
+Clinical amendment
+Actor, record, action/reference, timestamp
+Prescription
+Actor, prescription, action, timestamp
+Lab verification
+Actor, result, action, timestamp
+Payment
+Actor, invoice, amount, method, timestamp
+Refund
+Actor, invoice, amount, reason, timestamp
+Role change
+Actor, target, old/new role, timestamp
+Settings
+Actor, setting, old/new value, timestamp
+38. TESTING — COMPLETE STRATEGY
+Layer
+Tool
+What to test
+Frontend unit
+Vitest
+Utilities and pure functions
+Component
+React Testing Library
+Forms, tables, dialogs, states
+Backend unit
+xUnit
+Services and business rules
+Integration
+ASP.NET test host + test DB
+API/database
+API
+Postman/Newman or automated
+Endpoints
+E2E
+Playwright
+Complete user journeys
+Security
+OWASP-oriented
+Auth, access, validation
+Performance
+k6/JMeter
+Load and response
+UAT
+Stakeholders
+Business acceptance
+38.1 Critical E2E
+Login as receptionist.
+Register/search patient.
+Book appointment.
+Check in patient.
+Doctor opens encounter.
+Record vitals.
+Record diagnosis/treatment.
+Create lab request/prescription.
+Lab processes result.
+Pharmacy dispenses where applicable.
+Generate invoice.
+Record payment.
+Discharge/follow-up.
+Verify management report.
+Verify audit events.
+This end-to-end sequence is consistent with the existing build documentation's critical test scenario. fileciteturn4file10L1-L20
+39. PERFORMANCE
+Area
+Target / Rule
+Typical API read
+Target < 500 ms under normal conditions
+Typical mutation
+Target around < 1 s under normal conditions
+Dashboard
+Target around 2–3 s under normal network conditions
+Large reports
+Use asynchronous/background processing
+Lists
+Server-side pagination/filtering
+Index common search fields.
+Avoid N+1 queries.
+Paginate large datasets.
+Cache stable reference data.
+Lazy-load frontend modules.
+Use background jobs for heavy reports.
+40. BACKUP & DISASTER RECOVERY
+Automated PostgreSQL backups.
+Retention policy.
+Separate backup storage.
+Encryption where required.
+Regular restoration tests.
+Documented recovery procedure.
+Define RPO/RTO with stakeholders.
+Monitor backup success.
+Daily database backups were already listed as an assumption in the original project vision. fileciteturn4file5L1-L15
+41. DOCKER & DEPLOYMENT
+docker-compose.yml├── frontend├── api├── postgres├── reverse-proxy└── optional monitoring
+41.1 Environments
+Environment
+Purpose
+Development
+Local development
+QA/Test
+Automated/manual tests
+Staging
+Production-like validation
+Production
+Live hospital system
+41.2 Environment Variables
+Database connection
+Auth signing/session configuration
+Allowed origins
+SignalR
+Storage
+Email/SMS provider
+Logging
+Environment
+Secrets must never be committed to Git. This is explicitly stated in the current build documentation. fileciteturn4file3L1-L10
+42. GIT & CI/CD
+42.1 Branches
+main       → productiondevelop    → integrationfeature/*  → feature workfix/*      → fixesrelease/*  → release preparation
+42.2 CI
+Install dependencies.
+Lint/format.
+Build frontend.
+Build backend.
+Run unit tests.
+Run integration tests.
+Build Docker images.
+Security/dependency checks.
+Publish artifacts.
+42.3 CD
+Deploy staging.
+Run smoke tests.
+Approval if required.
+Deploy production.
+Health check.
+Monitor.
+Rollback if necessary.
+This CI/CD sequence follows the existing build blueprint. fileciteturn4file3L1-L18
+43. DEVELOPMENT ORDER
+Phase
+Build
+1
+Project setup + Figma design system
+2
+Database foundation + migrations
+3
+Authentication + RBAC
+4
+Hospital configuration + staff
+5
+Patient management
+6
+Appointments + check-in
+7
+OPD + EMR
+8
+Nursing
+9
+IPD
+10
+Emergency
+11
+ICU
+12
+Surgery
+13
+Laboratory
+14
+Radiology
+15
+Pharmacy
+16
+Inventory
+17
+Billing + payments
+18
+Insurance
+19
+HR + attendance
+20
+Notifications + SignalR
+21
+Reports + audit
+22
+Testing + hardening
+23
+Docker + staging
+24
+UAT
+25
+Production
+The earlier build blueprint used a 13-phase order from project setup through authentication, configuration, patients, appointments, EMR, laboratory, pharmacy, billing, real-time, reports, testing and deployment. fileciteturn4file3L1-L18 This expanded order adds the clinical/administrative areas present in the original CuraSphere scope.
+44. FEATURE-BY-FEATURE VERTICAL SLICE
+Requirement↓User Flow↓Figma↓Database↓API Contract↓Backend Validation↓Service / Business Rules↓Frontend Query / Mutation↓UI↓Real-Time Event↓Unit Test↓Integration Test↓E2E Test↓Code Review↓Staging↓UAT↓Production
+44.1 Patient Registration Example
+Design Figma screen.
+Create patients table/entity.
+Create API contract.
+Create DTO/schema.
+Implement duplicate warning.
+Implement service.
+Persist with EF Core.
+Write audit.
+Create TanStack Query mutation.
+Create React Hook Form + Zod.
+Add loading/error/success states.
+Write tests.
+Run E2E.
+Deploy.
+45. UI SCREEN INVENTORY
+Module
+Screens
+Auth
+Login, forgot password, reset password
+Dashboard
+Admin, doctor, reception, manager
+Patients
+List, registration, profile, timeline, documents
+Doctors
+List, profile, schedule
+Nursing
+Queue, vitals, notes, care tasks
+Appointments
+Calendar, booking, availability, check-in
+OPD
+Queue, triage, encounter
+IPD
+Admissions, wards, beds, patient stay
+Emergency
+Triage, emergency queue, disposition
+ICU
+ICU board, monitoring, notes
+Surgery
+Schedule, pre-op, procedure, post-op
+Laboratory
+Queue, request, sample, result, verification
+Radiology
+Orders, schedule, study/report
+Pharmacy
+Queue, prescription, dispensing
+Inventory
+Items, stock, movements, alerts
+Billing
+Invoices, payments, refunds, receipts
+Insurance
+Policies, claims, coverage
+HR
+Employees, attendance
+Reports
+Operational, clinical, financial, inventory, HR, audit
+Admin
+Users, roles, permissions, departments, settings
+46. MASTER API MAP
+AUTHPOST   /api/auth/loginPOST   /api/auth/logoutGET    /api/auth/mePOST   /api/auth/refreshPOST   /api/auth/forgot-passwordPOST   /api/auth/reset-passwordPATIENTSPOST   /api/patientsGET    /api/patientsGET    /api/patients/{id}PUT    /api/patients/{id}GET    /api/patients/{id}/timelineAPPOINTMENTSPOST   /api/appointmentsGET    /api/appointmentsPATCH  /api/appointments/{id}POST   /api/appointments/{id}/check-inPOST   /api/appointments/{id}/cancelCLINICALPOST   /api/encountersGET    /api/encounters/{id}POST   /api/encounters/{id}/notesPOST   /api/encounters/{id}/diagnosesPOST   /api/encounters/{id}/prescriptionsPOST   /api/encounters/{id}/lab-requestsLABGET    /api/lab/requestsPOST   /api/lab/requestsPATCH  /api/lab/requests/{id}/statusPOST   /api/lab/requests/{id}/resultsPOST   /api/lab/results/{id}/verifyPHARMACYGET    /api/pharmacy/prescriptionsPOST   /api/pharmacy/dispensesBILLINGPOST   /api/invoicesGET    /api/invoicesGET    /api/invoices/{id}POST   /api/invoices/{id}/paymentsPOST   /api/payments/{id}/refundREPORTSGET /api/reports/dashboardGET /api/reports/appointmentsGET /api/reports/financeGET /api/reports/laboratoryGET /api/reports/pharmacyGET /api/reports/audit
+47. DOCUMENTATION TO MAINTAIN DURING DEVELOPMENT
+Artifact
+Update when
+SRS
+Approved requirement changes
+Build Blueprint
+Architecture/process changes
+Figma
+Every UI change
+ERD/schema
+Every database change
+OpenAPI
+Every endpoint contract change
+RTM
+Requirement implementation/test status
+Test cases
+New or changed behavior
+Changelog
+Released features/fixes
+Deployment guide
+Infrastructure changes
+User manual
+User workflow changes
+48. WHAT NOT TO BUILD YET
+Do not start with AI diagnosis.
+Do not start with microservices.
+Do not build every future integration before the core patient journey works.
+Do not build an ERP-grade accounting system for the MVP.
+Do not create a giant generic dashboard.
+Do not duplicate server state across many stores.
+Do not allow frontend-only business rules.
+Do not skip testing of payments and clinical records.
+The original vision lists telemedicine, mobile apps, AI-assisted diagnosis, wearables, patient portal, multi-hospital management, cloud-native deployment, microservices migration, BI and predictive analytics as future scalability options rather than the initial core. fileciteturn4file0L1-L15
+49. MASTER IMPLEMENTATION CHECKLIST
+☐ Create Git repository
+☐ Create monorepo/project structure
+☐ Create Figma design system
+☐ Create shared UI components
+☐ Create React/Vite app
+☐ Create ASP.NET Core solution
+☐ Configure PostgreSQL
+☐ Configure EF Core
+☐ Create base migrations
+☐ Implement Identity
+☐ Implement authentication
+☐ Implement RBAC
+☐ Implement protected routes
+☐ Implement hospital configuration
+☐ Implement departments
+☐ Implement staff/doctors/nurses
+☐ Implement patient management
+☐ Implement appointment management
+☐ Implement OPD
+☐ Implement EMR
+☐ Implement nursing
+☐ Implement IPD
+☐ Implement emergency
+☐ Implement ICU
+☐ Implement surgery
+☐ Implement laboratory
+☐ Implement radiology
+☐ Implement pharmacy
+☐ Implement inventory
+☐ Implement billing
+☐ Implement payments
+☐ Implement insurance
+☐ Implement HR
+☐ Implement attendance
+☐ Implement notifications
+☐ Implement SignalR
+☐ Implement reports
+☐ Implement audit logs
+☐ Add unit tests
+☐ Add integration tests
+☐ Add Playwright E2E
+☐ Add security testing
+☐ Add performance testing
+☐ Create Docker setup
+☐ Create staging
+☐ Create CI/CD
+☐ Configure backups
+☐ Run UAT
+☐ Prepare manuals
+☐ Deploy production
+50. FINAL SYSTEM FLOW
+USER ↓AUTHENTICATION ↓ROLE + PERMISSIONS ↓ROLE-SPECIFIC DASHBOARD ↓PATIENT ↓APPOINTMENT / WALK-IN ↓CHECK-IN ↓TRIAGE / NURSING ↓OPD / IPD / EMERGENCY / ICU ↓DOCTOR ENCOUNTER ↓DIAGNOSIS + TREATMENT ├── LABORATORY ├── RADIOLOGY ├── PHARMACY └── SURGERY ↓BILLING + INSURANCE ↓PAYMENT ↓DISCHARGE / FOLLOW-UP ↓REPORTING ↓AUDIT
+The complete system should be built around this patient journey while keeping each department modular. The existing CuraSphere build documentation describes the same principle: CuraSphere is a hospital operations platform rather than a collection of unrelated CRUD screens. fileciteturn4file14L1-L15
+51. FINAL ENGINEERING RULES
+The database is the source of truth.
+Business rules are enforced on the backend.
+Frontend never accesses PostgreSQL directly.
+Use TanStack Query for server state.
+Use Zustand for appropriate client/UI state.
+Use transactions for critical multi-step operations.
+Clinical and financial history must be protected from silent modification.
+Every sensitive action must be authorized and auditable.
+Real-time events happen after successful persistence.
+Secrets never enter Git.
+Every major feature is built as UI + database + API + tests.
+Do not mark a feature complete until its workflow, error states and permissions are tested.
+52. FINAL BUILD DEFINITION
+CuraSphere is complete when the team can demonstrate the full patient journey in a working environment, with each authorized department seeing the correct information, each critical transaction persisted correctly, sensitive actions audited, real-time operational updates functioning where required, and the system passing its automated and user acceptance tests.
+The original project vision identifies the broader goal as a reliable, secure, scalable digital healthcare platform that improves communication, reduces manual work, supports patient care and provides accurate real-time data. fileciteturn4file6L1-L15
+This document therefore becomes the master implementation blueprint alongside the SRS: the SRS defines requirements, while this document defines the practical route from requirement → design → code → database → API → testing → deployment.
+APPENDIX A — SOURCE ALIGNMENT
+The original CuraSphere Project Vision Document identifies the project as a Hospital Management System and defines the clinical, administrative, financial, inventory and reporting scope. fileciteturn4file7L1-L18
+The current build blueprint establishes the React/TypeScript/Vite + Tailwind/shadcn/Zustand/TanStack Query frontend, ASP.NET Core/C#/EF Core/PostgreSQL backend and supporting real-time, testing and DevOps tools. fileciteturn4file2L1-L17
+The current build blueprint also defines the feature-by-feature vertical-slice development pattern and the development phases from project setup through production. fileciteturn4file3L1-L18
+APPENDIX B — NEXT DOCUMENTS
+Order
+Document
+Purpose
+1
+Figma UI/UX Specification
+Every screen, state, component and responsive behavior
+2
+Database Design Document
+Complete ERD, tables, columns, constraints, indexes and migrations
+3
+API Documentation
+Complete endpoint catalog, DTOs, validation and responses
+4
+Test Plan + Test Cases
+Requirement-to-test verification
+5
+Deployment Guide
+Docker, environments, CI/CD, backups and production
+6
+User Manual
+End-user instructions
+7
+Admin Manual
+Configuration and administration
+A separate generic SDD is not necessary if this build blueprint remains synchronized with architecture decisions; the existing documentation already treats the SDD as optional because its practical design guidance is incorporated here. fileciteturn4file12L1-L18

@@ -1,0 +1,315 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.12 - Reporting, Business Intelligence and Analytics System (RBI)
+
+5.12.1 Introduction
+The Reporting, Business Intelligence and Analytics System (RBI) provides centralized operational, clinical, financial, and executive reporting for the CuraSphere Hospital Management System.
+This module transforms data collected from all hospital departments into meaningful reports, dashboards, Key Performance Indicators (KPIs), statistical analysis, and executive insights to support operational monitoring and strategic decision-making.
+Unlike operational modules, the RBI module does not directly create clinical or financial transactions. Instead, it consolidates information from integrated systems and presents it through reports, dashboards, visualizations, and analytics.
+The Reporting and Business Intelligence System shall support real-time monitoring, historical analysis, regulatory reporting, and performance measurement.
+
+Reporting Module Scope
+The Reporting and Business Intelligence module shall manage:
+Operational Reports
+Clinical Reports
+Financial Reports
+Executive Dashboards
+Statistical Analysis
+KPI Monitoring
+Performance Metrics
+Patient Analytics
+Revenue Analytics
+Department Performance
+Inventory Analytics
+Pharmacy Reports
+Laboratory Reports
+Radiology Reports
+Human Resource Reports
+Infection Control Reports
+Regulatory Reports
+Custom Report Builder
+Scheduled Reports
+Report Export
+Audit Reports
+
+High-Level Reporting Workflow
+Hospital Modules
+        │
+        ▼
+Central Reporting Database
+        │
+        ▼
+Analytics Engine
+        │
+ ┌──────┼───────────┐
+ ▼      ▼           ▼
+Reports Dashboard KPI Engine
+        │
+        ▼
+Visualization
+        │
+        ▼
+Hospital Management
+
+5.12.2 Objectives
+The Reporting System shall:
+Provide real-time dashboards.
+Generate operational reports.
+Generate financial reports.
+Generate clinical reports.
+Support executive decision-making.
+Monitor hospital KPIs.
+Analyze historical trends.
+Export reports.
+Schedule automatic reports.
+Support regulatory reporting.
+Improve operational transparency.
+Reduce manual report preparation.
+Support business intelligence.
+Enable data-driven planning.
+Maintain report security.
+
+5.12.3 Actors
+Actor
+Description
+Hospital Administrator
+Reviews hospital performance
+CEO / Director
+Executive dashboards
+Department Manager
+Department reports
+Finance Manager
+Financial reports
+HR Manager
+HR analytics
+Laboratory Manager
+Laboratory reports
+Pharmacy Manager
+Pharmacy reports
+Auditor
+Audit reports
+Government Authority
+Regulatory reports
+CuraSphere System
+Automatic report generation
+
+5.12.4 High-Level Reporting Architecture
+             All Modules
+                  │
+                  ▼
+        Central Reporting Engine
+                  │
+      ┌───────────┼────────────┐
+      ▼           ▼            ▼
+ Operational   Financial   Clinical
+  Reports      Reports      Reports
+      │           │            │
+      └───────────┼────────────┘
+                  ▼
+        Business Intelligence
+                  │
+                  ▼
+      Dashboard & Visualization
+                  │
+                  ▼
+          Executive Decision
+
+5.12.5 Functional Requirement RBI-FR-001
+Operational Reporting
+
+Requirement ID
+RBI-FR-001
+Requirement Name
+Operational Report Generation
+
+Description
+The system shall generate operational reports for all hospital departments.
+Operational reports shall assist managers in monitoring daily hospital activities.
+
+Actors
+Department Manager
+Hospital Administrator
+
+Main Workflow
+Department Selected
+        │
+        ▼
+Choose Report
+        │
+        ▼
+Apply Filters
+        │
+        ▼
+Generate Report
+        │
+        ▼
+Display / Export
+
+Available Reports
+Patient Registration
+OPD Visits
+Emergency Visits
+Admissions
+Discharges
+Appointments
+Waiting Time
+Doctor Activity
+Bed Occupancy
+
+Business Rules
+Reports shall respect user access permissions.
+
+Acceptance Criteria
+Operational reports generated successfully.
+
+5.12.6 Functional Requirement RBI-FR-002
+Clinical Reporting
+
+Requirement ID
+RBI-FR-002
+
+Description
+The system shall generate clinical reports from EMR and hospital clinical systems.
+
+Clinical Reports
+Disease Statistics
+Diagnosis Trends
+Patient Outcomes
+Mortality Reports
+Readmission Reports
+Infection Reports
+Procedure Reports
+Surgery Reports
+Laboratory Statistics
+Radiology Statistics
+
+Workflow
+Clinical Database
+        │
+        ▼
+Clinical Analytics
+        │
+        ▼
+Generate Clinical Report
+
+Business Rules
+Patient confidentiality shall be preserved.
+
+Acceptance Criteria
+Clinical reports available to authorized clinicians.
+
+5.12.7 Functional Requirement RBI-FR-003
+Financial Reporting
+
+Requirement ID
+RBI-FR-003
+
+Description
+The system shall generate financial reports using Billing, Finance, Inventory, and Payroll data.
+
+Reports
+Daily Revenue
+Monthly Revenue
+Outstanding Payments
+Insurance Claims
+Expenses
+Profit Analysis
+Department Revenue
+Cash Flow
+Pharmacy Revenue
+
+Workflow
+Financial Database
+        │
+        ▼
+Financial Analysis
+        │
+        ▼
+Financial Reports
+
+Business Rules
+Financial reports shall only be available to authorized finance personnel.
+
+Acceptance Criteria
+Financial reports generated correctly.
+
+5.12.8 Functional Requirement RBI-FR-004
+Executive Dashboard
+
+Requirement ID
+RBI-FR-004
+
+Description
+The system shall provide interactive dashboards for hospital executives.
+
+Dashboard KPIs
+Daily Patients
+Revenue
+Bed Occupancy
+Emergency Cases
+Laboratory Tests
+Pharmacy Sales
+Appointment Completion
+Average Waiting Time
+ICU Occupancy
+Staff Attendance
+
+Dashboard Architecture
+Hospital Database
+       │
+       ▼
+KPI Engine
+       │
+       ▼
+Dashboard
+       │
+       ▼
+Charts
+Graphs
+Cards
+Tables
+
+Business Rules
+Dashboard data refresh intervals shall be configurable.
+
+Acceptance Criteria
+Real-time dashboards available.
+
+5.12.9 Functional Requirement RBI-FR-005
+KPI Monitoring
+
+Requirement ID
+RBI-FR-005
+
+Description
+The system shall monitor hospital Key Performance Indicators.
+
+Sample KPIs
+Average Patient Waiting Time
+Bed Occupancy Rate
+Average Length of Stay
+Readmission Rate
+Laboratory Turnaround Time
+Medicine Stock Availability
+Doctor Productivity
+Staff Attendance Rate
+Surgery Success Rate
+Revenue Growth
+
+Workflow
+Operational Data
+        │
+        ▼
+KPI Calculation
+        │
+        ▼
+Performance Score
+
+Business Rules
+KPIs shall use standardized formulas approved by hospital management.
+
+Acceptance Criteria
+KPIs calculated automatically.
+
+

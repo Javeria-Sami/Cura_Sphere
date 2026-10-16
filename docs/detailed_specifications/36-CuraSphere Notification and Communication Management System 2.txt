@@ -1,0 +1,470 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.13 - Notification and Communication Management System (NCM)
+
+5.13.10 Functional Requirement NCM-FR-006
+Internal Staff Messaging
+
+Requirement ID
+NCM-FR-006
+Requirement Name
+Internal Staff Messaging System
+
+Description
+The system shall provide a secure internal messaging platform for communication between hospital staff without requiring external messaging applications.
+The messaging system shall support individual, departmental, and group communication while maintaining confidentiality and auditability.
+
+Actors
+Doctor
+Nurse
+Pharmacist
+Laboratory Staff
+Radiology Staff
+HR Officer
+Hospital Administrator
+Department Manager
+
+Preconditions
+User must be authenticated.
+User account must be active.
+Messaging permission must be granted.
+
+Trigger
+An authorized user composes and sends an internal message.
+
+Main Workflow
+User Selects Recipient
+        │
+        ▼
+Compose Message
+        │
+        ▼
+Attach Files (Optional)
+        │
+        ▼
+Send Message
+        │
+        ▼
+Recipient Receives Notification
+        │
+        ▼
+Message Stored
+        │
+        ▼
+Audit Log Created
+
+Supported Features
+One-to-one messaging
+Department messaging
+Group messaging
+Broadcast messages
+File attachments
+Read receipts
+Message search
+Conversation history
+Priority messages
+
+Business Rules
+NCM-BR-021
+Only authenticated users shall exchange internal messages.
+NCM-BR-022
+Deleted messages shall remain available to authorized auditors according to hospital retention policy.
+NCM-BR-023
+Patient confidential information shall only be shared with authorized personnel.
+
+Acceptance Criteria
+Staff exchange secure messages.
+Read status recorded.
+Messages searchable.
+Audit logs maintained.
+
+5.13.11 Functional Requirement NCM-FR-007
+Emergency Broadcast and Code Alert Management
+
+Requirement ID
+NCM-FR-007
+Requirement Name
+Emergency Broadcast System
+
+Description
+The system shall broadcast emergency notifications to predefined personnel during critical situations.
+
+Emergency Codes
+The system shall support configurable emergency codes including:
+Code Blue
+Code Red
+Code Pink
+Code Black
+Code Orange
+Code Yellow
+Disaster Alert
+Fire Alert
+Security Alert
+Mass Casualty Alert
+
+Workflow
+Emergency Trigger
+        │
+        ▼
+Identify Emergency Code
+        │
+        ▼
+Determine Recipients
+        │
+        ▼
+Broadcast Notification
+        │
+        ▼
+Delivery Confirmation
+        │
+        ▼
+Incident Log Updated
+
+Business Rules
+NCM-BR-024
+Emergency alerts shall bypass non-critical notification queues.
+NCM-BR-025
+Emergency broadcasts shall be delivered using all available communication channels when configured.
+NCM-BR-026
+Emergency alerts shall require authorized activation unless automatically triggered by integrated systems.
+
+Acceptance Criteria
+Emergency alerts delivered immediately.
+Delivery status recorded.
+Emergency event logged.
+
+5.13.12 Functional Requirement NCM-FR-008
+Multi-Channel Notification Delivery
+
+Requirement ID
+NCM-FR-008
+Requirement Name
+Multi-Channel Notification Delivery
+
+Description
+The system shall support multiple notification delivery channels and automatically select the most appropriate channel according to hospital configuration and user preferences.
+
+Supported Channels
+SMS
+Email
+Mobile Push Notification
+Web Portal Notification
+Internal Messaging
+Desktop Notification
+
+Delivery Architecture
+Notification Engine
+        │
+        ▼
+Channel Selection
+        │
+ ┌──────┼──────────────┐
+ ▼      ▼              ▼
+SMS   Email      Push Notification
+ │      │              │
+ └──────┼──────────────┘
+        ▼
+Delivery Confirmation
+
+Business Rules
+NCM-BR-027
+Primary and secondary delivery channels shall be configurable.
+NCM-BR-028
+Failed delivery attempts shall trigger retry processing according to notification policy.
+
+Acceptance Criteria
+Notifications delivered through configured channels.
+Delivery failures handled automatically.
+
+5.13.13 Functional Requirement NCM-FR-009
+Notification Preferences Management
+
+Requirement ID
+NCM-FR-009
+
+Description
+Users shall manage personal notification preferences.
+
+Preference Options
+Users may configure:
+Preferred language
+Preferred notification channel
+Notification timing
+Quiet hours
+Marketing notifications
+Appointment reminders
+Billing notifications
+Laboratory notifications
+Emergency notifications (mandatory where applicable)
+
+Workflow
+User Opens Preferences
+        │
+        ▼
+Update Settings
+        │
+        ▼
+Validate Configuration
+        │
+        ▼
+Save Preferences
+
+Business Rules
+Critical emergency notifications cannot be disabled for designated emergency response staff.
+
+Acceptance Criteria
+Users manage notification preferences successfully.
+
+5.13.14 Functional Requirement NCM-FR-010
+Notification Scheduling and Retry Management
+
+Requirement ID
+NCM-FR-010
+
+Description
+The system shall schedule future notifications and automatically retry failed deliveries.
+
+Retry Workflow
+Notification Created
+        │
+        ▼
+Delivery Attempt
+        │
+    Success?
+   ┌───┴────┐
+  Yes      No
+   │        │
+Complete  Retry Queue
+            │
+            ▼
+Configured Retry Attempts
+            │
+            ▼
+Failure Log
+
+Business Rules
+Retry intervals and maximum retry attempts shall be configurable.
+
+Acceptance Criteria
+Failed notifications retried automatically.
+
+5.13.15 Functional Requirement NCM-FR-011
+Delivery Tracking and Notification History
+
+Requirement ID
+NCM-FR-011
+
+Description
+The system shall maintain complete delivery history for every notification.
+
+Notification Status
+Pending
+Scheduled
+Processing
+Delivered
+Read
+Failed
+Expired
+Cancelled
+
+Stored Information
+Notification ID
+Recipient
+Channel
+Template
+Delivery Time
+Read Time
+Status
+Failure Reason
+
+Workflow
+Notification Sent
+       │
+       ▼
+Delivery Tracking
+       │
+       ▼
+Status Updated
+       │
+       ▼
+Notification History
+
+Business Rules
+Notification history shall be retained according to hospital data retention policies.
+
+Acceptance Criteria
+Notification status accurately tracked.
+
+5.13.16 Functional Requirement NCM-FR-012
+Communication Security
+
+Requirement ID
+NCM-FR-012
+
+Description
+The Notification System shall implement security mechanisms to protect confidential communications.
+
+Security Controls
+Role-Based Access Control (RBAC)
+Authentication
+Authorization
+Encryption in Transit
+Encryption at Rest
+Digital Signatures (where applicable)
+Audit Logging
+
+Security Workflow
+User Login
+      │
+      ▼
+Authentication
+      │
+      ▼
+Permission Check
+      │
+      ▼
+Notification Access
+      │
+      ▼
+Audit Log
+
+Business Rules
+Sensitive clinical notifications shall not expose confidential patient information over insecure communication channels.
+
+Acceptance Criteria
+Unauthorized notification access prevented.
+
+5.13.17 Functional Requirement NCM-FR-013
+Notification Integration Requirements
+The Notification module shall integrate with:
+Module
+Purpose
+Patient Registration
+Registration notifications
+Appointment
+Appointment reminders
+EMR
+Clinical alerts
+Laboratory
+Result notifications
+Radiology
+Imaging notifications
+Pharmacy
+Prescription ready alerts
+Billing
+Invoice and payment notifications
+HR
+Employee announcements
+Authentication
+User identification
+Audit
+Notification audit logs
+External SMS Gateway
+SMS delivery
+Email Service
+Email delivery
+Push Notification Service
+Mobile notifications
+
+Integration Architecture
+Hospital Modules
+       │
+       ▼
+Notification Engine
+       │
+       ▼
+Template Engine
+       │
+       ▼
+Channel Manager
+       │
+ ┌─────┼──────────────┐
+ ▼     ▼              ▼
+SMS   Email      Push Service
+       │
+       ▼
+Notification History
+
+5.13.18 Functional Requirement NCM-FR-014
+Notification Non-Functional Requirements
+The Notification System shall satisfy the following quality requirements.
+Performance
+Critical notifications should typically be generated within 5 seconds of the triggering event.
+Standard notifications should be queued and delivered without unnecessary delay.
+Availability
+Target availability: 99.9%, excluding planned maintenance.
+Reliability
+Notification failures shall not affect the originating clinical or business transaction.
+Scalability
+Support thousands of concurrent notifications.
+Security
+All notification traffic shall be encrypted where supported by the communication channel.
+Backup & Recovery
+Notification templates, schedules, and delivery history shall be included in system backup procedures.
+
+5.13.19 Functional Requirement NCM-FR-015
+Notification Requirement Traceability Matrix
+Requirement ID
+Functional Area
+NCM-FR-001
+Template Management
+NCM-FR-002
+Appointment Reminders
+NCM-FR-003
+Clinical Notifications
+NCM-FR-004
+Laboratory & Radiology Notifications
+NCM-FR-005
+Billing Notifications
+NCM-FR-006
+Internal Staff Messaging
+NCM-FR-007
+Emergency Broadcast
+NCM-FR-008
+Multi-Channel Delivery
+NCM-FR-009
+Notification Preferences
+NCM-FR-010
+Scheduling & Retry
+NCM-FR-011
+Delivery Tracking
+NCM-FR-012
+Communication Security
+NCM-FR-013
+Integration Requirements
+NCM-FR-014
+Non-Functional Requirements
+NCM-FR-015
+Requirement Traceability
+
+5.13.20 Notification Module Architecture Summary
+                Hospital Modules
+                       │
+                       ▼
+            Notification Engine
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+   Template Engine  Scheduler   Recipient Engine
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+               Channel Manager
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+      SMS           Email        Push Service
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+              Delivery Tracking
+                       │
+                       ▼
+             Notification History
+                       │
+                       ▼
+                 Audit System
+
+
+

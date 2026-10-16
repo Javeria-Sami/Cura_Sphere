@@ -1,0 +1,577 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 — System Functional Requirements
+Part 5.9 — Pharmacy and Medication Management System (PHR)
+
+5.9.11 Functional Requirement PHR-FR-007
+Controlled Drug (Narcotics) Management
+
+Requirement ID
+PHR-FR-007
+Requirement Name
+Controlled Drug and Narcotics Management
+
+Description
+The system shall provide a secure mechanism for managing controlled medicines, narcotics, psychotropic drugs, and other legally regulated pharmaceutical products.
+Controlled medicines require stricter inventory control, authorization, dispensing, storage, and audit logging than standard medicines.
+The module shall comply with hospital policies and national pharmaceutical regulations.
+
+Actors
+Pharmacist
+Pharmacy Manager
+Authorized Doctor
+Inventory Officer
+Hospital Administrator
+Regulatory Auditor
+
+Preconditions
+Medicine exists in Medicine Master.
+Medicine is classified as Controlled Drug.
+User possesses controlled medicine privileges.
+
+Trigger
+A controlled medicine is prescribed, received, dispensed, transferred, adjusted, or destroyed.
+
+Main Workflow
+Doctor Prescribes Controlled Drug
+             │
+             ▼
+Clinical Validation
+             │
+             ▼
+Authorization Check
+             │
+             ▼
+Stock Availability
+             │
+             ▼
+Double Verification
+             │
+             ▼
+Dispensing
+             │
+             ▼
+Inventory Updated
+             │
+             ▼
+Controlled Drug Register Updated
+             │
+             ▼
+Audit Log Created
+
+System shall record
+Controlled Drug ID
+Prescription Number
+Patient ID
+Prescribing Doctor
+Dispensing Pharmacist
+Quantity Dispensed
+Remaining Stock
+Batch Number
+Expiry Date
+Storage Location
+Approval Information
+Regulatory Reference
+
+Alternative Flow
+Emergency medication override may be performed by authorized personnel according to hospital emergency policy.
+
+Exception Flow
+Unauthorized user attempts dispensing.
+System shall:
+Block transaction.
+Record security event.
+Notify pharmacy supervisor.
+
+Business Rules
+PHR-BR-015
+Controlled medicines require pharmacist verification.
+PHR-BR-016
+Controlled drug inventory shall never become negative.
+PHR-BR-017
+Every controlled drug transaction shall be audited.
+PHR-BR-018
+Controlled medicines require barcode verification before dispensing.
+
+Acceptance Criteria
+✔ Unauthorized dispensing prevented
+✔ Controlled drug register maintained
+✔ Audit generated
+✔ Inventory synchronized
+
+5.9.12 Functional Requirement PHR-FR-008
+Batch and Expiry Management
+
+Requirement ID
+PHR-FR-008
+Requirement Name
+Medicine Batch and Expiry Tracking
+
+Description
+The system shall maintain complete batch-level tracking of medicines throughout their lifecycle.
+Each batch shall be independently monitored for:
+Manufacturing Date
+Expiry Date
+Supplier
+Quantity
+Purchase Information
+Storage Location
+
+Actors
+Pharmacist
+Inventory Officer
+Procurement Officer
+
+Workflow
+Medicine Received
+        │
+        ▼
+Batch Created
+        │
+        ▼
+Expiry Recorded
+        │
+        ▼
+Inventory Updated
+        │
+        ▼
+Medicine Dispensed
+        │
+        ▼
+Batch Quantity Reduced
+
+Expiry Monitoring
+The system shall automatically classify medicines.
+Expiry > 180 Days
+        │
+      Safe
+
+Expiry < 180 Days
+        │
+     Monitor
+
+Expiry < 90 Days
+        │
+      Warning
+
+Expired
+        │
+Block Dispensing
+
+Business Rules
+PHR-BR-019
+Expired medicines shall never be dispensed.
+PHR-BR-020
+FEFO (First Expiry First Out) shall be used during dispensing.
+PHR-BR-021
+Batch numbers shall remain unique.
+
+Acceptance Criteria
+✔ Batch tracking available
+✔ FEFO supported
+✔ Expired medicine blocked
+
+5.9.13 Functional Requirement PHR-FR-009
+Medicine Returns Management
+
+Requirement ID
+PHR-FR-009
+Requirement Name
+Medicine Return Management
+
+Description
+The Pharmacy System shall support medicine return processing.
+Returns may originate from:
+Outpatient
+Inpatient
+Ward
+Emergency
+Pharmacy Counter
+
+Return Types
+Dispensing Error
+Patient Return
+Cancelled Prescription
+Unused Medication
+Damaged Product
+Expired Product
+Manufacturer Recall
+
+Workflow
+Return Requested
+        │
+        ▼
+Medicine Verified
+        │
+        ▼
+Return Approved
+        │
+        ▼
+Inventory Updated
+        │
+        ▼
+Billing Updated
+        │
+        ▼
+Audit Created
+
+Business Rules
+PHR-BR-022
+Returned medicines shall be inspected before stock re-entry.
+PHR-BR-023
+Opened medicines shall not automatically return to inventory.
+PHR-BR-024
+Expired medicines shall be quarantined.
+
+Acceptance Criteria
+✔ Return recorded
+✔ Inventory updated
+✔ Billing adjusted
+
+5.9.14 Functional Requirement PHR-FR-010
+Drug Substitution Management
+
+Requirement ID
+PHR-FR-010
+Requirement Name
+Medicine Substitution Management
+
+Description
+The system shall allow pharmacists to substitute prescribed medicines only according to hospital policies.
+Examples include:
+Generic substitution
+Therapeutic substitution
+Brand substitution
+
+Workflow
+Medicine Unavailable
+        │
+        ▼
+Search Approved Alternative
+        │
+        ▼
+Policy Validation
+        │
+        ▼
+Doctor Approval (If Required)
+        │
+        ▼
+Dispense Alternative
+        │
+        ▼
+Record Substitution
+
+Business Rules
+PHR-BR-025
+Substitutions require hospital-approved alternatives.
+PHR-BR-026
+Controlled medicines cannot be substituted without authorization.
+PHR-BR-027
+Every substitution shall be recorded.
+
+Acceptance Criteria
+✔ Safe substitutions allowed
+✔ Doctor approval recorded
+✔ Audit generated
+
+5.9.15 Functional Requirement PHR-FR-011
+Pharmacy Inventory Integration
+
+Requirement ID
+PHR-FR-011
+
+Description
+The Pharmacy module shall integrate directly with Inventory Management.
+Inventory shall automatically update after:
+Dispensing
+Purchase
+Return
+Adjustment
+Expiry
+Stock Transfer
+
+Integration Architecture
+Inventory
+     │
+     ▼
+Medicine Stock
+     │
+     ▼
+Dispensing
+     │
+     ▼
+Quantity Updated
+     │
+     ▼
+Available Stock Updated
+
+Business Rules
+Inventory synchronization shall occur immediately after every confirmed transaction.
+
+Acceptance Criteria
+Inventory always reflects actual medicine quantities.
+
+5.9.16 Functional Requirement PHR-FR-012
+Pharmacy Billing Integration
+
+Requirement ID
+PHR-FR-012
+
+Description
+Every dispensed medicine shall automatically generate billing information.
+
+Workflow
+Medicine Dispensed
+        │
+        ▼
+Billing Engine
+        │
+        ▼
+Patient Account
+        │
+        ▼
+Invoice Updated
+
+Information Sent
+Medicine
+Quantity
+Unit Price
+Total Price
+Tax
+Discount
+Insurance Coverage
+
+Business Rules
+Dispensed medicines shall not require manual billing.
+
+Acceptance Criteria
+Billing updated automatically.
+
+5.9.17 Functional Requirement PHR-FR-013
+Patient Medication History
+
+Requirement ID
+PHR-FR-013
+
+Description
+The system shall maintain a complete medication history for every patient.
+
+History shall include
+Prescriptions
+Dispensed Medicines
+Allergies
+Drug Reactions
+Previous Therapies
+Chronic Medicines
+Controlled Medicines
+
+Workflow
+Medicine Dispensed
+        │
+        ▼
+Patient Record
+        │
+        ▼
+Medication History Updated
+
+Business Rules
+Medication history shall never be deleted.
+
+Acceptance Criteria
+Complete medication history available.
+
+5.9.18 Functional Requirement PHR-FR-014
+Pharmacy Reports
+
+The Pharmacy module shall generate reports including:
+Daily Dispensing Report
+Prescription Report
+Controlled Drug Report
+Expired Medicines
+Near Expiry Medicines
+Fast Moving Medicines
+Slow Moving Medicines
+Purchase Report
+Return Report
+Revenue Report
+Inventory Report
+Batch Report
+Audit Report
+
+Reporting Flow
+Database
+     │
+     ▼
+Reporting Engine
+     │
+     ▼
+Filter
+     │
+     ▼
+Generate Report
+     │
+     ▼
+PDF / Excel / Dashboard
+
+Acceptance Criteria
+Reports generated in real time.
+
+5.9.19 Functional Requirement PHR-FR-015
+Pharmacy Security and Audit
+
+The Pharmacy module shall maintain complete audit logs.
+Every event shall record:
+User
+Date
+Time
+Action
+Medicine
+Previous Value
+New Value
+IP Address
+Device
+Session ID
+
+Audit Workflow
+User Action
+      │
+      ▼
+Security Layer
+      │
+      ▼
+Audit Database
+      │
+      ▼
+Audit Reports
+
+Business Rules
+Audit logs cannot be deleted.
+
+Acceptance Criteria
+Every transaction traceable.
+
+5.9.20 Functional Requirement PHR-FR-016
+Pharmacy Integration Requirements
+The Pharmacy module shall integrate with:
+Module
+Purpose
+EMR
+Prescription Storage
+Patient Registration
+Patient Information
+Billing
+Medicine Charges
+Inventory
+Stock Management
+Laboratory
+Lab-based Medication
+Radiology
+Contrast Medicines
+Surgery
+Surgical Medicines
+Nursing
+Medication Administration
+Insurance
+Drug Coverage
+Procurement
+Purchasing
+Notification
+Alerts
+Audit
+Compliance
+
+5.9.21 Functional Requirement PHR-FR-017
+Pharmacy Non-Functional Requirements
+The Pharmacy System shall provide:
+Performance
+Medicine search shall typically complete within 2 seconds under normal operating conditions.
+Availability
+Target availability shall be 99.9%, excluding planned maintenance.
+Reliability
+Medicine dispensing shall use transactional processing to prevent inconsistent inventory or billing records.
+Security
+Role-Based Access Control (RBAC) shall protect pharmacy operations.
+Scalability
+The architecture shall support multiple pharmacy locations and future expansion.
+Backup
+Medication records shall be included in scheduled hospital backup and disaster recovery procedures.
+Compliance
+The system shall support applicable pharmaceutical regulations, controlled substance policies, and hospital governance requirements.
+
+5.9.22 Functional Requirement PHR-FR-018
+Pharmacy Requirement Traceability Matrix
+Requirement ID
+Functional Area
+PHR-FR-001
+Medicine Master
+PHR-FR-002
+Drug Formulary
+PHR-FR-003
+Electronic Prescription
+PHR-FR-004
+Clinical Validation
+PHR-FR-005
+Pharmacist Verification
+PHR-FR-006
+Medicine Dispensing
+PHR-FR-007
+Controlled Drugs
+PHR-FR-008
+Batch & Expiry
+PHR-FR-009
+Medicine Returns
+PHR-FR-010
+Drug Substitution
+PHR-FR-011
+Inventory Integration
+PHR-FR-012
+Billing Integration
+PHR-FR-013
+Medication History
+PHR-FR-014
+Pharmacy Reports
+PHR-FR-015
+Security & Audit
+PHR-FR-016
+Integration Requirements
+PHR-FR-017
+Non-Functional Requirements
+PHR-FR-018
+Requirement Traceability
+
+5.9.23 Pharmacy Module Architecture Summary
+                    Doctor
+                       │
+                       ▼
+             Electronic Prescription
+                       │
+                       ▼
+              Clinical Validation
+                       │
+         ┌─────────────┼─────────────┐
+         ▼             ▼             ▼
+   Allergy Check  Drug Interaction  Dose Check
+         │             │             │
+         └─────────────┼─────────────┘
+                       ▼
+             Pharmacist Verification
+                       │
+                       ▼
+             Inventory Availability
+                       │
+                       ▼
+              Batch / FEFO Selection
+                       │
+                       ▼
+              Medicine Dispensing
+                       │
+         ┌─────────────┼─────────────┐
+         ▼             ▼             ▼
+     Inventory      Billing       EMR
+       Update        Update      History
+         │             │             │
+         └─────────────┼─────────────┘
+                       ▼
+                 Audit & Reports
+
+

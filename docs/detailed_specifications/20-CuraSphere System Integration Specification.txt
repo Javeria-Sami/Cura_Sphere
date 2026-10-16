@@ -1,0 +1,1950 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.15 — SYSTEM INTEGRATION, API, INTEROPERABILITY AND EXTERNAL SERVICES MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: INT/APIModule Name: System Integration, API, Interoperability and External Services Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.994 MODULE PURPOSE
+The System Integration, API, Interoperability and External Services Management System shall provide the controlled technical and functional foundation through which CuraSphere modules, frontend applications, background services, authorized external systems, medical systems, financial systems, communication providers, and future healthcare interoperability services exchange information.
+The module shall support:
+internal API communication;
+frontend-to-backend communication;
+module integration;
+external system integration;
+healthcare interoperability boundaries;
+integration endpoint management;
+integration registration;
+integration identification;
+integration activation;
+integration deactivation;
+integration authentication boundaries;
+integration authorization boundaries;
+API access control;
+API contract management;
+API versioning;
+request validation;
+response validation;
+standardized API responses;
+standardized API errors;
+API pagination;
+API filtering;
+API sorting;
+API search contracts;
+API correlation;
+API request tracking;
+API idempotency;
+duplicate request protection;
+integration retry;
+retry classification;
+integration timeout handling;
+circuit protection boundaries;
+external service failure handling;
+integration health monitoring;
+integration availability monitoring;
+integration latency monitoring;
+integration error monitoring;
+integration event logging;
+integration audit boundaries;
+webhook reception;
+webhook validation;
+webhook authentication;
+webhook replay protection;
+webhook event processing;
+outbound webhook boundaries;
+asynchronous integration boundaries;
+event-driven integration boundaries;
+message delivery boundaries;
+dead-letter processing boundaries;
+data mapping;
+data transformation;
+integration schema validation;
+integration contract compatibility;
+external identifier mapping;
+patient identifier mapping boundaries;
+provider identifier mapping boundaries;
+terminology mapping boundaries;
+healthcare interoperability boundaries;
+HL7 integration boundaries;
+FHIR integration boundaries;
+DICOM integration boundaries;
+laboratory integration boundaries;
+radiology integration boundaries;
+pharmacy integration boundaries;
+insurance integration boundaries;
+payment provider integration boundaries;
+SMS provider integration boundaries;
+email provider integration boundaries;
+identity provider integration boundaries;
+government health system integration boundaries;
+API documentation;
+API discovery boundaries;
+integration configuration;
+integration secret protection;
+integration credential rotation boundaries;
+integration observability;
+integration failure recovery;
+future API gateway support;
+future partner API support;
+future mobile application API support;
+future multi-hospital integration support.
+The high-level integration lifecycle shall be:
+SOURCE SYSTEM      │      ▼INTEGRATION REQUEST / EVENT      │      ▼INTEGRATION ENTRY BOUNDARY      │      ▼IDENTIFY INTEGRATION      │      ▼AUTHENTICATE      │      ▼AUTHORIZE      │      ▼VALIDATE CONTRACT      │      ▼VALIDATE DATA      │      ▼TRANSFORM / MAP      │      ▼APPLICATION SERVICE      │      ▼DOMAIN PROCESSING      │      ▼PERSIST / PROCESS      │      ▼CREATE INTEGRATION RESULT      │      ▼TRACK / OBSERVE      │      ▼RETURN RESPONSE / PUBLISH RESULT
+The module shall help CuraSphere answer questions such as:
+WHICH SYSTEM SENT THIS REQUEST?WHICH API VERSION WAS USED?IS THE CALLER AUTHENTICATED?IS THE CALLER AUTHORIZED?IS THE REQUEST CONTRACT VALID?IS THE REQUEST DUPLICATED?HAS THIS REQUEST ALREADY BEEN PROCESSED?WHAT IS THE REQUEST CORRELATION ID?WHICH EXTERNAL SYSTEM OWNS THIS IDENTIFIER?HOW IS AN EXTERNAL PATIENT ID MAPPED?WHAT HAPPENS IF THE SMS PROVIDER IS DOWN?WHAT HAPPENS IF A PAYMENT PROVIDER TIMES OUT?SHOULD THE REQUEST BE RETRIED?HOW MANY TIMES HAS THE REQUEST BEEN RETRIED?IS THE FAILURE TEMPORARY OR PERMANENT?WHAT HAPPENS TO A FAILED ASYNCHRONOUS MESSAGE?HOW DO WE PREVENT WEBHOOK REPLAY?HOW IS AN EXTERNAL PAYLOAD VALIDATED?HOW IS EXTERNAL DATA TRANSFORMED?WHICH API CONTRACT IS CURRENT?CAN OLD CLIENTS CONTINUE USING AN OLDER API VERSION?IS THE EXTERNAL SERVICE HEALTHY?WHAT IS THE EXTERNAL SERVICE LATENCY?CAN CURASPHERE SUPPORT HL7 IN THE FUTURE?CAN CURASPHERE SUPPORT FHIR IN THE FUTURE?CAN CURASPHERE SUPPORT DICOM INTEGRATION?CAN A MOBILE APPLICATION USE THE API?CAN AN AUTHORIZED PARTNER USE THE API?CAN MULTIPLE HOSPITALS USE DIFFERENT INTEGRATIONS?
+
+5.995 INTEGRATION DOMAIN BOUNDARY
+The INT/API module shall manage communication and interoperability boundaries.
+It shall not become the owner of all data exchanged through integrations.
+Example:
+PATIENT MODULE      │      ▼OWNS PATIENT
+Integration module:
+INT/API   │   ▼TRANSPORTS / MAPS PATIENT DATA
+Therefore:
+PATIENT DATA TRANSPORT          ≠PATIENT OWNERSHIP
+Another example:
+BILLING MODULE      │      ▼OWNS PAYMENT TRANSACTION
+Payment provider integration:
+INT/API   │   ▼COMMUNICATES WITH PAYMENT PROVIDER
+Therefore:
+PAYMENT PROVIDER COMMUNICATION              ≠PAYMENT DOMAIN OWNERSHIP
+Another example:
+LABORATORY MODULE        │        ▼OWNS LAB ORDER AND RESULT
+Laboratory device integration:
+INT/API   │   ▼RECEIVES / TRANSMITS LAB DATA
+Therefore:
+LAB INTEGRATION       ≠LABORATORY BUSINESS DOMAIN
+Critical Principle
+DOMAIN MODULE      │      ▼OWNS BUSINESS MEANING
+INTEGRATION MODULE         │         ▼OWNS COMMUNICATION BOUNDARY
+The Integration module shall not independently:
+DIAGNOSE PATIENTSAPPROVE LAB RESULTSFINALIZE RADIOLOGY REPORTSDISPENSE MEDICINESGENERATE SALARIESAPPROVE INSURANCE CLAIMSREVERSE PAYMENTSCREATE CLINICAL DECISIONS
+unless the responsible domain service explicitly performs the business operation.
+
+5.996 CRITICAL API ARCHITECTURE PRINCIPLE
+CuraSphere shall distinguish:
+API
+from:
+DOMAIN LOGIC
+from:
+DATABASE
+Incorrect architecture:
+REACT  │  ▼API CONTROLLER  │  ▼DIRECT SQL
+Example:
+[HttpPost]public IActionResult CreateAppointment(AppointmentDto dto){    // validate everything here    // calculate everything here    // execute SQL here    // send SMS here    // write audit here    // return response}
+This architecture shall be avoided.
+Preferred conceptual architecture:
+REACT  │  ▼API ENDPOINT  │  ▼APPLICATION SERVICE  │  ▼DOMAIN RULES  │  ▼REPOSITORY / DATA ACCESS BOUNDARY  │  ▼POSTGRESQL
+External communication:
+APPLICATION SERVICE        │        ▼INTEGRATION ABSTRACTION        │        ▼EXTERNAL PROVIDER ADAPTER        │        ▼EXTERNAL SYSTEM
+Therefore:
+API CONTROLLER      ≠BUSINESS DOMAIN
+and:
+EXTERNAL PROVIDER SDK          ≠APPLICATION BUSINESS LOGIC
+
+5.997 API CONSUMER CONCEPT
+CuraSphere APIs may be consumed by approved clients.
+Potential consumers include:
+CURASPHERE REACT WEB APPLICATIONCURASPHERE ADMINISTRATION APPLICATIONCURASPHERE PATIENT PORTALCURASPHERE FUTURE MOBILE APPLICATIONCURASPHERE BACKGROUND WORKERAUTHORIZED INTERNAL SERVICEAUTHORIZED EXTERNAL PARTNERAUTHORIZED HEALTHCARE SYSTEM
+Conceptually:
+                CURASPHERE API                      │        ┌─────────────┼─────────────┐        │             │             │        ▼             ▼             ▼     REACT         WORKERS       PARTNERS        │             │             │        ▼             ▼             ▼    WEB USERS     BACKGROUND     EXTERNAL                   PROCESSING     SYSTEMS
+Not every API endpoint shall be available to every consumer.
+
+5.998 INTEGRATION CONCEPT
+An integration shall represent an approved communication relationship between CuraSphere and another system or provider.
+Conceptually:
+INTEGRATION     │     ├── Integration ID     ├── Integration Code     ├── Integration Name     ├── Integration Type     ├── Provider     ├── Direction     ├── Protocol     ├── Endpoint Reference     ├── Authentication Type     ├── Configuration Reference     ├── Credential Reference     ├── Timeout Policy     ├── Retry Policy     ├── Status     └── Health Status
+Example:
+INTEGRATION CODESMS_PRIMARYNAMEPrimary SMS ProviderDIRECTIONOUTBOUNDPROTOCOLHTTPSSTATUSACTIVE
+Another example:
+INTEGRATION CODEPAYMENT_PROVIDER_01TYPEPAYMENTDIRECTIONBIDIRECTIONAL
+Secret credentials shall not be stored as normal integration display data.
+
+5.999 INTEGRATION ACTORS
+Actor
+Integration Responsibility
+CuraSphere React Application
+Consumes approved backend APIs
+CuraSphere API
+Exposes approved application capabilities
+Background Worker
+Processes asynchronous integration work
+Integration Administrator
+Manages approved integration configuration
+System Administrator
+Reviews integration health
+Security Administrator
+Manages approved security boundaries
+External Healthcare System
+Exchanges approved healthcare data
+Payment Provider
+Processes approved payment provider operations
+SMS Provider
+Delivers approved SMS communications
+Email Provider
+Delivers approved email communications
+Insurance System
+Exchanges approved insurance information
+Laboratory System
+Exchanges approved laboratory information
+Radiology System
+Exchanges approved radiology information
+Identity Provider
+Supports approved identity integration
+Partner Application
+Consumes approved partner APIs
+Audit User
+Reviews eligible integration audit events
+DevOps Operator
+Manages infrastructure-level integration configuration
+
+5.1000 INTEGRATION FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-INT-FR-001
+Expose Internal Application API
+M
+CS-INT-FR-002
+Support React API Consumption
+M
+CS-INT-FR-003
+Authenticate API Consumer
+M
+CS-INT-FR-004
+Authorize API Request
+M
+CS-INT-FR-005
+Validate API Request
+M
+CS-INT-FR-006
+Standardize API Response
+M
+CS-INT-FR-007
+Standardize API Error
+M
+CS-INT-FR-008
+Assign Correlation Identifier
+M
+CS-INT-FR-009
+Track API Request
+M
+CS-INT-FR-010
+Support API Versioning
+M
+CS-INT-FR-011
+Maintain API Contract Compatibility
+M
+CS-INT-FR-012
+Paginate API Collections
+M
+CS-INT-FR-013
+Filter API Collections
+M
+CS-INT-FR-014
+Sort API Collections
+M
+CS-INT-FR-015
+Support API Search Contracts
+M
+CS-INT-FR-016
+Prevent Unauthorized Field Exposure
+M
+CS-INT-FR-017
+Prevent Mass Assignment
+M
+CS-INT-FR-018
+Apply API Rate Protection Boundary
+S
+CS-INT-FR-019
+Support API Idempotency
+M
+CS-INT-FR-020
+Detect Duplicate Integration Request
+M
+CS-INT-FR-021
+Register Integration
+M
+CS-INT-FR-022
+Generate Integration Identifier
+M
+CS-INT-FR-023
+Assign Integration Type
+M
+CS-INT-FR-024
+Configure Integration Direction
+M
+CS-INT-FR-025
+Activate Integration
+M
+CS-INT-FR-026
+Deactivate Integration
+M
+CS-INT-FR-027
+Configure Integration Timeout
+M
+CS-INT-FR-028
+Configure Integration Retry Policy
+M
+CS-INT-FR-029
+Classify Integration Failure
+M
+CS-INT-FR-030
+Retry Temporary Integration Failure
+M
+CS-INT-FR-031
+Prevent Unsafe Retry
+M
+CS-INT-FR-032
+Record Integration Attempt
+M
+CS-INT-FR-033
+Monitor Integration Health
+M
+CS-INT-FR-034
+Monitor Integration Availability
+M
+CS-INT-FR-035
+Monitor Integration Latency
+M
+CS-INT-FR-036
+Monitor Integration Failure Rate
+M
+CS-INT-FR-037
+Receive Webhook
+M
+CS-INT-FR-038
+Authenticate Webhook
+M
+CS-INT-FR-039
+Validate Webhook Signature
+M
+CS-INT-FR-040
+Prevent Webhook Replay
+M
+CS-INT-FR-041
+Validate Webhook Payload
+M
+CS-INT-FR-042
+Process Webhook Event
+M
+CS-INT-FR-043
+Record Webhook Processing Result
+M
+CS-INT-FR-044
+Support Outbound Webhook Boundary
+S
+CS-INT-FR-045
+Support Asynchronous Integration
+M
+CS-INT-FR-046
+Queue Integration Work Boundary
+M
+CS-INT-FR-047
+Process Integration Message
+M
+CS-INT-FR-048
+Detect Failed Integration Message
+M
+CS-INT-FR-049
+Support Dead-Letter Boundary
+M
+CS-INT-FR-050
+Reprocess Eligible Failed Message
+S
+CS-INT-FR-051
+Validate Integration Schema
+M
+CS-INT-FR-052
+Map External Data
+M
+CS-INT-FR-053
+Transform External Data
+M
+CS-INT-FR-054
+Preserve External Identifier
+M
+CS-INT-FR-055
+Map External Identifier
+M
+CS-INT-FR-056
+Detect Identifier Mapping Conflict
+M
+CS-INT-FR-057
+Protect Integration Credentials
+M
+CS-INT-FR-058
+Prevent Credential Exposure in UI
+M
+CS-INT-FR-059
+Prevent Credential Exposure in API
+M
+CS-INT-FR-060
+Prevent Credential Exposure in Logs
+M
+CS-INT-FR-061
+Audit Integration Administration
+M
+CS-INT-FR-062
+Record Eligible Integration Security Event
+M
+CS-INT-FR-063
+Support API Documentation
+M
+CS-INT-FR-064
+Support API Contract Discovery Boundary
+S
+CS-INT-FR-065
+Support HL7 Integration Boundary
+S
+CS-INT-FR-066
+Support FHIR Interoperability Boundary
+S
+CS-INT-FR-067
+Support DICOM Integration Boundary
+S
+CS-INT-FR-068
+Support Laboratory Integration Boundary
+S
+CS-INT-FR-069
+Support Radiology Integration Boundary
+S
+CS-INT-FR-070
+Support Pharmacy Integration Boundary
+S
+CS-INT-FR-071
+Support Insurance Integration Boundary
+S
+CS-INT-FR-072
+Support Payment Provider Integration
+M
+CS-INT-FR-073
+Support SMS Provider Integration
+M
+CS-INT-FR-074
+Support Email Provider Integration
+M
+CS-INT-FR-075
+Support Identity Provider Integration Boundary
+S
+CS-INT-FR-076
+Support Partner API Boundary
+S
+CS-INT-FR-077
+Support Future Mobile API Consumer
+S
+CS-INT-FR-078
+Support Future API Gateway Boundary
+S
+CS-INT-FR-079
+Apply Integration Data Scope
+M
+CS-INT-FR-080
+Support Future Multi-Hospital Integration
+S
+
+5.1001 INTERNAL APPLICATION API
+CS-INT-FR-001 — Expose Internal Application API
+CuraSphere shall expose approved application functionality through controlled ASP.NET Core API endpoints.
+Conceptually:
+REACT APPLICATION       │       ▼HTTPS       │       ▼ASP.NET CORE API       │       ▼APPLICATION LAYER       │       ▼DOMAIN
+Example conceptual endpoint:
+POST /api/appointments
+The endpoint may request appointment creation.
+However:
+POST /api/appointments
+shall not mean:
+DIRECT INSERT INTO appointments
+The responsible application and domain rules shall execute.
+
+5.1002 REACT API CONSUMPTION
+CS-INT-FR-002 — Support React API Consumption
+The React application shall consume approved CuraSphere APIs.
+Conceptually:
+REACT COMPONENT      │      ▼UI ACTION      │      ▼CLIENT APPLICATION SERVICE      │      ▼API CLIENT      │      ▼ASP.NET CORE API
+The architecture should avoid:
+EVERY REACT COMPONENT          │          ▼CREATES RANDOM FETCH REQUESTS
+Preferred:
+REACT UI   │   ▼FEATURE / API LAYER   │   ▼CENTRAL API CLIENT
+The final React data-fetching architecture shall be defined during UI Architecture.
+
+5.1003 API CONSUMER AUTHENTICATION
+CS-INT-FR-003 — Authenticate API Consumer
+The system shall authenticate protected API consumers.
+Conceptually:
+API REQUEST     │     ▼AUTHENTICATION     │  ┌──┴──┐  │     │VALID INVALID  │     │  ▼     ▼CONTINUE REJECT
+Authentication mechanisms may differ between:
+HUMAN USER CLIENTINTERNAL SERVICEEXTERNAL PARTNERWEBHOOK PROVIDER
+The final mechanisms shall be defined during IAM and Security Architecture.
+
+5.1004 API REQUEST AUTHORIZATION
+CS-INT-FR-004 — Authorize API Request
+The system shall authorize protected API requests.
+Example:
+AUTHENTICATED USER        │        ▼POST /api/payments/{id}/reverse
+Authentication alone shall not allow payment reversal.
+The system shall verify:
+PERMISSIONDATA SCOPEDOMAIN RULES
+Conceptually:
+AUTHENTICATED      │      ▼AUTHORIZED?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼PROCESS REJECT
+
+5.1005 API REQUEST VALIDATION
+CS-INT-FR-005 — Validate API Request
+The API shall validate incoming requests.
+Validation may include:
+REQUIRED FIELDDATA TYPESTRING LENGTHNUMBER RANGEDATE FORMATENUM VALUEIDENTIFIER FORMATCOLLECTION SIZEDOMAIN REFERENCE
+Example:
+{  "pageSize": -500}
+Result:
+VALIDATION FAILURE
+React validation may improve user experience.
+ASP.NET Core shall enforce authoritative server validation.
+
+5.1006 STANDARD API RESPONSE
+CS-INT-FR-006 — Standardize API Response
+CuraSphere shall define consistent API response conventions.
+Successful resource example:
+{  "id": "APT-000421",  "status": "SCHEDULED"}
+Collection response may conceptually contain:
+{  "items": [],  "page": 1,  "pageSize": 25,  "totalCount": 0}
+The final API envelope strategy shall be defined during API Architecture.
+The SRS does not require every successful response to be unnecessarily wrapped in:
+{  "success": true,  "message": "Success",  "data": {}}
+The final response standard shall follow REST and application architecture decisions.
+
+5.1007 STANDARD API ERROR
+CS-INT-FR-007 — Standardize API Error
+The API shall provide standardized machine-readable errors.
+Potential error information includes:
+ERROR CODETITLEDETAILVALIDATION ERRORSCORRELATION ID
+Example:
+{  "code": "APPOINTMENT_SLOT_UNAVAILABLE",  "title": "Appointment slot unavailable",  "correlationId": "COR-8F72A1"}
+The API shall not expose:
+DATABASE PASSWORDCONNECTION STRINGSQL QUERY DETAILSSERVER FILE PATHSTACK TRACE
+to normal clients.
+
+5.1008 CORRELATION IDENTIFIER
+CS-INT-FR-008 — Assign Correlation Identifier
+The system shall assign or accept an approved correlation identifier for eligible API and integration operations.
+Conceptually:
+REQUEST   │   ▼CORRELATION ID   │   ├── API LOG   ├── APPLICATION LOG   ├── INTEGRATION LOG   └── ERROR EVENT
+Example:
+CORRELATION IDCOR-8F72A1
+The correlation identifier shall support technical tracing.
+It shall not replace:
+PATIENT IDAPPOINTMENT IDINVOICE IDAUDIT EVENT ID
+
+5.1009 API REQUEST TRACKING
+CS-INT-FR-009 — Track API Request
+The system shall support eligible API request tracking.
+Potential technical information includes:
+CORRELATION IDREQUEST METHODROUTE TEMPLATESTART TIMECOMPLETION TIMESTATUS CODEDURATIONAUTHENTICATED ACTOR REFERENCECLIENT TYPE
+Sensitive request content shall not automatically be logged.
+Example:
+POST /api/clinical-notes
+The system may log:
+ROUTESTATUSDURATION
+It shall not automatically log the complete clinical note text.
+
+5.1010 API VERSIONING
+CS-INT-FR-010 — Support API Versioning
+CuraSphere shall support an API versioning strategy.
+Conceptual examples include:
+/api/v1/patients
+or approved header-based versioning.
+The exact versioning strategy shall be defined during API Architecture.
+Conceptually:
+CLIENT A   │   ▼API V1
+CLIENT B   │   ▼API V2
+The system should support controlled API evolution.
+
+5.1011 API CONTRACT COMPATIBILITY
+CS-INT-FR-011 — Maintain API Contract Compatibility
+The system shall manage API contract changes.
+Potential changes include:
+ADD OPTIONAL FIELDADD REQUIRED FIELDREMOVE FIELDRENAME FIELDCHANGE DATA TYPECHANGE ENUM VALUECHANGE BUSINESS SEMANTICS
+Example:
+V1patientName
+Changing directly to:
+fullLegalName
+may break existing consumers.
+The system shall identify breaking changes.
+Conceptually:
+API CHANGE    │    ▼BREAKING?  ┌─┴─┐  │   │ YES  NO  │   │  ▼   ▼NEW   COMPATIBLEVERSION CHANGE
+
+5.1012 API PAGINATION
+CS-INT-FR-012 — Paginate API Collections
+The system shall paginate eligible API collections.
+Example request:
+PAGE = 1PAGE SIZE = 25
+Potential response metadata:
+PAGEPAGE SIZETOTAL COUNT
+The system shall enforce an approved maximum page size.
+Example:
+pageSize = 1000000
+may be rejected or constrained.
+
+5.1013 API FILTERING
+CS-INT-FR-013 — Filter API Collections
+The system shall support approved filtering.
+Example:
+STATUS = ACTIVEDEPARTMENT = CARDIOLOGY
+Only approved filter fields shall be supported.
+The API shall not dynamically convert every client-provided field into unrestricted SQL.
+Incorrect concept:
+CLIENT FILTER     │     ▼DIRECT SQL WHERE STRING
+Preferred:
+APPROVED FILTER CONTRACT          │          ▼VALIDATED QUERY MODEL
+
+5.1014 API SORTING
+CS-INT-FR-014 — Sort API Collections
+The system shall support approved API sorting.
+Example:
+sortBy = appointmentDatesortDirection = descending
+The backend shall validate sortable fields.
+Client-provided sort values shall not become raw SQL fragments.
+
+5.1015 API SEARCH CONTRACTS
+CS-INT-FR-015 — Support API Search Contracts
+The system shall support approved search contracts.
+Example:
+GET /api/patients?search=uzair
+The exact route design shall be finalized during API Design.
+Search behavior shall be domain-specific.
+Patient search may consider:
+PATIENT REFERENCEAPPROVED NAME FIELDSAPPROVED CONTACT FIELD
+Inventory search may consider:
+ITEM CODEITEM NAME
+One universal search algorithm shall not be assumed for every domain.
+
+5.1016 UNAUTHORIZED FIELD EXPOSURE PROTECTION
+CS-INT-FR-016 — Prevent Unauthorized Field Exposure
+The API shall prevent unauthorized data fields from being returned.
+Example patient object contains:
+PATIENT IDNAMECONTACTCLINICAL DATAFINANCIAL DATA
+Reception endpoint requires:
+PATIENT IDNAMECONTACT
+The API shall not automatically return the complete patient aggregate.
+Conceptually:
+DOMAIN MODEL      │      ▼API RESPONSE CONTRACT      │      ▼AUTHORIZED FIELDS
+The system shall not use database entities as unrestricted public API contracts.
+
+5.1017 MASS ASSIGNMENT PROTECTION
+CS-INT-FR-017 — Prevent Mass Assignment
+The API shall prevent clients from updating unauthorized fields.
+Example request:
+{  "name": "Patient Name",  "isSystemAdministrator": true}
+A patient update endpoint shall not bind:
+isSystemAdministrator
+to an internal security entity.
+Preferred:
+SPECIFIC REQUEST DTO
+Example:
+UpdatePatientContactRequest
+containing only approved editable fields.
+
+5.1018 API RATE PROTECTION BOUNDARY
+CS-INT-FR-018 — Apply API Rate Protection Boundary
+Priority
+Should Have
+The architecture should support API rate protection.
+Potential consumers include:
+PUBLIC PATIENT PORTALPARTNER APILOGIN ENDPOINTPASSWORD RESET ENDPOINTWEBHOOK ENDPOINT
+Conceptually:
+CLIENT  │  ▼REQUEST RATE CHECK  │ ┌┴┐ │ │OK EXCEEDED │ │ ▼ ▼API REJECT / THROTTLE
+The final rate-limiting technology and thresholds shall be defined during Security and Infrastructure Architecture.
+
+5.1019 API IDEMPOTENCY
+CS-INT-FR-019 — Support API Idempotency
+The system shall support idempotency for eligible operations.
+Example:
+CREATE PAYMENT REQUEST
+Network timeout occurs.
+Client retries.
+Without idempotency:
+REQUEST 1   │   ▼PAYMENT CREATED
+REQUEST 2   │   ▼SECOND PAYMENT CREATED
+Potential result:
+DUPLICATE FINANCIAL TRANSACTION
+Preferred:
+IDEMPOTENCY KEY       │       ▼REQUEST 1       │       ▼PROCESS       │       ▼STORE RESULT
+Retry:
+SAME IDEMPOTENCY KEY          │          ▼EXISTING RESULT          │          ▼RETURN SAFE RESULT
+Idempotency requirements shall be operation-specific.
+
+5.1020 DUPLICATE INTEGRATION REQUEST DETECTION
+CS-INT-FR-020 — Detect Duplicate Integration Request
+The system shall detect duplicate eligible integration requests.
+Potential duplicate identifiers include:
+EXTERNAL EVENT IDPROVIDER TRANSACTION IDIDEMPOTENCY KEYMESSAGE IDWEBHOOK EVENT ID
+Example:
+PAYMENT PROVIDER EVENTEVT-50021
+First delivery:
+PROCESSED
+Second delivery:
+DUPLICATE DETECTED
+The system shall not automatically process the financial effect twice.
+
+5.1021 REGISTER INTEGRATION
+CS-INT-FR-021 — Register Integration
+The system shall allow authorized administrators to register approved integrations.
+Main flow:
+ADMINISTRATOR      │      ▼CREATE INTEGRATION      │      ▼ENTER CODE      │      ▼SELECT TYPE      │      ▼SELECT DIRECTION      │      ▼CONFIGURE ENDPOINT REFERENCE      │      ▼CONFIGURE SECURITY REFERENCE      │      ▼CONFIGURE TIMEOUT      │      ▼CONFIGURE RETRY      │      ▼VALIDATE      │      ▼SAVE
+The integration shall not automatically become active where approval or testing is required.
+
+5.1022 INTEGRATION IDENTIFIER
+CS-INT-FR-022 — Generate Integration Identifier
+The system shall generate a unique integration identifier.
+Example:
+INT-00000125
+An integration may also use a stable code:
+SMS_PRIMARY
+Therefore:
+INTERNAL IDENTIFIER        ≠INTEGRATION CODE
+The final identifier strategy shall be defined during Data Architecture.
+
+5.1023 INTEGRATION TYPE
+CS-INT-FR-023 — Assign Integration Type
+The system shall assign an approved integration type.
+Potential types include:
+HEALTHCARELABORATORYRADIOLOGYPHARMACYINSURANCEPAYMENTSMSEMAILIDENTITYGOVERNMENTPARTNERINTERNAL
+The final registry shall be defined during Integration Architecture.
+
+5.1024 INTEGRATION DIRECTION
+CS-INT-FR-024 — Configure Integration Direction
+The system shall identify integration direction.
+Potential values include:
+INBOUNDOUTBOUNDBIDIRECTIONAL
+Example:
+SMS PROVIDEROUTBOUND
+Payment provider may be:
+BIDIRECTIONAL
+because CuraSphere may:
+SEND PAYMENT REQUEST
+and:
+RECEIVE PAYMENT WEBHOOK
+
+5.1025 ACTIVATE INTEGRATION
+CS-INT-FR-025 — Activate Integration
+The system shall allow authorized users to activate eligible integrations.
+Conceptually:
+INACTIVE INTEGRATION          │          ▼ACTIVATION REQUEST          │          ▼PERMISSION CHECK          │          ▼CONFIGURATION VALIDATION          │          ▼CREDENTIAL REFERENCE CHECK          │          ▼HEALTH / CONNECTIVITY CHECK          │          ▼ACTIVATE          │          ▼AUDIT EVENT
+An invalid critical integration configuration shall not become active.
+
+5.1026 DEACTIVATE INTEGRATION
+CS-INT-FR-026 — Deactivate Integration
+The system shall allow authorized users to deactivate eligible integrations.
+Before deactivation, the system should identify potential impact.
+Example:
+SMS_PRIMARY
+is the only SMS provider.
+Deactivation:
+SMS_PRIMARY     │     ▼NO ALTERNATIVE     │     ▼SMS DELIVERY UNAVAILABLE
+The administrator shall receive an approved impact warning.
+Deactivation shall be audited.
+
+5.1027 INTEGRATION TIMEOUT
+CS-INT-FR-027 — Configure Integration Timeout
+The system shall support integration timeout policies.
+Example:
+PAYMENT PROVIDER REQUEST          │          ▼WAIT          │          ▼TIMEOUT LIMIT REACHED          │          ▼STOP WAITING
+The application shall not wait indefinitely for an external service.
+Timeouts may differ by integration type.
+Example:
+SMS REQUEST10 SECONDS
+and:
+LARGE HEALTH DATA EXPORTLONGER APPROVED TIMEOUT
+Exact timeout values shall be defined during Detailed Design and operational testing.
+
+5.1028 INTEGRATION RETRY POLICY
+CS-INT-FR-028 — Configure Integration Retry Policy
+The system shall support approved retry policies.
+Potential policy attributes include:
+MAXIMUM ATTEMPTSINITIAL DELAYDELAY STRATEGYMAXIMUM DELAYRETRYABLE ERROR TYPES
+Conceptually:
+ATTEMPT 1   │   ▼TEMPORARY FAILURE   │   ▼WAIT   │   ▼ATTEMPT 2
+Retry policy shall be integration-specific.
+
+5.1029 INTEGRATION FAILURE CLASSIFICATION
+CS-INT-FR-029 — Classify Integration Failure
+The system shall classify eligible integration failures.
+Potential classes include:
+TEMPORARYPERMANENTAUTHENTICATIONAUTHORIZATIONVALIDATIONTIMEOUTRATE_LIMITEDPROVIDER_UNAVAILABLEUNKNOWN
+Example:
+HTTP 503
+may represent:
+TEMPORARY PROVIDER UNAVAILABLE
+Example:
+INVALID PATIENT IDENTIFIER
+may represent:
+PERMANENT VALIDATION FAILURE
+Failure classification shall influence retry behavior.
+
+5.1030 TEMPORARY FAILURE RETRY
+CS-INT-FR-030 — Retry Temporary Integration Failure
+The system shall retry eligible temporary integration failures.
+Conceptually:
+FAILURE   │   ▼CLASSIFY   │   ▼TEMPORARY? ┌─┴─┐ │   │YES  NO │   │ ▼   ▼RETRY FAIL
+Example retryable failure:
+PROVIDER TEMPORARILY UNAVAILABLE
+Potential non-retryable failure:
+INVALID API CREDENTIAL
+Repeated invalid credential requests shall not be retried indefinitely.
+
+5.1031 UNSAFE RETRY PROTECTION
+CS-INT-FR-031 — Prevent Unsafe Retry
+The system shall prevent unsafe retries.
+Example:
+PAYMENT REQUEST SENT        │        ▼PROVIDER PROCESSED PAYMENT        │        ▼RESPONSE LOST
+CuraSphere sees:
+TIMEOUT
+Blind retry may create:
+SECOND PAYMENT
+Therefore:
+TIMEOUT   │   ▼RETRY
+shall not automatically apply to every operation.
+The system shall consider:
+IDEMPOTENCYPROVIDER TRANSACTION IDSTATUS QUERY CAPABILITYOPERATION SEMANTICS
+before retrying.
+
+5.1032 INTEGRATION ATTEMPT RECORD
+CS-INT-FR-032 — Record Integration Attempt
+The system shall record eligible integration attempts.
+Potential information includes:
+INTEGRATION ATTEMPT IDINTEGRATION IDCORRELATION IDOPERATIONATTEMPT NUMBERSTART TIMECOMPLETION TIMERESULTFAILURE CLASSIFICATIONSTATUS CODE REFERENCEDURATION
+Sensitive payloads and credentials shall not automatically be stored.
+
+5.1033 INTEGRATION HEALTH
+CS-INT-FR-033 — Monitor Integration Health
+The system shall support integration health monitoring.
+Potential health states include:
+HEALTHYDEGRADEDUNAVAILABLEUNKNOWN
+Example:
+SMS_PRIMARYHEALTHY
+Payment provider:
+PAYMENT_PROVIDER_01DEGRADED
+The exact health calculation strategy shall be defined during Observability Architecture.
+
+5.1034 INTEGRATION AVAILABILITY
+CS-INT-FR-034 — Monitor Integration Availability
+The system shall support monitoring of integration availability.
+Potential indicators include:
+SUCCESSFUL REQUESTSFAILED REQUESTSTIMEOUTSCONNECTION FAILURESHEALTH CHECK RESULT
+Example:
+SMS_PRIMARYAVAILABILITY99.8%
+The exact reporting period and service objectives shall be defined later.
+
+5.1035 INTEGRATION LATENCY
+CS-INT-FR-035 — Monitor Integration Latency
+The system shall support integration latency monitoring.
+Potential metrics include:
+AVERAGE DURATIONMEDIAN DURATIONP95 DURATIONP99 DURATIONMAXIMUM DURATION
+Example:
+PAYMENT PROVIDERP95 LATENCY1.8 SECONDS
+The exact metrics platform shall be selected during Observability Architecture.
+
+5.1036 INTEGRATION FAILURE RATE
+CS-INT-FR-036 — Monitor Integration Failure Rate
+The system shall support integration failure-rate monitoring.
+Example:
+TOTAL REQUESTS10,000FAILED2,500
+Failure rate:
+25%
+This may indicate:
+PROVIDER OUTAGECREDENTIAL FAILURECONTRACT CHANGENETWORK PROBLEMCURASPHERE DEFECT
+The system shall provide sufficient technical signals for investigation.
+
+5.1037 RECEIVE WEBHOOK
+CS-INT-FR-037 — Receive Webhook
+The system shall support approved inbound webhook endpoints.
+Potential providers include:
+PAYMENT PROVIDERSMS PROVIDEREMAIL PROVIDERINSURANCE SYSTEM
+Conceptually:
+EXTERNAL PROVIDER         │         ▼WEBHOOK ENDPOINT         │         ▼SECURITY VALIDATION         │         ▼PAYLOAD VALIDATION         │         ▼EVENT PROCESSING
+Webhook endpoints shall not trust incoming data only because the request reaches the endpoint.
+
+5.1038 WEBHOOK AUTHENTICATION
+CS-INT-FR-038 — Authenticate Webhook
+The system shall authenticate approved webhook sources.
+Potential mechanisms may include:
+SIGNED REQUESTSHARED SECRET REFERENCEMUTUAL TLSPROVIDER TOKENAPPROVED NETWORK CONTROL
+No specific mechanism is selected by this SRS.
+The mechanism shall depend on provider capabilities and Security Architecture.
+
+5.1039 WEBHOOK SIGNATURE VALIDATION
+CS-INT-FR-039 — Validate Webhook Signature
+Where a provider supports signed webhooks, the system shall validate the signature.
+Conceptually:
+WEBHOOK   │   ▼RECEIVE RAW PAYLOAD   │   ▼SIGNATURE HEADER   │   ▼VERIFY USING APPROVED SECRET / KEY   │ ┌─┴─┐ │   │VALID INVALID │   │ ▼   ▼CONTINUE REJECT
+Signature validation shall occur before trusting the webhook event.
+
+5.1040 WEBHOOK REPLAY PROTECTION
+CS-INT-FR-040 — Prevent Webhook Replay
+The system shall protect eligible webhook endpoints against replay.
+Potential controls include:
+EVENT ID DEDUPLICATIONTIMESTAMP VALIDATIONNONCESIGNATURE TIMESTAMPPROCESSING HISTORY
+Example:
+EVENT IDPAY-EVT-10021
+First request:
+PROCESSED
+Replay:
+DUPLICATE EVENT
+Financial effects shall not be applied twice.
+
+5.1041 WEBHOOK PAYLOAD VALIDATION
+CS-INT-FR-041 — Validate Webhook Payload
+The system shall validate webhook payloads.
+Validation may include:
+SCHEMAEVENT TYPEREQUIRED FIELDSDATA TYPEIDENTIFIER FORMATVALUE RANGEPROVIDER REFERENCE
+Example:
+{  "eventType": "payment.completed",  "amount": -500}
+The payload shall not automatically be accepted as a valid payment.
+The Billing domain shall validate financial meaning.
+
+5.1042 WEBHOOK EVENT PROCESSING
+CS-INT-FR-042 — Process Webhook Event
+The system shall route validated webhook events to the responsible application service.
+Example:
+PAYMENT WEBHOOK       │       ▼INTEGRATION BOUNDARY       │       ▼VALIDATED PAYMENT EVENT       │       ▼BILLING APPLICATION SERVICE
+The webhook controller shall not independently perform all financial business logic.
+
+5.1043 WEBHOOK PROCESSING RESULT
+CS-INT-FR-043 — Record Webhook Processing Result
+The system shall record eligible webhook processing results.
+Potential information includes:
+WEBHOOK EVENT IDINTEGRATION IDEXTERNAL EVENT IDEVENT TYPERECEIVED TIMEPROCESSING STATUSCOMPLETION TIMEFAILURE CLASSIFICATIONCORRELATION ID
+Potential statuses include:
+RECEIVEDVALIDATEDPROCESSINGPROCESSEDFAILEDDUPLICATEREJECTED
+
+5.1044 OUTBOUND WEBHOOK BOUNDARY
+CS-INT-FR-044 — Support Outbound Webhook Boundary
+Priority
+Should Have
+The architecture should support future outbound webhooks.
+Example:
+CURASPHERE EVENTAPPOINTMENT_CANCELLED
+Authorized partner may receive:
+WEBHOOK EVENT
+Conceptually:
+DOMAIN EVENT     │     ▼OUTBOUND INTEGRATION     │     ▼WEBHOOK DELIVERY     │     ▼PARTNER ENDPOINT
+Outbound webhook payloads shall follow approved data minimization and authorization rules.
+
+5.1045 ASYNCHRONOUS INTEGRATION
+CS-INT-FR-045 — Support Asynchronous Integration
+The system shall support asynchronous integration where immediate synchronous completion is not required.
+Example:
+APPOINTMENT CREATED        │        ▼USER RESPONSE
+Notification delivery:
+BACKGROUND PROCESS        │        ▼SEND SMS
+The appointment API should not necessarily wait for:
+SMS PROVIDER
+before returning appointment success.
+Conceptually:
+BUSINESS TRANSACTION        │        ▼COMMIT        │        ▼ASYNC WORK        │        ▼EXTERNAL PROVIDER
+The final reliable messaging strategy shall be defined during Application and Integration Architecture.
+
+5.1046 INTEGRATION WORK QUEUE BOUNDARY
+CS-INT-FR-046 — Queue Integration Work Boundary
+The architecture shall support a queue or equivalent durable work-processing boundary for eligible asynchronous integration operations.
+Potential work includes:
+SEND SMSSEND EMAILDELIVER WEBHOOKPROCESS EXTERNAL EVENTSYNCHRONIZE ELIGIBLE DATA
+This requirement does not select:
+RABBITMQKAFKAAZURE SERVICE BUSAWS SQS
+or another product.
+The technology shall be selected during Architecture Design.
+
+5.1047 PROCESS INTEGRATION MESSAGE
+CS-INT-FR-047 — Process Integration Message
+The system shall process eligible asynchronous integration messages.
+Conceptually:
+MESSAGE   │   ▼WORKER   │   ▼VALIDATE MESSAGE   │   ▼CHECK DUPLICATE   │   ▼PROCESS   │   ▼SUCCESS? ┌─┴─┐ │   │YES  NO │   │ ▼   ▼COMPLETE CLASSIFY FAILURE
+The message handler shall be designed for approved retry behavior.
+
+5.1048 FAILED INTEGRATION MESSAGE
+CS-INT-FR-048 — Detect Failed Integration Message
+The system shall detect failed integration messages.
+Potential failure conditions include:
+MAXIMUM RETRIES EXCEEDEDPERMANENT VALIDATION FAILUREUNKNOWN EVENT TYPEINVALID MAPPINGPROVIDER REJECTIONUNRECOVERABLE PROCESSING ERROR
+The failed message shall not silently disappear.
+
+5.1049 DEAD-LETTER BOUNDARY
+CS-INT-FR-049 — Support Dead-Letter Boundary
+The architecture shall support isolation of eligible repeatedly failed integration work.
+Conceptually:
+MESSAGE   │   ▼PROCESS   │   ▼FAIL   │   ▼RETRY   │   ▼FAIL   │   ▼MAXIMUM ATTEMPTS   │   ▼FAILED MESSAGE BOUNDARY
+Potential terminology:
+DEAD LETTERFAILED MESSAGE STOREERROR QUEUE
+The exact implementation shall be selected during Integration Architecture.
+
+5.1050 FAILED MESSAGE REPROCESSING
+CS-INT-FR-050 — Reprocess Eligible Failed Message
+Priority
+Should Have
+The system should allow authorized operational users to reprocess eligible failed integration messages.
+Example:
+FAILURESMS PROVIDER CREDENTIAL INVALID
+Credential fixed.
+Operator selects:
+REPROCESS
+The system shall:
+CHECK ELIGIBILITYCHECK DUPLICATE STATECREATE REPROCESSING ATTEMPTPROCESSRECORD RESULT
+Unsafe financial messages shall require domain-specific reprocessing controls.
+
+5.1051 INTEGRATION SCHEMA VALIDATION
+CS-INT-FR-051 — Validate Integration Schema
+The system shall validate approved external data schemas.
+Potential schema forms include:
+JSON CONTRACTXML CONTRACTCSV IMPORT SCHEMAHEALTHCARE MESSAGE PROFILE
+Example expected:
+{  "externalPatientId": "P-1001",  "firstName": "Ali"}
+Received:
+{  "externalPatientId": 999999,  "unknownData": []}
+The system shall apply approved schema validation.
+
+5.1052 EXTERNAL DATA MAPPING
+CS-INT-FR-052 — Map External Data
+The system shall map external data to approved CuraSphere integration models.
+Example external field:
+patient_no
+CuraSphere integration field:
+externalPatientIdentifier
+Conceptually:
+EXTERNAL CONTRACT       │       ▼MAPPING LAYER       │       ▼CURASPHERE INTEGRATION MODEL
+External models shall not directly become CuraSphere domain entities.
+
+5.1053 EXTERNAL DATA TRANSFORMATION
+CS-INT-FR-053 — Transform External Data
+The system shall support approved data transformation.
+Potential transformations include:
+DATE FORMATENUM VALUECODE MAPPINGUNIT MAPPINGIDENTIFIER FORMATTEXT NORMALIZATION
+Example:
+EXTERNALM
+CuraSphere approved representation:
+MALE
+The transformation shall follow approved mapping rules.
+Clinical transformation shall require clinical governance where appropriate.
+
+5.1054 EXTERNAL IDENTIFIER PRESERVATION
+CS-INT-FR-054 — Preserve External Identifier
+The system shall preserve eligible external identifiers.
+Example:
+CURASPHERE PATIENT IDPAT-000421
+External hospital patient ID:
+EXT-PAT-99201
+The system shall not replace the CuraSphere patient identifier with the external identifier.
+Preferred:
+CURASPHERE ID      │      ▼PAT-000421EXTERNAL MAPPING      │      ▼SYSTEM-A : EXT-PAT-99201
+
+5.1055 EXTERNAL IDENTIFIER MAPPING
+CS-INT-FR-055 — Map External Identifier
+The system shall support mapping between eligible CuraSphere and external identifiers.
+Conceptually:
+EXTERNAL SYSTEM A        │        ▼EXT-PAT-99201        │        ▼IDENTIFIER MAPPING        │        ▼PAT-000421
+Potential mapping entities include:
+PATIENTPROVIDERAPPOINTMENTLAB ORDERRADIOLOGY ORDERINVOICEPAYMENT
+The final mapping model shall be domain-specific.
+
+5.1056 IDENTIFIER MAPPING CONFLICT
+CS-INT-FR-056 — Detect Identifier Mapping Conflict
+The system shall detect identifier mapping conflicts.
+Example:
+EXT-PAT-99201
+already maps to:
+PAT-000421
+New request attempts to map it to:
+PAT-000999
+Result:
+IDENTIFIER MAPPING CONFLICT
+The system shall not silently replace the mapping.
+Conflict resolution shall require approved operational procedures.
+
+5.1057 INTEGRATION CREDENTIAL PROTECTION
+CS-INT-FR-057 — Protect Integration Credentials
+The system shall protect integration credentials.
+Potential credentials include:
+API KEYCLIENT SECRETPRIVATE KEYCERTIFICATE CREDENTIALSHARED WEBHOOK SECRETPROVIDER PASSWORD
+Credentials shall use the approved secret management boundary.
+Integration metadata may store:
+CREDENTIAL REFERENCE
+but shall not expose the credential value.
+
+5.1058 CREDENTIAL UI PROTECTION
+CS-INT-FR-058 — Prevent Credential Exposure in UI
+The React administration UI shall not receive integration credential values.
+Incorrect:
+API KEYsk_live_123456789
+Preferred:
+PAYMENT PROVIDER CREDENTIALCONFIGURED
+The frontend may receive approved metadata:
+CREDENTIAL STATUSLAST ROTATED DATECREDENTIAL REFERENCE NAME
+where permitted.
+
+5.1059 CREDENTIAL API PROTECTION
+CS-INT-FR-059 — Prevent Credential Exposure in API
+Normal administration APIs shall not return integration secrets.
+Incorrect:
+{  "integration": "PAYMENT_PROVIDER_01",  "apiKey": "secret-key"}
+The API may return:
+{  "integration": "PAYMENT_PROVIDER_01",  "credentialConfigured": true}
+The exact secret update workflow shall be defined during Security and DevOps Architecture.
+
+5.1060 CREDENTIAL LOG PROTECTION
+CS-INT-FR-060 — Prevent Credential Exposure in Logs
+The system shall prevent integration credentials from being recorded in application or integration logs.
+Sensitive headers may include:
+AUTHORIZATIONAPI-KEYCLIENT-SECRETCOOKIE
+These values shall be removed, masked, or excluded according to the logging policy.
+
+5.1061 INTEGRATION ADMINISTRATION AUDIT
+CS-INT-FR-061 — Audit Integration Administration
+The system shall audit integration administration actions.
+Potential events include:
+INTEGRATION_CREATEDINTEGRATION_UPDATEDINTEGRATION_ACTIVATEDINTEGRATION_DEACTIVATEDINTEGRATION_RETRY_POLICY_UPDATEDINTEGRATION_TIMEOUT_UPDATEDINTEGRATION_CREDENTIAL_REFERENCE_UPDATEDFAILED_MESSAGE_REPROCESSED
+Secret values shall not be recorded.
+
+5.1062 INTEGRATION SECURITY EVENT
+CS-INT-FR-062 — Record Eligible Integration Security Event
+The system shall record eligible integration security events.
+Potential events include:
+INVALID_WEBHOOK_SIGNATUREWEBHOOK_REPLAY_DETECTEDINVALID_API_CREDENTIALUNAUTHORIZED_PARTNER_REQUESTEXCESSIVE_FAILED_AUTHENTICATIONINTEGRATION_CREDENTIAL_FAILURE
+Security events shall integrate with the approved audit and observability architecture.
+
+5.1063 API DOCUMENTATION
+CS-INT-FR-063 — Support API Documentation
+CuraSphere shall maintain technical API documentation for approved APIs.
+Documentation should include:
+ENDPOINTMETHODAUTHENTICATION REQUIREMENTAUTHORIZATION REQUIREMENTREQUEST CONTRACTRESPONSE CONTRACTERROR CONTRACTPAGINATIONFILTERSVERSION
+ASP.NET Core API metadata may support automated documentation generation.
+No specific documentation product is selected by this SRS.
+
+5.1064 API CONTRACT DISCOVERY
+CS-INT-FR-064 — Support API Contract Discovery Boundary
+Priority
+Should Have
+The architecture should support machine-readable API contract discovery.
+Potential standards may include:
+OPENAPI
+The final approach shall be defined during API Architecture.
+Production API discovery exposure shall follow Security Architecture.
+
+5.1065 HL7 INTEGRATION BOUNDARY
+CS-INT-FR-065 — Support HL7 Integration Boundary
+Priority
+Should Have
+The architecture should preserve a future boundary for HL7-based healthcare integration.
+Potential healthcare information exchange may include:
+PATIENT INFORMATIONADMISSION INFORMATIONDISCHARGE INFORMATIONLABORATORY INFORMATIONCLINICAL EVENTS
+This SRS does not declare:
+ALL CURASPHERE INTERNAL MODELS SHALL BE HL7 MODELS
+Preferred conceptual architecture:
+CURASPHERE DOMAIN        │        ▼HL7 ADAPTER / MAPPING        │        ▼HL7 EXTERNAL SYSTEM
+The exact HL7 version and message profiles shall require interoperability analysis.
+
+5.1066 FHIR INTEROPERABILITY BOUNDARY
+CS-INT-FR-066 — Support FHIR Interoperability Boundary
+Priority
+Should Have
+The architecture should support future FHIR interoperability.
+Potential future resources may relate to:
+PATIENTPRACTITIONERAPPOINTMENTENCOUNTEROBSERVATIONDIAGNOSTIC REPORTMEDICATIONCLAIM
+This SRS shall not force the internal PostgreSQL schema to copy FHIR resource structures directly.
+Preferred:
+CURASPHERE DOMAIN MODEL          │          ▼FHIR MAPPING LAYER          │          ▼FHIR RESOURCE
+Therefore:
+INTERNAL DOMAIN MODEL          ≠FHIR RESOURCE MODEL
+The FHIR version, implementation guide, profiles, terminology requirements, and server strategy shall be selected during Healthcare Interoperability Architecture.
+
+5.1067 DICOM INTEGRATION BOUNDARY
+CS-INT-FR-067 — Support DICOM Integration Boundary
+Priority
+Should Have
+The architecture should preserve a DICOM integration boundary for radiology and medical imaging systems.
+Potential systems include:
+PACSRISIMAGING MODALITYDICOM ARCHIVE
+Conceptually:
+CURASPHERE RADIOLOGY DOMAIN             │             ▼DICOM / IMAGING INTEGRATION             │             ▼PACS / MODALITY
+CuraSphere shall not automatically store all medical imaging binary data directly in ordinary PostgreSQL business tables.
+The final imaging architecture shall be defined during Radiology and Integration Architecture.
+
+5.1068 LABORATORY INTEGRATION BOUNDARY
+CS-INT-FR-068 — Support Laboratory Integration Boundary
+Priority
+Should Have
+The architecture should support future laboratory system or analyzer integration.
+Potential flow:
+LAB ORDER   │   ▼LAB INTEGRATION   │   ▼LAB SYSTEM / ANALYZER   │   ▼RESULT   │   ▼VALIDATION   │   ▼LABORATORY DOMAIN
+Received results shall not automatically become clinically verified results unless Laboratory domain rules permit it.
+
+5.1069 RADIOLOGY INTEGRATION BOUNDARY
+CS-INT-FR-069 — Support Radiology Integration Boundary
+Priority
+Should Have
+The architecture should support future radiology integration.
+Potential systems include:
+RISPACSIMAGING MODALITYEXTERNAL REPORTING SYSTEM
+The integration layer may exchange:
+ORDER INFORMATIONSCHEDULE INFORMATIONSTUDY IDENTIFIERREPORT INFORMATIONIMAGE REFERENCE
+Final report approval shall remain governed by the Radiology domain.
+
+5.1070 PHARMACY INTEGRATION BOUNDARY
+CS-INT-FR-070 — Support Pharmacy Integration Boundary
+Priority
+Should Have
+The architecture should support future pharmacy integrations.
+Potential integrations include:
+EXTERNAL PHARMACY SYSTEMMEDICINE INFORMATION PROVIDERSUPPLIER SYSTEMPRESCRIPTION SERVICE
+External medication data shall require approved mapping and clinical governance.
+The integration module shall not independently alter prescriptions.
+
+5.1071 INSURANCE INTEGRATION BOUNDARY
+CS-INT-FR-071 — Support Insurance Integration Boundary
+Priority
+Should Have
+The architecture should support future insurance system integration.
+Potential operations include:
+ELIGIBILITY CHECKPRE-AUTHORIZATION REQUESTCLAIM SUBMISSIONCLAIM STATUSCLAIM RESPONSE
+Conceptually:
+INSURANCE DOMAIN       │       ▼INSURANCE INTEGRATION ADAPTER       │       ▼INSURANCE PROVIDER
+Insurance business status shall remain owned by the appropriate financial or insurance domain.
+
+5.1072 PAYMENT PROVIDER INTEGRATION
+CS-INT-FR-072 — Support Payment Provider Integration
+The system shall support approved payment provider integration.
+Potential operations include:
+CREATE PAYMENT REQUESTQUERY PAYMENT STATUSRECEIVE PAYMENT EVENTPROCESS REFUND REQUEST BOUNDARYVERIFY PROVIDER TRANSACTION
+Conceptually:
+BILLING DOMAIN      │      ▼PAYMENT INTEGRATION INTERFACE      │      ▼PAYMENT PROVIDER ADAPTER      │      ▼PAYMENT PROVIDER
+The Billing domain shall remain the authority for CuraSphere financial transaction state.
+Provider status and CuraSphere status may require reconciliation.
+
+5.1073 SMS PROVIDER INTEGRATION
+CS-INT-FR-073 — Support SMS Provider Integration
+The system shall support approved SMS provider integration.
+Potential use cases include:
+APPOINTMENT REMINDERAPPOINTMENT CONFIRMATIONPASSWORD SECURITY MESSAGEPAYMENT NOTIFICATIONAPPROVED HOSPITAL COMMUNICATION
+Conceptually:
+NOTIFICATION REQUEST        │        ▼NOTIFICATION MODULE        │        ▼SMS INTEGRATION ABSTRACTION        │        ▼SMS PROVIDER ADAPTER        │        ▼SMS PROVIDER
+Business modules shall not directly call random SMS provider SDKs.
+Incorrect:
+APPOINTMENT CONTROLLER        │        ▼SMS PROVIDER SDK
+Preferred:
+APPOINTMENT DOMAIN        │        ▼NOTIFICATION REQUEST        │        ▼NOTIFICATION SYSTEM        │        ▼SMS INTEGRATION
+
+5.1074 EMAIL PROVIDER INTEGRATION
+CS-INT-FR-074 — Support Email Provider Integration
+The system shall support approved email provider integration.
+Potential communication includes:
+ACCOUNT COMMUNICATIONAPPOINTMENT COMMUNICATIONAPPROVED REPORT DELIVERY NOTICESYSTEM ADMINISTRATION NOTICE
+Email provider communication shall use an integration abstraction.
+The final email provider shall not be hardcoded throughout the application.
+
+5.1075 IDENTITY PROVIDER INTEGRATION
+CS-INT-FR-075 — Support Identity Provider Integration Boundary
+Priority
+Should Have
+The architecture should support future external identity provider integration.
+Potential examples include:
+ENTERPRISE IDENTITY PROVIDERHOSPITAL DIRECTORYGOVERNMENT IDENTITY SERVICE
+Conceptually:
+CURASPHERE IAM      │      ▼IDENTITY INTEGRATION      │      ▼EXTERNAL IDENTITY PROVIDER
+External authentication shall not automatically grant CuraSphere permissions.
+Therefore:
+EXTERNAL IDENTITY VERIFIED             ≠CURASPHERE ADMIN AUTHORIZED
+Role and permission mapping shall remain controlled by IAM.
+
+5.1076 PARTNER API BOUNDARY
+CS-INT-FR-076 — Support Partner API Boundary
+Priority
+Should Have
+The architecture should support approved partner APIs.
+Potential partners include:
+INSURANCE PROVIDERSHEALTH NETWORKSLABORATORY PARTNERSAUTHORIZED GOVERNMENT SYSTEMSAPPROVED HEALTHCARE APPLICATIONS
+Partner APIs may require:
+SEPARATE AUTHENTICATIONSEPARATE AUTHORIZATIONRATE PROTECTIONDATA SCOPEAPI VERSIONPARTNER-SPECIFIC CONTRACT
+Internal React APIs shall not automatically become public partner APIs.
+
+5.1077 FUTURE MOBILE API CONSUMER
+CS-INT-FR-077 — Support Future Mobile API Consumer
+Priority
+Should Have
+The CuraSphere API architecture should support future approved mobile applications.
+Conceptually:
+ASP.NET CORE API       │   ┌───┴───┐   │       │   ▼       ▼REACT    MOBILEWEB      APPLICATION
+This requirement does not mean:
+EVERY WEB API RESPONSE        │        ▼PERFECT MOBILE API
+API contracts shall be consumer-aware.
+A Backend-for-Frontend pattern may be evaluated later if required.
+
+5.1078 API GATEWAY BOUNDARY
+CS-INT-FR-078 — Support Future API Gateway Boundary
+Priority
+Should Have
+The architecture should preserve a future API gateway boundary.
+Conceptually:
+CLIENTS   │   ▼API GATEWAY   │   ▼CURASPHERE API SERVICES
+Potential gateway capabilities may include:
+ROUTINGRATE LIMITINGAPI AUTHENTICATION BOUNDARYREQUEST CORRELATIONAPI OBSERVABILITYPARTNER API MANAGEMENT
+No API gateway product is selected by this SRS.
+For the initial RAD architecture, an API gateway may not be required.
+
+5.1079 INTEGRATION DATA SCOPE
+CS-INT-FR-079 — Apply Integration Data Scope
+The system shall apply data scope to integrations.
+Example:
+SMS PROVIDER
+requires:
+PHONE NUMBERMESSAGE CONTENT
+It shall not receive:
+COMPLETE PATIENT CLINICAL RECORD
+unless explicitly required and legally approved.
+Another example:
+PAYMENT PROVIDER
+may require:
+PAYMENT REFERENCEAMOUNTCURRENCYAPPROVED CUSTOMER REFERENCE
+It shall not automatically receive:
+DIAGNOSIS HISTORYCLINICAL NOTESLAB RESULTS
+Critical Principle
+INTEGRATION      │      ▼MINIMUM REQUIRED DATA
+Data minimization shall apply.
+
+5.1080 FUTURE MULTI-HOSPITAL INTEGRATION
+CS-INT-FR-080 — Support Future Multi-Hospital Integration
+Priority
+Should Have
+The architecture should support future hospital-specific integration configuration.
+Example:
+HOSPITAL A    │    ▼SMS PROVIDER A
+Hospital B:
+HOSPITAL B    │    ▼SMS PROVIDER B
+Payment integration:
+HOSPITAL A    │    ▼PAYMENT PROVIDER X
+HOSPITAL B    │    ▼PAYMENT PROVIDER Y
+Integration resolution may conceptually become:
+HOSPITAL   │   ▼INTEGRATION TYPE   │   ▼ACTIVE INTEGRATION
+The exact multi-hospital strategy shall be defined during Architecture Design.
+
+5.1081 CURASPHERE API DATA FLOW MODEL
+REACT APPLICATION       │       ▼HTTPS REQUEST       │       ▼ASP.NET CORE API       │       ▼CORRELATION       │       ▼AUTHENTICATION       │       ▼AUTHORIZATION       │       ▼REQUEST VALIDATION       │       ▼APPLICATION SERVICE       │       ▼DOMAIN LOGIC       │       ▼DATA ACCESS       │       ▼POSTGRESQL       │       ▼APPLICATION RESULT       │       ▼API RESPONSE MAPPING       │       ▼HTTP RESPONSE       │       ▼REACT APPLICATION
+
+5.1082 EXTERNAL INTEGRATION DATA FLOW MODEL
+CURASPHERE DOMAIN        │        ▼APPLICATION SERVICE        │        ▼INTEGRATION INTERFACE        │        ▼PROVIDER ADAPTER        │        ▼REQUEST MAPPING        │        ▼AUTHENTICATION BOUNDARY        │        ▼EXTERNAL PROVIDER        │        ▼EXTERNAL RESPONSE        │        ▼RESPONSE VALIDATION        │        ▼RESPONSE MAPPING        │        ▼CURASPHERE APPLICATION MODEL        │        ▼DOMAIN PROCESSING
+
+5.1083 WEBHOOK PROCESSING MODEL
+EXTERNAL PROVIDER         │         ▼WEBHOOK REQUEST         │         ▼WEBHOOK ENDPOINT         │         ▼CORRELATION ID         │         ▼SOURCE AUTHENTICATION         │         ▼SIGNATURE VALIDATION         │         ▼REPLAY CHECK         │         ▼SCHEMA VALIDATION         │         ▼EVENT TYPE RESOLUTION         │         ▼DUPLICATE CHECK         │         ▼APPLICATION SERVICE         │         ▼DOMAIN PROCESSING         │         ▼PROCESSING RESULT         │         ▼WEBHOOK EVENT HISTORY
+
+5.1084 ASYNCHRONOUS INTEGRATION MODEL
+BUSINESS OPERATION        │        ▼DOMAIN PROCESSING        │        ▼DATABASE COMMIT        │        ▼INTEGRATION WORK CREATED        │        ▼DURABLE WORK BOUNDARY        │        ▼BACKGROUND WORKER        │        ▼INTEGRATION ADAPTER        │        ▼EXTERNAL PROVIDER        │    ┌───┴───┐    │       │ SUCCESS   FAILURE    │       │    ▼       ▼COMPLETE  CLASSIFY            │       ┌────┴────┐       │         │   TEMPORARY   PERMANENT       │         │       ▼         ▼     RETRY     FAILED       │         │       ▼         ▼MAX ATTEMPTS?  REVIEW       │       ▼FAILED MESSAGE BOUNDARY
+
+5.1085 API REQUEST SEQUENCE MODEL
+REACT       API       AUTH       APP SERVICE      DOMAIN      DATABASE  │          │          │             │              │            │  │ Request  │          │             │              │            │  ├─────────►│          │             │              │            │  │          │ Auth     │             │              │            │  │          ├─────────►│             │              │            │  │          │ Valid    │             │              │            │  │          │◄─────────┤             │              │            │  │          │ Execute  │             │              │            │  │          ├───────────────────────►│              │            │  │          │          │             │ Domain Rule  │            │  │          │          │             ├─────────────►│            │  │          │          │             │              │ Persist    │  │          │          │             │              ├───────────►│  │          │          │             │              │ Result     │  │          │          │             │              │◄───────────┤  │          │          │             │ Result       │            │  │          │          │             │◄─────────────┤            │  │          │ Response │             │              │            │  │          │◄───────────────────────┤              │            │  │ Result   │          │             │              │            │  │◄─────────┤          │             │              │            │
+
+5.1086 EXTERNAL PROVIDER SEQUENCE MODEL
+APP SERVICE   INTEGRATION   ADAPTER   PROVIDER     │             │           │          │     │ Request     │           │          │     ├────────────►│           │          │     │             │ Map       │          │     │             ├──────────►│          │     │             │           │ Request  │     │             │           ├─────────►│     │             │           │ Response │     │             │           │◄─────────┤     │             │ Result    │          │     │             │◄──────────┤          │     │ Result      │           │          │     │◄────────────┤           │          │
+Failure:
+APP SERVICE   INTEGRATION   ADAPTER   PROVIDER     │             │           │          │     │ Request     │           │          │     ├────────────►│           │          │     │             │           │ Request  │     │             │           ├─────────►│     │             │           │ TIMEOUT  │     │             │           │◄ ─ ─ ─ ─ │     │             │ Classify  │          │     │             │◄──────────┤          │     │             │ Retry?    │          │     │             │           │          │
+
+5.1087 INTEGRATION FAILURE STATE MODEL
+CREATED   │   ▼PROCESSING   │ ┌─┴─────────────┐ │               │ ▼               ▼SUCCESS         FAILURE                  │                  ▼              CLASSIFIED                  │          ┌───────┴───────┐          │               │          ▼               ▼      TEMPORARY        PERMANENT          │               │          ▼               ▼        RETRY           FAILED          │          ▼      PROCESSING          │      ┌───┴───┐      │       │   SUCCESS  MAX RETRIES      │       │      ▼       ▼  COMPLETE  FAILED
+
+5.1088 WEBHOOK STATE MODEL
+RECEIVED   │   ▼AUTHENTICATED   │   ▼VALIDATED   │   ▼DEDUPLICATED   │   ▼PROCESSING   │ ┌─┴────────┐ │          │ ▼          ▼PROCESSED  FAILED
+Alternative rejected states:
+RECEIVED   │   ├──► INVALID_SIGNATURE   │   ├──► REPLAY_DETECTED   │   ├──► INVALID_PAYLOAD   │   └──► UNKNOWN_EVENT
+
+5.1089 INTEGRATION BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-INT-BR-001
+Integration communication shall remain separate from domain ownership
+CS-INT-BR-002
+API controllers shall not become the complete business domain
+CS-INT-BR-003
+External provider SDKs shall not be spread throughout business modules
+CS-INT-BR-004
+Protected APIs shall authenticate eligible consumers
+CS-INT-BR-005
+Protected API operations shall enforce authorization
+CS-INT-BR-006
+API requests shall be server validated
+CS-INT-BR-007
+API errors shall not expose internal secrets or stack traces
+CS-INT-BR-008
+Correlation identifiers shall support technical tracing
+CS-INT-BR-009
+Sensitive payloads shall not automatically be logged
+CS-INT-BR-010
+API breaking changes shall be governed
+CS-INT-BR-011
+Database entities shall not automatically become public API contracts
+CS-INT-BR-012
+APIs shall prevent unauthorized field exposure
+CS-INT-BR-013
+APIs shall prevent mass assignment
+CS-INT-BR-014
+Idempotency shall be applied to eligible duplicate-sensitive operations
+CS-INT-BR-015
+Duplicate provider events shall not apply business effects twice
+CS-INT-BR-016
+External service calls shall use approved timeout policies
+CS-INT-BR-017
+Retry behavior shall depend on failure classification and operation semantics
+CS-INT-BR-018
+Unsafe operations shall not be blindly retried
+CS-INT-BR-019
+Webhook sources shall be validated
+CS-INT-BR-020
+Eligible webhooks shall use replay protection
+CS-INT-BR-021
+Webhook controllers shall route business processing to responsible domains
+CS-INT-BR-022
+Failed asynchronous integration work shall not silently disappear
+CS-INT-BR-023
+External data shall be mapped before entering domain processing
+CS-INT-BR-024
+External identifiers shall remain separate from CuraSphere identifiers
+CS-INT-BR-025
+Identifier mapping conflicts shall not be silently overwritten
+CS-INT-BR-026
+Integration credentials shall use approved secret boundaries
+CS-INT-BR-027
+Integration credentials shall not be exposed to React
+CS-INT-BR-028
+Integration credentials shall not be recorded in logs
+CS-INT-BR-029
+External authentication shall not automatically grant CuraSphere authorization
+CS-INT-BR-030
+Integration data exchange shall follow data minimization
+CS-INT-BR-031
+Internal domain models shall not automatically copy external healthcare standards
+CS-INT-BR-032
+FHIR resources shall not automatically define the internal PostgreSQL schema
+CS-INT-BR-033
+Received laboratory results shall follow Laboratory domain verification rules
+CS-INT-BR-034
+External payment status shall be reconciled with CuraSphere Billing state
+CS-INT-BR-035
+Future multi-hospital integrations shall support hospital-specific resolution boundaries
+
+5.1090 INTEGRATION PERMISSION CONCEPT
+Potential permissions include:
+INT_DASHBOARD_VIEWINT_INTEGRATION_VIEWINT_INTEGRATION_CREATEINT_INTEGRATION_UPDATEINT_INTEGRATION_ACTIVATEINT_INTEGRATION_DEACTIVATEINT_HEALTH_VIEWINT_ATTEMPT_VIEWINT_FAILED_MESSAGE_VIEWINT_FAILED_MESSAGE_REPROCESSINT_WEBHOOK_HISTORY_VIEWINT_IDENTIFIER_MAPPING_VIEWINT_IDENTIFIER_MAPPING_MANAGEINT_API_DOCUMENTATION_VIEWINT_SECURITY_EVENT_VIEWINT_ADMIN
+Example Integration Administrator:
+INTEGRATION ADMINISTRATOR          │          ├── INT_DASHBOARD_VIEW          ├── INT_INTEGRATION_VIEW          ├── INT_INTEGRATION_CREATE          ├── INT_INTEGRATION_UPDATE          ├── INT_INTEGRATION_ACTIVATE          └── INT_INTEGRATION_DEACTIVATE
+Operational integration user:
+INTEGRATION OPERATOR          │          ├── INT_HEALTH_VIEW          ├── INT_ATTEMPT_VIEW          ├── INT_FAILED_MESSAGE_VIEW          └── INT_FAILED_MESSAGE_REPROCESS
+Critical Principle
+INT_ADMIN
+shall not automatically grant:
+CLINICAL NOTE EDITLAB RESULT VERIFICATIONRADIOLOGY REPORT APPROVALPAYMENT REVERSALSALARY APPROVAL
+Integration administration and business-domain authority shall remain separate.
+
+5.1091 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Internal application APIs
+CS-INT-FR-001 to 002
+API authentication and authorization
+CS-INT-FR-003 to 004
+API validation and response standards
+CS-INT-FR-005 to 007
+API tracing
+CS-INT-FR-008 to 009
+API versioning and compatibility
+CS-INT-FR-010 to 011
+API collection contracts
+CS-INT-FR-012 to 015
+API data protection
+CS-INT-FR-016 to 017
+API rate protection
+CS-INT-FR-018
+Idempotency and duplicate protection
+CS-INT-FR-019 to 020
+Integration registration
+CS-INT-FR-021 to 024
+Integration lifecycle
+CS-INT-FR-025 to 026
+Timeout and retry
+CS-INT-FR-027 to 031
+Integration attempt history
+CS-INT-FR-032
+Integration health and monitoring
+CS-INT-FR-033 to 036
+Inbound webhooks
+CS-INT-FR-037 to 043
+Outbound webhooks
+CS-INT-FR-044
+Asynchronous integration
+CS-INT-FR-045 to 050
+Schema, mapping and transformation
+CS-INT-FR-051 to 053
+External identifier management
+CS-INT-FR-054 to 056
+Integration credential protection
+CS-INT-FR-057 to 060
+Integration audit and security
+CS-INT-FR-061 to 062
+API documentation
+CS-INT-FR-063 to 064
+HL7 interoperability boundary
+CS-INT-FR-065
+FHIR interoperability boundary
+CS-INT-FR-066
+DICOM interoperability boundary
+CS-INT-FR-067
+Laboratory integration
+CS-INT-FR-068
+Radiology integration
+CS-INT-FR-069
+Pharmacy integration
+CS-INT-FR-070
+Insurance integration
+CS-INT-FR-071
+Payment provider integration
+CS-INT-FR-072
+SMS integration
+CS-INT-FR-073
+Email integration
+CS-INT-FR-074
+Identity integration
+CS-INT-FR-075
+Partner API
+CS-INT-FR-076
+Future mobile API
+CS-INT-FR-077
+Future API gateway
+CS-INT-FR-078
+Integration data minimization
+CS-INT-FR-079
+Multi-hospital integration
+CS-INT-FR-080
+
+5.1092 INTEGRATION AND API RISK ANALYSIS
+Risk 1 — Controllers Contain the Whole Application
+Problem
+CONTROLLER   │   ├── VALIDATION   ├── BUSINESS RULES   ├── SQL   ├── SMS   ├── EMAIL   └── AUDIT
+Impact
+The application becomes difficult to test and maintain.
+Mitigation
+Use application and domain boundaries.
+
+Risk 2 — React Directly Connects to PostgreSQL
+Problem
+REACT  │  ▼POSTGRESQL
+Impact
+DATABASE CREDENTIAL EXPOSUREAUTHORIZATION BYPASSBUSINESS RULE BYPASSDATABASE ATTACK SURFACE
+Mitigation
+All approved frontend business operations shall pass through the backend API.
+
+Risk 3 — Database Entity Returned Directly
+Problem
+PATIENT DATABASE ENTITY          │          ▼JSON RESPONSE
+Impact
+New database fields may accidentally become externally visible.
+Mitigation
+Use explicit API response contracts.
+
+Risk 4 — API Trusts React Validation
+Problem
+React validates:
+AMOUNT > 0
+Attacker sends direct API request:
+AMOUNT = -100000
+Impact
+Invalid data may enter the system.
+Mitigation
+Backend validation shall be authoritative.
+
+Risk 5 — Every Error Returns Stack Trace
+Problem
+API response contains:
+NpgsqlExceptionDATABASE HOSTTABLE NAMEFILE PATHSOURCE CODE LINE
+Impact
+Internal architecture information is exposed.
+Mitigation
+Use standardized safe API errors.
+
+Risk 6 — No API Version Strategy
+Problem
+React V1 expects:
+patientName
+Backend changes it to:
+legalFullName
+Impact
+Production frontend fails.
+Mitigation
+Govern API contract changes.
+
+Risk 7 — Unlimited Page Size
+Problem
+Client requests:
+pageSize = 10,000,000
+Impact
+MEMORY PRESSUREDATABASE LOADAPI TIMEOUT
+Mitigation
+Enforce maximum page sizes.
+
+Risk 8 — Client Sends Raw SQL Filter
+Problem
+filter = "status = 'ACTIVE' OR 1=1"
+Impact
+Security and query integrity risk.
+Mitigation
+Use approved filter contracts.
+
+Risk 9 — No Idempotency for Payment Creation
+Problem
+Client retries after timeout.
+Impact
+Duplicate payment processing.
+Mitigation
+Use operation-specific idempotency.
+
+Risk 10 — Every Timeout Is Retried
+Problem
+Provider processed payment but response was lost.
+CuraSphere retries.
+Impact
+Duplicate financial action.
+Mitigation
+Apply operation-aware retry strategy.
+
+Risk 11 — No Timeout
+Problem
+External provider never responds.
+API waits indefinitely.
+Impact
+THREAD / CONNECTION EXHAUSTIONSLOW USER EXPERIENCESYSTEM DEGRADATION
+Mitigation
+Define integration timeouts.
+
+Risk 12 — Retry Storm
+Problem
+External SMS provider fails.
+10,000 messages retry immediately.
+Impact
+Provider and CuraSphere receive additional load.
+Mitigation
+Use controlled retry delays and attempt limits.
+
+Risk 13 — Webhook Trusts Payload
+Problem
+Anyone sends:
+payment.completed
+Impact
+Fake payment events may be processed.
+Mitigation
+Authenticate and validate webhook sources.
+
+Risk 14 — Webhook Replay
+Problem
+A valid payment webhook is captured and sent 100 times.
+Impact
+Repeated business processing.
+Mitigation
+Use event deduplication and replay controls.
+
+Risk 15 — Webhook Controller Updates Financial Tables Directly
+Problem
+WEBHOOK   │   ▼UPDATE invoicesSET paid = true
+Impact
+Billing business rules are bypassed.
+Mitigation
+Route validated events to Billing application services.
+
+Risk 16 — Failed Messages Disappear
+Problem
+SMS delivery fails after retries.
+Message is deleted.
+Impact
+Operations cannot investigate or reprocess it.
+Mitigation
+Maintain a failed-message boundary.
+
+Risk 17 — External Model Becomes Domain Model
+Problem
+Payment provider DTO is used throughout Billing.
+Impact
+Changing payment provider changes the Billing domain.
+Mitigation
+Use mapping and adapter layers.
+
+Risk 18 — External Patient ID Replaces CuraSphere ID
+Problem
+Patient ID:
+EXT-99201
+comes from Hospital A.
+Hospital B also uses:
+EXT-99201
+Impact
+Identifier collision.
+Mitigation
+Maintain system-specific external identifier mappings.
+
+Risk 19 — Mapping Conflict Is Automatically Overwritten
+Problem
+One external patient identifier maps to two CuraSphere patients.
+Impact
+Clinical data may attach to the wrong patient.
+Mitigation
+Reject and investigate mapping conflicts.
+
+Risk 20 — API Key Stored in Integration Table
+Problem
+integrations├── name├── endpoint└── api_key
+Administrators can query the table.
+Impact
+Credential exposure.
+Mitigation
+Use secret management boundaries.
+
+Risk 21 — Authorization Header Logged
+Problem
+Logs contain:
+Authorization: Bearer eyJ...
+Impact
+Session or token exposure.
+Mitigation
+Redact sensitive headers.
+
+Risk 22 — Business Module Uses SMS SDK Directly
+Problem
+APPOINTMENT SERVICE        │        ▼TWILIO SDK
+Provider changes.
+Impact
+Appointment code requires modification.
+Mitigation
+Use notification and integration abstractions.
+
+Risk 23 — FHIR Used as Internal Database Design
+Problem
+Every PostgreSQL table directly copies FHIR resource JSON.
+Impact
+Internal domain behavior becomes tightly coupled to an external interoperability model.
+Mitigation
+Use a FHIR mapping boundary.
+
+Risk 24 — HL7 Message Automatically Updates Clinical State
+Problem
+External message arrives.
+CuraSphere directly marks:
+LAB RESULT VERIFIED
+Impact
+Clinical verification rules may be bypassed.
+Mitigation
+Route external information through the responsible clinical domain.
+
+Risk 25 — DICOM Images Stored in Normal Transaction Tables
+Problem
+Large imaging binary data is inserted into ordinary radiology business rows.
+Impact
+Database growth and operational complexity increase.
+Mitigation
+Define dedicated medical imaging architecture.
+
+Risk 26 — External Identity Means Internal Administrator
+Problem
+External identity provider returns:
+role = admin
+CuraSphere grants:
+CURASPHERE SUPER ADMIN
+Impact
+Authorization governance is bypassed.
+Mitigation
+Control external-to-internal role mapping.
+
+Risk 27 — Partner Uses Internal React API
+Problem
+An insurance provider receives access to internal UI endpoints.
+Impact
+Internal contracts and unnecessary data become externally exposed.
+Mitigation
+Define partner API boundaries.
+
+Risk 28 — Complete Patient Record Sent to SMS Provider
+Problem
+SMS provider receives:
+PATIENT HISTORYDIAGNOSISLAB RESULTSPHONE NUMBER
+to send an appointment reminder.
+Impact
+Severe unnecessary data exposure.
+Mitigation
+Apply integration data minimization.
+
+Risk 29 — One Integration Configuration for All Hospitals
+Problem
+Future hospitals use different providers.
+Architecture contains:
+SMS_PROVIDER = PROVIDER_A
+globally.
+Impact
+Multi-hospital expansion requires redesign.
+Mitigation
+Preserve hospital-scoped integration resolution boundaries.
+
+Risk 30 — Microservices Introduced Only Because Integrations Exist
+Problem
+Development team creates:
+SMS MICROSERVICEEMAIL MICROSERVICEPAYMENT MICROSERVICEFHIR MICROSERVICEWEBHOOK MICROSERVICE
+during the first RAD iteration.
+Impact
+DEPLOYMENT COMPLEXITYDISTRIBUTED DEBUGGINGNETWORK FAILURE MODESDEVOPS OVERHEAD
+Mitigation
+Start with clear modular boundaries and extract services only when architecture evidence requires it.
+
+5.1093 COMPLETE INTEGRATION CAPABILITY MODEL
+                   INTEGRATION PLATFORM                           │          ┌────────────────┼────────────────┐          │                │                │          ▼                ▼                ▼         API            EXTERNAL         ASYNC          │            INTEGRATION       PROCESSING          │                │                │          ▼                ▼                ▼   AUTHENTICATION       ADAPTERS          WORK          │                │             BOUNDARY          ▼                ▼                │   AUTHORIZATION         MAPPING            ▼          │                │             WORKER          ▼                ▼                │     VALIDATION       TRANSFORMATION         ▼          │                │              RETRY          ▼                ▼                │      CONTRACTS         PROVIDERS            ▼          │                │             FAILED          ▼                ▼             MESSAGE     VERSIONING         WEBHOOKS          BOUNDARY          │                │                │          └────────────────┼────────────────┘                           ▼                     OBSERVABILITY                           │                           ▼                       SECURITY                           │                           ▼                         AUDIT
+
+5.1094 INTEGRATION MODULE COMPLETION STATUS
+Module: System Integration, API, Interoperability and External Services Management SystemModule Code: INT/APIRequirement Range: CS-INT-FR-001 to CS-INT-FR-080Business Rule Range: CS-INT-BR-001 to CS-INT-BR-035
+Integration Domain Boundary: DefinedAPI vs Domain Logic Boundary: DefinedAPI Consumer Concept: DefinedIntegration Concept: DefinedIntegration Actors: DefinedInternal Application API: DefinedReact API Consumption Boundary: DefinedAPI Consumer Authentication: DefinedAPI Authorization: DefinedAPI Request Validation: DefinedAPI Response Standard Boundary: DefinedAPI Error Standard: DefinedCorrelation Identifier: DefinedAPI Request Tracking: DefinedAPI Versioning: DefinedAPI Contract Compatibility: DefinedAPI Pagination: DefinedAPI Filtering: DefinedAPI Sorting: DefinedAPI Search Contracts: DefinedUnauthorized Field Exposure Protection: DefinedMass Assignment Protection: DefinedAPI Rate Protection Boundary: DefinedAPI Idempotency: DefinedDuplicate Integration Request Detection: DefinedIntegration Registration: DefinedIntegration Identifier: DefinedIntegration Type: DefinedIntegration Direction: DefinedIntegration Activation: DefinedIntegration Deactivation: DefinedIntegration Timeout: DefinedIntegration Retry Policy: DefinedIntegration Failure Classification: DefinedTemporary Failure Retry: DefinedUnsafe Retry Protection: DefinedIntegration Attempt Record: DefinedIntegration Health: DefinedIntegration Availability: DefinedIntegration Latency: DefinedIntegration Failure Rate: DefinedWebhook Reception: DefinedWebhook Authentication: DefinedWebhook Signature Validation: DefinedWebhook Replay Protection: DefinedWebhook Payload Validation: DefinedWebhook Event Processing: DefinedWebhook Processing Result: DefinedOutbound Webhook Boundary: DefinedAsynchronous Integration: DefinedIntegration Work Queue Boundary: DefinedIntegration Message Processing: DefinedFailed Integration Message Detection: DefinedDead-Letter Boundary: DefinedFailed Message Reprocessing: DefinedIntegration Schema Validation: DefinedExternal Data Mapping: DefinedExternal Data Transformation: DefinedExternal Identifier Preservation: DefinedExternal Identifier Mapping: DefinedIdentifier Mapping Conflict Detection: DefinedIntegration Credential Protection: DefinedCredential UI Protection: DefinedCredential API Protection: DefinedCredential Log Protection: DefinedIntegration Administration Audit: DefinedIntegration Security Events: DefinedAPI Documentation: DefinedAPI Contract Discovery Boundary: DefinedHL7 Integration Boundary: DefinedFHIR Interoperability Boundary: DefinedDICOM Integration Boundary: DefinedLaboratory Integration Boundary: DefinedRadiology Integration Boundary: DefinedPharmacy Integration Boundary: DefinedInsurance Integration Boundary: DefinedPayment Provider Integration: DefinedSMS Provider Integration: DefinedEmail Provider Integration: DefinedIdentity Provider Integration Boundary: DefinedPartner API Boundary: DefinedFuture Mobile API Consumer: DefinedFuture API Gateway Boundary: DefinedIntegration Data Scope: DefinedFuture Multi-Hospital Integration: DefinedAPI Data Flow Model: DefinedExternal Integration Data Flow Model: DefinedWebhook Processing Model: DefinedAsynchronous Integration Model: DefinedAPI Request Sequence Model: DefinedExternal Provider Sequence Model: DefinedIntegration Failure State Model: DefinedWebhook State Model: DefinedIntegration Permission Concept: DefinedRequirement Traceability: EstablishedIntegration and API Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The System Integration, API, Interoperability and External Services Management requirements establish the communication and interoperability foundation of CuraSphere.
+These requirements shall later be transformed into:
+API architecture document;
+integration architecture document;
+interoperability architecture document;
+REST API design standards;
+API endpoint naming standards;
+API versioning strategy;
+API request contract standards;
+API response contract standards;
+API error contract standards;
+pagination standards;
+filtering standards;
+sorting standards;
+search contract standards;
+correlation strategy;
+API observability strategy;
+API authentication architecture;
+API authorization architecture;
+API data scope architecture;
+idempotency architecture;
+duplicate request protection strategy;
+integration registration use case;
+integration activation use case;
+integration deactivation use case;
+integration health review use case;
+failed message review use case;
+failed message reprocessing use case;
+webhook reception use case;
+webhook processing use case;
+external identifier mapping use case;
+API request activity diagram;
+integration request activity diagram;
+webhook activity diagram;
+retry activity diagram;
+failed message activity diagram;
+identifier mapping activity diagram;
+API request sequence diagram;
+payment provider sequence diagram;
+SMS provider sequence diagram;
+email provider sequence diagram;
+webhook sequence diagram;
+failed message reprocessing sequence diagram;
+integration domain model;
+Integration domain entity;
+Integration Configuration model;
+Integration Attempt model;
+Webhook Event model;
+External Identifier Mapping model;
+Failed Integration Message model;
+Idempotency Record model;
+PostgreSQL integration schema;
+integration indexing strategy;
+external identifier uniqueness strategy;
+idempotency indexing strategy;
+webhook event deduplication strategy;
+integration attempt retention strategy;
+API DTO architecture;
+API mapping architecture;
+ASP.NET Core controller architecture;
+ASP.NET Core application service architecture;
+ASP.NET Core integration abstraction architecture;
+provider adapter pattern;
+HttpClient architecture;
+HTTP connection management strategy;
+timeout strategy;
+retry strategy;
+resilience strategy;
+circuit breaker evaluation;
+asynchronous processing architecture;
+durable work strategy;
+transactional outbox evaluation;
+inbox pattern evaluation;
+dead-letter strategy;
+failed message reprocessing strategy;
+webhook security architecture;
+webhook signature validation strategy;
+webhook replay protection strategy;
+integration credential strategy;
+integration secret management strategy;
+API documentation strategy;
+OpenAPI strategy;
+API gateway evaluation;
+partner API architecture;
+mobile API architecture;
+HL7 architecture assessment;
+FHIR architecture assessment;
+DICOM architecture assessment;
+PACS integration assessment;
+RIS integration assessment;
+LIS integration assessment;
+payment integration architecture;
+SMS integration architecture;
+email integration architecture;
+insurance integration architecture;
+identity provider integration architecture;
+healthcare terminology mapping strategy;
+external identifier mapping strategy;
+React API client architecture;
+React API error handling;
+React authentication request handling;
+React request cancellation strategy;
+React query caching strategy;
+React server-state architecture;
+API integration tests;
+API authorization tests;
+API validation tests;
+API error contract tests;
+API pagination tests;
+API filtering tests;
+API sorting tests;
+API search tests;
+API version compatibility tests;
+API unauthorized field exposure tests;
+mass assignment tests;
+API rate protection tests;
+idempotency tests;
+duplicate request tests;
+integration timeout tests;
+retry classification tests;
+unsafe retry tests;
+webhook authentication tests;
+webhook signature tests;
+webhook replay tests;
+webhook duplicate event tests;
+webhook schema tests;
+integration mapping tests;
+integration transformation tests;
+external identifier mapping tests;
+identifier conflict tests;
+integration credential exposure tests;
+log redaction tests;
+asynchronous message tests;
+failed message tests;
+dead-letter tests;
+message reprocessing tests;
+payment integration tests;
+SMS integration tests;
+email integration tests;
+partner API security tests;
+integration data minimization tests;
+integration load tests;
+integration failure recovery tests;
+provider outage tests;
+retry storm tests;
+API performance tests;
+API concurrency tests.
+No microservices architecture, API gateway product, YARP deployment, Ocelot deployment, Azure API Management deployment, AWS API Gateway deployment, Kong deployment, NGINX API gateway strategy, GraphQL API, gRPC API, REST-only policy, API versioning mechanism, URI versioning policy, header versioning policy, API envelope standard, OpenAPI exposure policy, Swagger UI production policy, rate-limiting algorithm, rate-limiting threshold, distributed rate limiter, Redis rate limiter, idempotency key format, idempotency retention period, HttpClient resilience library, Polly strategy, circuit breaker threshold, retry count, retry delay, exponential backoff formula, jitter strategy, message broker, RabbitMQ deployment, Apache Kafka deployment, Azure Service Bus deployment, AWS SQS deployment, transactional outbox implementation, inbox implementation, dead-letter queue product, background worker deployment model, Hangfire deployment, Quartz.NET deployment, MassTransit deployment, NServiceBus deployment, webhook signature algorithm, webhook timestamp tolerance, integration credential provider, Azure Key Vault deployment, AWS Secrets Manager deployment, HashiCorp Vault deployment, HL7 version, HL7 v2 profile, HL7 v3 implementation, FHIR version, FHIR R4 implementation, FHIR R5 implementation, FHIR server, FHIR implementation guide, DICOM server, PACS product, RIS product, LIS product, medical terminology server, SNOMED CT integration, LOINC integration, ICD integration, RxNorm integration, payment gateway provider, JazzCash integration, Easypaisa integration, bank payment provider, SMS provider, email provider, SMTP provider, SendGrid integration, Twilio integration, external identity provider, Microsoft Entra ID integration, Keycloak deployment, government health integration, partner API contract, mobile Backend-for-Frontend, integration data retention period, or multi-hospital integration resolution strategy has been finalized by this SRS section.
+Those decisions shall be made during Domain Architecture, Application Architecture, API Architecture, Integration Architecture, Healthcare Interoperability Architecture, Security Architecture, Identity and Access Architecture, Data Architecture, Observability Architecture, Infrastructure Architecture, DevOps Architecture, Detailed Design, clinical governance, financial governance, hospital governance, interoperability analysis, provider evaluation, and approved legal or compliance review.
+

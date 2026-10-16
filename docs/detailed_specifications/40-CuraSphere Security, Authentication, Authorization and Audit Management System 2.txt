@@ -1,0 +1,453 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.15 - Security, Authentication, Authorization and Audit Management System (SEC)
+
+5.15.11 Functional Requirement SEC-FR-007
+Single Sign-On (SSO) Management
+
+Requirement ID
+SEC-FR-007
+Requirement Name
+Single Sign-On (SSO) Authentication
+
+Description
+The system shall support Single Sign-On (SSO) to enable authorized users to authenticate once and securely access multiple CuraSphere modules without repeated logins.
+The implementation may integrate with enterprise identity providers where deployed.
+
+Actors
+System User
+Identity Provider
+Security Administrator
+
+Preconditions
+SSO integration is configured.
+User exists in the identity provider.
+
+Workflow
+User Opens CuraSphere
+        │
+        ▼
+Redirect to Identity Provider
+        │
+        ▼
+User Authentication
+        │
+        ▼
+Identity Verification
+        │
+        ▼
+Security Token Issued
+        │
+        ▼
+CuraSphere Login
+        │
+        ▼
+Access Granted
+
+Business Rules
+SEC-BR-007
+SSO sessions shall respect configured authentication policies.
+SEC-BR-008
+Authentication failures shall be logged.
+
+Acceptance Criteria
+Single authentication provides access.
+Unauthorized identities rejected.
+Security events logged.
+
+5.15.12 Functional Requirement SEC-FR-008
+Data Encryption Management
+
+Requirement ID
+SEC-FR-008
+Requirement Name
+Data Encryption Management
+
+Description
+The system shall protect sensitive information using modern encryption techniques.
+Encryption shall protect:
+Patient Records
+Medical History
+Financial Information
+Login Credentials
+Audit Logs
+API Communication
+Backup Files
+
+Encryption Architecture
+User Data
+      │
+      ▼
+Encryption Layer
+      │
+      ▼
+Secure Database
+      │
+      ▼
+Authorized Access
+      │
+      ▼
+Decryption
+
+Encryption Categories
+Data at Rest
+Database encryption
+File encryption
+Backup encryption
+Data in Transit
+HTTPS
+TLS
+Secure APIs
+
+Business Rules
+SEC-BR-009
+Sensitive data shall never be transmitted through unencrypted communication channels.
+SEC-BR-010
+Encryption keys shall be protected using secure key management practices.
+
+Acceptance Criteria
+Sensitive data encrypted.
+Secure communication enforced.
+
+5.15.13 Functional Requirement SEC-FR-009
+API Security Management
+
+Requirement ID
+SEC-FR-009
+Requirement Name
+API Security
+
+Description
+The system shall secure all internal and external APIs.
+
+API Security Features
+Authentication
+Authorization
+API Keys
+OAuth 2.0
+JWT Tokens
+Rate Limiting
+IP Restrictions
+Request Validation
+Response Validation
+
+API Workflow
+Client Request
+       │
+       ▼
+Authentication
+       │
+       ▼
+Authorization
+       │
+       ▼
+Token Validation
+       │
+       ▼
+API Processing
+       │
+       ▼
+Response Returned
+
+Business Rules
+SEC-BR-011
+Every API request shall be authenticated unless explicitly configured as public.
+SEC-BR-012
+Unauthorized API requests shall be rejected.
+
+Acceptance Criteria
+APIs protected successfully.
+
+5.15.14 Functional Requirement SEC-FR-010
+Security Audit Logging
+
+Requirement ID
+SEC-FR-010
+Requirement Name
+Security Audit Logging
+
+Description
+Every security-related activity shall generate an immutable audit record.
+
+Audit Events
+Login
+Logout
+Failed Login
+Password Change
+Permission Change
+Role Assignment
+MFA Enrollment
+Account Lockout
+Session Termination
+Configuration Changes
+
+Workflow
+Security Event
+       │
+       ▼
+Audit Engine
+       │
+       ▼
+Audit Repository
+       │
+       ▼
+Audit Reports
+
+Audit Information
+Audit ID
+User ID
+Event Type
+Date
+Time
+IP Address
+Device
+Browser
+Session ID
+Result
+
+Business Rules
+Audit logs shall not be modified or deleted.
+
+Acceptance Criteria
+Complete audit trail maintained.
+
+5.15.15 Functional Requirement SEC-FR-011
+Security Monitoring and Threat Detection
+
+Requirement ID
+SEC-FR-011
+
+Description
+The system shall continuously monitor security events and detect suspicious activities.
+
+Monitoring Events
+Multiple Failed Logins
+Suspicious IP Addresses
+Privilege Escalation
+Unauthorized Access
+Database Attacks
+API Abuse
+Malware Detection
+Session Hijacking
+Brute Force Attempts
+
+Monitoring Workflow
+Security Events
+        │
+        ▼
+Threat Detection Engine
+        │
+        ▼
+Risk Analysis
+        │
+        ▼
+Security Alert
+        │
+        ▼
+Administrator Notification
+
+Business Rules
+Critical threats shall generate immediate alerts.
+
+Acceptance Criteria
+Threats detected automatically.
+
+5.15.16 Functional Requirement SEC-FR-012
+Digital Certificates and Digital Signatures
+
+Requirement ID
+SEC-FR-012
+
+Description
+The system shall support digital certificates and digital signatures where required.
+
+Supported Usage
+Electronic Prescriptions
+Laboratory Reports
+Radiology Reports
+Medical Certificates
+Financial Documents
+API Authentication
+
+Workflow
+Document Generated
+        │
+        ▼
+Digital Signature Applied
+        │
+        ▼
+Certificate Validation
+        │
+        ▼
+Verified Document
+
+Business Rules
+Digital signatures shall be verifiable.
+
+Acceptance Criteria
+Signed documents verified successfully.
+
+5.15.17 Functional Requirement SEC-FR-013
+Security Compliance Management
+
+Requirement ID
+SEC-FR-013
+
+Description
+The system shall support compliance with healthcare security regulations and organizational policies.
+
+Compliance Areas
+Patient Privacy
+Medical Record Security
+Financial Record Protection
+Audit Retention
+Access Logging
+Password Policies
+Data Encryption
+Disaster Recovery
+
+Compliance Workflow
+Security Policies
+        │
+        ▼
+Compliance Engine
+        │
+        ▼
+Compliance Report
+        │
+        ▼
+Administrator Review
+
+Business Rules
+Compliance reports shall be available only to authorized users.
+
+Acceptance Criteria
+Compliance reports generated.
+
+5.15.18 Functional Requirement SEC-FR-014
+Security Integration Requirements
+The Security module shall integrate with:
+Module
+Purpose
+Authentication
+Login
+HR
+Employee verification
+Patient Portal
+Patient login
+Administration
+User management
+Audit
+Security logging
+Notification
+Security alerts
+API Gateway
+Secure APIs
+Reporting
+Security reports
+
+Integration Architecture
+Authentication
+       │
+       ▼
+Security Engine
+       │
+ ┌─────┼────────────┐
+ ▼     ▼            ▼
+RBAC Encryption Audit
+       │
+       ▼
+Hospital Modules
+
+5.15.19 Functional Requirement SEC-FR-015
+Security Non-Functional Requirements
+The Security module shall satisfy the following quality requirements.
+Performance
+Authentication should typically complete within 3 seconds under normal operating conditions.
+Authorization checks should occur with minimal latency appropriate for interactive use.
+Availability
+Target availability: 99.99%, excluding planned maintenance.
+Reliability
+Security failures shall fail safely and shall not compromise protected resources.
+Scalability
+Support thousands of concurrent authenticated users.
+Security
+Support TLS 1.2+ or newer as configured by organizational policy.
+Passwords shall be stored using strong password hashing algorithms (for example, Argon2id, bcrypt, or PBKDF2 with appropriate parameters).
+Backup
+Security configurations and audit logs shall be included in scheduled backups.
+
+5.15.20 Functional Requirement SEC-FR-016
+Security Requirement Traceability Matrix
+Requirement ID
+Functional Area
+SEC-FR-001
+User Authentication
+SEC-FR-002
+Password Policy
+SEC-FR-003
+Multi-Factor Authentication
+SEC-FR-004
+Role-Based Access Control
+SEC-FR-005
+Session Management
+SEC-FR-006
+Account Lockout
+SEC-FR-007
+Single Sign-On
+SEC-FR-008
+Data Encryption
+SEC-FR-009
+API Security
+SEC-FR-010
+Security Audit
+SEC-FR-011
+Threat Detection
+SEC-FR-012
+Digital Signatures
+SEC-FR-013
+Compliance
+SEC-FR-014
+Integration Requirements
+SEC-FR-015
+Non-Functional Requirements
+SEC-FR-016
+Requirement Traceability
+
+5.15.21 Security Module Architecture Summary
+                  User
+                   │
+                   ▼
+          Authentication Layer
+                   │
+      ┌────────────┼────────────┐
+      ▼            ▼            ▼
+ Password       MFA         SSO Login
+      │            │            │
+      └────────────┼────────────┘
+                   ▼
+         Authorization Engine
+                   │
+                   ▼
+            RBAC Validation
+                   │
+      ┌────────────┼────────────┐
+      ▼            ▼            ▼
+ API Security  Encryption   Session Manager
+      │            │            │
+      └────────────┼────────────┘
+                   ▼
+             Audit Engine
+                   │
+                   ▼
+      Security Monitoring Engine
+                   │
+                   ▼
+          Threat Detection System
+                   │
+                   ▼
+         Security Dashboard
+
+
+

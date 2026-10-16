@@ -1,0 +1,1727 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.11 — REPORTING, ANALYTICS AND HOSPITAL MANAGEMENT DASHBOARD SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: RPT/ANAModule Name: Reporting, Analytics and Hospital Management Dashboard SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.594 MODULE PURPOSE
+The Reporting, Analytics and Hospital Management Dashboard System shall provide authorized users with controlled, accurate, understandable, and operationally useful views of CuraSphere data.
+The module shall support:
+hospital management dashboards;
+operational dashboards;
+clinical operational statistics;
+patient statistics;
+appointment statistics;
+OPD statistics;
+IPD statistics;
+emergency statistics;
+laboratory statistics;
+radiology statistics;
+pharmacy statistics;
+billing and financial reporting;
+insurance reporting;
+inventory reporting;
+workforce reporting;
+doctor performance indicators;
+department performance indicators;
+trend analysis;
+period comparison;
+key performance indicators;
+configurable report filters;
+report generation;
+report execution;
+report status tracking;
+report export;
+scheduled report definitions;
+reporting snapshots;
+reporting read models;
+dashboard refresh;
+data freshness indicators;
+authorized drill-down;
+reporting audit events.
+The high-level reporting lifecycle shall be:
+OPERATIONAL MODULES        │        ▼TRANSACTION DATA        │        ▼REPORTING DATA PREPARATION        │        ▼REPORTING READ MODEL        │        ▼METRIC CALCULATION        │        ▼KPI / STATISTIC        │        ▼DASHBOARD / REPORT        │        ▼AUTHORIZED USER        │        ▼MANAGEMENT DECISION
+The reporting system shall help CuraSphere answer questions such as:
+HOW MANY PATIENTS WERE REGISTERED?HOW MANY APPOINTMENTS WERE COMPLETED?HOW MANY APPOINTMENTS WERE CANCELLED?HOW MANY PATIENTS VISITED OPD?HOW MANY PATIENTS ARE CURRENTLY ADMITTED?WHAT IS THE CURRENT BED OCCUPANCY CONTEXT?HOW MANY EMERGENCY ENCOUNTERS OCCURRED?HOW MANY LABORATORY ORDERS WERE COMPLETED?HOW MANY RADIOLOGY STUDIES WERE COMPLETED?WHAT IS THE CURRENT BILLING SUMMARY?WHAT PAYMENTS WERE RECEIVED?WHAT INVENTORY ITEMS ARE LOW IN STOCK?WHICH MEDICINES ARE APPROACHING EXPIRY?WHAT IS THE WORKFORCE ATTENDANCE SUMMARY?WHAT ARE THE CURRENT HOSPITAL OPERATIONAL TRENDS?
+
+5.595 REPORTING DOMAIN BOUNDARY
+The RPT/ANA module shall provide reporting, analytical projections, metrics, KPIs, dashboards, and authorized decision-support views.
+It shall not become the authoritative owner of operational transactions.
+Conceptually:
+PATIENT MODULE      │      ▼OWNS PATIENT TRANSACTIONS
+BILLING MODULE      │      ▼OWNS BILLING TRANSACTIONS
+INVENTORY MODULE      │      ▼OWNS INVENTORY TRANSACTIONS
+HR MODULE      │      ▼OWNS WORKFORCE TRANSACTIONS
+The Reporting module:
+OPERATIONAL DATA      │      ▼AUTHORIZED REPORTING PROJECTION      │      ▼REPORT / DASHBOARD
+Therefore:
+REPORT   ≠SOURCE TRANSACTION
+and:
+DASHBOARD   ≠OPERATIONAL DATABASE OWNER
+Example:
+The Billing module answers:
+What is the authoritative status of invoice INV-000421?
+The Reporting module answers:
+What is the total invoiced amount for the selected reporting period?
+The Inventory module answers:
+What stock movement changed the balance of item MED-421?
+The Reporting module answers:
+Which items currently meet the approved low-stock reporting condition?
+
+5.596 CRITICAL REPORTING ARCHITECTURE CONCEPT
+CuraSphere shall distinguish:
+SOURCE TRANSACTION
+REPORTING READ MODEL
+METRIC
+KPI
+DASHBOARD
+REPORT DEFINITION
+REPORT EXECUTION
+REPORT EXPORT
+REPORTING SNAPSHOT
+These concepts shall not be treated as one object.
+Weak architecture:
+dashboardControllerSELECT *FROM patientsJOIN appointmentsJOIN admissionsJOIN invoicesJOIN paymentsJOIN inventoryJOIN employeesJOIN attendance
+for every dashboard request.
+This approach may create:
+SLOW QUERIESDUPLICATE COUNTSINCORRECT AGGREGATIONDATABASE LOADTIGHT COUPLINGDIFFICULT TESTINGUNSTABLE DASHBOARDS
+A stronger conceptual model is:
+OPERATIONAL MODULES        │        ▼REPORTING PROJECTION        │        ▼READ MODEL        │        ▼METRIC CALCULATION        │        ▼DASHBOARD QUERY        │        ▼REACT VISUALIZATION
+
+5.597 REPORTING ACTORS
+Actor
+Responsibility
+Hospital Owner
+Views strategic hospital information
+Hospital Director
+Reviews operational hospital performance
+Hospital Administrator
+Reviews authorized administrative reports
+Department Head
+Reviews authorized departmental indicators
+Finance Manager
+Reviews financial reporting
+Accountant
+Reviews eligible billing and payment reports
+HR Manager
+Reviews workforce reports
+Inventory Manager
+Reviews inventory analytics
+Pharmacy Manager
+Reviews eligible pharmacy indicators
+Laboratory Manager
+Reviews laboratory operational reports
+Radiology Manager
+Reviews radiology operational reports
+Doctor
+Views eligible personal or clinical operational indicators
+System Administrator
+Manages technical reporting configuration where authorized
+Reporting Administrator
+Manages eligible report definitions and schedules
+Audit User
+Reviews reporting access and execution events
+CuraSphere System
+Calculates, projects, validates, and serves reporting data
+
+5.598 REPORTING FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-RPT-FR-001
+Provide Hospital Management Dashboard
+M
+CS-RPT-FR-002
+Provide Dashboard Summary Cards
+M
+CS-RPT-FR-003
+Provide Dashboard Trend Views
+M
+CS-RPT-FR-004
+Provide Dashboard Period Filter
+M
+CS-RPT-FR-005
+Provide Dashboard Department Filter
+M
+CS-RPT-FR-006
+Refresh Dashboard Data
+M
+CS-RPT-FR-007
+Display Data Freshness Context
+M
+CS-RPT-FR-008
+Enforce Dashboard Authorization
+M
+CS-RPT-FR-009
+Provide Authorized Dashboard Drill-Down
+S
+CS-RPT-FR-010
+Provide Patient Statistics
+M
+CS-RPT-FR-011
+Report Patient Registration Trends
+M
+CS-RPT-FR-012
+Report Patient Demographic Statistics
+S
+CS-RPT-FR-013
+Report Appointment Statistics
+M
+CS-RPT-FR-014
+Report Appointment Status Distribution
+M
+CS-RPT-FR-015
+Report Appointment Trends
+M
+CS-RPT-FR-016
+Report OPD Statistics
+M
+CS-RPT-FR-017
+Report IPD Statistics
+M
+CS-RPT-FR-018
+Report Admission Trends
+M
+CS-RPT-FR-019
+Report Discharge Trends
+M
+CS-RPT-FR-020
+Report Bed Occupancy Context
+M
+CS-RPT-FR-021
+Report Emergency Statistics
+M
+CS-RPT-FR-022
+Report Laboratory Statistics
+M
+CS-RPT-FR-023
+Report Laboratory Turnaround Context
+S
+CS-RPT-FR-024
+Report Radiology Statistics
+M
+CS-RPT-FR-025
+Report Radiology Turnaround Context
+S
+CS-RPT-FR-026
+Report Pharmacy Statistics
+M
+CS-RPT-FR-027
+Report Prescription Fulfilment Context
+S
+CS-RPT-FR-028
+Provide Financial Reports
+M
+CS-RPT-FR-029
+Report Invoice Summary
+M
+CS-RPT-FR-030
+Report Payment Summary
+M
+CS-RPT-FR-031
+Report Outstanding Balance Context
+M
+CS-RPT-FR-032
+Report Revenue Trend
+M
+CS-RPT-FR-033
+Report Payment Method Distribution
+S
+CS-RPT-FR-034
+Report Insurance Financial Context
+M
+CS-RPT-FR-035
+Provide Inventory Reports
+M
+CS-RPT-FR-036
+Report Current Stock Context
+M
+CS-RPT-FR-037
+Report Low Stock Items
+M
+CS-RPT-FR-038
+Report Expiring Stock
+M
+CS-RPT-FR-039
+Report Expired Stock
+M
+CS-RPT-FR-040
+Report Stock Movement Trends
+M
+CS-RPT-FR-041
+Report Inventory Consumption Context
+S
+CS-RPT-FR-042
+Provide Doctor Performance Indicators
+M
+CS-RPT-FR-043
+Report Doctor Appointment Context
+M
+CS-RPT-FR-044
+Report Doctor Encounter Context
+M
+CS-RPT-FR-045
+Report Doctor Operational Trend
+S
+CS-RPT-FR-046
+Provide Department Performance Indicators
+M
+CS-RPT-FR-047
+Provide Workforce Reports
+M
+CS-RPT-FR-048
+Report Employee Distribution
+M
+CS-RPT-FR-049
+Report Attendance Summary
+M
+CS-RPT-FR-050
+Report Leave Summary
+M
+CS-RPT-FR-051
+Report Duty Coverage Context
+S
+CS-RPT-FR-052
+Maintain Metric Definition
+M
+CS-RPT-FR-053
+Maintain KPI Definition
+M
+CS-RPT-FR-054
+Calculate Metric
+M
+CS-RPT-FR-055
+Calculate KPI
+M
+CS-RPT-FR-056
+Preserve Metric Calculation Context
+M
+CS-RPT-FR-057
+Support Period Comparison
+M
+CS-RPT-FR-058
+Support Trend Analysis
+M
+CS-RPT-FR-059
+Create Report Definition
+M
+CS-RPT-FR-060
+Update Report Definition
+M
+CS-RPT-FR-061
+Activate or Deactivate Report Definition
+M
+CS-RPT-FR-062
+Execute Report
+M
+CS-RPT-FR-063
+Generate Report Execution Identifier
+M
+CS-RPT-FR-064
+Track Report Execution Status
+M
+CS-RPT-FR-065
+Apply Report Parameters
+M
+CS-RPT-FR-066
+Validate Report Parameters
+M
+CS-RPT-FR-067
+View Report Result
+M
+CS-RPT-FR-068
+Export Eligible Report
+M
+CS-RPT-FR-069
+Record Report Export Context
+M
+CS-RPT-FR-070
+Create Scheduled Report Definition
+S
+CS-RPT-FR-071
+Execute Scheduled Report
+S
+CS-RPT-FR-072
+Track Scheduled Report Status
+S
+CS-RPT-FR-073
+Create Reporting Snapshot
+S
+CS-RPT-FR-074
+Preserve Historical Snapshot Context
+S
+CS-RPT-FR-075
+Maintain Reporting Read Models
+M
+CS-RPT-FR-076
+Refresh Reporting Read Models
+M
+CS-RPT-FR-077
+Detect Reporting Refresh Failure
+M
+CS-RPT-FR-078
+Display Reporting Data Freshness
+M
+CS-RPT-FR-079
+Enforce Reporting Data Scope
+M
+CS-RPT-FR-080
+Prevent Unauthorized Sensitive Aggregation
+M
+CS-RPT-FR-081
+Record Reporting Audit Events
+M
+CS-RPT-FR-082
+Support Reporting Performance Monitoring
+M
+CS-RPT-FR-083
+Support Future Business Intelligence Integration
+S
+CS-RPT-FR-084
+Support Future Predictive Analytics Boundary
+S
+
+5.599 HOSPITAL MANAGEMENT DASHBOARD
+CS-RPT-FR-001 — Provide Hospital Management Dashboard
+Description
+The system shall provide an authorized hospital management dashboard containing approved hospital operational and management indicators.
+Priority
+Must Have
+Conceptual Dashboard
+CURASPHERE MANAGEMENT DASHBOARD               │   ┌───────────┼────────────┐   │           │            │   ▼           ▼            ▼PATIENTS   OPERATIONS    FINANCIAL   │           │            │   ▼           ▼            ▼REGISTRATION APPOINTMENTS REVENUEADMISSIONS    OPD          PAYMENTSDISCHARGES    IPD          OUTSTANDING              EMERGENCY
+Additional areas:
+LABORATORYRADIOLOGYPHARMACYINVENTORYWORKFORCE
+Example Dashboard Layout Concept
++----------------------------------------------------------+| CURASPHERE HOSPITAL MANAGEMENT DASHBOARD                 |+----------------------------------------------------------+| Period: Today | Department: All | Updated: 10:30 AM      |+----------------------------------------------------------+| Patients | Appointments | Admissions | Emergency Visits  ||   421    |      86      |     42     |        31         |+----------------------------------------------------------+| Patient Trend                                             ||                                                          ||      /\        /\                                         ||  ___/  \______/  \_____                                  |+----------------------------------------------------------+| Financial Summary       | Bed Occupancy Context           ||                         |                                 || Invoiced                | Occupied                        || Paid                    | Available                       || Outstanding             | Reserved / Other Context        |+----------------------------------------------------------+| Low Stock | Expiring Stock | Lab Pending | Staff Coverage|+----------------------------------------------------------+
+The final visual design shall be defined during UI/UX Architecture.
+
+5.600 DASHBOARD SUMMARY CARDS
+CS-RPT-FR-002 — Provide Dashboard Summary Cards
+The system shall provide authorized summary cards for approved metrics.
+Potential cards may include:
+TOTAL PATIENT REGISTRATIONSTODAY'S APPOINTMENTSCURRENT ADMISSIONSTODAY'S DISCHARGESEMERGENCY ENCOUNTERSPENDING LAB ORDERSPENDING RADIOLOGY ORDERSTOTAL INVOICEDPAYMENTS RECEIVEDOUTSTANDING BALANCELOW STOCK ITEMSEXPIRING STOCK ITEMSACTIVE EMPLOYEESSTAFF ON APPROVED LEAVE
+Important Principle
+A summary card shall reference a defined metric.
+Incorrect:
+CARD TITLEPatientsVALUE421
+with no calculation definition.
+Required concept:
+METRICPATIENT_REGISTRATIONS
+PERIOD2026-07-14 00:00TO2026-07-14 23:59
+VALUE421
+The system shall be able to define what the number represents.
+
+5.601 DASHBOARD TREND VIEWS
+CS-RPT-FR-003 — Provide Dashboard Trend Views
+The system shall provide approved trend views.
+Potential trends include:
+PATIENT REGISTRATION TRENDAPPOINTMENT TRENDADMISSION TRENDDISCHARGE TRENDEMERGENCY VISIT TRENDLAB ORDER TRENDRADIOLOGY ORDER TRENDREVENUE TRENDPAYMENT TRENDINVENTORY CONSUMPTION TRENDATTENDANCE TREND
+Potential visualizations may include:
+LINE CHARTBAR CHARTAREA CHARTSTACKED BAR CHART
+The final visualization type shall be selected during UI/UX Architecture based on the metric.
+The system shall not use a chart only because a chart library supports it.
+
+5.602 DASHBOARD PERIOD FILTER
+CS-RPT-FR-004 — Provide Dashboard Period Filter
+The system shall allow authorized users to select an eligible reporting period.
+Potential options may include:
+TODAYYESTERDAYLAST 7 DAYSLAST 30 DAYSTHIS MONTHPREVIOUS MONTHTHIS YEARCUSTOM DATE RANGE
+Example:
+START DATE2026-07-01END DATE2026-07-14
+The backend shall validate report period parameters.
+
+5.603 DASHBOARD DEPARTMENT FILTER
+CS-RPT-FR-005 — Provide Dashboard Department Filter
+The system shall support applicable department filtering.
+Example:
+ALL AUTHORIZED DEPARTMENTS
+or:
+EMERGENCY
+or:
+CARDIOLOGY
+Security Requirement
+A user shall not gain access to another department’s restricted reporting data by changing:
+departmentId=999
+in an API request.
+Department reporting scope shall be enforced by ASP.NET Core authorization and data scope rules.
+
+5.604 DASHBOARD REFRESH
+CS-RPT-FR-006 — Refresh Dashboard Data
+The system shall support dashboard data refresh.
+Refresh may occur through:
+USER-INITIATED REFRESHCONFIGURED PERIODIC REFRESHREPORTING READ MODEL REFRESH
+The exact refresh frequency shall be defined during Reporting Architecture and performance testing.
+The system shall not assume that every dashboard metric requires second-by-second refresh.
+
+5.605 DATA FRESHNESS CONTEXT
+CS-RPT-FR-007 — Display Data Freshness Context
+The system shall display applicable data freshness information.
+Example:
+DATA UPDATED14 JUL 202610:30:15
+or:
+LAST REFRESH2 MINUTES AGO
+Potential freshness states may include:
+CURRENTRECENTDELAYEDSTALEREFRESH_FAILED
+The final thresholds shall be configurable.
+Critical Principle
+A dashboard shall not display old reporting data as if it is current.
+
+5.606 DASHBOARD AUTHORIZATION
+CS-RPT-FR-008 — Enforce Dashboard Authorization
+The system shall enforce authorization for dashboard access.
+Example:
+HOSPITAL DIRECTOR       │       ▼HOSPITAL MANAGEMENT DASHBOARD
+A doctor may receive:
+PERSONAL / AUTHORIZED CLINICAL OPERATIONS VIEW
+but not automatically:
+HOSPITAL FINANCIAL DASHBOARD
+A pharmacist may receive:
+PHARMACY OPERATIONAL DASHBOARD
+but not automatically:
+HR ATTENDANCE DASHBOARD
+Business Rule
+CS-RPT-BR-001
+Dashboard authorization shall be enforced by the backend.
+
+5.607 AUTHORIZED DASHBOARD DRILL-DOWN
+CS-RPT-FR-009 — Provide Authorized Dashboard Drill-Down
+Priority
+Should Have
+The system should allow authorized users to drill down from an aggregate indicator into an eligible supporting view.
+Example:
+LOW STOCK ITEMS12
+User selects the card:
+12 │ ▼LOW STOCK REPORT │ ▼AUTHORIZED ITEM LIST
+Critical Security Principle
+Aggregate access does not automatically mean row-level access.
+Example:
+A manager may be authorized to see:
+TOTAL PATIENTS421
+but may not automatically be authorized to see:
+421 PATIENT MEDICAL RECORDS
+Therefore:
+AGGREGATE PERMISSION        ≠RECORD DETAIL PERMISSION
+
+5.608 PATIENT STATISTICS
+CS-RPT-FR-010 — Provide Patient Statistics
+The system shall provide authorized patient statistics.
+Potential indicators may include:
+TOTAL REGISTERED PATIENTSNEW PATIENT REGISTRATIONSRETURNING PATIENT CONTEXTACTIVE PATIENT ENCOUNTER CONTEXTPATIENT REGISTRATION TREND
+The exact definition of each statistic shall be maintained as a reporting metric definition.
+
+5.609 PATIENT REGISTRATION TREND
+CS-RPT-FR-011 — Report Patient Registration Trends
+The system shall report patient registration trends for an eligible period.
+Example:
+DATE          NEW REGISTRATIONS10 JUL               8211 JUL               9112 JUL               7613 JUL               9514 JUL               88
+Conceptually:
+PATIENT REGISTRATION EVENTS             │             ▼GROUP BY REPORTING PERIOD             │             ▼COUNT ELIGIBLE REGISTRATIONS             │             ▼TREND SERIES
+
+5.610 PATIENT DEMOGRAPHIC STATISTICS
+CS-RPT-FR-012 — Report Patient Demographic Statistics
+Priority
+Should Have
+The system should provide authorized demographic statistics using approved patient demographic data.
+Potential statistics may include:
+AGE GROUP DISTRIBUTIONSEX / GENDER DATA DISTRIBUTIONWHERE DEFINED BY THE PATIENT DATA MODELGEOGRAPHICAL DISTRIBUTIONWHERE AUTHORIZED AND APPROPRIATE
+Privacy Requirement
+Demographic reporting shall follow approved privacy and data minimization rules.
+Small-group reporting may require suppression or restricted access where disclosure risk exists.
+The final privacy thresholds shall be defined during Security and Privacy Architecture.
+
+5.611 APPOINTMENT STATISTICS
+CS-RPT-FR-013 — Report Appointment Statistics
+The system shall provide authorized appointment statistics.
+Potential indicators include:
+TOTAL APPOINTMENTSSCHEDULED APPOINTMENTSCONFIRMED APPOINTMENTSCOMPLETED APPOINTMENTSCANCELLED APPOINTMENTSNO-SHOW CONTEXTRESCHEDULED APPOINTMENT CONTEXT
+The metric calculation shall use the approved Appointment state model.
+
+5.612 APPOINTMENT STATUS DISTRIBUTION
+CS-RPT-FR-014 — Report Appointment Status Distribution
+The system shall report appointment status distribution.
+Example:
+COMPLETED       52SCHEDULED       18CANCELLED        8NO SHOW           5OTHER VALID       3
+The system shall not calculate appointment status using UI labels.
+It shall use authoritative backend status values.
+
+5.613 APPOINTMENT TRENDS
+CS-RPT-FR-015 — Report Appointment Trends
+The system shall provide appointment trends.
+Potential dimensions may include:
+DATEDEPARTMENTDOCTORAPPOINTMENT STATUSAPPOINTMENT TYPE
+All dimensions shall be subject to authorization.
+
+5.614 OPD STATISTICS
+CS-RPT-FR-016 — Report OPD Statistics
+The system shall provide authorized OPD operational statistics.
+Potential indicators may include:
+OPD ENCOUNTERSNEW OPD ENCOUNTERSCOMPLETED OPD ENCOUNTERSOPD ENCOUNTERS BY DEPARTMENTOPD ENCOUNTERS BY DOCTOROPD DAILY TREND
+The reporting module shall consume approved OPD encounter data.
+It shall not infer an OPD encounter only because an appointment exists.
+Therefore:
+APPOINTMENT     ≠OPD ENCOUNTER
+
+5.615 IPD STATISTICS
+CS-RPT-FR-017 — Report IPD Statistics
+The system shall provide authorized IPD statistics.
+Potential indicators may include:
+CURRENT ADMISSIONSNEW ADMISSIONSDISCHARGESTRANSFER CONTEXTAVERAGE LENGTH OF STAY CONTEXTBED OCCUPANCY CONTEXT
+The exact calculation of advanced IPD indicators shall be defined during Reporting Metric Design.
+
+5.616 ADMISSION TRENDS
+CS-RPT-FR-018 — Report Admission Trends
+The system shall report eligible admission trends.
+Example:
+DATE       ADMISSIONS10 JUL         3111 JUL         2712 JUL         3513 JUL         4214 JUL         38
+The system shall define whether an admission is counted by:
+ADMISSION CREATED DATE
+or:
+ADMISSION EFFECTIVE DATE
+The final metric definition shall explicitly identify the source event and timestamp.
+
+5.617 DISCHARGE TRENDS
+CS-RPT-FR-019 — Report Discharge Trends
+The system shall report eligible discharge trends.
+The metric definition shall specify:
+SOURCE MODULESOURCE EVENTDATE FIELDSTATUS FILTERDEPARTMENT SCOPECOUNTING RULE
+This prevents inconsistent numbers between reports.
+
+5.618 BED OCCUPANCY CONTEXT
+CS-RPT-FR-020 — Report Bed Occupancy Context
+The system shall report authorized bed occupancy context.
+Potential indicators may include:
+TOTAL ELIGIBLE BEDSOCCUPIED BEDSAVAILABLE BEDSRESERVED BEDSOUT OF SERVICE BEDS
+Potential conceptual occupancy calculation:
+OCCUPIED ELIGIBLE BEDS          ÷TOTAL ELIGIBLE OPERATIONAL BEDS          ×100
+Important Requirement
+The denominator shall be explicitly defined.
+Incorrect:
+Occupied Beds / All Beds Ever Created
+if retired or out-of-service beds should not be included.
+The final occupancy metric shall be defined during Reporting Metric Design.
+
+5.619 EMERGENCY STATISTICS
+CS-RPT-FR-021 — Report Emergency Statistics
+The system shall provide authorized emergency operational statistics.
+Potential indicators may include:
+EMERGENCY ENCOUNTERSACTIVE EMERGENCY ENCOUNTERSCOMPLETED EMERGENCY ENCOUNTERSEMERGENCY ENCOUNTERS BY TRIAGE CONTEXTEMERGENCY DAILY TREND
+This SRS does not finalize clinical emergency quality indicators.
+Clinical outcome analytics shall require separate clinical governance.
+
+5.620 LABORATORY STATISTICS
+CS-RPT-FR-022 — Report Laboratory Statistics
+The system shall provide authorized laboratory operational statistics.
+Potential indicators may include:
+TOTAL LAB ORDERSPENDING LAB ORDERSSPECIMEN COLLECTED CONTEXTIN PROCESS ORDERSCOMPLETED LAB ORDERSCANCELLED LAB ORDERSLAB ORDERS BY TESTLAB ORDERS BY DEPARTMENT
+
+5.621 LABORATORY TURNAROUND CONTEXT
+CS-RPT-FR-023 — Report Laboratory Turnaround Context
+Priority
+Should Have
+The system should support approved laboratory turnaround reporting.
+Conceptually:
+TURNAROUND START EVENT          │          ▼DEFINED START TIMESTAMP          │          ▼DEFINED COMPLETION EVENT          │          ▼DEFINED END TIMESTAMP          │          ▼DURATION
+Critical Principle
+The system shall not use the phrase:
+LAB TURNAROUND TIME
+without defining:
+START EVENTEND EVENT
+Possible definitions may differ:
+ORDERED → RESULT VERIFIED
+or:
+SPECIMEN RECEIVED → RESULT VERIFIED
+The approved metric definition shall identify the exact calculation.
+
+5.622 RADIOLOGY STATISTICS
+CS-RPT-FR-024 — Report Radiology Statistics
+The system shall provide authorized radiology operational statistics.
+Potential indicators may include:
+TOTAL IMAGING ORDERSSCHEDULED STUDIESIN PROGRESS STUDIESCOMPLETED STUDIESREPORTED STUDIESCANCELLED STUDIESSTUDIES BY MODALITYSTUDIES BY DEPARTMENT
+
+5.623 RADIOLOGY TURNAROUND CONTEXT
+CS-RPT-FR-025 — Report Radiology Turnaround Context
+Priority
+Should Have
+The system should support approved radiology turnaround indicators.
+Possible conceptual metric:
+STUDY COMPLETED       │       ▼COMPLETION TIMESTAMP       │       ▼REPORT FINALIZED       │       ▼FINALIZATION TIMESTAMP       │       ▼REPORTING TURNAROUND DURATION
+The final metric definition shall be approved during Reporting Metric Design.
+
+5.624 PHARMACY STATISTICS
+CS-RPT-FR-026 — Report Pharmacy Statistics
+The system shall provide authorized pharmacy operational statistics.
+Potential indicators may include:
+PRESCRIPTIONS RECEIVEDPRESCRIPTIONS PENDINGPRESCRIPTIONS DISPENSEDPRESCRIPTIONS PARTIALLY DISPENSEDPRESCRIPTIONS CANCELLEDMEDICINE DISPENSING TRENDMEDICINE CONSUMPTION CONTEXT
+
+5.625 PRESCRIPTION FULFILMENT CONTEXT
+CS-RPT-FR-027 — Report Prescription Fulfilment Context
+Priority
+Should Have
+The system should provide approved prescription fulfilment indicators.
+Conceptually:
+PRESCRIBED QUANTITY        │        ▼DISPENSED QUANTITY        │        ▼FULFILMENT CONTEXT
+The system shall not treat:
+PRESCRIPTION CREATED
+as:
+MEDICINE DISPENSED
+Therefore:
+PRESCRIBED     ≠DISPENSED
+
+5.626 FINANCIAL REPORTS
+CS-RPT-FR-028 — Provide Financial Reports
+The system shall provide authorized financial operational reports based on approved billing, payment, and insurance data.
+Potential reports include:
+INVOICE SUMMARYPAYMENT SUMMARYOUTSTANDING BALANCE REPORTREVENUE TRENDPAYMENT METHOD REPORTINSURANCE FINANCIAL CONTEXTBILLING ADJUSTMENT REPORTREFUND CONTEXTWHERE SUPPORTED BY BILLING REQUIREMENTS
+Important Boundary
+The CuraSphere reporting module shall not automatically become a full accounting general ledger.
+Therefore:
+HOSPITAL BILLING REPORTING           ≠FULL GENERAL LEDGER ACCOUNTING
+unless a future accounting domain is approved.
+
+5.627 INVOICE SUMMARY
+CS-RPT-FR-029 — Report Invoice Summary
+The system shall report eligible invoice summaries.
+Potential indicators include:
+INVOICES CREATEDTOTAL INVOICED AMOUNTPAID INVOICESPARTIALLY PAID INVOICESUNPAID INVOICESCANCELLED / VOIDED CONTEXTOUTSTANDING AMOUNT
+The report shall use approved Billing state definitions.
+
+5.628 PAYMENT SUMMARY
+CS-RPT-FR-030 — Report Payment Summary
+The system shall report authorized payment summaries.
+Potential indicators include:
+PAYMENTS RECEIVEDTOTAL PAYMENT AMOUNTPAYMENTS BY METHODPAYMENTS BY DEPARTMENT CONTEXTPAYMENT TREND
+The report shall not count failed payment attempts as successful payments.
+Conceptually:
+PAYMENT ATTEMPT       ≠SUCCESSFUL PAYMENT
+
+5.629 OUTSTANDING BALANCE CONTEXT
+CS-RPT-FR-031 — Report Outstanding Balance Context
+The system shall report eligible outstanding balance information.
+Conceptually:
+APPROVED BILLABLE AMOUNT          │          ▼VALID ADJUSTMENTS          │          ▼PAYMENTS APPLIED          │          ▼OUTSTANDING BALANCE
+The final calculation shall use Billing domain rules.
+The Reporting module shall not independently invent financial balance logic.
+
+5.630 REVENUE TREND
+CS-RPT-FR-032 — Report Revenue Trend
+The system shall provide an authorized revenue trend based on an approved revenue reporting definition.
+Critical Requirement
+The term:
+REVENUE
+shall be explicitly defined.
+Potential reporting definitions may include:
+INVOICED AMOUNT
+or:
+PAYMENTS RECEIVED
+or another approved financial measure.
+The dashboard shall not label:
+PAYMENTS RECEIVED
+as:
+REVENUE
+unless the approved financial metric definition permits it.
+
+5.631 PAYMENT METHOD DISTRIBUTION
+CS-RPT-FR-033 — Report Payment Method Distribution
+Priority
+Should Have
+The system should report eligible payment method distribution.
+Example:
+CASH             45%CARD             30%BANK / TRANSFER  15%OTHER APPROVED   10%
+The exact payment method vocabulary shall come from the Billing module.
+
+5.632 INSURANCE FINANCIAL CONTEXT
+CS-RPT-FR-034 — Report Insurance Financial Context
+The system shall provide authorized insurance-related reporting.
+Potential indicators may include:
+INSURANCE CASESCLAIMS CREATEDCLAIMS SUBMITTEDCLAIMS APPROVEDCLAIMS REJECTEDCLAIMED AMOUNTAPPROVED AMOUNTPENDING CLAIM CONTEXT
+The final indicators shall follow the approved Insurance module state model.
+
+5.633 INVENTORY REPORTS
+CS-RPT-FR-035 — Provide Inventory Reports
+The system shall provide authorized inventory reports.
+Potential reports include:
+CURRENT STOCK REPORTLOW STOCK REPORTOUT OF STOCK REPORTEXPIRING STOCK REPORTEXPIRED STOCK REPORTSTOCK MOVEMENT REPORTINVENTORY CONSUMPTION REPORTITEM DISTRIBUTION REPORT
+
+5.634 CURRENT STOCK CONTEXT
+CS-RPT-FR-036 — Report Current Stock Context
+The system shall provide authorized current stock information.
+Potential information includes:
+ITEMLOCATIONBATCHAVAILABLE QUANTITYRESERVED QUANTITYEXPIRY CONTEXTSTOCK STATUS
+The Reporting module shall consume authoritative inventory balance logic.
+It shall not independently calculate stock using an unrelated formula.
+
+5.635 LOW STOCK REPORT
+CS-RPT-FR-037 — Report Low Stock Items
+The system shall report items meeting approved low-stock conditions.
+Conceptually:
+CURRENT AVAILABLE STOCK           │           ▼COMPARE WITH REORDER / LOW STOCK RULE           │           ▼LOW STOCK?     ┌─────┴─────┐     │           │    YES          NO     │           │     ▼           ▼REPORT ITEM    NORMAL
+The final threshold source shall come from Inventory configuration.
+
+5.636 EXPIRING STOCK REPORT
+CS-RPT-FR-038 — Report Expiring Stock
+The system shall report eligible stock approaching expiry.
+Potential reporting windows may include:
+30 DAYS60 DAYS90 DAYS
+The exact period shall be configurable.
+The report may include:
+ITEMBATCHLOCATIONAVAILABLE QUANTITYEXPIRY DATEDAYS TO EXPIRY
+
+5.637 EXPIRED STOCK REPORT
+CS-RPT-FR-039 — Report Expired Stock
+The system shall report eligible expired stock.
+Conceptually:
+CURRENT DATE      │      ▼COMPARE WITH BATCH EXPIRY      │      ▼EXPIRED STOCK CONTEXT
+The report shall not automatically authorize disposal.
+Disposal remains an Inventory workflow.
+Therefore:
+EXPIRED STOCK REPORT          ≠STOCK DISPOSAL AUTHORIZATION
+
+5.638 STOCK MOVEMENT TRENDS
+CS-RPT-FR-040 — Report Stock Movement Trends
+The system shall report authorized stock movement trends.
+Potential movement contexts include:
+RECEIPTISSUETRANSFERDISPENSINGADJUSTMENTRETURNDISPOSAL
+The final movement vocabulary shall come from Inventory domain requirements.
+
+5.639 INVENTORY CONSUMPTION CONTEXT
+CS-RPT-FR-041 — Report Inventory Consumption Context
+Priority
+Should Have
+The system should report eligible inventory consumption context.
+Potential dimensions include:
+ITEMITEM CATEGORYDEPARTMENTLOCATIONDATEREPORTING PERIOD
+The term:
+CONSUMPTION
+shall have an approved metric definition.
+
+5.640 DOCTOR PERFORMANCE INDICATORS
+CS-RPT-FR-042 — Provide Doctor Performance Indicators
+Description
+The system shall provide authorized operational doctor performance indicators.
+Priority
+Must Have
+Potential indicators may include:
+APPOINTMENTS SCHEDULEDAPPOINTMENTS COMPLETEDOPD ENCOUNTERSCLINICAL ENCOUNTER COUNTAPPOINTMENT COMPLETION CONTEXTOPERATIONAL WORKLOAD TREND
+Critical Governance Principle
+CuraSphere shall not automatically label a doctor:
+GOOD DOCTORBAD DOCTORBEST DOCTORPOOR DOCTOR
+based only on transaction counts.
+The system shall initially provide operational indicators.
+Clinical quality scoring requires approved clinical governance.
+Therefore:
+OPERATIONAL PERFORMANCE INDICATOR                ≠CLINICAL QUALITY JUDGMENT
+
+5.641 DOCTOR APPOINTMENT CONTEXT
+CS-RPT-FR-043 — Report Doctor Appointment Context
+The system shall provide authorized doctor appointment indicators.
+Example:
+DOCTORDR-000421PERIOD01 JUL → 31 JULSCHEDULED180COMPLETED142CANCELLED18NO-SHOW CONTEXT12OTHER VALID CONTEXT8
+The report shall use Appointment domain state definitions.
+
+5.642 DOCTOR ENCOUNTER CONTEXT
+CS-RPT-FR-044 — Report Doctor Encounter Context
+The system shall provide authorized doctor encounter statistics.
+Potential contexts may include:
+OPD ENCOUNTERSIPD CARE CONTEXTEMERGENCY ENCOUNTER CONTEXTOTHER APPROVED CLINICAL WORKLOAD CONTEXT
+The system shall avoid double counting the same clinical event where reporting rules identify one logical encounter.
+
+5.643 DOCTOR OPERATIONAL TREND
+CS-RPT-FR-045 — Report Doctor Operational Trend
+Priority
+Should Have
+The system should provide authorized doctor operational trend views.
+Example:
+WEEK 1     42 ENCOUNTERSWEEK 2     51 ENCOUNTERSWEEK 3     47 ENCOUNTERSWEEK 4     55 ENCOUNTERS
+The trend shall be labeled according to the metric actually displayed.
+Incorrect:
+DOCTOR PERFORMANCE = 55
+Preferred:
+COMPLETED OPD ENCOUNTERS = 55
+
+5.644 DEPARTMENT PERFORMANCE INDICATORS
+CS-RPT-FR-046 — Provide Department Performance Indicators
+The system shall provide authorized departmental operational indicators.
+Potential indicators may include:
+PATIENT VOLUMEAPPOINTMENT VOLUMEOPD ENCOUNTERSADMISSIONSDISCHARGESEMERGENCY ENCOUNTERSLAB ORDER VOLUMERADIOLOGY ORDER VOLUMEBILLING CONTEXTINVENTORY CONSUMPTIONWORKFORCE COVERAGE
+Department comparisons shall use consistent metric definitions.
+
+5.645 WORKFORCE REPORTS
+CS-RPT-FR-047 — Provide Workforce Reports
+The system shall provide authorized workforce reports.
+Potential reports include:
+EMPLOYEE DISTRIBUTIONEMPLOYMENT STATUSSTAFF BY DEPARTMENTSTAFF BY DESIGNATIONATTENDANCE SUMMARYLEAVE SUMMARYDUTY COVERAGECREDENTIAL EXPIRY
+
+5.646 EMPLOYEE DISTRIBUTION
+CS-RPT-FR-048 — Report Employee Distribution
+The system shall report authorized employee distribution.
+Potential dimensions include:
+DEPARTMENTSTAFF CATEGORYDESIGNATIONEMPLOYMENT TYPEEMPLOYMENT STATUS
+Example:
+EMERGENCYDOCTORS       18NURSES        42SUPPORT       21OTHER          9
+
+5.647 ATTENDANCE SUMMARY
+CS-RPT-FR-049 — Report Attendance Summary
+The system shall provide authorized attendance summary reporting.
+Potential indicators include:
+PRESENT CONTEXTABSENT CONTEXTLATE CONTEXTINCOMPLETE ATTENDANCEAPPROVED LEAVE CONTEXTATTENDANCE CORRECTION CONTEXT
+The exact attendance definitions shall come from HRM/WFM requirements.
+
+5.648 LEAVE SUMMARY
+CS-RPT-FR-050 — Report Leave Summary
+The system shall provide authorized leave summary reporting.
+Potential indicators include:
+LEAVE REQUESTSPENDING REQUESTSAPPROVED REQUESTSREJECTED REQUESTSACTIVE APPROVED LEAVELEAVE BY TYPE
+The report shall use approved Leave state definitions.
+
+5.649 DUTY COVERAGE CONTEXT
+CS-RPT-FR-051 — Report Duty Coverage Context
+Priority
+Should Have
+The system should provide authorized duty coverage context.
+Example:
+DEPARTMENTEMERGENCYSHIFTNIGHTREQUIRED WORKFORCE CONTEXT5 NURSESASSIGNED3 NURSESRESULTUNDERSTAFFED CONTEXT
+The system shall only calculate coverage against an approved staffing requirement.
+It shall not invent required staffing ratios.
+
+5.650 METRIC DEFINITION
+CS-RPT-FR-052 — Maintain Metric Definition
+Description
+The system shall maintain approved reporting metric definitions.
+Priority
+Must Have
+Conceptual Metric Definition
+METRIC DEFINITION        │        ├── Metric ID        ├── Metric Code        ├── Metric Name        ├── Description        ├── Source Domain        ├── Source Event / Entity        ├── Date-Time Basis        ├── Calculation Rule        ├── Filter Context        ├── Aggregation Type        └── Active Status
+Example:
+METRIC CODEPATIENT_REGISTRATIONS
+SOURCE DOMAINPATIENT MANAGEMENT
+COUNTING RULECOUNT ELIGIBLE PATIENT REGISTRATION EVENTS
+DATE BASISREGISTRATION EFFECTIVE TIMESTAMP
+Critical Principle
+Every important management number should have an understandable definition.
+
+5.651 KPI DEFINITION
+CS-RPT-FR-053 — Maintain KPI Definition
+The system shall maintain approved KPI definitions.
+Conceptual KPI
+KPI DEFINITION      │      ├── KPI ID      ├── KPI Code      ├── KPI Name      ├── Description      ├── Metric Inputs      ├── Calculation Rule      ├── Target Context      ├── Threshold Context      └── Active Status
+Example conceptual KPI:
+BED OCCUPANCY RATE
+may depend on:
+OCCUPIED ELIGIBLE BEDS
+and:
+TOTAL ELIGIBLE OPERATIONAL BEDS
+Important Principle
+A metric and KPI are not automatically the same.
+METRICCompleted Appointments = 142
+KPIAppointment Completion Rate = 78.9%
+
+5.652 METRIC CALCULATION
+CS-RPT-FR-054 — Calculate Metric
+The system shall calculate approved metrics according to their defined rules.
+Conceptually:
+METRIC REQUEST      │      ▼LOAD METRIC DEFINITION      │      ▼VALIDATE REPORTING SCOPE      │      ▼SELECT APPROVED READ MODEL      │      ▼APPLY PERIOD      │      ▼APPLY AUTHORIZED FILTERS      │      ▼CALCULATE      │      ▼RETURN METRIC RESULT
+The authoritative calculation shall occur in backend reporting logic.
+
+5.653 KPI CALCULATION
+CS-RPT-FR-055 — Calculate KPI
+The system shall calculate approved KPIs.
+Example:
+COMPLETED APPOINTMENTS142
+ELIGIBLE APPOINTMENTS180
+Conceptual calculation:
+142 / 180 × 100
+Result:
+78.89%
+The exact denominator shall be defined.
+The system shall define behavior for:
+DENOMINATOR = 0
+Possible result:
+NOT APPLICABLE
+rather than:
+0%
+if zero percent would misrepresent the data.
+
+5.654 METRIC CALCULATION CONTEXT
+CS-RPT-FR-056 — Preserve Metric Calculation Context
+The system shall preserve or expose sufficient context to understand significant metric calculations.
+Potential context includes:
+METRIC CODEREPORTING PERIODDEPARTMENT SCOPECALCULATION VERSIONDATA FRESHNESSCALCULATED AT
+For important management reporting, the system should be able to answer:
+WHAT DOES THIS NUMBER MEAN?WHICH PERIOD DOES IT COVER?WHICH DEPARTMENT DOES IT COVER?WHEN WAS IT CALCULATED?WHICH METRIC DEFINITION WAS USED?
+
+5.655 PERIOD COMPARISON
+CS-RPT-FR-057 — Support Period Comparison
+The system shall support eligible comparison between reporting periods.
+Example:
+CURRENT PERIOD01 JUL → 14 JULPATIENT REGISTRATIONS1,240
+Previous comparison:
+PREVIOUS PERIOD17 JUN → 30 JUNPATIENT REGISTRATIONS1,110
+Difference:
++130
+Percentage context:
++11.71%
+Important Requirement
+The comparison periods shall be clearly identified.
+The UI shall not display:
++11.71%
+without explaining:
+COMPARED WITH WHAT?
+
+5.656 TREND ANALYSIS
+CS-RPT-FR-058 — Support Trend Analysis
+The system shall support trend analysis for approved metrics.
+Potential aggregation periods include:
+HOURLYDAILYWEEKLYMONTHLYQUARTERLYYEARLY
+The available aggregation shall depend on the metric and selected reporting period.
+Example:
+1 DAY VIEW   │   ▼HOURLY TREND
+1 MONTH VIEW   │   ▼DAILY TREND
+1 YEAR VIEW   │   ▼MONTHLY TREND
+The final automatic aggregation strategy shall be defined during Reporting Architecture.
+
+5.657 REPORT DEFINITION
+CS-RPT-FR-059 — Create Report Definition
+Description
+The system shall allow authorized reporting administrators to create approved report definitions where configurable reporting is supported.
+Conceptual Model
+REPORT DEFINITION        │        ├── Report Definition ID        ├── Report Code        ├── Report Name        ├── Description        ├── Report Category        ├── Data Source Context        ├── Parameter Definition        ├── Output Definition        ├── Authorization Policy        └── Active Status
+Important Security Principle
+Configurable reporting shall not mean:
+USER TYPES RAW SQL        │        ▼EXECUTE AGAINST PRODUCTION DATABASE
+Ordinary reporting users shall not receive unrestricted raw SQL execution capability.
+
+5.658 UPDATE REPORT DEFINITION
+CS-RPT-FR-060 — Update Report Definition
+The system shall allow authorized users to update eligible report definitions.
+Significant report definition changes shall be auditable.
+Where a report is used for controlled management reporting, definition versioning may be required.
+The final report versioning strategy shall be defined during Reporting Architecture.
+
+5.659 REPORT DEFINITION STATUS
+CS-RPT-FR-061 — Activate or Deactivate Report Definition
+The system shall allow authorized users to activate or deactivate eligible report definitions.
+Inactive reports shall not normally be available for new report executions.
+Historical report execution records shall remain traceable.
+
+5.660 EXECUTE REPORT
+CS-RPT-FR-062 — Execute Report
+The system shall allow an authorized user to execute an eligible report.
+Main Flow
+AUTHORIZED USER       │       ▼SELECT REPORT       │       ▼ENTER PARAMETERS       │       ▼VALIDATE PARAMETERS       │       ▼VALIDATE AUTHORIZATION       │       ▼CREATE REPORT EXECUTION       │       ▼EXECUTE REPORT QUERY       │       ▼GENERATE RESULT       │       ▼DISPLAY REPORT
+Preconditions
+User is authenticated.
+User has report access.
+Report definition is active.
+Parameters are valid.
+Requested data scope is authorized.
+Postconditions
+Report execution context exists.
+Report result is available or execution failure is recorded.
+Applicable audit event exists.
+
+5.661 REPORT EXECUTION IDENTIFIER
+CS-RPT-FR-063 — Generate Report Execution Identifier
+The system shall generate a unique report execution identifier.
+Example:
+RPTX-00000421
+This identifier may support:
+EXECUTION TRACKINGAUDITERROR INVESTIGATIONEXPORT TRACEABILITY
+
+5.662 REPORT EXECUTION STATUS
+CS-RPT-FR-064 — Track Report Execution Status
+The system shall track report execution status.
+Conceptual State Model
+REQUESTED    │    ▼VALIDATING    │    ▼QUEUED    │    ▼RUNNING    │    ├────────► FAILED    │    ▼COMPLETED
+Alternative:
+CANCELLED
+The exact state model shall depend on synchronous and asynchronous reporting architecture.
+
+5.663 REPORT PARAMETERS
+CS-RPT-FR-065 — Apply Report Parameters
+The system shall support approved report parameters.
+Potential parameters include:
+START DATEEND DATEDEPARTMENTDOCTORSTAFF CATEGORYREPORT STATUS FILTERITEM CATEGORYINVENTORY LOCATIONPAYMENT METHODREPORTING GROUP
+Only parameters defined by the report shall be accepted.
+
+5.664 REPORT PARAMETER VALIDATION
+CS-RPT-FR-066 — Validate Report Parameters
+The system shall validate report parameters.
+Validation may include:
+REQUIRED PARAMETER?VALID DATE?VALID DATE RANGE?AUTHORIZED DEPARTMENT?VALID IDENTIFIER?ALLOWED STATUS?MAXIMUM REPORTING PERIOD?SUPPORTED AGGREGATION?
+Security Requirement
+The backend shall reject manipulated report parameters.
+React validation improves user experience.
+ASP.NET Core validation protects the system.
+
+5.665 VIEW REPORT RESULT
+CS-RPT-FR-067 — View Report Result
+The system shall allow authorized users to view eligible report results.
+The report view may include:
+REPORT TITLEREPORT DESCRIPTIONREPORTING PERIODFILTERS APPLIEDDATA FRESHNESSSUMMARYTABLECHARTTOTALSGENERATED AT
+The final layout shall depend on the report type.
+
+5.666 REPORT EXPORT
+CS-RPT-FR-068 — Export Eligible Report
+The system shall allow authorized users to export eligible reports.
+Potential output formats may include:
+PDFCSVXLSX
+The final supported formats shall be defined during Reporting and Document Architecture.
+Important Requirement
+Export authorization shall be separately enforceable where required.
+A user who can view a dashboard shall not automatically be allowed to export all supporting data.
+Therefore:
+VIEW PERMISSION       ≠EXPORT PERMISSION
+
+5.667 REPORT EXPORT CONTEXT
+CS-RPT-FR-069 — Record Report Export Context
+The system shall record applicable report export context.
+Potential information includes:
+REPORTREPORT EXECUTIONEXPORTED BYEXPORTED ATOUTPUT FORMATREPORTING SCOPERESULT
+Example audit event:
+EVENTREPORT_EXPORTEDREPORTFINANCIAL_PAYMENT_SUMMARYPERIOD01 JUL → 14 JULFORMATXLSXACTORUSR-FIN-021RESULTSUCCESS
+
+5.668 SCHEDULED REPORT DEFINITION
+CS-RPT-FR-070 — Create Scheduled Report Definition
+Priority
+Should Have
+The system should allow authorized users to define eligible scheduled report executions.
+Conceptual Model
+REPORT SCHEDULE       │       ├── Schedule ID       ├── Report Definition       ├── Parameter Context       ├── Frequency       ├── Execution Time       ├── Delivery Context       ├── Next Execution       └── Status
+Potential frequencies may include:
+DAILYWEEKLYMONTHLY
+The final scheduling engine shall be selected during Application and DevOps Architecture.
+
+5.669 SCHEDULED REPORT EXECUTION
+CS-RPT-FR-071 — Execute Scheduled Report
+Priority
+Should Have
+The system should execute eligible reports according to approved schedules.
+Conceptually:
+SCHEDULER    │    ▼DUE REPORT SCHEDULE    │    ▼VALIDATE SCHEDULE    │    ▼CREATE REPORT EXECUTION    │    ▼EXECUTE    │    ▼GENERATE RESULT    │    ▼AUTHORIZED DELIVERY CONTEXT
+The system shall record execution failures.
+
+5.670 SCHEDULED REPORT STATUS
+CS-RPT-FR-072 — Track Scheduled Report Status
+The system should track scheduled report status.
+Potential statuses include:
+ACTIVEPAUSEDDISABLEDFAILEDCOMPLETED
+Execution status and schedule status shall remain distinguishable.
+REPORT SCHEDULE STATUS          ≠REPORT EXECUTION STATUS
+
+5.671 REPORTING SNAPSHOT
+CS-RPT-FR-073 — Create Reporting Snapshot
+Priority
+Should Have
+The system should support approved reporting snapshots where historical management reporting requires a preserved point-in-time result.
+Conceptually:
+REPORTING DATA      │      ▼CALCULATE APPROVED METRICS      │      ▼SNAPSHOT AT TIME T      │      ▼PRESERVED REPORTING CONTEXT
+Example:
+MONTH-END FINANCIAL REPORTING SNAPSHOT31 JUL 202623:59
+A snapshot may preserve:
+METRIC VALUESREPORTING PERIODCALCULATION VERSIONCREATED ATDATA FRESHNESS CONTEXT
+
+5.672 HISTORICAL SNAPSHOT CONTEXT
+CS-RPT-FR-074 — Preserve Historical Snapshot Context
+Priority
+Should Have
+The system should preserve eligible historical reporting snapshot context.
+This supports questions such as:
+WHAT DID THE JULY MANAGEMENT REPORT SHOWWHEN IT WAS FINALIZED?
+This is different from:
+RECALCULATE JULY USING TODAY'S DATA
+Therefore:
+HISTORICAL SNAPSHOT        ≠CURRENT RECALCULATION
+
+5.673 REPORTING READ MODELS
+CS-RPT-FR-075 — Maintain Reporting Read Models
+Description
+The system shall maintain approved reporting read models where required for performance, consistency, and reporting simplicity.
+Priority
+Must Have
+Conceptually:
+OPERATIONAL TABLES       │       ▼REPORTING PROJECTION LOGIC       │       ▼REPORTING READ MODEL       │       ▼DASHBOARD QUERY
+Potential read models may include:
+DAILY_PATIENT_STATISTICSDAILY_APPOINTMENT_STATISTICSDAILY_ADMISSION_STATISTICSDAILY_EMERGENCY_STATISTICSDAILY_LAB_STATISTICSDAILY_RADIOLOGY_STATISTICSDAILY_BILLING_STATISTICSDAILY_PAYMENT_STATISTICSINVENTORY_STATUS_SUMMARYDAILY_WORKFORCE_STATISTICS
+These names are conceptual.
+Final PostgreSQL structures shall be defined during Data Architecture.
+
+5.674 REFRESH REPORTING READ MODELS
+CS-RPT-FR-076 — Refresh Reporting Read Models
+The system shall refresh applicable reporting read models according to approved reporting requirements.
+Potential strategies may include:
+SYNCHRONOUS UPDATEEVENT-DRIVEN PROJECTIONSCHEDULED REFRESHINCREMENTAL REFRESHMATERIALIZED VIEW REFRESH
+The final strategy may differ by report.
+Example:
+CURRENT BED STATUS
+may require fresher data than:
+MONTHLY PATIENT REGISTRATION TREND
+The system shall not apply one refresh strategy to every metric without analysis.
+
+5.675 REPORTING REFRESH FAILURE
+CS-RPT-FR-077 — Detect Reporting Refresh Failure
+The system shall detect applicable reporting refresh failures.
+Potential failure context includes:
+READ MODELREFRESH STARTED ATREFRESH FAILED ATFAILURE CATEGORYLAST SUCCESSFUL REFRESHCURRENT FRESHNESS STATE
+The system shall not silently continue displaying stale information as current.
+
+5.676 REPORTING DATA FRESHNESS
+CS-RPT-FR-078 — Display Reporting Data Freshness
+The system shall expose applicable reporting freshness context to authorized users.
+Example:
+PATIENT STATISTICSUPDATED 10:30 AM
+FINANCIAL SUMMARYUPDATED 10:25 AM
+INVENTORY STATUSREFRESH DELAYEDLAST SUCCESSFUL UPDATE 09:40 AM
+Different dashboard components may have different freshness times.
+
+5.677 REPORTING DATA SCOPE
+CS-RPT-FR-079 — Enforce Reporting Data Scope
+The system shall enforce reporting data scope.
+Potential scopes include:
+HOSPITAL-WIDEDEPARTMENTPERSONALROLE-BASEDFINANCIALCLINICAL OPERATIONALWORKFORCEINVENTORY LOCATION
+Example:
+DEPARTMENT HEADCARDIOLOGY
+may be authorized for:
+CARDIOLOGY OPERATIONAL REPORTS
+but not automatically:
+EMERGENCY DEPARTMENT REPORTS
+The backend shall enforce applicable data scope.
+
+5.678 SENSITIVE AGGREGATION CONTROL
+CS-RPT-FR-080 — Prevent Unauthorized Sensitive Aggregation
+The system shall prevent unauthorized reporting combinations that expose restricted information.
+Example:
+A user may have access to:
+EMPLOYEE DIRECTORY
+and:
+GENERAL ATTENDANCE SUMMARY
+This shall not automatically authorize:
+INDIVIDUAL EMPLOYEE+DETAILED LEAVE TYPE+DETAILED ATTENDANCE HISTORY+DEPARTMENT+EXPORT
+The reporting system shall respect source-domain authorization and privacy classification.
+Business Rule
+CS-RPT-BR-002
+Reporting aggregation shall not be used to bypass operational data authorization.
+
+5.679 REPORTING AUDIT EVENTS
+CS-RPT-FR-081 — Record Reporting Audit Events
+The system shall record appropriate audit events for significant reporting operations.
+Potential events include:
+DASHBOARD_VIEWEDSENSITIVE_REPORT_VIEWEDREPORT_EXECUTION_REQUESTEDREPORT_EXECUTION_STARTEDREPORT_EXECUTION_COMPLETEDREPORT_EXECUTION_FAILEDREPORT_EXPORTEDREPORT_DEFINITION_CREATEDREPORT_DEFINITION_UPDATEDREPORT_DEFINITION_ACTIVATEDREPORT_DEFINITION_DEACTIVATEDREPORT_SCHEDULE_CREATEDREPORT_SCHEDULE_UPDATEDREPORT_SCHEDULE_DISABLEDREPORTING_SNAPSHOT_CREATEDREPORTING_REFRESH_STARTEDREPORTING_REFRESH_COMPLETEDREPORTING_REFRESH_FAILED
+Example:
+EVENTSENSITIVE_REPORT_VIEWEDREPORTEMPLOYEE_ATTENDANCE_DETAILACTORUSR-HR-021SCOPECARDIOLOGYTIME2026-07-14 15:42RESULTSUCCESS
+
+5.680 REPORTING PERFORMANCE MONITORING
+CS-RPT-FR-082 — Support Reporting Performance Monitoring
+The system shall support technical monitoring of reporting performance.
+Potential technical indicators include:
+REPORT EXECUTION DURATIONDASHBOARD API RESPONSE TIMEREAD MODEL REFRESH DURATIONFAILED REPORT EXECUTIONSREPORT QUERY TIMEOUTSEXPORT GENERATION DURATION
+These are technical observability indicators.
+They are not hospital business KPIs.
+Therefore:
+BUSINESS ANALYTICS        ≠APPLICATION OBSERVABILITY
+Both are important but belong to different concerns.
+
+5.681 FUTURE BUSINESS INTELLIGENCE INTEGRATION
+CS-RPT-FR-083 — Support Future Business Intelligence Integration
+Priority
+Should Have
+The architecture should support future integration with an approved Business Intelligence platform.
+Conceptually:
+CURASPHERE OPERATIONAL SYSTEM             │             ▼APPROVED ANALYTICS BOUNDARY             │             ▼REPORTING / ANALYTICS DATASET             │             ▼BUSINESS INTELLIGENCE PLATFORM
+Potential future capabilities may include:
+EXECUTIVE BI DASHBOARDSADVANCED DATA MODELSSELF-SERVICE ANALYTICSCROSS-PERIOD ANALYSISMULTI-HOSPITAL ANALYTICS
+No BI product is selected by this SRS.
+
+5.682 FUTURE PREDICTIVE ANALYTICS BOUNDARY
+CS-RPT-FR-084 — Support Future Predictive Analytics Boundary
+Priority
+Should Have
+The architecture should permit future approved predictive analytics capabilities.
+Potential future areas may include:
+PATIENT VOLUME FORECASTINGBED DEMAND FORECASTINGINVENTORY DEMAND FORECASTINGSTAFFING DEMAND FORECASTINGAPPOINTMENT NO-SHOW RISK ANALYSIS
+Critical Governance Principle
+Predictive analytics shall not automatically become clinical diagnosis.
+Therefore:
+OPERATIONAL FORECAST        ≠CLINICAL DIAGNOSIS
+Future AI or predictive capabilities shall require:
+DEFINED PURPOSEAPPROVED DATASETDATA QUALITY REVIEWMODEL VALIDATIONSECURITY REVIEWPRIVACY REVIEWBIAS REVIEW WHERE APPLICABLEHUMAN OVERSIGHTMONITORINGVERSION CONTROL
+No AI model has been selected by this SRS section.
+
+5.683 REPORTING DATA FLOW MODEL
+PATIENT MANAGEMENT ───────┐APPOINTMENT MANAGEMENT ───┤OPD ──────────────────────┤IPD ──────────────────────┤EMERGENCY ────────────────┤LABORATORY ───────────────┤RADIOLOGY ────────────────┤PHARMACY ─────────────────┤BILLING ──────────────────┤INSURANCE ────────────────┤INVENTORY ────────────────┤HR / WORKFORCE ───────────┤                          │                          ▼                REPORTING PROJECTION                          │                          ▼                  REPORTING READ MODEL                          │                ┌─────────┼─────────┐                │         │         │                ▼         ▼         ▼             METRICS     KPIs     TRENDS                │         │         │                └─────────┼─────────┘                          ▼                 REPORTING API                          │                          ▼                    REACT UI                          │              ┌───────────┼───────────┐              │           │           │              ▼           ▼           ▼          DASHBOARD     REPORT      EXPORT
+
+5.684 DASHBOARD QUERY MODEL
+REACT DASHBOARD       │       ▼GET DASHBOARD REQUEST       │       ▼ASP.NET CORE REPORTING API       │       ▼AUTHENTICATION       │       ▼AUTHORIZATION       │       ▼REPORTING SCOPE       │       ▼DASHBOARD QUERY HANDLER       │       ▼REPORTING READ MODEL       │       ▼DASHBOARD DTO       │       ▼REACT VISUALIZATION
+The React application shall not directly query PostgreSQL.
+Therefore:
+REACT  │  X  ▼POSTGRESQL
+is prohibited.
+Required architecture:
+REACT  │  ▼HTTPS REST API  │  ▼ASP.NET CORE  │  ▼APPLICATION / REPORTING LOGIC  │  ▼ENTITY FRAMEWORK CORE / APPROVED DATA ACCESS  │  ▼POSTGRESQL
+
+5.685 METRIC CALCULATION MODEL
+METRIC REQUEST      │      ▼METRIC CODE      │      ▼LOAD METRIC DEFINITION      │      ▼VALIDATE USER SCOPE      │      ▼RESOLVE REPORTING PERIOD      │      ▼RESOLVE AUTHORIZED FILTERS      │      ▼LOAD REPORTING DATA      │      ▼APPLY CALCULATION RULE      │      ▼METRIC RESULT      │      ├── VALUE      ├── UNIT      ├── PERIOD      ├── SCOPE      ├── CALCULATED AT      └── FRESHNESS CONTEXT
+
+5.686 KPI RELATIONSHIP MODEL
+METRIC A ─────────┐                  │METRIC B ─────────┼────► KPI CALCULATION                  │              │METRIC C ─────────┘              ▼                              KPI RESULT                                  │                     ┌────────────┼────────────┐                     │            │            │                     ▼            ▼            ▼                   VALUE        TARGET       STATUS
+Example:
+COMPLETED APPOINTMENTS          │          ├───────────────┐          │               │          ▼               ▼        142        ELIGIBLE APPOINTMENTS                          │                          ▼                         180                          │                          ▼              APPOINTMENT COMPLETION RATE                          │                          ▼                        78.89%
+
+5.687 REPORT EXECUTION MODEL
+REPORT DEFINITION        │        ▼REPORT PARAMETERS        │        ▼REPORT EXECUTION        │        ▼VALIDATION        │        ▼AUTHORIZATION        │        ▼REPORTING QUERY        │        ▼REPORT RESULT        │        ├────────────► VIEW        │        └────────────► EXPORT
+The report definition and report execution shall remain separate.
+REPORT DEFINITIONWHAT REPORT EXISTS?
+REPORT EXECUTIONWHEN AND HOW WAS THE REPORT RUN?
+
+5.688 REPORTING SNAPSHOT MODEL
+LIVE REPORTING DATA        │        ▼METRIC CALCULATION        │        ▼REPORT RESULT        │        ▼APPROVED SNAPSHOT ACTION        │        ▼REPORTING SNAPSHOT        │        ├── PERIOD        ├── VALUES        ├── CALCULATION VERSION        ├── CREATED AT        └── FRESHNESS CONTEXT
+Historical comparison:
+JULY SNAPSHOT      │      ├────────────► PRESERVED JULY RESULT      │      ▼CURRENT RECALCULATION      │      └────────────► CURRENT INTERPRETATION OF JULY DATA
+The two may differ if:
+LATE TRANSACTIONSAUTHORIZED CORRECTIONSDATA MIGRATIONMETRIC DEFINITION CHANGES
+The system shall not silently treat them as identical.
+
+5.689 COMPLETE REPORTING LIFECYCLE MODEL
+OPERATIONAL EVENT       │       ▼SOURCE DOMAIN RECORD       │       ▼REPORTING PROJECTION       │       ▼REPORTING READ MODEL       │       ▼DATA FRESHNESS UPDATE       │       ▼METRIC CALCULATION       │       ├──────────────┐       │              │       ▼              ▼     METRIC           KPI       │              │       └───────┬──────┘               ▼             TREND               │               ▼            DASHBOARD               │               ├──────────────┐               │              │               ▼              ▼           MANAGEMENT       REPORT             VIEW             │                              ▼                           EXECUTION                              │                      ┌───────┴───────┐                      │               │                      ▼               ▼                    VIEW            EXPORT                      │               │                      └───────┬───────┘                              ▼                         AUDIT EVENT
+
+5.690 REPORTING SEQUENCE MODEL
+USER     REACT UI    REPORTING API    READ MODEL    DATABASE │           │             │               │            │ │ Dashboard │             │               │            │ ├──────────►│             │               │            │ │           │ GET Summary │               │            │ │           ├────────────►│               │            │ │           │             │ Authorize     │            │ │           │             │               │            │ │           │             │ Query         │            │ │           │             ├──────────────►│            │ │           │             │               │            │ │           │             │               │ Read       │ │           │             │               ├───────────►│ │           │             │               │            │ │           │             │               │ Result     │ │           │             │               │◄───────────┤ │           │             │ Dashboard DTO │            │ │           │             │◄──────────────┤            │ │           │ JSON        │               │            │ │           │◄────────────┤               │            │ │ Dashboard │             │               │            │ │◄──────────┤             │               │            │
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.691 REPORT EXECUTION STATE MODEL
+REQUESTED    │    ▼VALIDATING    │    ├────────────► REJECTED    │    ▼QUEUED    │    ▼RUNNING    │    ├────────────► FAILED    │    ▼COMPLETED
+Optional:
+CANCELLED
+A completed report execution may later have:
+ZERO EXPORTSONE EXPORTMULTIPLE AUTHORIZED EXPORTS
+Therefore:
+REPORT EXECUTION STATUS          ≠REPORT EXPORT STATUS
+
+5.692 REPORTING REFRESH STATE MODEL
+CURRENT   │   ▼REFRESH_DUE   │   ▼REFRESHING   │   ├────────────► REFRESH_FAILED   │                    │   │                    ▼   │                  STALE   │   ▼CURRENT
+The final freshness state model shall be defined during Reporting Architecture.
+
+5.693 REPORTING BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-RPT-BR-001
+Dashboard authorization shall be enforced by the backend
+CS-RPT-BR-002
+Reporting aggregation shall not bypass operational data authorization
+CS-RPT-BR-003
+Reports shall use approved metric definitions
+CS-RPT-BR-004
+Important metrics shall identify reporting period and scope
+CS-RPT-BR-005
+Reporting data freshness shall be visible where applicable
+CS-RPT-BR-006
+React shall not be the authoritative metric calculation engine
+CS-RPT-BR-007
+Report parameters shall be backend validated
+CS-RPT-BR-008
+Report exports shall require applicable authorization
+CS-RPT-BR-009
+Operational indicators shall not automatically be treated as clinical quality judgments
+CS-RPT-BR-010
+Historical snapshots shall remain distinguishable from current recalculation
+CS-RPT-BR-011
+Reporting shall not become unrestricted raw SQL execution
+CS-RPT-BR-012
+Predictive analytics shall not automatically be treated as clinical diagnosis
+
+5.694 REPORTING PERMISSION CONCEPT
+Potential reporting permissions include:
+RPT_DASHBOARD_HOSPITAL_VIEWRPT_DASHBOARD_DEPARTMENT_VIEWRPT_PATIENT_STATISTICS_VIEWRPT_APPOINTMENT_VIEWRPT_OPD_VIEWRPT_IPD_VIEWRPT_EMERGENCY_VIEWRPT_LAB_VIEWRPT_RADIOLOGY_VIEWRPT_PHARMACY_VIEWRPT_FINANCIAL_VIEWRPT_INSURANCE_VIEWRPT_INVENTORY_VIEWRPT_DOCTOR_INDICATOR_VIEWRPT_DEPARTMENT_INDICATOR_VIEWRPT_WORKFORCE_VIEWRPT_REPORT_VIEWRPT_REPORT_EXECUTERPT_REPORT_EXPORTRPT_REPORT_DEFINITION_MANAGERPT_REPORT_SCHEDULE_MANAGERPT_REPORT_SNAPSHOT_CREATERPT_REPORTING_ADMIN
+Example Hospital Director Concept
+HOSPITAL DIRECTOR        │        ├── RPT_DASHBOARD_HOSPITAL_VIEW        ├── RPT_PATIENT_STATISTICS_VIEW        ├── RPT_APPOINTMENT_VIEW        ├── RPT_OPD_VIEW        ├── RPT_IPD_VIEW        ├── RPT_EMERGENCY_VIEW        ├── RPT_LAB_VIEW        ├── RPT_RADIOLOGY_VIEW        ├── RPT_PHARMACY_VIEW        ├── RPT_FINANCIAL_VIEW        ├── RPT_INVENTORY_VIEW        ├── RPT_DEPARTMENT_INDICATOR_VIEW        └── RPT_REPORT_VIEW
+The Hospital Director shall not automatically receive:
+RPT_REPORT_DEFINITION_MANAGERPT_REPORTING_ADMIN
+Example Department Head Concept
+DEPARTMENT HEAD       │       ├── RPT_DASHBOARD_DEPARTMENT_VIEW       ├── RPT_APPOINTMENT_VIEW       ├── RPT_DEPARTMENT_INDICATOR_VIEW       └── RPT_REPORT_VIEW
+with:
+DATA SCOPEAUTHORIZED DEPARTMENT
+Example Reporting Administrator Concept
+REPORTING ADMINISTRATOR          │          ├── RPT_REPORT_DEFINITION_MANAGE          ├── RPT_REPORT_SCHEDULE_MANAGE          └── RPT_REPORTING_ADMIN
+This role shall not automatically receive unrestricted access to all clinical or financial report results.
+
+5.695 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Hospital management dashboard
+CS-RPT-FR-001 to 009
+Patient statistics
+CS-RPT-FR-010 to 012
+Appointment statistics
+CS-RPT-FR-013 to 015
+OPD statistics
+CS-RPT-FR-016
+IPD reporting
+CS-RPT-FR-017 to 020
+Emergency statistics
+CS-RPT-FR-021
+Laboratory reporting
+CS-RPT-FR-022 to 023
+Radiology reporting
+CS-RPT-FR-024 to 025
+Pharmacy reporting
+CS-RPT-FR-026 to 027
+Financial reports
+CS-RPT-FR-028 to 034
+Inventory reports
+CS-RPT-FR-035 to 041
+Doctor performance indicators
+CS-RPT-FR-042 to 045
+Department indicators
+CS-RPT-FR-046
+Workforce reports
+CS-RPT-FR-047 to 051
+Metric management
+CS-RPT-FR-052 to 056
+Comparison and trends
+CS-RPT-FR-057 to 058
+Report definition
+CS-RPT-FR-059 to 061
+Report execution
+CS-RPT-FR-062 to 067
+Report export
+CS-RPT-FR-068 to 069
+Scheduled reporting
+CS-RPT-FR-070 to 072
+Historical reporting snapshots
+CS-RPT-FR-073 to 074
+Reporting read models
+CS-RPT-FR-075 to 078
+Reporting security and scope
+CS-RPT-FR-079 to 080
+Reporting audit
+CS-RPT-FR-081
+Reporting technical monitoring
+CS-RPT-FR-082
+Future BI integration
+CS-RPT-FR-083
+Future predictive analytics
+CS-RPT-FR-084
+
+5.696 REPORTING AND ANALYTICS RISK ANALYSIS
+Risk 1 — Dashboard Queries Every Operational Table
+Problem
+Each dashboard request performs large joins across the hospital database.
+Impact
+SLOW DASHBOARDHIGH DATABASE LOADQUERY TIMEOUTSOPERATIONAL PERFORMANCE IMPACT
+Mitigation
+Use approved reporting projections and read models.
+
+Risk 2 — Same KPI Has Different Definitions
+Problem
+Finance dashboard says:
+REVENUE = PAYMENTS RECEIVED
+Management report says:
+REVENUE = INVOICED AMOUNT
+Impact
+Management loses trust in the system.
+Mitigation
+Maintain approved metric and KPI definitions.
+
+Risk 3 — React Calculates Important KPIs
+Problem
+const completionRate =  completed / total * 100;
+is the only authoritative calculation.
+Impact
+Different clients may calculate different values.
+Mitigation
+Perform authoritative metric calculation in ASP.NET Core reporting logic.
+
+Risk 4 — Dashboard Shows Stale Data as Current
+Problem
+Reporting refresh failed at 08:00.
+Dashboard at 15:00 shows:
+CURRENT PATIENTS421
+with no freshness warning.
+Impact
+Management may make decisions using outdated data.
+Mitigation
+Display data freshness and refresh failure context.
+
+Risk 5 — Aggregate Access Exposes Patient Details
+Problem
+A manager can see patient statistics.
+Drill-down opens full patient medical records.
+Impact
+Unauthorized clinical data exposure.
+Mitigation
+Separate aggregate permission from record-detail permission.
+
+Risk 6 — Department Filter Is UI-Only
+Problem
+React only displays Cardiology.
+User changes:
+departmentId=2
+to:
+departmentId=8
+Impact
+Unauthorized departmental data exposure.
+Mitigation
+Enforce data scope in ASP.NET Core.
+
+Risk 7 — Reports Allow Raw SQL
+Problem
+Ordinary reporting users type SQL.
+Impact
+DATA EXPOSUREDATABASE DAMAGE RISKPERFORMANCE RISKSECURITY BYPASS
+Mitigation
+Use controlled report definitions and approved query architecture.
+
+Risk 8 — Doctor Performance Becomes Clinical Judgment
+Problem
+Doctor with fewer appointments is labeled:
+POOR PERFORMER
+Impact
+Misleading and unfair evaluation.
+Mitigation
+Clearly distinguish operational indicators from clinical quality assessment.
+
+Risk 9 — Bed Occupancy Denominator Is Wrong
+Problem
+Out-of-service beds are included in the denominator.
+Impact
+Occupancy percentage becomes misleading.
+Mitigation
+Define eligible operational bed criteria.
+
+Risk 10 — Appointment Is Counted as OPD Encounter
+Problem
+Every appointment is counted as a clinical visit.
+Impact
+OPD statistics are inflated.
+Mitigation
+Use authoritative OPD encounter data.
+
+Risk 11 — Prescription Is Counted as Dispensing
+Problem
+Prescription creation is treated as medicine issue.
+Impact
+Pharmacy reports are inaccurate.
+Mitigation
+Use authoritative dispensing events.
+
+Risk 12 — Failed Payment Is Counted as Payment
+Problem
+Payment attempts are aggregated.
+Impact
+Financial reporting is overstated.
+Mitigation
+Use approved successful payment states.
+
+Risk 13 — Current Recalculation Replaces Historical Report
+Problem
+July report changes after late data corrections.
+Management cannot determine what the original July report showed.
+Impact
+Historical reporting traceability is lost.
+Mitigation
+Support approved reporting snapshots.
+
+Risk 14 — Export Permission Equals View Permission
+Problem
+A user can view a summary card.
+The same user exports 100,000 detailed rows.
+Impact
+Sensitive data extraction risk.
+Mitigation
+Separate view and export authorization.
+
+Risk 15 — Reporting Query Blocks Hospital Operations
+Problem
+A large yearly report consumes PostgreSQL resources.
+Patient registration and billing become slow.
+Impact
+Reporting affects patient care operations.
+Mitigation
+Use performance limits, read models, query optimization, and asynchronous execution where appropriate.
+
+Risk 16 — Duplicate Counts Across Joins
+Problem
+One patient has:
+3 APPOINTMENTS4 PAYMENTS
+A direct join creates:
+12 ROWS
+The dashboard counts:
+12 PATIENTS
+Impact
+Incorrect statistics.
+Mitigation
+Use domain-aware aggregation and reporting projections.
+
+Risk 17 — Undefined Turnaround Time
+Problem
+One report calculates:
+ORDER → RESULT
+Another calculates:
+SPECIMEN → RESULT
+Both are labeled:
+LAB TURNAROUND TIME
+Impact
+Metrics cannot be compared.
+Mitigation
+Define source event and end event for each metric.
+
+Risk 18 — Sensitive Small-Group Analytics
+Problem
+A demographic report filters to a very small patient group.
+Impact
+Individuals may become identifiable.
+Mitigation
+Apply privacy, data minimization, and approved aggregation controls.
+
+Risk 19 — Reporting Administrator Has All Data
+Problem
+Technical report configuration role automatically receives all patient and financial information.
+Impact
+Excessive privilege.
+Mitigation
+Separate report administration permission from report data access.
+
+Risk 20 — AI Forecast Is Treated as Medical Advice
+Problem
+Future analytics predicts a pattern.
+The system presents it as a diagnosis.
+Impact
+Clinical safety risk.
+Mitigation
+Maintain a strict predictive analytics and clinical decision boundary.
+
+5.697 COMPLETE REPORTING CAPABILITY MODEL
+                REPORTING & ANALYTICS                          │          ┌───────────────┼───────────────┐          │               │               │          ▼               ▼               ▼      DASHBOARDS        REPORTS         METRICS          │               │               │          ├── Hospital    ├── Clinical    ├── Definition          ├── Department  ├── Financial   ├── Calculation          ├── Finance     ├── Inventory   ├── Context          ├── Inventory   ├── Workforce   └── Freshness          └── Workforce   └── Operational                          │                          ▼                          KPIs                          │                    ┌─────┼─────┐                    │     │     │                    ▼     ▼     ▼                  VALUE TARGET STATUS                          │                          ▼                        TRENDS                          │                          ▼                 PERIOD COMPARISON                          │                          ▼                  REPORT EXECUTION                          │                ┌─────────┼─────────┐                │         │         │                ▼         ▼         ▼              VIEW      EXPORT    SCHEDULE                │         │         │                └─────────┼─────────┘                          ▼                    AUDIT & HISTORY                          │                          ▼                  REPORTING SNAPSHOT
+
+5.698 REPORTING MODULE COMPLETION STATUS
+Module: Reporting, Analytics and Hospital Management Dashboard SystemModule Code: RPT/ANARequirement Range: CS-RPT-FR-001 to CS-RPT-FR-084Business Rule Range: CS-RPT-BR-001 to CS-RPT-BR-012
+Reporting Domain Boundary: DefinedOperational Transaction vs Report Boundary: DefinedReporting Read Model Concept: DefinedMetric Concept: DefinedKPI Concept: DefinedDashboard Concept: DefinedReport Definition Concept: DefinedReport Execution Concept: DefinedReport Export Concept: DefinedReporting Snapshot Concept: DefinedHospital Management Dashboard: DefinedDashboard Summary Cards: DefinedDashboard Trend Views: DefinedDashboard Period Filter: DefinedDashboard Department Filter: DefinedDashboard Refresh: DefinedDashboard Freshness: DefinedDashboard Authorization: DefinedDashboard Drill-Down Boundary: DefinedAggregate vs Record Detail Permission: DefinedPatient Statistics: DefinedPatient Registration Trends: DefinedPatient Demographic Reporting Boundary: DefinedAppointment Statistics: DefinedAppointment Status Distribution: DefinedAppointment Trends: DefinedOPD Statistics: DefinedAppointment vs OPD Encounter Boundary: DefinedIPD Statistics: DefinedAdmission Trends: DefinedDischarge Trends: DefinedBed Occupancy Context: DefinedEmergency Statistics: DefinedLaboratory Statistics: DefinedLaboratory Turnaround Context: DefinedRadiology Statistics: DefinedRadiology Turnaround Context: DefinedPharmacy Statistics: DefinedPrescription vs Dispensing Boundary: DefinedFinancial Reports: DefinedBilling Reporting vs General Ledger Boundary: DefinedInvoice Summary: DefinedPayment Summary: DefinedPayment Attempt vs Successful Payment Boundary: DefinedOutstanding Balance Context: DefinedRevenue Metric Boundary: DefinedPayment Method Distribution: DefinedInsurance Financial Context: DefinedInventory Reports: DefinedCurrent Stock Context: DefinedLow Stock Report: DefinedExpiring Stock Report: DefinedExpired Stock Report: DefinedStock Movement Trends: DefinedInventory Consumption Context: DefinedDoctor Performance Indicators: DefinedOperational Indicator vs Clinical Quality Boundary: DefinedDoctor Appointment Context: DefinedDoctor Encounter Context: DefinedDoctor Operational Trends: DefinedDepartment Performance Indicators: DefinedWorkforce Reports: DefinedEmployee Distribution: DefinedAttendance Summary: DefinedLeave Summary: DefinedDuty Coverage Context: DefinedMetric Definition: DefinedKPI Definition: DefinedMetric Calculation: DefinedKPI Calculation: DefinedMetric Calculation Context: DefinedPeriod Comparison: DefinedTrend Analysis: DefinedReport Definition: DefinedReport Definition Update: DefinedReport Definition Status: DefinedReport Execution: DefinedReport Execution Identifier: DefinedReport Execution State: DefinedReport Parameters: DefinedReport Parameter Validation: DefinedReport Result View: DefinedReport Export: DefinedView vs Export Permission Boundary: DefinedReport Export Audit Context: DefinedScheduled Report Definition: DefinedScheduled Report Execution: DefinedScheduled Report Status: DefinedReporting Snapshot: DefinedHistorical Snapshot vs Current Recalculation: DefinedReporting Read Models: DefinedReporting Refresh Strategy Boundary: DefinedReporting Refresh Failure: DefinedReporting Data Freshness: DefinedReporting Data Scope: DefinedSensitive Aggregation Control: DefinedReporting Audit Events: DefinedReporting Performance Monitoring: DefinedBusiness Analytics vs Technical Observability Boundary: DefinedFuture BI Integration Boundary: DefinedFuture Predictive Analytics Boundary: DefinedPredictive Analytics vs Clinical Diagnosis Boundary: DefinedReporting Data Flow Model: DefinedDashboard Query Model: DefinedMetric Calculation Model: DefinedKPI Relationship Model: DefinedReport Execution Model: DefinedReporting Snapshot Model: DefinedReporting Lifecycle Model: DefinedReporting Sequence Model: DefinedReporting State Models: DefinedReporting Permission Concept: DefinedRequirement Traceability: EstablishedReporting Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The Reporting, Analytics and Hospital Management Dashboard requirements establish the decision-support and operational intelligence foundation of CuraSphere.
+These requirements shall later be transformed into:
+Hospital Management Dashboard use case specification;
+Department Dashboard use case specification;
+Patient Statistics use case;
+Appointment Statistics use case;
+OPD Reporting use case;
+IPD Reporting use case;
+Emergency Reporting use case;
+Laboratory Reporting use case;
+Radiology Reporting use case;
+Pharmacy Reporting use case;
+Financial Reporting use case;
+Inventory Reporting use case;
+Doctor Performance Indicator use case;
+Department Performance Indicator use case;
+Workforce Reporting use case;
+Metric Definition use case;
+KPI Definition use case;
+Report Definition use case;
+Report Execution use case;
+Report Export use case;
+Scheduled Report use case;
+Reporting Snapshot use case;
+dashboard activity diagram;
+metric calculation activity diagram;
+KPI calculation activity diagram;
+report execution activity diagram;
+report export activity diagram;
+scheduled report activity diagram;
+reporting refresh activity diagram;
+reporting snapshot activity diagram;
+Report Execution state machine;
+Reporting Refresh state machine;
+Report Schedule state machine;
+Load Hospital Dashboard sequence diagram;
+Calculate Metric sequence diagram;
+Calculate KPI sequence diagram;
+Execute Report sequence diagram;
+Export Report sequence diagram;
+Execute Scheduled Report sequence diagram;
+Refresh Reporting Read Model sequence diagram;
+Create Reporting Snapshot sequence diagram;
+Metric Definition domain model;
+KPI Definition domain model;
+Report Definition domain model;
+Report Execution domain model;
+Report Schedule domain model;
+Reporting Snapshot domain model;
+Reporting Read Model architecture;
+PostgreSQL reporting schema;
+reporting projection strategy;
+materialized view evaluation;
+incremental reporting refresh strategy;
+reporting query optimization strategy;
+reporting index strategy;
+reporting partitioning evaluation;
+dashboard cache strategy;
+metric versioning strategy;
+KPI versioning strategy;
+report definition versioning strategy;
+historical snapshot strategy;
+report export strategy;
+asynchronous report execution strategy;
+scheduled reporting strategy;
+reporting job architecture;
+React Hospital Dashboard requirements;
+React Department Dashboard requirements;
+React Patient Analytics requirements;
+React Appointment Analytics requirements;
+React Clinical Operations Dashboard requirements;
+React Laboratory Analytics requirements;
+React Radiology Analytics requirements;
+React Pharmacy Analytics requirements;
+React Financial Dashboard requirements;
+React Inventory Analytics requirements;
+React Workforce Analytics requirements;
+React Report Center requirements;
+React Report Builder administrative requirements;
+React Report Execution Workspace requirements;
+React Report Export UX requirements;
+React reporting chart standards;
+React KPI card standards;
+React dashboard loading states;
+React dashboard stale-data states;
+React dashboard error states;
+ASP.NET Core Reporting API;
+ASP.NET Core Dashboard API;
+ASP.NET Core Metric Query Service;
+ASP.NET Core KPI Query Service;
+ASP.NET Core Report Execution Service;
+ASP.NET Core Report Export Service;
+ASP.NET Core Reporting Projection Service;
+ASP.NET Core Reporting Refresh Service;
+ASP.NET Core Scheduled Report Worker;
+reporting authorization policies;
+reporting data scope policies;
+patient metric tests;
+appointment metric tests;
+OPD reporting tests;
+IPD reporting tests;
+bed occupancy calculation tests;
+emergency metric tests;
+laboratory turnaround tests;
+radiology turnaround tests;
+pharmacy fulfilment tests;
+financial metric tests;
+payment state aggregation tests;
+inventory reporting tests;
+low stock reporting tests;
+expiry reporting tests;
+doctor operational indicator tests;
+workforce reporting tests;
+metric calculation tests;
+KPI denominator-zero tests;
+period comparison tests;
+reporting scope tests;
+report parameter validation tests;
+report export authorization tests;
+reporting refresh failure tests;
+stale-data display tests;
+reporting snapshot tests;
+duplicate aggregation tests;
+reporting performance tests.
+No final KPI formula, hospital target value, clinical quality score, doctor ranking algorithm, patient demographic suppression threshold, bed occupancy formula, laboratory turnaround definition, radiology turnaround definition, revenue recognition policy, accounting standard, general ledger architecture, payroll reporting model, staffing ratio, doctor-to-patient ratio, nurse-to-patient ratio, dashboard chart library, React charting package, Business Intelligence platform, Power BI integration, Tableau integration, data warehouse, data lake, OLAP engine, PostgreSQL materialized view strategy, reporting partition strategy, caching technology, Redis deployment, report scheduler, background job framework, Hangfire deployment, Quartz.NET deployment, PDF report library, Excel export library, CSV export implementation, report template engine, report designer, predictive model, machine learning algorithm, AI model, forecasting algorithm, clinical decision support model, or external analytics platform has been finalized by this SRS section.
+Those decisions shall be made during Reporting Architecture, Data Architecture, Application Architecture, UI/UX Architecture, Security Architecture, Privacy Architecture, DevOps Architecture, Integration Architecture, Detailed Design, and approved hospital governance.
+

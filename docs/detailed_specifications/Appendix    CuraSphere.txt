@@ -1,0 +1,2702 @@
+﻿Appendix A Glossary of Terms and Acronyms
+A.1 Introduction
+This appendix provides definitions of technical terms, medical terminology, abbreviations, and acronyms used throughout the CuraSphere Hospital Management System (HMS) Software Requirements Specification (SRS).
+The glossary ensures that all stakeholders—including hospital administrators, healthcare professionals, developers, testers, project managers, auditors, and regulatory authorities—share a common understanding of the terminology used within the project.
+
+A.2 Purpose
+The glossary aims to:
+Standardize terminology across the project.
+Reduce ambiguity in documentation.
+Improve communication among stakeholders.
+Support onboarding of new team members.
+Provide quick reference for technical and medical terms.
+Ensure consistency throughout the SRS.
+
+A.3 General Terms
+Term
+Definition
+Application
+Software developed to perform hospital management functions.
+Authentication
+Process of verifying a user's identity.
+Authorization
+Process of determining user permissions after authentication.
+Availability
+Degree to which the system remains operational and accessible.
+Backup
+Copy of system data used for recovery purposes.
+Bug
+A defect or error in software behavior.
+Client
+User device accessing the system through a browser or application.
+Configuration
+Collection of system settings that control application behavior.
+Dashboard
+Main user interface displaying relevant information and shortcuts.
+Database
+Structured repository used to store system information.
+Deployment
+Process of installing and configuring the software in an operational environment.
+Disaster Recovery
+Procedures for restoring services after major failures.
+Encryption
+Process of converting data into a secure format to prevent unauthorized access.
+Framework
+Software platform providing reusable development components.
+Integration
+Communication between CuraSphere and external systems.
+Middleware
+Software layer connecting application components.
+Module
+Independent functional component of the system.
+Production Environment
+Live operational environment used by end users.
+Scalability
+Ability of the system to support increasing workloads.
+Server
+Computer hosting application or database services.
+Session
+Active interaction between a user and the system.
+User Interface (UI)
+Visual components through which users interact with the system.
+Workflow
+Ordered sequence of tasks performed to complete a business process.
+
+A.4 Medical Terminology
+Term
+Definition
+Admission
+Formal registration of a patient into the hospital.
+Allergy
+Adverse reaction to a medication, food, or substance.
+Clinical Note
+Medical documentation created by a healthcare professional.
+Consultation
+Professional medical examination of a patient.
+Diagnosis
+Identification of a disease or medical condition.
+Discharge
+Formal release of a patient from hospital care.
+Electronic Medical Record (EMR)
+Digital record containing patient medical information maintained by the healthcare provider.
+Encounter
+Interaction between a patient and a healthcare professional.
+Laboratory Test
+Medical examination of biological samples.
+Medication
+Drug prescribed or administered to a patient.
+Outpatient
+Patient receiving care without hospital admission.
+Patient
+Individual receiving healthcare services.
+Prescription
+Authorized order for medication.
+Radiology
+Medical imaging services used for diagnosis and treatment.
+Treatment Plan
+Planned medical care for a patient's condition.
+Vital Signs
+Clinical measurements such as blood pressure, temperature, pulse, and respiration.
+
+A.5 Technical Acronyms
+Acronym
+Full Form
+API
+Application Programming Interface
+AES
+Advanced Encryption Standard
+ARIA
+Accessible Rich Internet Applications
+CI/CD
+Continuous Integration / Continuous Deployment
+CPU
+Central Processing Unit
+CSS
+Cascading Style Sheets
+DBMS
+Database Management System
+DNS
+Domain Name System
+Docker
+Containerization Platform
+ERD
+Entity Relationship Diagram
+Git
+Distributed Version Control System
+HTML
+HyperText Markup Language
+HTTP
+HyperText Transfer Protocol
+HTTPS
+HyperText Transfer Protocol Secure
+IP
+Internet Protocol
+JSON
+JavaScript Object Notation
+JWT
+JSON Web Token
+ORM
+Object-Relational Mapping
+REST
+Representational State Transfer
+SQL
+Structured Query Language
+SSL
+Secure Sockets Layer
+TLS
+Transport Layer Security
+UI
+User Interface
+UX
+User Experience
+UTF-8
+Unicode Transformation Format – 8-bit
+XML
+Extensible Markup Language
+
+A.6 Healthcare Acronyms
+Acronym
+Full Form
+EMR
+Electronic Medical Record
+EHR
+Electronic Health Record
+HIS
+Hospital Information System
+HMS
+Hospital Management System
+ICD
+International Classification of Diseases
+LIS
+Laboratory Information System
+PACS
+Picture Archiving and Communication System
+RIS
+Radiology Information System
+OPD
+Outpatient Department
+IPD
+Inpatient Department
+ICU
+Intensive Care Unit
+NICU
+Neonatal Intensive Care Unit
+OT
+Operating Theatre
+MRN
+Medical Record Number
+BMI
+Body Mass Index
+BP
+Blood Pressure
+ECG
+Electrocardiogram
+MRI
+Magnetic Resonance Imaging
+CT
+Computed Tomography
+CBC
+Complete Blood Count
+
+A.7 Security Acronyms
+Acronym
+Full Form
+MFA
+Multi-Factor Authentication
+RBAC
+Role-Based Access Control
+IAM
+Identity and Access Management
+IDS
+Intrusion Detection System
+IPS
+Intrusion Prevention System
+SIEM
+Security Information and Event Management
+VPN
+Virtual Private Network
+WAF
+Web Application Firewall
+XSS
+Cross-Site Scripting
+CSRF
+Cross-Site Request Forgery
+OWASP
+Open Worldwide Application Security Project
+RPO
+Recovery Point Objective
+RTO
+Recovery Time Objective
+
+A.8 Quality Assurance Acronyms
+Acronym
+Full Form
+QA
+Quality Assurance
+QC
+Quality Control
+SIT
+System Integration Testing
+UAT
+User Acceptance Testing
+FAT
+Factory Acceptance Testing
+SAT
+Site Acceptance Testing
+MTTR
+Mean Time To Repair
+MTBF
+Mean Time Between Failures
+SLA
+Service Level Agreement
+KPI
+Key Performance Indicator
+
+A.9 Symbols and Conventions
+Symbol
+Meaning
+✔
+Completed requirement or activity
+◻
+Pending requirement or activity
+≥
+Greater than or equal to
+≤
+Less than or equal to
+→
+Process flow or direction
+UTC
+Coordinated Universal Time
+
+A.10 Document Naming Conventions
+Item
+Convention
+Source Code
+PascalCase or camelCase according to language standards
+Database Tables
+snake_case
+API Endpoints
+kebab-case
+Variables
+camelCase
+Classes
+PascalCase
+Interfaces
+PascalCase with project-specific naming conventions
+Constants
+UPPER_SNAKE_CASE
+Configuration Files
+kebab-case or project standard
+
+A.11 Glossary Acceptance Criteria
+The Glossary shall be considered complete when:
+All significant technical terms are defined.
+Medical terminology is documented.
+Technical, healthcare, security, and quality assurance acronyms are listed.
+Naming conventions are documented.
+Terminology remains consistent throughout the SRS.
+Future revisions include updates for newly introduced terms and abbreviations.
+
+Appendix B References
+B.1 Introduction
+This appendix lists the standards, specifications, frameworks, regulations, technical documentation, and reference materials used in the design and development of the CuraSphere Hospital Management System (HMS).
+These references provide the foundation for the system architecture, security controls, healthcare interoperability, software engineering practices, accessibility, quality assurance, and regulatory compliance described throughout this Software Requirements Specification (SRS).
+
+B.2 Software Engineering Standards
+The CuraSphere SRS is based on internationally recognized software engineering standards.
+Standard
+Description
+Purpose
+IEEE 29148
+Systems and Software Engineering — Life Cycle Processes — Requirements Engineering
+Primary SRS standard
+IEEE 12207
+Software Life Cycle Processes
+Software development lifecycle
+IEEE 1016
+Software Design Description
+Architecture documentation
+IEEE 730
+Software Quality Assurance
+Quality management
+IEEE 829 (Legacy) / ISO 29119
+Software Testing Documentation
+Testing processes
+
+B.3 ISO Standards
+The project aligns with relevant International Organization for Standardization (ISO) standards.
+Standard
+Description
+ISO/IEC 25010
+Software Product Quality Model
+ISO/IEC 25012
+Data Quality Model
+ISO/IEC 27001
+Information Security Management Systems (ISMS)
+ISO/IEC 27002
+Information Security Controls
+ISO 27799
+Health Informatics — Information Security Management
+ISO 8601
+Date and Time Representation
+ISO/IEC 9241
+Ergonomics of Human-System Interaction
+These standards provide guidance for quality, security, usability, and interoperability.
+
+B.4 Healthcare Standards
+The CuraSphere system is designed with awareness of established healthcare standards.
+Standard
+Description
+HL7
+Health Level Seven messaging standard
+HL7 FHIR
+Fast Healthcare Interoperability Resources
+DICOM
+Digital Imaging and Communications in Medicine
+ICD-10
+International Classification of Diseases
+ICD-11
+Latest revision of disease classification
+LOINC
+Laboratory observation coding system
+SNOMED CT
+Clinical terminology standard (where licensed and applicable)
+These standards improve interoperability between healthcare information systems.
+
+B.5 Privacy and Regulatory References
+Depending on the deployment jurisdiction, the system may need to comply with applicable privacy and healthcare regulations.
+Regulation
+Description
+HIPAA
+Health Insurance Portability and Accountability Act (United States)
+GDPR
+General Data Protection Regulation (European Union)
+Local Health Regulations
+Country-specific healthcare legislation
+Electronic Record Retention Laws
+Medical record preservation requirements
+The applicable regulations shall be determined by the deploying organization.
+
+B.6 Cybersecurity References
+The security architecture references widely accepted cybersecurity guidance.
+Standard / Framework
+Purpose
+OWASP Top 10
+Common web application security risks
+OWASP ASVS
+Application Security Verification Standard
+NIST Cybersecurity Framework
+Cybersecurity risk management
+CIS Controls
+Security best practices
+CWE
+Common Weakness Enumeration
+These references guide secure software development and operational security.
+
+B.7 Accessibility References
+Accessibility requirements are based on internationally recognized guidance.
+Standard
+Description
+WCAG 2.1 Level AA
+Web Content Accessibility Guidelines
+WAI-ARIA
+Accessible Rich Internet Applications
+ISO 9241-171
+Guidance on software accessibility
+These standards help ensure that the application is usable by individuals with diverse accessibility needs.
+
+B.8 Database References
+The database layer references PostgreSQL documentation and SQL standards.
+Reference
+Purpose
+PostgreSQL Documentation
+Database administration and development
+SQL Standard (ISO/IEC 9075)
+Relational database language
+ACID Principles
+Transaction consistency
+Database Normalization
+Database design methodology
+
+B.9 Web Development References
+The frontend implementation references established web technologies.
+Technology
+Purpose
+HTML5
+Web page structure
+CSS3
+Styling
+JavaScript (ECMAScript)
+Client-side scripting
+React.js Documentation
+Frontend framework
+Responsive Web Design Principles
+Cross-device compatibility
+
+B.10 Backend Development References
+Backend implementation is based on the following technologies.
+Technology
+Purpose
+ASP.NET Core Documentation
+Backend framework
+C# Language Specification
+Programming language
+REST Architectural Style
+API design
+JSON Specification
+Data exchange
+JWT Specification
+Authentication tokens
+
+B.11 API and Integration References
+Integration follows widely accepted API design practices.
+Reference
+Description
+REST API Design Guidelines
+Web service architecture
+OpenAPI Specification
+API documentation
+JSON Schema
+Data validation
+OAuth 2.0
+Authorization framework (where applicable)
+These references promote consistent and interoperable API development.
+
+B.12 DevOps and Deployment References
+Deployment and operational practices are based on modern DevOps principles.
+Technology
+Purpose
+Docker Documentation
+Containerization
+Kubernetes Documentation
+Container orchestration
+Git Documentation
+Version control
+CI/CD Best Practices
+Automated software delivery
+
+B.13 Testing References
+Testing activities are guided by recognized quality assurance standards.
+Reference
+Purpose
+ISO/IEC/IEEE 29119
+Software Testing
+IEEE Software Testing Guidance
+Test planning and execution
+OWASP Testing Guide
+Security testing
+Performance Testing Best Practices
+Load and stress testing
+
+B.14 User Experience References
+User interface and usability are informed by established design principles.
+Reference
+Purpose
+Nielsen's Usability Heuristics
+User interface evaluation
+Material Design Principles
+Interface consistency
+Human-Centered Design
+User-focused development
+Responsive Design Guidelines
+Multi-device usability
+
+B.15 Documentation References
+Project documentation follows recognized documentation practices.
+Reference
+Purpose
+IEEE 29148
+Requirements specification
+Markdown Documentation Standards
+Technical documentation
+UML Specification
+Software modeling
+Entity Relationship Modeling
+Database design
+
+B.16 Educational and Industry References
+The following resources support development and learning activities:
+Official framework documentation (React, ASP.NET Core, PostgreSQL, Docker)
+OWASP documentation
+NIST publications
+ISO and IEEE standards documentation
+HL7 International implementation guides
+PostgreSQL administration manuals
+Software architecture and design pattern references
+Secure coding best practice guides
+These resources provide additional guidance but do not replace organizational policies or applicable legal requirements.
+
+B.17 Reference Management
+To maintain consistency:
+References shall be reviewed periodically.
+Superseded standards shall be identified and replaced where appropriate.
+Project documentation shall reference the latest approved versions of standards.
+Regulatory references shall be updated when applicable laws or organizational policies change.
+New references shall undergo review before inclusion in the project documentation.
+
+B.18 References Acceptance Criteria
+The References appendix shall be considered complete when:
+Applicable IEEE, ISO, healthcare, security, accessibility, and software engineering references are documented.
+Development technologies and implementation references are identified.
+Testing, deployment, and operational references are listed.
+Regulatory references are included where applicable.
+References are maintained and reviewed throughout the project lifecycle.
+
+Appendix C Requirements Traceability Matrix (RTM)
+
+C.1 Introduction
+The Requirements Traceability Matrix (RTM) establishes end-to-end traceability for all requirements defined in the CuraSphere Hospital Management System (HMS) Software Requirements Specification (SRS).
+The RTM ensures that every stakeholder requirement is:
+Identified
+Documented
+Implemented
+Tested
+Verified
+Maintained throughout the Software Development Life Cycle (SDLC)
+Traceability helps ensure that no approved requirement is omitted during design, development, testing, deployment, or maintenance.
+
+C.2 Purpose
+The RTM is used to:
+Ensure complete requirement coverage.
+Verify that all business needs are addressed.
+Link requirements to system modules.
+Support impact analysis during changes.
+Track implementation status.
+Support testing and validation.
+Facilitate regulatory and quality audits.
+
+C.3 Traceability Process
+
+Stakeholder Need
+        │
+        ▼
+Business Requirement
+        │
+        ▼
+Functional / Non-Functional Requirement
+        │
+        ▼
+System Design
+        │
+        ▼
+Implementation
+        │
+        ▼
+Test Cases
+        │
+        ▼
+Verification
+        │
+        ▼
+Deployment
+
+C.4 Requirement Identification Scheme
+Each requirement shall be assigned a unique identifier.
+Prefix
+Description
+Example
+BR
+Business Requirement
+BR-001
+FR
+Functional Requirement
+FR-015
+NFR
+Non-Functional Requirement
+NFR-009
+UC
+Use Case
+UC-012
+DB
+Database Requirement
+DB-006
+IF
+Interface Requirement
+IF-004
+TC
+Test Case
+TC-103
+MOD
+System Module
+MOD-Patient
+Requirement IDs shall remain stable throughout the project lifecycle.
+
+C.5 Business Requirements Traceability
+Business Requirement
+Related Functional Requirements
+Module
+BR-001 Patient Registration
+FR-001, FR-002
+Patient Management
+BR-002 Appointment Scheduling
+FR-010–FR-018
+Appointment Management
+BR-003 Electronic Medical Records
+FR-020–FR-040
+EMR Module
+BR-004 Billing & Payments
+FR-041–FR-060
+Billing Module
+BR-005 Pharmacy Operations
+FR-061–FR-075
+Pharmacy Module
+BR-006 Laboratory Management
+FR-076–FR-090
+Laboratory Module
+BR-007 Reporting & Analytics
+FR-091–FR-110
+Reporting Module
+Every approved business requirement shall map to one or more functional requirements.
+
+C.6 Functional Requirements Traceability Matrix
+FR ID
+Requirement
+Module
+Use Case
+Test Case
+Status
+FR-001
+Register Patient
+Patient Management
+UC-001
+TC-001
+Approved
+FR-002
+Update Patient Information
+Patient Management
+UC-002
+TC-002
+Approved
+FR-010
+Book Appointment
+Appointment
+UC-010
+TC-010
+Approved
+FR-020
+Create Medical Record
+EMR
+UC-020
+TC-020
+Approved
+FR-041
+Generate Invoice
+Billing
+UC-041
+TC-041
+Approved
+FR-061
+Dispense Medication
+Pharmacy
+UC-061
+TC-061
+Approved
+FR-076
+Record Laboratory Result
+Laboratory
+UC-076
+TC-076
+Approved
+FR-091
+Generate Reports
+Reporting
+UC-091
+TC-091
+Approved
+Each functional requirement shall be traceable to its corresponding implementation and verification activities.
+
+C.7 Non-Functional Requirements Traceability Matrix
+NFR ID
+Requirement Category
+Verification Method
+Evidence
+NFR-001
+Performance
+Load Testing
+Performance Report
+NFR-002
+Reliability
+Reliability Testing
+Reliability Report
+NFR-003
+Availability
+Failover Testing
+Availability Report
+NFR-004
+Scalability
+Stress Testing
+Scalability Report
+NFR-005
+Security
+Security Assessment
+Security Audit
+NFR-006
+Usability
+User Acceptance Testing
+UAT Report
+NFR-007
+Accessibility
+Accessibility Testing
+Accessibility Report
+NFR-008
+Maintainability
+Code Review
+Review Report
+NFR-009
+Portability
+Cross-Platform Testing
+Compatibility Report
+NFR-010
+Backup & Disaster Recovery
+Recovery Simulation
+DR Report
+NFR-011
+Logging & Audit
+Audit Verification
+Audit Report
+NFR-012
+Compliance
+Compliance Review
+Compliance Assessment
+NFR-013
+Localization
+Localization Testing
+Localization Report
+NFR-014
+Operational
+Operational Readiness Review
+Operational Checklist
+
+C.8 Module Traceability Matrix
+Module
+Business Requirements
+Functional Requirements
+Authentication
+BR-001
+FR-001–FR-005
+Patient Management
+BR-001
+FR-001–FR-009
+Appointment Management
+BR-002
+FR-010–FR-019
+EMR
+BR-003
+FR-020–FR-040
+Billing
+BR-004
+FR-041–FR-060
+Pharmacy
+BR-005
+FR-061–FR-075
+Laboratory
+BR-006
+FR-076–FR-090
+Reporting
+BR-007
+FR-091–FR-110
+Administration
+BR-001–BR-007
+FR-111–FR-130
+
+C.9 Use Case Traceability Matrix
+Use Case
+Related Module
+Functional Requirement
+UC-001
+Patient Management
+FR-001
+UC-002
+Patient Management
+FR-002
+UC-010
+Appointment
+FR-010
+UC-020
+EMR
+FR-020
+UC-041
+Billing
+FR-041
+UC-061
+Pharmacy
+FR-061
+UC-076
+Laboratory
+FR-076
+UC-091
+Reporting
+FR-091
+
+C.10 Test Case Traceability Matrix
+Test Case
+Requirement
+Test Type
+TC-001
+FR-001
+Functional
+TC-002
+FR-002
+Functional
+TC-010
+FR-010
+Integration
+TC-020
+FR-020
+Functional
+TC-041
+FR-041
+Functional
+TC-061
+FR-061
+Functional
+TC-076
+FR-076
+Functional
+TC-091
+FR-091
+System
+TC-201
+NFR-001
+Performance
+TC-202
+NFR-005
+Security
+TC-203
+NFR-010
+Disaster Recovery
+Each approved requirement shall have at least one corresponding verification activity.
+
+C.11 Requirement Status Tracking
+Requirements shall be tracked using standardized statuses.
+Status
+Description
+Proposed
+Requirement identified but not approved
+Approved
+Requirement accepted by stakeholders
+In Design
+Under architectural or design development
+In Development
+Being implemented
+In Testing
+Under verification
+Verified
+Successfully tested
+Implemented
+Available in the deployed system
+Retired
+No longer applicable
+Status updates shall be maintained throughout the project lifecycle.
+
+C.12 Change Impact Analysis
+When a requirement changes, the following artifacts shall be reviewed:
+Business requirements
+Functional requirements
+Non-functional requirements
+Use cases
+Database design
+APIs
+User interface
+Source code
+Test cases
+User documentation
+Training materials
+A formal impact assessment shall be completed before approving significant changes.
+
+Requirement Change Workflow
+
+Requirement Change Request
+           │
+           ▼
+Impact Analysis
+           │
+           ▼
+Stakeholder Review
+           │
+           ▼
+Approval / Rejection
+           │
+           ▼
+Implementation
+           │
+           ▼
+Testing
+           │
+           ▼
+RTM Update
+
+C.13 RTM Maintenance
+The RTM shall be maintained throughout the project.
+Maintenance activities include:
+Adding new requirements.
+Updating requirement relationships.
+Tracking implementation progress.
+Recording verification results.
+Removing obsolete references.
+Maintaining version history.
+The RTM shall remain synchronized with the latest approved SRS.
+
+C.14 RTM Governance
+The following stakeholders are responsible for RTM maintenance.
+Role
+Responsibility
+Business Analyst
+Maintain business requirement traceability
+System Analyst
+Update functional and non-functional mappings
+Software Architect
+Verify design traceability
+Development Team
+Confirm implementation traceability
+QA Team
+Maintain test traceability
+Project Manager
+Monitor overall RTM completeness
+
+C.15 RTM Acceptance Criteria
+The Requirements Traceability Matrix shall be considered complete when:
+Every approved business requirement is mapped to one or more functional requirements.
+Functional and non-functional requirements are linked to relevant modules, use cases, and test cases.
+Requirement status is current and accurately maintained.
+Change impact analysis procedures are documented.
+Traceability supports complete lifecycle management from stakeholder needs through implementation and verification.
+The RTM provides complete, consistent, and auditable coverage of all requirements defined in the CuraSphere SRS.
+
+Appendix D UML Diagrams
+
+D.1 Introduction
+This appendix provides the Unified Modeling Language (UML) diagrams for the CuraSphere Hospital Management System (HMS). These diagrams visually represent the system's structure, behavior, interactions, and deployment architecture.
+The UML models serve as a communication tool between stakeholders, analysts, architects, developers, testers, and system administrators. They also provide a blueprint for implementation and maintenance.
+The objectives of this appendix are to:
+Visualize the system architecture.
+Describe user interactions.
+Model system behavior.
+Define data relationships.
+Support software design and implementation.
+Improve documentation and maintainability.
+
+D.2 UML Diagram Overview
+Diagram
+Purpose
+System Context Diagram
+Defines system boundaries and external entities
+Use Case Diagram
+Shows interactions between users and the system
+Class Diagram
+Represents static system structure
+Activity Diagram
+Models workflows and business processes
+Sequence Diagram
+Illustrates object interactions over time
+State Machine Diagram
+Describes state transitions of system entities
+Component Diagram
+Shows software modules and dependencies
+Deployment Diagram
+Represents physical deployment architecture
+Entity Relationship Diagram (ERD)
+Models database entities and relationships
+Package Diagram
+Organizes system components into logical packages
+
+D.3 System Context Diagram
+The System Context Diagram illustrates the interaction between CuraSphere and external actors.
+                    +-------------------------+
+                    |     Government Portal   |
+                    +-----------+-------------+
+                                |
+                                |
++-----------+        +----------v----------+        +------------------+
+| Insurance |------->|     CuraSphere HMS  |<-------| Laboratory System|
+|  Provider |        |                      |        +------------------+
++-----------+        +----------+-----------+
+                                |
+        +-----------------------+-----------------------+
+        |                       |                       |
+        |                       |                       |
++-------v------+       +--------v--------+      +-------v-------+
+|  Patients    |       | Doctors/Nurses  |      | Administrators|
++--------------+       +-----------------+      +---------------+
+                                |
+                                |
+                     +----------v----------+
+                     | Pharmacy & Billing  |
+                     +---------------------+
+Description
+External entities interacting with the system include:
+Patients
+Doctors
+Nurses
+Receptionists
+Pharmacists
+Laboratory staff
+Administrators
+Insurance providers
+Government health systems
+External laboratory systems
+
+D.4 Use Case Diagram
+The Use Case Diagram illustrates interactions between users and the system.
+                         +----------------+
+                         |    Patient     |
+                         +-------+--------+
+                                 |
+             ------------------------------------------
+             |            |            |              |
+             v            v            v              v
+      Register      Book Appointment  View Reports  Pay Bills
+
+                         +----------------+
+                         |    Doctor      |
+                         +-------+--------+
+                                 |
+          -----------------------------------------------
+          |            |             |                 |
+          v            v             v                 v
+    View EMR    Prescribe Medicine  Update Records  Request Lab Test
+
+                       +--------------------+
+                       | Administrator      |
+                       +---------+----------+
+                                 |
+      -------------------------------------------------------
+      |          |             |             |              |
+      v          v             v             v              v
+ Manage Users Configure Roles Generate Reports Manage System Monitor Logs
+Primary Actors
+Patient
+Doctor
+Nurse
+Receptionist
+Pharmacist
+Laboratory Technician
+Billing Officer
+Administrator
+
+D.5 High-Level Class Diagram
+The Class Diagram represents the static structure of the system.
++------------------+
+|      Patient     |
++------------------+
+| patientId        |
+| name             |
+| gender           |
+| dob              |
+| phone            |
++--------+---------+
+         |
+         | 1
+         |
+         | *
++--------v---------+
+| Appointment      |
++------------------+
+| appointmentId    |
+| date             |
+| time             |
+| status           |
++--------+---------+
+         |
+         | *
+         |
+         |1
++--------v---------+
+| Doctor           |
++------------------+
+| doctorId         |
+| specialization   |
++------------------+
+
+Patient -------- MedicalRecord
+Patient -------- Billing
+Patient -------- Prescription
+Patient -------- LaboratoryReport
+Major Classes
+Patient
+Doctor
+Appointment
+MedicalRecord
+Prescription
+Pharmacy
+LaboratoryReport
+Invoice
+Payment
+User
+Role
+Department
+
+D.6 Patient Registration Activity Diagram
+Start
+   |
+   v
+Enter Patient Information
+   |
+   v
+Validate Information
+   |
+   +------Invalid------+
+   |                   |
+   |                   v
+   |            Show Validation Errors
+   |                   |
+   +<------------------+
+   |
+Valid
+   |
+   v
+Save Patient Record
+   |
+   v
+Generate Patient ID
+   |
+   v
+Display Success Message
+   |
+   v
+End
+Description
+This workflow describes the process of registering a new patient in the hospital system.
+
+D.7 Appointment Booking Sequence Diagram
+Patient
+   |
+   | Request Appointment
+   v
+Receptionist
+   |
+   | Check Availability
+   v
+Appointment Module
+   |
+   | Verify Doctor Schedule
+   v
+Doctor Calendar
+   |
+   | Available?
+   +------No------+
+   |              |
+   |              v
+   |      Return Alternative Slots
+   |
+  Yes
+   |
+   v
+Create Appointment
+   |
+   v
+Database
+   |
+   v
+Confirmation
+Sequence Overview
+The sequence demonstrates:
+Appointment request
+Availability verification
+Schedule confirmation
+Database update
+User notification
+
+D.8 Medical Record State Machine Diagram
+            Created
+               |
+               v
+         Under Review
+          /         \
+         /           \
+        v             v
+ Updated          Archived
+        |
+        v
+ Closed
+State Descriptions
+State
+Description
+Created
+Record is initially created
+Under Review
+Being updated by authorized staff
+Updated
+Record has been modified
+Closed
+Treatment episode completed
+Archived
+Record retained for historical purposes
+
+D.9 Component Diagram
+                 CuraSphere HMS
+
++--------------------------------------------------------+
+| Authentication Module                                  |
++--------------------------------------------------------+
+| Patient Management Module                              |
++--------------------------------------------------------+
+| Appointment Module                                     |
++--------------------------------------------------------+
+| EMR Module                                             |
++--------------------------------------------------------+
+| Laboratory Module                                      |
++--------------------------------------------------------+
+| Pharmacy Module                                        |
++--------------------------------------------------------+
+| Billing Module                                         |
++--------------------------------------------------------+
+| Reporting Module                                       |
++--------------------------------------------------------+
+| Notification Module                                    |
++--------------------------------------------------------+
+| Administration Module                                  |
++--------------------------------------------------------+
+Component Relationships
+Each module communicates through well-defined service interfaces and shares data via the central database.
+
+D.10 Deployment Diagram
+                 Internet
+                     |
+             +-------v--------+
+             | Load Balancer  |
+             +-------+--------+
+                     |
+          +----------+-----------+
+          |                      |
++---------v--------+   +---------v--------+
+| Application      |   | Application      |
+| Server 1         |   | Server 2         |
++---------+--------+   +---------+--------+
+          |                      |
+          +----------+-----------+
+                     |
+             +-------v--------+
+             | PostgreSQL DB  |
+             +-------+--------+
+                     |
+             +-------v--------+
+             | Backup Server  |
+             +----------------+
+Deployment Nodes
+Client Devices
+Load Balancer
+Application Servers
+Database Server
+Backup Server
+Monitoring Server (optional)
+Storage Infrastructure
+
+D.11 Entity Relationship Diagram (ERD)
+Patient
+   |
+   |1
+   |------< Appointment >------1 Doctor
+   |
+   |1
+   |------< MedicalRecord
+   |
+   |1
+   |------< Invoice
+   |
+   |1
+   |------< Prescription
+   |
+   |1
+   |------< LaboratoryReport
+Core Entities
+Patient
+Doctor
+Appointment
+MedicalRecord
+Prescription
+Invoice
+Payment
+LaboratoryReport
+Department
+User
+Role
+
+D.12 Package Diagram
++--------------------------------+
+| Authentication Package         |
++--------------------------------+
+
++--------------------------------+
+| Patient Management Package     |
++--------------------------------+
+
++--------------------------------+
+| Appointment Package            |
++--------------------------------+
+
++--------------------------------+
+| EMR Package                    |
++--------------------------------+
+
++--------------------------------+
+| Billing Package                |
++--------------------------------+
+
++--------------------------------+
+| Pharmacy Package               |
++--------------------------------+
+
++--------------------------------+
+| Laboratory Package             |
++--------------------------------+
+
++--------------------------------+
+| Reporting Package              |
++--------------------------------+
+
++--------------------------------+
+| Administration Package         |
++--------------------------------+
+Packages group related classes, interfaces, and services to improve modularity and maintainability.
+
+D.13 UML Modeling Guidelines
+The following principles shall be applied when maintaining UML models:
+Use consistent naming conventions.
+Keep diagrams synchronized with the implemented system.
+Document assumptions and constraints.
+Maintain version control for diagram revisions.
+Review diagrams after significant architectural changes.
+Ensure diagrams accurately represent the latest approved design.
+
+D.14 UML Acceptance Criteria
+The UML documentation shall be considered complete when:
+All major system views are represented.
+Diagrams accurately reflect the approved architecture and design.
+Actors, components, entities, and interactions are clearly identified.
+Models support implementation, testing, and maintenance activities.
+UML artifacts remain synchronized with future design updates.
+
+Appendix E Wireframes and UI Mockups
+
+E.1 Introduction
+This appendix defines the User Interface (UI) Wireframes and Mockups for the CuraSphere Hospital Management System (HMS). It provides a high-level visual blueprint for each major screen, ensuring a consistent, intuitive, and accessible user experience across all modules.
+The UI design follows modern healthcare application principles with emphasis on:
+Simplicity
+Consistency
+Accessibility
+Responsive design
+User-centered workflows
+Minimal learning curve
+Efficient navigation
+
+E.2 UI Design Objectives
+The user interface shall:
+Provide a clean and professional appearance.
+Minimize user interaction steps.
+Reduce data entry errors.
+Support responsive layouts.
+Ensure accessibility compliance.
+Maintain consistent navigation.
+Provide real-time feedback.
+Display information clearly and efficiently.
+
+E.3 Design Principles
+The CuraSphere interface shall follow these principles:
+Principle
+Description
+Consistency
+Uniform layouts, colors, and controls across all modules
+Simplicity
+Clear interfaces with minimal unnecessary elements
+Visibility
+Important information displayed prominently
+Feedback
+Immediate confirmation of user actions
+Accessibility
+WCAG 2.1 AA compliant design
+Responsiveness
+Optimized for desktop, tablet, and mobile devices
+Error Prevention
+Validation before submission
+Security
+Secure authentication and session management
+
+E.4 Color Palette
+Element
+Color
+Primary
+#2563EB (Blue)
+Secondary
+#14B8A6 (Teal)
+Success
+#22C55E (Green)
+Warning
+#F59E0B (Amber)
+Error
+#EF4444 (Red)
+Background
+#F8FAFC
+Card Background
+#FFFFFF
+Border
+#E5E7EB
+Primary Text
+#111827
+Secondary Text
+#6B7280
+These colors provide sufficient contrast and align with healthcare UI best practices.
+
+E.5 Typography
+Element
+Font
+Weight
+Heading 1
+Inter
+Bold
+Heading 2
+Inter
+Semi-Bold
+Body Text
+Inter
+Regular
+Buttons
+Inter
+Medium
+Labels
+Inter
+Medium
+Tables
+Inter
+Regular
+Typography shall prioritize readability and consistency.
+
+E.6 Login Screen Wireframe
++------------------------------------------------------+
+|                    CURASPHERE HMS                    |
+|------------------------------------------------------|
+|                                                      |
+|              [ Hospital Logo ]                       |
+|                                                      |
+|              Username / Email                        |
+|           +----------------------+                   |
+|           |                      |                   |
+|           +----------------------+                   |
+|                                                      |
+|              Password                                |
+|           +----------------------+                   |
+|           | **************       |                   |
+|           +----------------------+                   |
+|                                                      |
+|             [ Login ]                                |
+|                                                      |
+|      Forgot Password?   Remember Me                  |
+|                                                      |
++------------------------------------------------------+
+Features
+Hospital branding
+Secure login
+Password visibility toggle
+Remember me option
+Forgot password
+Responsive layout
+
+E.7 Dashboard Wireframe
++--------------------------------------------------------------+
+| Logo | Dashboard | Notifications | Profile | Logout          |
++--------------------------------------------------------------+
+| Sidebar |                                          |
+|---------|------------------------------------------|
+| Home    | KPI Cards                                |
+| Patients|------------------------------------------|
+| Doctors | Today's Appointments                     |
+| Billing |------------------------------------------|
+| Pharmacy| Recent Activities                        |
+| Reports |------------------------------------------|
+| Settings| Charts & Statistics                      |
++--------------------------------------------------------------+
+Dashboard Widgets
+Total Patients
+Today's Appointments
+Available Doctors
+Revenue Summary
+Bed Occupancy
+Pending Bills
+Alerts & Notifications
+Recent Activities
+
+E.8 Patient Registration Screen
++--------------------------------------------------------------+
+| Patient Registration                                         |
++--------------------------------------------------------------+
+| Personal Information                                         |
+|--------------------------------------------------------------|
+| Name           Gender         Date of Birth                  |
+| Phone          Email          Blood Group                    |
+| Address                                                |
+| Emergency Contact                                        |
+|--------------------------------------------------------------|
+| Insurance Information                                     |
+|--------------------------------------------------------------|
+| Medical History                                           |
+|--------------------------------------------------------------|
+| [ Save ]   [ Reset ]   [ Cancel ]                          |
++--------------------------------------------------------------+
+Features
+Multi-section form
+Required field indicators
+Real-time validation
+Auto-generated Patient ID
+Insurance details
+Emergency contact
+
+E.9 Appointment Scheduling Screen
++--------------------------------------------------------------+
+| Appointment Scheduler                                        |
++--------------------------------------------------------------+
+| Search Patient                                               |
+| Doctor Selection                                              |
+| Department                                                    |
+| Calendar View                                                 |
+| Time Slot Selection                                           |
+| Appointment Notes                                             |
+|--------------------------------------------------------------|
+| [ Confirm ]   [ Cancel ]                                     |
++--------------------------------------------------------------+
+Features
+Calendar integration
+Doctor availability
+Time slot selection
+Appointment confirmation
+Conflict detection
+
+E.10 Electronic Medical Record (EMR) Screen
++--------------------------------------------------------------+
+| Patient Information                                          |
++--------------------------------------------------------------+
+| Tabs                                                         |
+|--------------------------------------------------------------|
+| Overview | History | Medications | Labs | Radiology | Notes  |
+|--------------------------------------------------------------|
+| Clinical Details                                             |
+| Diagnosis                                                    |
+| Treatment Plan                                               |
+| Prescriptions                                                |
+| Progress Notes                                               |
+|--------------------------------------------------------------|
+| [ Save ] [ Print ] [ Export ]                               |
++--------------------------------------------------------------+
+Features
+Tabbed navigation
+Comprehensive patient history
+Clinical documentation
+Medication management
+Export and print functionality
+
+E.11 Billing and Payment Screen
++--------------------------------------------------------------+
+| Billing                                                      |
++--------------------------------------------------------------+
+| Patient Details                                              |
+| Services Rendered                                            |
+|--------------------------------------------------------------|
+| Service      Qty      Cost      Total                        |
+|--------------------------------------------------------------|
+| Grand Total                                                  |
+| Insurance Deduction                                          |
+| Balance Due                                                  |
+|--------------------------------------------------------------|
+| Payment Method                                               |
+|--------------------------------------------------------------|
+| [ Generate Invoice ] [ Receive Payment ]                     |
++--------------------------------------------------------------+
+Features
+Automatic billing calculations
+Insurance support
+Multiple payment methods
+Invoice generation
+Receipt printing
+
+E.12 Pharmacy Management Screen
++--------------------------------------------------------------+
+| Pharmacy                                                     |
++--------------------------------------------------------------+
+| Search Prescription                                          |
+|--------------------------------------------------------------|
+| Medicine List                                                |
+| Quantity                                                     |
+| Dosage                                                       |
+| Stock Availability                                           |
+|--------------------------------------------------------------|
+| [ Dispense ] [ Update Stock ]                               |
++--------------------------------------------------------------+
+Features
+Prescription lookup
+Inventory management
+Stock alerts
+Dispensing records
+
+E.13 Laboratory Management Screen
++--------------------------------------------------------------+
+| Laboratory                                                   |
++--------------------------------------------------------------+
+| Test Requests                                                |
+|--------------------------------------------------------------|
+| Patient Name                                                 |
+| Test Type                                                    |
+| Sample Status                                                |
+| Result Entry                                                 |
+|--------------------------------------------------------------|
+| [ Save Results ] [ Print Report ]                           |
++--------------------------------------------------------------+
+Features
+Test request management
+Sample tracking
+Result entry
+Report generation
+
+E.14 Reports and Analytics Dashboard
++--------------------------------------------------------------+
+| Reports & Analytics                                          |
++--------------------------------------------------------------+
+| Date Filters                                                 |
+| Department Filter                                            |
+|--------------------------------------------------------------|
+| Revenue Chart                                                |
+| Patient Statistics                                           |
+| Appointment Trends                                           |
+| Inventory Reports                                            |
+| Financial Reports                                            |
+|--------------------------------------------------------------|
+| [ Export PDF ] [ Export Excel ]                             |
++--------------------------------------------------------------+
+Features
+Interactive charts
+Data filtering
+Export options
+KPI summaries
+Drill-down capabilities
+
+E.15 Responsive Design Guidelines
+The interface shall support the following screen sizes:
+Device
+Minimum Resolution
+Desktop
+1920 × 1080
+Laptop
+1366 × 768
+Tablet
+768 × 1024
+Mobile
+375 × 667
+Responsive behavior shall include:
+Flexible grid layouts
+Collapsible navigation
+Scalable typography
+Touch-friendly controls
+Optimized forms
+Adaptive tables
+
+E.16 Navigation Structure
+Home
+│
+├── Dashboard
+├── Patients
+│   ├── Register
+│   ├── Search
+│   └── History
+├── Doctors
+├── Appointments
+├── EMR
+├── Laboratory
+├── Pharmacy
+├── Billing
+├── Reports
+├── Administration
+└── Settings
+
+E.17 UI Accessibility Considerations
+The interface shall support:
+Keyboard navigation
+Screen reader compatibility
+High-contrast mode
+Adjustable text scaling
+Accessible forms and labels
+Visible focus indicators
+Error messages with clear guidance
+Consistent navigation patterns
+
+E.18 UI Acceptance Criteria
+The UI design shall be considered complete when:
+All primary system screens are documented.
+Wireframes cover major workflows.
+Design principles, colors, and typography are defined.
+Responsive behavior is specified.
+Accessibility requirements are incorporated.
+Navigation structure is documented.
+Interfaces support efficient, intuitive, and secure interaction for all user roles.
+
+Appendix F Sample Reports and Forms
+
+F.1 Introduction
+This appendix provides representative forms, reports, and document templates used within the CuraSphere Hospital Management System (HMS). These samples establish a standardized format for data collection, reporting, communication, and record management across all hospital departments.
+The objectives of these templates are to:
+Standardize documentation.
+Improve data accuracy.
+Ensure regulatory compliance.
+Facilitate efficient clinical workflows.
+Support reporting and auditing.
+Enhance interoperability between departments.
+
+F.2 Patient Registration Form
+Purpose
+To capture demographic, contact, insurance, and emergency information for new patients.
+Sample Template
+------------------------------------------------------------
+                CURASPHERE HOSPITAL
+              PATIENT REGISTRATION FORM
+------------------------------------------------------------
+
+Patient ID: ______________________
+
+Registration Date: _______________
+
+PERSONAL INFORMATION
+
+First Name: ______________________
+
+Last Name: _______________________
+
+Gender:
+□ Male
+□ Female
+□ Other
+
+Date of Birth: ___________________
+
+Blood Group: _____________________
+
+CNIC / National ID: _______________
+
+Marital Status: __________________
+
+Phone Number: ____________________
+
+Email Address: ___________________
+
+Home Address:
+
+__________________________________
+
+__________________________________
+
+Emergency Contact
+
+Name: ____________________________
+
+Relationship: ____________________
+
+Phone: ___________________________
+
+Insurance Information
+
+Insurance Provider:
+
+__________________________________
+
+Policy Number:
+
+__________________________________
+
+Primary Physician:
+
+__________________________________
+
+Medical Alerts / Allergies:
+
+__________________________________
+
+Signature: _______________________
+
+------------------------------------------------------------
+
+F.3 Appointment Request Form
+Purpose
+To schedule consultations with healthcare providers.
+Sample Template
+------------------------------------------------------------
+                APPOINTMENT REQUEST
+------------------------------------------------------------
+
+Appointment ID: __________________
+
+Patient ID: ______________________
+
+Patient Name: ____________________
+
+Department: ______________________
+
+Doctor: __________________________
+
+Appointment Date:
+
+________________________
+
+Time:
+
+________________________
+
+Appointment Type:
+
+□ Consultation
+
+□ Follow-up
+
+□ Emergency
+
+□ Telemedicine
+
+Reason for Visit:
+
+__________________________________
+
+Priority:
+
+□ Normal
+
+□ Urgent
+
+□ Emergency
+
+Status:
+
+□ Scheduled
+
+□ Completed
+
+□ Cancelled
+
+□ No Show
+
+Remarks:
+
+__________________________________
+
+------------------------------------------------------------
+
+F.4 Electronic Medical Record (EMR) Form
+Purpose
+To maintain comprehensive clinical information for each patient.
+Sample Template
+------------------------------------------------------------
+          ELECTRONIC MEDICAL RECORD
+------------------------------------------------------------
+
+Patient ID: ______________________
+
+Visit Date: ______________________
+
+Doctor:
+
+__________________________________
+
+Chief Complaint:
+
+__________________________________
+
+Medical History:
+
+__________________________________
+
+Diagnosis:
+
+__________________________________
+
+Treatment Plan:
+
+__________________________________
+
+Medications:
+
+__________________________________
+
+Laboratory Orders:
+
+__________________________________
+
+Radiology Orders:
+
+__________________________________
+
+Follow-up Date:
+
+__________________________________
+
+Doctor Signature:
+
+__________________________________
+
+------------------------------------------------------------
+
+F.5 Prescription Template
+Purpose
+To record medications prescribed to a patient.
+Sample Template
+------------------------------------------------------------
+                 PRESCRIPTION
+------------------------------------------------------------
+
+Patient Name:
+
+__________________________________
+
+Patient ID:
+
+__________________________________
+
+Doctor:
+
+__________________________________
+
+Date:
+
+__________________________________
+
+Medicine Name
+
+Dose
+
+Frequency
+
+Duration
+
+Instructions
+
+------------------------------------------------
+
+1.
+
+______________________________
+
+2.
+
+______________________________
+
+3.
+
+______________________________
+
+Doctor Signature:
+
+______________________________
+
+------------------------------------------------------------
+
+F.6 Laboratory Report
+Purpose
+To document laboratory investigations and results.
+Sample Template
+------------------------------------------------------------
+                 LABORATORY REPORT
+------------------------------------------------------------
+
+Report ID:
+
+______________________________
+
+Patient Name:
+
+______________________________
+
+Patient ID:
+
+______________________________
+
+Requested By:
+
+______________________________
+
+Test Name
+
+Result
+
+Reference Range
+
+Status
+
+-----------------------------------------------
+
+CBC
+
+_____________________
+
+Blood Sugar
+
+_____________________
+
+Hemoglobin
+
+_____________________
+
+Comments:
+
+__________________________________
+
+Technician:
+
+__________________________________
+
+Approved By:
+
+__________________________________
+
+------------------------------------------------------------
+
+F.7 Radiology Report
+Purpose
+To record imaging study findings.
+Sample Template
+------------------------------------------------------------
+                 RADIOLOGY REPORT
+------------------------------------------------------------
+
+Patient ID:
+
+______________________________
+
+Imaging Type:
+
+□ X-Ray
+
+□ CT Scan
+
+□ MRI
+
+□ Ultrasound
+
+Clinical History:
+
+__________________________________
+
+Findings:
+
+__________________________________
+
+Impression:
+
+__________________________________
+
+Radiologist:
+
+__________________________________
+
+Report Date:
+
+__________________________________
+
+------------------------------------------------------------
+
+F.8 Billing Invoice
+Purpose
+To generate invoices for hospital services.
+Sample Template
+------------------------------------------------------------
+                     INVOICE
+------------------------------------------------------------
+
+Invoice No:
+
+______________________________
+
+Patient ID:
+
+______________________________
+
+Invoice Date:
+
+______________________________
+
+------------------------------------------------------------
+
+Service
+
+Quantity
+
+Unit Cost
+
+Total
+
+------------------------------------------------------------
+
+Consultation
+
+_________
+
+Laboratory
+
+_________
+
+Radiology
+
+_________
+
+Medication
+
+_________
+
+Hospital Charges
+
+_________
+
+------------------------------------------------------------
+
+Subtotal:
+
+__________________
+
+Insurance Coverage:
+
+__________________
+
+Discount:
+
+__________________
+
+Total Due:
+
+__________________
+
+Payment Method:
+
+□ Cash
+
+□ Card
+
+□ Insurance
+
+□ Online
+
+------------------------------------------------------------
+
+F.9 Payment Receipt
+Purpose
+To confirm successful payment transactions.
+Sample Template
+------------------------------------------------------------
+                 PAYMENT RECEIPT
+------------------------------------------------------------
+
+Receipt Number:
+
+______________________________
+
+Invoice Number:
+
+______________________________
+
+Amount Paid:
+
+______________________________
+
+Payment Date:
+
+______________________________
+
+Payment Method:
+
+______________________________
+
+Received By:
+
+______________________________
+
+Balance Remaining:
+
+______________________________
+
+------------------------------------------------------------
+
+F.10 Discharge Summary
+Purpose
+To summarize a patient's hospital stay and discharge instructions.
+Sample Template
+------------------------------------------------------------
+               DISCHARGE SUMMARY
+------------------------------------------------------------
+
+Patient ID:
+
+______________________________
+
+Admission Date:
+
+______________________________
+
+Discharge Date:
+
+______________________________
+
+Final Diagnosis:
+
+__________________________________
+
+Treatment Provided:
+
+__________________________________
+
+Medications at Discharge:
+
+__________________________________
+
+Follow-up Appointment:
+
+__________________________________
+
+Doctor:
+
+__________________________________
+
+Patient Instructions:
+
+__________________________________
+
+------------------------------------------------------------
+
+F.11 User Activity Log Report
+Purpose
+To track user actions performed within the system.
+Sample Template
+Date & Time
+User ID
+Role
+Activity
+Module
+Status
+2026-08-01 09:15
+ADM001
+Administrator
+Created User
+Administration
+Success
+2026-08-01 09:30
+DOC015
+Doctor
+Updated EMR
+Medical Records
+Success
+2026-08-01 10:05
+REC003
+Receptionist
+Registered Patient
+Patient Management
+Success
+
+F.12 Daily Operational Report
+Purpose
+To summarize daily hospital activities.
+Sample Template
+Metric
+Value
+New Patient Registrations
+128
+Total Appointments
+214
+Completed Consultations
+198
+Laboratory Tests
+156
+Pharmacy Prescriptions Dispensed
+142
+Revenue Collected
+$24,850
+Admissions
+34
+Discharges
+29
+
+F.13 Executive Dashboard Report
+Purpose
+To provide senior management with key performance indicators.
+Sample Dashboard Metrics
+KPI
+Current Value
+Total Registered Patients
+48,750
+Active Inpatients
+312
+Outpatients Today
+845
+Average Waiting Time
+18 Minutes
+Bed Occupancy Rate
+87%
+Appointment Completion Rate
+95%
+Pharmacy Stock Availability
+98%
+System Uptime
+99.96%
+
+F.14 Monthly Financial Report
+Purpose
+To summarize hospital financial performance.
+Category
+Amount
+Consultation Revenue
+$125,000
+Laboratory Revenue
+$48,500
+Pharmacy Revenue
+$72,300
+Radiology Revenue
+$39,800
+Insurance Claims
+$210,000
+Operating Expenses
+$185,400
+Net Operating Revenue
+$310,200
+
+F.15 Inventory Stock Report
+Purpose
+To monitor pharmacy and medical supply inventory.
+Item
+Current Stock
+Reorder Level
+Status
+Paracetamol 500 mg
+2,450
+500
+Normal
+Insulin
+180
+100
+Normal
+Surgical Gloves
+8,500
+2,000
+Normal
+IV Cannulas
+1,250
+400
+Normal
+Face Masks
+15,000
+5,000
+Normal
+
+F.16 Report and Form Management Guidelines
+The following guidelines shall apply to all forms and reports:
+Use standardized layouts across all departments.
+Include unique document identifiers.
+Display generation date and time.
+Protect confidential patient information.
+Support PDF printing and electronic export.
+Maintain version control for report templates.
+Ensure compliance with applicable healthcare documentation standards.
+
+F.17 Acceptance Criteria
+The Sample Reports and Forms appendix shall be considered complete when:
+Templates exist for all major hospital operations.
+Forms capture all required business and clinical data.
+Reports support operational, financial, and administrative decision-making.
+Templates are consistent in structure and formatting.
+Documents support electronic storage, printing, and auditing.
+Templates can be customized to meet organizational requirements without changing the underlying system functionality.
+
+Appendix G Revision History and Approval Sheet
+
+G.1 Introduction
+This appendix defines the document control procedures for the CuraSphere Hospital Management System (HMS) Software Requirements Specification (SRS). It establishes a structured approach for managing document revisions, recording changes, conducting stakeholder reviews, obtaining approvals, controlling document distribution, and maintaining version history throughout the project lifecycle.
+Proper document control ensures that all stakeholders work from the latest approved version of the SRS and that every modification is traceable, reviewed, and authorized.
+
+G.2 Purpose
+The objectives of this appendix are to:
+Maintain document version history.
+Record all approved changes.
+Track document reviews.
+Define approval responsibilities.
+Control document distribution.
+Ensure document integrity.
+Support audits and compliance activities.
+
+G.3 Document Information
+Item
+Value
+Document Title
+Software Requirements Specification (SRS)
+Project Name
+CuraSphere Hospital Management System
+Document Type
+Software Requirements Specification
+Version
+1.0
+Status
+Final
+Classification
+Internal Project Documentation
+Language
+English
+Prepared By
+Project Team
+Reviewed By
+Project Stakeholders
+Approved By
+Project Sponsor / Authorized Authority
+
+G.4 Revision History
+All modifications to this document shall be recorded in the revision history table.
+Version
+Date
+Author
+Description of Changes
+Status
+0.1
+DD/MM/YYYY
+Project Team
+Initial draft created
+Draft
+0.5
+DD/MM/YYYY
+Project Team
+Functional requirements added
+Draft
+0.8
+DD/MM/YYYY
+Project Team
+Non-functional requirements completed
+Review
+0.9
+DD/MM/YYYY
+Project Team
+Appendices completed
+Review
+1.0
+DD/MM/YYYY
+Project Sponsor
+Final approved version
+Approved
+Future revisions shall continue this numbering sequence.
+
+G.5 Change Log
+Each document update shall be recorded in the change log.
+Change ID
+Date
+Section
+Description
+Requested By
+Approved By
+CHG-001
+DD/MM/YYYY
+Section 3
+Updated functional requirements
+Business Analyst
+Project Manager
+CHG-002
+DD/MM/YYYY
+Section 10
+Revised security requirements
+Security Officer
+Project Sponsor
+CHG-003
+DD/MM/YYYY
+Appendix D
+Updated UML diagrams
+Software Architect
+Technical Lead
+Each approved change shall be uniquely identifiable.
+
+G.6 Review History
+The review process ensures technical accuracy, business alignment, and regulatory compliance.
+Review Stage
+Reviewer
+Purpose
+Status
+Business Review
+Business Analyst
+Validate business requirements
+Completed
+Technical Review
+Software Architect
+Validate architecture and design
+Completed
+Security Review
+Security Team
+Review security controls
+Completed
+QA Review
+Quality Assurance Team
+Verify completeness
+Completed
+Regulatory Review
+Compliance Officer
+Verify applicable compliance requirements
+Completed
+Final Review
+Project Sponsor
+Overall approval
+Pending / Approved
+
+G.7 Approval Workflow
+The document approval process shall follow the workflow below.
+
+Document Draft
+       │
+       ▼
+Internal Review
+       │
+       ▼
+Technical Review
+       │
+       ▼
+Quality Review
+       │
+       ▼
+Compliance Review
+       │
+       ▼
+Stakeholder Approval
+       │
+       ▼
+Final Approval
+       │
+       ▼
+Official Release
+No document shall be considered final until all required approvals have been obtained.
+
+G.8 Approval Sheet
+The following approval record shall accompany the final version of the document.
+Role
+Name
+Signature
+Date
+Status
+Project Manager
+__________________
+__________
+__________
+Approved
+Business Analyst
+__________________
+__________
+__________
+Approved
+Software Architect
+__________________
+__________
+__________
+Approved
+Quality Assurance Lead
+__________________
+__________
+__________
+Approved
+Security Officer
+__________________
+__________
+__________
+Approved
+Hospital Representative
+__________________
+__________
+__________
+Approved
+Project Sponsor
+__________________
+__________
+__________
+Final Approval
+Electronic approvals may be used where permitted by organizational policy.
+
+G.9 Document Distribution List
+The approved SRS shall be distributed to authorized stakeholders.
+Recipient
+Department
+Distribution Method
+Project Sponsor
+Executive Management
+Electronic Copy
+Project Manager
+Project Office
+Electronic Copy
+Business Analysts
+Business Analysis
+Electronic Copy
+Software Architects
+Development
+Electronic Copy
+Development Team
+Engineering
+Electronic Copy
+Quality Assurance Team
+QA
+Electronic Copy
+Security Team
+Information Security
+Electronic Copy
+Hospital Administration
+Operations
+Electronic Copy
+Compliance Team
+Regulatory Affairs
+Electronic Copy
+Printed copies, if required, shall be treated as uncontrolled unless specifically marked otherwise.
+
+G.10 Document Control Policy
+The following document control practices shall apply:
+Maintain a single approved master copy.
+Archive superseded versions.
+Restrict editing of approved versions.
+Record all approved revisions.
+Protect the document from unauthorized modification.
+Review the document periodically or after significant project changes.
+Ensure stakeholders have access to the latest approved version.
+
+G.11 Version Numbering Policy
+Version numbers shall follow the convention below.
+Version
+Meaning
+0.x
+Draft version
+1.0
+Initial approved release
+1.x
+Minor revisions
+2.0
+Major revision
+3.0+
+Significant functional or architectural changes
+
+G.12 Document Maintenance
+The Project Manager shall coordinate document maintenance activities, including:
+Periodic review.
+Incorporation of approved changes.
+Version updates.
+Distribution of revised editions.
+Archiving previous versions.
+Verification of document integrity.
+Maintenance shall continue throughout the project lifecycle and, where applicable, during operational support.
+
+G.13 Archival and Retention
+Document records shall be retained according to organizational document retention policies.
+Archived records shall include:
+Approved versions.
+Review comments.
+Approval records.
+Change requests.
+Revision history.
+Supporting documentation.
+Archived copies shall remain accessible for audit and historical reference.
+
+G.14 Final Project Sign-Off
+The project shall be considered ready for implementation when:
+The SRS has been reviewed by all designated stakeholders.
+All required approvals have been obtained.
+Outstanding review comments have been resolved or formally accepted.
+The document status has been updated to Approved.
+The final approved version has been distributed to authorized stakeholders.
+
+G.15 Appendix Acceptance Criteria
+Appendix G shall be considered complete when:
+Document information is recorded.
+Revision history is maintained.
+Change logs are documented.
+Review records are available.
+Approval workflow is defined.
+Approval signatures are obtained or designated.
+Distribution procedures are documented.
+Document control and maintenance policies are established.
+Final project sign-off requirements are specified.
+
+
+

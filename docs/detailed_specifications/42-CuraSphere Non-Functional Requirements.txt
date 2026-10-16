@@ -1,0 +1,220 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+
+6.1 Introduction
+The Non-Functional Requirements (NFR) define the quality attributes, operational characteristics, constraints, and standards that govern the CuraSphere Hospital Management System.
+Unlike functional requirements, which describe what the system does, non-functional requirements describe how well the system performs.
+These requirements ensure that CuraSphere is:
+Secure
+Reliable
+Available
+Scalable
+Maintainable
+High Performing
+Easy to Use
+Easy to Deploy
+Easy to Monitor
+Easy to Upgrade
+Enterprise Ready
+The NFRs apply across every module of CuraSphere including Patient Management, Billing, Pharmacy, Laboratory, HR, Inventory, Security, Reporting, and Integrations.
+
+6.2 Purpose
+The purpose of this section is to define the minimum quality standards that every component of CuraSphere shall satisfy during development, deployment, operation, and maintenance.
+These requirements ensure that the system delivers consistent performance while supporting hospital operations 24 hours a day.
+
+6.3 Objectives
+The Non-Functional Requirements shall:
+Ensure high system performance.
+Maintain continuous availability.
+Protect sensitive healthcare information.
+Support future scalability.
+Improve maintainability.
+Simplify deployment.
+Support disaster recovery.
+Ensure interoperability.
+Improve usability.
+Ensure regulatory compliance.
+Support DevOps practices.
+Enable cloud deployment.
+Improve monitoring capabilities.
+Reduce operational risks.
+Support long-term software evolution.
+
+6.4 Quality Attribute Overview
+                CuraSphere
+                     │
+ ┌──────────┬─────────┼─────────┬──────────┐
+ ▼          ▼         ▼         ▼          ▼
+Performance Security Reliability Scalability Usability
+                     │
+         ┌───────────┼────────────┐
+         ▼           ▼            ▼
+ Maintainability Monitoring Compliance
+                     │
+                     ▼
+              Enterprise Quality
+
+6.5 Non-Functional Requirement Categories
+The CuraSphere Hospital Management System shall satisfy the following quality categories.
+ID
+Category
+NFR-01
+Performance
+NFR-02
+Scalability
+NFR-03
+Availability
+NFR-04
+Reliability
+NFR-05
+Security
+NFR-06
+Usability
+NFR-07
+Accessibility
+NFR-08
+Maintainability
+NFR-09
+Portability
+NFR-10
+Compatibility
+NFR-11
+Interoperability
+NFR-12
+Backup & Recovery
+NFR-13
+Logging & Monitoring
+NFR-14
+Compliance
+NFR-15
+Localization
+
+6.6 High-Level Quality Model
+Functional Requirements
+          │
+          ▼
+Quality Attributes
+          │
+ ┌────────┼─────────┬─────────┐
+ ▼        ▼         ▼         ▼
+Security Performance Reliability Scalability
+          │
+          ▼
+Enterprise Hospital System
+
+6.7 Requirement Relationships
+Performance
+      │
+      ▼
+Fast User Experience
+
+Security
+      │
+      ▼
+Protected Patient Data
+
+Reliability
+      │
+      ▼
+Continuous Hospital Operations
+
+Scalability
+      │
+      ▼
+Future Expansion
+
+Maintainability
+      │
+      ▼
+Easy Software Updates
+
+6.8 Non-Functional Requirement Traceability Overview
+Quality Attribute
+Applies To
+Performance
+All Modules
+Security
+All Modules
+Availability
+All Modules
+Reliability
+All Modules
+Scalability
+All Modules
+Monitoring
+All Modules
+Logging
+All Modules
+Backup
+Entire System
+Compliance
+Entire System
+Disaster Recovery
+Entire System
+
+6.9 Technology Context
+The following technology stack shall be used to satisfy the non-functional requirements.
+Frontend
+React.js
+TypeScript
+Tailwind CSS
+HTML5
+CSS3
+JavaScript (ES2023)
+
+Backend
+ASP.NET Framework / ASP.NET Core (C#)
+Java Services (where required for integration or specialized services)
+
+Database
+PostgreSQL
+
+Development Tools
+Visual Studio 2022
+Visual Studio Code
+pgAdmin 4
+Git
+GitHub
+
+API Technologies
+REST API
+OpenAPI (Swagger)
+HL7
+HL7 FHIR
+DICOM
+
+DevOps
+GitHub
+Docker
+Kubernetes (optional deployment)
+CI/CD Pipeline
+Nginx
+IIS
+
+Cloud Support
+Microsoft Azure
+AWS
+Google Cloud Platform (optional)
+
+6.10 Non-Functional Architecture Overview
+             Users
+               │
+               ▼
+        React Frontend
+               │
+               ▼
+ ASP.NET / Java Backend Services
+               │
+        ┌──────┼────────┐
+        ▼      ▼        ▼
+ PostgreSQL  File Store Cache
+        │
+        ▼
+ Monitoring & Logging
+        │
+        ▼
+ Backup & Recovery
+
+
+

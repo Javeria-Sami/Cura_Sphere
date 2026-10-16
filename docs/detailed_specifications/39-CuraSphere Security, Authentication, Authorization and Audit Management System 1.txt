@@ -1,0 +1,381 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.15 - Security, Authentication, Authorization and Audit Management System (SEC)
+
+5.15.1 Introduction
+The Security, Authentication, Authorization and Audit Management System (SEC) provides the security foundation for the CuraSphere Hospital Management System.
+Healthcare information is highly confidential. Therefore, CuraSphere shall implement enterprise-grade security controls to ensure the confidentiality, integrity, availability, accountability, and traceability of all patient, clinical, financial, and administrative information.
+The Security module protects users, data, devices, APIs, servers, databases, and communication channels while ensuring compliance with healthcare security standards and organizational policies.
+Unlike other functional modules, the Security module affects every component of CuraSphere.
+
+Security Module Scope
+The Security Management System shall manage:
+User Authentication
+User Authorization
+Identity Management
+Password Management
+Multi-Factor Authentication (MFA)
+Role-Based Access Control (RBAC)
+Permission Management
+Session Management
+Single Sign-On (SSO)
+User Provisioning
+Account Lockout
+Password Policies
+Device Authentication
+API Security
+Encryption
+Digital Certificates
+Digital Signatures
+Audit Logging
+Security Monitoring
+Threat Detection
+Compliance Monitoring
+
+Security Architecture Overview
+               User
+                │
+                ▼
+        Authentication Layer
+                │
+                ▼
+      Identity Verification
+                │
+                ▼
+     Authorization Engine
+                │
+                ▼
+      Permission Validation
+                │
+                ▼
+        Business Modules
+                │
+                ▼
+         Audit Logging
+                │
+                ▼
+      Security Monitoring
+
+5.15.2 Objectives
+The Security System shall:
+Protect patient confidentiality.
+Verify user identities.
+Control user access.
+Prevent unauthorized activities.
+Encrypt sensitive information.
+Monitor system security.
+Record security events.
+Detect suspicious activities.
+Support regulatory compliance.
+Protect APIs.
+Secure communication channels.
+Prevent data tampering.
+Maintain accountability.
+Reduce cybersecurity risks.
+Maintain complete audit trails.
+
+5.15.3 Actors
+Actor
+Description
+System User
+Authenticated system user
+Patient
+Portal user
+Doctor
+Clinical user
+Nurse
+Clinical user
+Pharmacist
+Pharmacy user
+HR Officer
+HR user
+Finance Officer
+Finance user
+Security Administrator
+Security configuration
+System Administrator
+Administrative access
+External Identity Provider
+Identity verification
+CuraSphere Security Engine
+Automated security enforcement
+
+5.15.4 High-Level Security Architecture
+              User
+               │
+               ▼
+        Login Interface
+               │
+               ▼
+     Authentication Server
+               │
+      ┌────────┼────────┐
+      ▼        ▼        ▼
+ Password    MFA     SSO Login
+      │        │        │
+      └────────┼────────┘
+               ▼
+       Authorization Engine
+               │
+               ▼
+        RBAC Validation
+               │
+               ▼
+      Hospital Applications
+               │
+               ▼
+        Audit Repository
+
+5.15.5 Functional Requirement SEC-FR-001
+User Authentication Management
+
+Requirement ID
+SEC-FR-001
+Requirement Name
+User Authentication
+
+Description
+The system shall authenticate every user before granting access to CuraSphere.
+Authentication verifies user identity using one or more configured authentication factors.
+
+Supported Authentication Methods
+Username and Password
+Email and Password
+Employee ID and Password
+Mobile Number and Password
+Multi-Factor Authentication (MFA)
+Single Sign-On (SSO)
+Directory Service Authentication (e.g., LDAP/Active Directory, if deployed)
+
+Main Workflow
+User Login
+     │
+     ▼
+Enter Credentials
+     │
+     ▼
+Credential Validation
+     │
+     ▼
+MFA Required?
+  ┌───┴────┐
+ Yes      No
+  │        │
+Verify     │
+OTP        │
+  └───┬────┘
+      ▼
+Authentication Success
+      │
+      ▼
+Create Session
+
+Business Rules
+SEC-BR-001
+Authentication shall occur before access to protected resources.
+SEC-BR-002
+Failed authentication attempts shall be recorded.
+SEC-BR-003
+Authentication mechanisms shall support configurable password policies.
+
+Acceptance Criteria
+Users authenticate successfully.
+Invalid credentials rejected.
+Sessions created securely.
+
+5.15.6 Functional Requirement SEC-FR-002
+Password Policy Management
+
+Requirement ID
+SEC-FR-002
+
+Description
+The system shall enforce configurable password policies.
+
+Password Requirements
+Configurable policies may include:
+Minimum Length
+Maximum Length
+Uppercase Characters
+Lowercase Characters
+Numbers
+Special Characters
+Password Expiry
+Password History
+Account Lockout Threshold
+
+Workflow
+Password Created
+       │
+       ▼
+Policy Validation
+       │
+       ▼
+Accepted?
+   │        │
+ Yes       No
+   │        │
+ Save   Show Errors
+
+Business Rules
+Weak passwords shall not be accepted.
+
+Acceptance Criteria
+Password policy enforced.
+
+5.15.7 Functional Requirement SEC-FR-003
+Multi-Factor Authentication (MFA)
+
+Requirement ID
+SEC-FR-003
+
+Description
+The system shall support Multi-Factor Authentication for enhanced security.
+
+Supported Factors
+One-Time Password (OTP)
+Authenticator Application
+Email Verification
+SMS Verification
+Hardware Token (optional)
+Biometric Authentication (device dependent)
+
+Workflow
+Password Verified
+       │
+       ▼
+Generate OTP
+       │
+       ▼
+User Enters OTP
+       │
+       ▼
+Verify OTP
+       │
+       ▼
+Access Granted
+
+Business Rules
+MFA may be mandatory for privileged accounts.
+
+Acceptance Criteria
+MFA functions correctly.
+
+5.15.8 Functional Requirement SEC-FR-004
+Role-Based Access Control (RBAC)
+
+Requirement ID
+SEC-FR-004
+
+Description
+The system shall control access using Role-Based Access Control.
+
+RBAC Model
+User
+ │
+ ▼
+Assigned Role
+ │
+ ▼
+Permission Set
+ │
+ ▼
+Authorized Function
+
+Sample Roles
+Doctor
+Nurse
+Receptionist
+Laboratory Technician
+Radiologist
+Pharmacist
+Cashier
+HR Officer
+Finance Officer
+Administrator
+
+Business Rules
+Permissions shall be granted through roles rather than directly to users where practical.
+
+Acceptance Criteria
+Role-based permissions enforced.
+
+5.15.9 Functional Requirement SEC-FR-005
+Session Management
+
+Requirement ID
+SEC-FR-005
+
+Description
+The system shall securely manage user sessions.
+
+Session Features
+Secure Login
+Session Timeout
+Automatic Logout
+Session Renewal
+Concurrent Session Control
+Remember Device (configurable)
+
+Workflow
+User Login
+      │
+      ▼
+Session Created
+      │
+      ▼
+User Activity
+      │
+      ▼
+Inactive?
+  │        │
+ No       Yes
+  │        │
+Continue Logout
+
+Business Rules
+Inactive sessions shall automatically expire after the configured timeout.
+
+Acceptance Criteria
+Sessions securely managed.
+
+5.15.10 Functional Requirement SEC-FR-006
+Account Lockout Management
+
+Requirement ID
+SEC-FR-006
+
+Description
+The system shall protect against brute-force login attacks by temporarily locking accounts after repeated failed authentication attempts.
+
+Lockout Workflow
+Failed Login
+      │
+      ▼
+Increment Counter
+      │
+      ▼
+Threshold Reached?
+  │           │
+ No          Yes
+  │           │
+Retry     Lock Account
+              │
+              ▼
+Administrator / Auto Unlock
+
+Business Rules
+SEC-BR-004
+The maximum number of failed login attempts shall be configurable.
+SEC-BR-005
+Temporary lockout duration shall be configurable.
+SEC-BR-006
+All account lockout events shall be audited.
+
+Acceptance Criteria
+Repeated failed logins trigger lockout.
+Lockout duration enforced.
+Security events logged.
+
+

@@ -1,0 +1,942 @@
+﻿CURASPHERE
+Hospital Management System
+Software Requirements Specification
+SECTION 2: OVERALL DESCRIPTION
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-002Project: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+2. OVERALL DESCRIPTION
+2.1 Purpose of This Section
+This section provides a high-level description of CuraSphere before detailed functional requirements are defined.
+The section establishes:
+the position of CuraSphere within the hospital environment;
+the system boundary;
+the major product functions;
+the types of system users;
+the expected operating environment;
+design and implementation constraints;
+user documentation expectations;
+assumptions;
+dependencies;
+the overall system context.
+The purpose of this section is not to describe individual buttons, API endpoints, database tables, or source code classes.
+The purpose is to establish the environment in which the software shall operate.
+The overall description can be represented as:
+                     BUSINESS ENVIRONMENT                              │                              ▼                    HOSPITAL OPERATIONS                              │                              ▼                  ┌─────────────────────┐                  │                     │                  │     CURASPHERE      │                  │                     │                  │ Hospital Management │                  │       System        │                  │                     │                  └─────────────────────┘                              │             ┌────────────────┼────────────────┐             │                │                │             ▼                ▼                ▼          USERS             DATA          EXTERNAL                                          SERVICES
+
+2.2 Product Perspective
+CuraSphere is a centralized, web-based Hospital Management System.
+The product shall provide a common digital platform through which authorized hospital users can perform clinical, administrative, operational, and financial activities.
+CuraSphere shall be designed as an independent software product.
+The initial system shall target a single healthcare organization while maintaining an architectural direction that allows future support for:
+multiple hospital branches;
+multiple healthcare facilities;
+specialized clinics;
+diagnostic centers;
+hospital groups;
+cloud-hosted healthcare services.
+CuraSphere shall not initially be designed as a collection of independent microservices.
+The initial product shall use a modular application architecture.
+The application shall maintain clear module and layer boundaries to reduce unnecessary technical complexity during initial development.
+The initial architectural perspective is:
+                         CURASPHERE                    ┌───────────────────┐                    │    Web Client     │                    │     React.js      │                    └─────────┬─────────┘                              │                              │ HTTPS                              │ REST API                              ▼                    ┌───────────────────┐                    │   ASP.NET Core    │                    │    Application    │                    └─────────┬─────────┘                              │                   ┌──────────┼──────────┐                   │          │          │                   ▼          ▼          ▼               Domain     Application  Infrastructure                Rules       Services      Services                   │          │          │                   └──────────┼──────────┘                              │                              ▼                    ┌───────────────────┐                    │    PostgreSQL     │                    │     Database      │                    └───────────────────┘
+The detailed architectural decisions shall be defined in the Software Architecture Document.
+The SRS only defines architectural constraints that are directly related to system requirements.
+
+2.3 Product Positioning
+CuraSphere is positioned between hospital users and hospital information.
+Without an integrated hospital management platform, hospital departments may directly manage their own records.
+Example:
+Reception ───────► Patient FilesDoctor ──────────► Clinical NotesLaboratory ──────► Laboratory RecordsPharmacy ────────► Medicine RecordsBilling ─────────► Financial Records
+This creates separate information systems.
+CuraSphere introduces a controlled application layer.
+                     HOSPITAL USERS        Receptionist    Doctor       Nurse        Pharmacist      Lab Staff    Accountant        Administrator   Management   IT Support                           │                           ▼                 ┌──────────────────────┐                 │                      │                 │      CURASPHERE      │                 │                      │                 │ Authentication       │                 │ Authorization        │                 │ Business Rules       │                 │ Validation           │                 │ Workflow Control     │                 │ Audit Logging        │                 │                      │                 └───────────┬──────────┘                             │                             ▼                 ┌──────────────────────┐                 │  HOSPITAL DATA       │                 │                      │                 │ Patients             │                 │ Medical Records      │                 │ Appointments         │                 │ Laboratory           │                 │ Pharmacy             │                 │ Billing              │                 │ Inventory            │                 │ Staff                │                 └──────────────────────┘
+Users shall not directly access the primary production database for normal hospital operations.
+Hospital activities shall be performed through authorized CuraSphere interfaces or approved system integrations.
+
+2.4 Product Boundary
+The system boundary defines what CuraSphere is responsible for and what exists outside the system.
+2.4.1 Inside the CuraSphere Boundary
+CuraSphere shall be responsible for managing:
+Identity and Access
+user accounts;
+authentication;
+authorization;
+roles;
+permissions;
+access control;
+session-related security;
+audit information.
+Patient Administration
+patient registration;
+patient identification;
+demographic information;
+patient contacts;
+patient search;
+patient record management.
+Clinical Operations
+consultations;
+clinical notes;
+diagnoses;
+prescriptions;
+vital signs;
+patient medical history;
+OPD workflows;
+IPD workflows;
+emergency workflows;
+discharge records.
+Appointment Operations
+appointment creation;
+appointment scheduling;
+rescheduling;
+cancellation;
+appointment status;
+doctor availability.
+Diagnostic Operations
+laboratory requests;
+laboratory samples;
+laboratory results;
+radiology requests;
+radiology reports.
+Pharmacy Operations
+medicine records;
+medicine stock;
+prescriptions;
+medicine dispensing;
+stock movement.
+Financial Operations
+patient charges;
+invoices;
+payments;
+refunds;
+insurance information;
+financial records.
+Operational Management
+departments;
+hospital rooms;
+beds;
+staff;
+hospital inventory;
+notifications;
+reporting;
+audit logs;
+system configuration.
+
+2.4.2 Outside the Initial CuraSphere Boundary
+The following capabilities are outside the initial system scope unless approved through formal requirement change management:
+autonomous AI medical diagnosis;
+robotic surgery control;
+direct medical equipment control;
+ambulance GPS tracking;
+national identity database integration;
+national health database integration;
+direct banking core system integration;
+advanced insurance company API integration;
+biometric hardware integration;
+wearable medical device integration;
+public telemedicine platform;
+native Android application;
+native iOS application;
+multi-country regulatory automation.
+These features may become future CuraSphere capabilities.
+The boundary model is:
+                 OUTSIDE INITIAL SCOPE       AI DIAGNOSIS        WEARABLE DEVICES       ROBOTIC SURGERY     NATIONAL HEALTH API       BANKING CORE        TELEMEDICINE PLATFORM                    ┌─────────────────┐                    │                 │                    │   CURASPHERE    │                    │                 │                    │   HMS CORE      │                    │                 │                    └─────────────────┘       BIOMETRICS          AMBULANCE GPS       MOBILE APPS         MEDICAL IoT                 OUTSIDE INITIAL SCOPE
+
+2.5 High-Level Product Functions
+CuraSphere shall provide the following major product functions.
+2.5.1 Identity and Access Management
+The system shall manage user identity and access.
+High-level capabilities include:
+user authentication;
+user account management;
+role assignment;
+permission management;
+access restrictions;
+account status management;
+security audit events.
+
+2.5.2 Dashboard and Analytics
+The system shall provide role-aware dashboards.
+Dashboard information may include:
+daily patients;
+appointments;
+admissions;
+discharges;
+emergency cases;
+occupied beds;
+available beds;
+pending laboratory requests;
+pharmacy stock alerts;
+financial summaries;
+operational notifications.
+A user’s dashboard shall depend on the user’s role and permissions.
+Example:
+                         DASHBOARD                             │          ┌──────────────────┼──────────────────┐          │                  │                  │          ▼                  ▼                  ▼     ADMIN DASHBOARD    DOCTOR DASHBOARD   PHARMACY DASHBOARD     System Users       Today's Patients   Low Stock     Departments        Appointments       Prescriptions     Audit Events       Consultations      Expiring Stock
+
+2.5.3 Patient Management
+The system shall manage the patient administrative record.
+High-level capabilities include:
+register a patient;
+generate a Medical Record Number;
+search for patients;
+view patient profiles;
+update permitted patient information;
+manage patient contacts;
+identify probable duplicate patient records;
+maintain patient status.
+The patient shall act as a central domain entity in CuraSphere.
+                            PATIENT                               │        ┌──────────────────────┼──────────────────────┐        │                      │                      │        ▼                      ▼                      ▼   Appointments           Medical Records          Billing        │                      │                      │        ▼                      ▼                      ▼   Consultations          Laboratory              Payments        │                      │        ▼                      ▼   Prescriptions          Radiology        │        ▼   Pharmacy
+
+2.5.4 Doctor Management
+The system shall manage doctor-related administrative information.
+Capabilities include:
+doctor profiles;
+specialization;
+department assignment;
+availability;
+schedules;
+consultation information;
+doctor status.
+
+2.5.5 Nurse Management
+The system shall support nursing-related information and workflows.
+Capabilities may include:
+nurse profiles;
+department assignments;
+ward assignments;
+patient monitoring;
+vital sign recording;
+nursing notes.
+
+2.5.6 Appointment Management
+The system shall manage outpatient appointments.
+Capabilities include:
+appointment booking;
+doctor selection;
+appointment date and time;
+appointment rescheduling;
+appointment cancellation;
+appointment status management;
+appointment history.
+The high-level appointment lifecycle is:
+                         REQUESTED                             │                             ▼                         SCHEDULED                             │                ┌────────────┼────────────┐                │            │            │                ▼            ▼            ▼            CHECKED-IN    CANCELLED     NO-SHOW                │                ▼            IN PROGRESS                │                ▼             COMPLETED
+The detailed state model shall be defined in the appointment requirement section.
+
+2.5.7 OPD Management
+The Outpatient Department module shall manage patients receiving medical services without hospital admission.
+Capabilities include:
+patient check-in;
+queue management;
+consultation;
+clinical notes;
+diagnosis;
+prescription;
+laboratory request;
+radiology request;
+follow-up recommendations.
+
+2.5.8 IPD Management
+The Inpatient Department module shall support patients admitted to the hospital.
+Capabilities include:
+patient admission;
+ward assignment;
+room assignment;
+bed assignment;
+inpatient clinical records;
+nursing records;
+transfer;
+discharge.
+High-level IPD flow:
+PATIENT   │   ▼ADMISSION REQUEST   │   ▼ADMISSION APPROVAL   │   ▼WARD / ROOM / BED ASSIGNMENT   │   ▼INPATIENT CARE   │   ├────────► DOCTOR NOTES   │   ├────────► NURSING NOTES   │   ├────────► MEDICATION   │   ├────────► LABORATORY   │   └────────► RADIOLOGY   │   ▼DISCHARGE DECISION   │   ▼DISCHARGE SUMMARY   │   ▼PATIENT DISCHARGED
+
+2.5.9 Emergency Management
+The system shall support emergency patient workflows.
+Emergency capabilities include:
+emergency registration;
+rapid patient identification;
+temporary patient records where required;
+triage information;
+emergency status;
+emergency clinical records;
+emergency admission.
+Emergency workflows shall prioritize rapid access to required functions while maintaining appropriate auditability.
+
+2.5.10 Electronic Medical Records
+The system shall maintain electronic medical information associated with patients.
+Medical information may include:
+consultation records;
+diagnoses;
+allergies;
+medical history;
+vital signs;
+clinical notes;
+prescriptions;
+laboratory results;
+radiology reports;
+admission records;
+discharge summaries.
+Access to medical information shall be controlled according to authorization requirements.
+
+2.5.11 Pharmacy Management
+The system shall support hospital pharmacy operations.
+Capabilities include:
+medicine catalog;
+medicine categories;
+medicine stock;
+batch information;
+expiry information;
+prescription review;
+medicine dispensing;
+stock adjustments;
+stock alerts.
+Pharmacy information flow:
+DOCTOR   │   ▼PRESCRIPTION   │   ▼PHARMACY QUEUE   │   ▼PHARMACIST REVIEW   │   ▼MEDICINE AVAILABILITY   │   ├────────► NOT AVAILABLE   │   └────────► AVAILABLE                   │                   ▼               DISPENSE                   │                   ▼             STOCK MOVEMENT                   │                   ▼             PATIENT HISTORY
+
+2.5.12 Laboratory Management
+The system shall support laboratory workflows.
+Capabilities include:
+test catalog;
+laboratory request;
+sample collection;
+sample status;
+test processing;
+result recording;
+result verification;
+result availability.
+Laboratory workflow:
+TEST REQUEST     │     ▼REQUEST RECEIVED     │     ▼SAMPLE REQUIRED?     │     ├──────── NO ────────► PROCESS TEST     │     ▼SAMPLE COLLECTION     │     ▼SAMPLE RECEIVED     │     ▼PROCESS TEST     │     ▼RECORD RESULT     │     ▼VERIFY RESULT     │     ▼RESULT AVAILABLE
+
+2.5.13 Radiology Management
+The system shall support radiology requests and reports.
+Capabilities include:
+imaging service catalog;
+radiology requests;
+request scheduling;
+examination status;
+radiology reports;
+report verification.
+The initial product may store references to imaging information rather than acting as a complete Picture Archiving and Communication System.
+A dedicated PACS integration may be considered in future releases.
+
+2.5.14 Billing Management
+The system shall manage patient financial transactions associated with hospital services.
+Capabilities include:
+service charges;
+patient invoices;
+invoice items;
+payment recording;
+payment status;
+discounts according to permissions;
+refunds;
+billing history.
+High-level billing model:
+                    PATIENT SERVICES                           │       ┌───────────────────┼───────────────────┐       │                   │                   │       ▼                   ▼                   ▼  CONSULTATION         LABORATORY           PHARMACY       │                   │                   │       └───────────────────┼───────────────────┘                           │                           ▼                       CHARGES                           │                           ▼                        INVOICE                           │              ┌────────────┼────────────┐              │            │            │              ▼            ▼            ▼            UNPAID      PARTIALLY      PAID                           PAID
+
+2.5.15 Insurance Management
+The system shall maintain insurance-related patient information.
+Capabilities may include:
+insurance provider records;
+patient insurance information;
+policy information;
+coverage details;
+insurance billing references;
+claim status tracking.
+Advanced direct insurance API processing is outside the initial product boundary.
+
+2.5.16 Inventory Management
+The system shall support hospital inventory operations.
+Capabilities include:
+inventory items;
+categories;
+suppliers;
+stock quantities;
+stock receipts;
+stock issues;
+stock adjustments;
+low-stock alerts.
+Pharmacy medicine inventory and general hospital inventory shall maintain clear domain boundaries.
+
+2.5.17 Human Resource Management
+The system shall support basic hospital employee management.
+Capabilities include:
+employee records;
+departments;
+designations;
+employment status;
+attendance information;
+leave information.
+Advanced enterprise payroll capabilities may be developed as a separate future module if required.
+
+2.5.18 Reporting Management
+The system shall provide operational and management reports.
+Reports may include:
+patient registration reports;
+appointment reports;
+admission reports;
+discharge reports;
+bed occupancy reports;
+laboratory reports;
+pharmacy stock reports;
+billing reports;
+payment reports;
+inventory reports.
+Report access shall depend on user permissions.
+
+2.5.19 Notification Management
+The system shall support internal system notifications.
+Notifications may be generated for:
+appointments;
+pending tasks;
+laboratory results;
+low stock;
+medicine expiry;
+system events;
+administrative alerts.
+External SMS, email, and push notification providers may be integrated through approved services.
+
+2.5.20 Audit Management
+The system shall maintain audit information for security-sensitive and business-sensitive activities.
+Audit events may include:
+login attempts;
+user creation;
+role changes;
+permission changes;
+patient record access;
+clinical record modifications;
+billing changes;
+refund activities;
+inventory adjustments;
+system configuration changes.
+Audit records shall support accountability and investigation.
+
+2.6 Product Function Decomposition Model
+The high-level CuraSphere module decomposition is:
+                              CURASPHERE                                  │     ┌────────────────────────────┼────────────────────────────┐     │                            │                            │     ▼                            ▼                            ▼  CLINICAL                  OPERATIONAL                   FINANCIAL     │                            │                            │     │                            │                            │     ├── Patient                 ├── Authentication           ├── Billing     ├── Doctor                  ├── Users                    ├── Payments     ├── Nurse                   ├── Roles                    ├── Refunds     ├── OPD                     ├── Permissions              ├── Insurance     ├── IPD                     ├── Departments              └── Reports     ├── Emergency               ├── Inventory     ├── Medical Records         ├── HR     ├── Laboratory              ├── Notifications     ├── Radiology               ├── Audit     └── Pharmacy                └── Configuration
+A second perspective is based on healthcare workflow:
+PATIENT ENTRY     │     ├────► REGISTRATION     │     ├────► APPOINTMENT     │     └────► EMERGENCY                │                ▼         CLINICAL SERVICE                │       ┌────────┼────────┐       │        │        │       ▼        ▼        ▼     OPD       IPD    EMERGENCY       │        │        │       └────────┼────────┘                │                ▼        SUPPORT SERVICES                │       ┌────────┼────────┐       │        │        │       ▼        ▼        ▼      LAB    RADIOLOGY  PHARMACY       │        │        │       └────────┼────────┘                │                ▼              BILLING                │                ▼             PAYMENT                │                ▼          REPORTING / AUDIT
+
+2.7 User Classes and Characteristics
+CuraSphere shall support multiple user classes.
+A user class represents a category of users with similar responsibilities.
+A user class is not automatically equal to a technical role.
+The detailed RBAC model shall be documented later.
+
+2.7.1 System Administrator
+Primary Responsibility
+Manage the technical and security configuration of CuraSphere.
+Expected Activities
+manage users;
+manage roles;
+manage permissions;
+configure system settings;
+review system events;
+review audit information.
+Technical Skill Level
+High.
+Access Sensitivity
+Critical.
+The System Administrator shall not automatically receive unrestricted authority to modify clinical information.
+Technical administration and clinical authority shall remain separate concepts.
+
+2.7.2 Hospital Administrator
+Primary Responsibility
+Manage hospital administrative operations.
+Expected Activities
+review operational dashboards;
+manage departments;
+review staff information;
+review operational reports;
+monitor hospital activity.
+Technical Skill Level
+Medium.
+Access Sensitivity
+High.
+
+2.7.3 Doctor
+Primary Responsibility
+Provide clinical services to patients.
+Expected Activities
+review assigned patients;
+review authorized patient history;
+perform consultations;
+record clinical notes;
+record diagnoses;
+create prescriptions;
+request laboratory tests;
+request radiology services;
+create follow-up recommendations.
+Technical Skill Level
+Basic to medium.
+Access Sensitivity
+Critical clinical access.
+
+2.7.4 Nurse
+Primary Responsibility
+Support patient care and monitoring.
+Expected Activities
+review assigned patients;
+record vital signs;
+record nursing notes;
+review permitted care instructions;
+update permitted nursing information.
+Technical Skill Level
+Basic to medium.
+Access Sensitivity
+High clinical access.
+
+2.7.5 Receptionist
+Primary Responsibility
+Manage patient administrative entry and appointments.
+Expected Activities
+search patients;
+register patients;
+update permitted demographic information;
+book appointments;
+reschedule appointments;
+cancel appointments;
+check in patients.
+Technical Skill Level
+Basic.
+Access Sensitivity
+Medium.
+A receptionist must not receive clinical editing authority merely because the receptionist can access a patient profile.
+
+2.7.6 Pharmacist
+Primary Responsibility
+Manage pharmacy operations.
+Expected Activities
+review prescriptions;
+verify medicine availability;
+dispense medicines;
+review medicine stock;
+manage permitted stock activities;
+review expiry alerts.
+Technical Skill Level
+Medium.
+Access Sensitivity
+High.
+
+2.7.7 Laboratory Staff
+Primary Responsibility
+Manage laboratory processing activities.
+Expected Activities
+review test requests;
+collect or receive samples;
+update sample status;
+process tests;
+record results according to permissions.
+Technical Skill Level
+Medium.
+Access Sensitivity
+High clinical data access.
+
+2.7.8 Laboratory Approver or Pathologist
+Primary Responsibility
+Verify laboratory results where verification is required.
+Expected Activities
+review laboratory results;
+approve or reject results;
+add authorized comments;
+release verified results.
+Technical Skill Level
+Medium.
+Access Sensitivity
+Critical clinical access.
+
+2.7.9 Radiology Staff
+Primary Responsibility
+Manage radiology service workflows.
+Expected Activities
+review radiology requests;
+manage examination status;
+manage scheduling;
+record permitted examination information.
+Technical Skill Level
+Medium.
+Access Sensitivity
+High.
+
+2.7.10 Radiologist
+Primary Responsibility
+Review radiology examinations and provide reports.
+Expected Activities
+review examination information;
+create radiology reports;
+verify reports;
+release reports.
+Access Sensitivity
+Critical clinical access.
+
+2.7.11 Accountant or Billing Officer
+Primary Responsibility
+Manage patient financial activities.
+Expected Activities
+generate invoices;
+review charges;
+record payments;
+manage permitted discounts;
+process authorized refunds;
+review billing reports.
+Technical Skill Level
+Medium.
+Access Sensitivity
+Critical financial access.
+
+2.7.12 HR Staff
+Primary Responsibility
+Manage hospital employee information.
+Expected Activities
+maintain employee records;
+manage departments and designations where permitted;
+manage attendance information;
+manage leave information.
+Access Sensitivity
+High personnel information access.
+
+2.7.13 Inventory Staff
+Primary Responsibility
+Manage general hospital inventory.
+Expected Activities
+manage inventory items;
+record stock receipts;
+record stock issues;
+review stock levels;
+perform authorized adjustments.
+Access Sensitivity
+High operational access.
+
+2.7.14 Hospital Management
+Primary Responsibility
+Review hospital performance and strategic information.
+Expected Activities
+review management dashboards;
+review operational statistics;
+review financial summaries;
+review hospital reports.
+Access Sensitivity
+High.
+Management access shall not automatically provide clinical editing permissions.
+
+2.7.15 IT Support
+Primary Responsibility
+Support system operation.
+Expected Activities
+review technical status;
+assist authorized users;
+investigate technical problems;
+review permitted technical logs.
+Access Sensitivity
+High.
+IT Support must not automatically receive unrestricted access to patient clinical records.
+
+2.7.16 Patient
+The initial internal hospital system may provide limited or no direct patient application access.
+Future CuraSphere versions may provide a patient portal.
+Potential patient capabilities include:
+view appointments;
+request appointments;
+view permitted reports;
+view prescriptions;
+view invoices;
+manage personal profile information.
+The patient portal shall be treated as a separate interface boundary if introduced.
+
+2.8 User Classification Model
+                         CURASPHERE USERS                                │       ┌────────────────────────┼────────────────────────┐       │                        │                        │       ▼                        ▼                        ▼    CLINICAL               ADMINISTRATIVE             SUPPORT       │                        │                        │       ├── Doctor               ├── Receptionist         ├── IT Support       ├── Nurse                ├── Hospital Admin       ├── System Admin       ├── Pharmacist           ├── Accountant           └── Management       ├── Lab Staff            ├── HR       ├── Pathologist          └── Inventory Staff       ├── Radiology Staff       └── Radiologist
+User classification shall influence:
+UI navigation;
+dashboard content;
+available actions;
+data visibility;
+permission requirements;
+audit sensitivity.
+
+2.9 Operating Environment
+CuraSphere shall operate as a web-based application.
+2.9.1 Client Environment
+The primary client shall be a modern web browser.
+Supported browser categories should include current supported versions of:
+Chromium-based browsers;
+Microsoft Edge;
+Mozilla Firefox.
+Safari support may be validated according to deployment requirements.
+The user interface shall be implemented using React.js.
+The detailed frontend technology version shall be fixed during architecture baseline creation.
+
+2.9.2 Server Environment
+The backend shall use the .NET platform and C#.
+The server application shall expose controlled APIs to approved clients.
+The preferred backend application model is:
+ASP.NET Core Web API
+The exact supported .NET version shall be selected as an actively supported release during architecture implementation.
+The production system shall not depend on an unsupported runtime version.
+
+2.9.3 Database Environment
+PostgreSQL shall be the primary relational database management system.
+The database shall store structured CuraSphere application information.
+The system shall use controlled application access to the database.
+Normal users shall not directly connect to PostgreSQL.
+The expected database flow is:
+USER  │  ▼REACT APPLICATION  │  ▼ASP.NET CORE API  │  ▼APPLICATION RULES  │  ▼DATA ACCESS  │  ▼POSTGRESQL
+
+2.9.4 Development Environment
+The primary backend development environment shall support:
+Visual Studio;
+.NET development;
+C# development;
+debugging;
+testing.
+Frontend development may use:
+Visual Studio Code;
+Node.js development tools;
+React development tools.
+The project shall use Git for source version control.
+A remote Git repository shall be maintained using an approved source control hosting platform.
+
+2.9.5 Deployment Environment
+CuraSphere shall be designed to support containerized deployment.
+The deployment environment may include:
+Linux server;
+Docker containers;
+reverse proxy;
+PostgreSQL service;
+centralized configuration;
+centralized logging;
+monitoring services.
+Conceptual deployment environment:
+                         INTERNET / HOSPITAL NETWORK                                     │                                     ▼                              REVERSE PROXY                                     │                    ┌────────────────┴────────────────┐                    │                                 │                    ▼                                 ▼             REACT WEB CLIENT                 ASP.NET CORE API                                                      │                                                      ▼                                                POSTGRESQL                                                      │                              ┌───────────────────────┼─────────────┐                              │                       │             │                              ▼                       ▼             ▼                           BACKUP                  LOGGING       MONITORING
+The final deployment architecture shall be defined in the DevOps Architecture Document.
+
+2.10 Design and Implementation Constraints
+The following constraints apply to the initial CuraSphere project.
+CS-SYS-CON-001 — Frontend Technology
+The primary web frontend shall use React.js.
+CS-SYS-CON-002 — Backend Technology
+The backend application shall use C# and the .NET platform.
+CS-SYS-CON-003 — Backend Application Framework
+The primary backend API shall use ASP.NET Core.
+CS-SYS-CON-004 — Database Technology
+The primary relational database shall use PostgreSQL.
+CS-SYS-CON-005 — API Communication
+The web client shall communicate with the backend through approved HTTP-based APIs.
+Production communication shall use HTTPS.
+CS-SYS-CON-006 — Database Access
+Normal application users shall not directly access the production database.
+CS-SYS-CON-007 — Authentication
+Protected application functions shall require authenticated access.
+CS-SYS-CON-008 — Authorization
+Protected operations shall be controlled by authorization rules.
+CS-SYS-CON-009 — Auditability
+Security-sensitive and selected business-sensitive activities shall be auditable.
+CS-SYS-CON-010 — Version Control
+Application source code and approved technical configuration shall be maintained through Git-based version control.
+CS-SYS-CON-011 — Environment Separation
+The project shall maintain logically separate development and production environments.
+A test or staging environment should be maintained before production release.
+CS-SYS-CON-012 — Secret Management
+Passwords, database credentials, token secrets, and other sensitive secrets must not be hardcoded into source code.
+CS-SYS-CON-013 — Modular Design
+The application shall maintain identifiable functional module boundaries.
+CS-SYS-CON-014 — Maintainability
+Implementation shall follow documented naming, structure, and coding conventions.
+CS-SYS-CON-015 — Browser-Based Access
+The initial hospital staff interface shall be browser based.
+
+2.11 User Documentation
+CuraSphere shall be supported by user and technical documentation.
+Documentation categories shall include:
+End-User Documentation
+system login guide;
+dashboard guide;
+patient registration guide;
+appointment management guide;
+doctor workflow guide;
+nursing workflow guide;
+pharmacy workflow guide;
+laboratory workflow guide;
+billing workflow guide.
+Administrator Documentation
+user management guide;
+role management guide;
+permission management guide;
+system configuration guide;
+audit review guide.
+Technical Documentation
+software architecture document;
+database documentation;
+API documentation;
+environment configuration guide;
+deployment guide;
+backup guide;
+recovery guide;
+monitoring guide;
+troubleshooting guide.
+Developer Documentation
+project setup guide;
+coding conventions;
+Git workflow;
+branch strategy;
+pull request rules;
+testing guide;
+module development guide.
+The documentation structure is:
+                      CURASPHERE DOCUMENTATION                                │          ┌─────────────────────┼─────────────────────┐          │                     │                     │          ▼                     ▼                     ▼      BUSINESS               TECHNICAL              USER          │                     │                     │          ├── Vision            ├── Architecture      ├── Reception          ├── SRS               ├── Database          ├── Doctor          └── Scope             ├── API               ├── Nurse                                ├── DevOps            ├── Pharmacy                                └── Testing           └── Admin
+
+2.12 Assumptions
+The following initial assumptions apply to CuraSphere.
+CS-SYS-ASM-001
+The hospital shall provide authorized staff information required for account creation.
+CS-SYS-ASM-002
+Hospital staff shall receive appropriate training before production use.
+CS-SYS-ASM-003
+The hospital shall maintain suitable network infrastructure.
+CS-SYS-ASM-004
+Authorized hospital representatives shall validate clinical and administrative workflows.
+CS-SYS-ASM-005
+Hospital departments shall follow approved CuraSphere workflows after system adoption.
+CS-SYS-ASM-006
+The deployment organization shall maintain appropriate backup infrastructure.
+CS-SYS-ASM-007
+The production environment shall have sufficient computing resources for expected hospital workload.
+CS-SYS-ASM-008
+Regulatory requirements shall be identified according to the deployment jurisdiction before production launch.
+CS-SYS-ASM-009
+Third-party integrations shall provide stable and documented interfaces where integration is required.
+CS-SYS-ASM-010
+Clinical users remain responsible for professional healthcare decisions.
+CuraSphere is an information management platform and shall not replace professional medical judgment.
+
+2.13 Dependencies
+CuraSphere depends on several technical and operational components.
+2.13.1 Technical Dependencies
+The system depends on:
+supported .NET runtime;
+ASP.NET Core;
+React ecosystem;
+Node.js build environment;
+PostgreSQL;
+supported web browsers;
+operating system environment;
+network infrastructure.
+
+2.13.2 Development Dependencies
+Development depends on:
+Git;
+remote source control;
+development IDEs;
+package repositories;
+build tools;
+testing tools.
+
+2.13.3 Operational Dependencies
+Production operation depends on:
+server availability;
+database availability;
+network connectivity;
+backup processes;
+monitoring;
+technical support.
+
+2.13.4 External Service Dependencies
+Future or optional features may depend on:
+SMS providers;
+email providers;
+payment services;
+insurance services;
+healthcare interoperability services.
+External service failure must not corrupt the primary CuraSphere database.
+The general dependency model is:
+                         CURASPHERE                              │       ┌──────────────────────┼──────────────────────┐       │                      │                      │       ▼                      ▼                      ▼   PLATFORM               INFRASTRUCTURE          EXTERNAL       │                      │                      │       ├── .NET               ├── Network            ├── SMS       ├── React              ├── Server             ├── Email       ├── PostgreSQL         ├── Storage            ├── Payment       └── Node.js            └── Backup             └── Insurance
+
+2.14 System Context
+The system context identifies CuraSphere as a single system and shows its major external actors and external systems.
+2.14.1 Level 0 System Context Diagram
+                                 ┌──────────────────┐                                 │     PATIENT      │                                 └────────┬─────────┘                                          │                                          │ Patient Information                                          │ Appointment Information                                          ▼┌──────────────────┐             ┌──────────────────────────┐│   RECEPTIONIST   │────────────►│                          │└──────────────────┘             │                          │                                 │                          │┌──────────────────┐             │                          ││      DOCTOR      │◄───────────►│                          │└──────────────────┘             │                          │                                 │                          │┌──────────────────┐             │                          ││      NURSE       │◄───────────►│        CURASPHERE        │└──────────────────┘             │                          │                                 │   HOSPITAL MANAGEMENT    │┌──────────────────┐             │          SYSTEM          ││    PHARMACIST    │◄───────────►│                          │└──────────────────┘             │                          │                                 │                          │┌──────────────────┐             │                          ││ LABORATORY STAFF │◄───────────►│                          │└──────────────────┘             │                          │                                 │                          │┌──────────────────┐             │                          ││ RADIOLOGY STAFF  │◄───────────►│                          │└──────────────────┘             │                          │                                 │                          │┌──────────────────┐             │                          ││ BILLING OFFICER  │◄───────────►│                          │└──────────────────┘             │                          │                                 │                          │┌──────────────────┐             │                          ││      ADMIN       │◄───────────►│                          │└──────────────────┘             └────────────┬─────────────┘                                              │                         ┌────────────────────┼────────────────────┐                         │                    │                    │                         ▼                    ▼                    ▼                   EMAIL SERVICE         SMS SERVICE       FUTURE EXTERNAL                                                               SYSTEMS
+
+2.14.2 Context Interaction Table
+External Actor/System
+Interaction with CuraSphere
+Patient
+Provides patient information and receives healthcare-related information
+Receptionist
+Registers patients and manages appointments
+Doctor
+Reviews clinical information and records clinical decisions
+Nurse
+Records nursing and patient monitoring information
+Pharmacist
+Reviews prescriptions and manages dispensing
+Laboratory Staff
+Processes laboratory requests and results
+Radiology Staff
+Processes radiology requests
+Billing Officer
+Manages invoices and payments
+HR Staff
+Manages employee information
+Inventory Staff
+Manages hospital stock
+Hospital Administrator
+Manages hospital operations
+System Administrator
+Manages technical access and configuration
+Hospital Management
+Reviews operational and management information
+Email Service
+Delivers approved email notifications
+SMS Service
+Delivers approved SMS notifications
+Future External Systems
+Exchange approved information through controlled integrations
+
+2.15 System Boundary Model
+The detailed high-level system boundary is:
++-----------------------------------------------------------------------+|                           CURASPHERE                                   ||                                                                       ||  +------------------+  +------------------+  +---------------------+   ||  | Identity & Access|  | Patient          |  | Appointment         |   ||  +------------------+  +------------------+  +---------------------+   ||                                                                       ||  +------------------+  +------------------+  +---------------------+   ||  | Clinical Records |  | OPD / IPD        |  | Emergency           |   ||  +------------------+  +------------------+  +---------------------+   ||                                                                       ||  +------------------+  +------------------+  +---------------------+   ||  | Pharmacy         |  | Laboratory       |  | Radiology           |   ||  +------------------+  +------------------+  +---------------------+   ||                                                                       ||  +------------------+  +------------------+  +---------------------+   ||  | Billing          |  | Insurance        |  | Inventory           |   ||  +------------------+  +------------------+  +---------------------+   ||                                                                       ||  +------------------+  +------------------+  +---------------------+   ||  | HR               |  | Reports          |  | Notifications       |   ||  +------------------+  +------------------+  +---------------------+   ||                                                                       ||  +------------------+  +------------------+                            ||  | Audit            |  | Administration   |                            ||  +------------------+  +------------------+                            ||                                                                       |+-----------------------------------------------------------------------+             ▲                                         ▲             │                                         │       HOSPITAL USERS                           EXTERNAL SERVICES             │                                         │             ▼                                         ▼  Doctors / Nurses / Staff                   SMS / Email / Future APIs
+
+2.16 High-Level Information Flow Model
+The following model describes the primary direction of information through CuraSphere.
+                           PATIENT INFORMATION                                    │                                    ▼                              REGISTRATION                                    │                                    ▼                              PATIENT RECORD                                    │                ┌───────────────────┼───────────────────┐                │                   │                   │                ▼                   ▼                   ▼           APPOINTMENT          EMERGENCY           ADMISSION                │                   │                   │                └───────────────────┼───────────────────┘                                    │                                    ▼                            CLINICAL RECORD                                    │          ┌─────────────────────────┼─────────────────────────┐          │                         │                         │          ▼                         ▼                         ▼      LABORATORY                RADIOLOGY                 PHARMACY          │                         │                         │          └─────────────────────────┼─────────────────────────┘                                    │                                    ▼                               PATIENT CARE                                    │                                    ▼                                  BILLING                                    │                                    ▼                                  PAYMENT                                    │                                    ▼                           REPORTING AND AUDIT
+The diagram represents a high-level conceptual flow.
+It does not imply that all processes must execute in exactly this sequence.
+For example:
+an emergency patient may bypass a standard appointment;
+an admitted patient may require multiple laboratory tests;
+a patient may receive multiple prescriptions;
+billing charges may be generated throughout the patient journey.
+Detailed workflow rules shall be documented in the functional requirements and business rules sections.
+
+2.17 CuraSphere Conceptual Model
+The central conceptual model of CuraSphere is:
+                              HOSPITAL                                  │                                  ▼                              DEPARTMENT                                  │              ┌───────────────────┼───────────────────┐              │                   │                   │              ▼                   ▼                   ▼             STAFF              SERVICES           RESOURCES              │                   │                   │              │                   │                   ├── Rooms              │                   │                   ├── Beds              │                   │                   └── Inventory              │                   │              │                   ▼              │                 PATIENT              │                   │              └──────────────────►│                                  │                                  ▼                            PATIENT JOURNEY                                  │           ┌──────────────────────┼──────────────────────┐           │                      │                      │           ▼                      ▼                      ▼       OUTPATIENT             INPATIENT              EMERGENCY           │                      │                      │           └──────────────────────┼──────────────────────┘                                  │                                  ▼                           CLINICAL SERVICES                                  │                ┌─────────────────┼─────────────────┐                │                 │                 │                ▼                 ▼                 ▼             DOCTOR              LAB             RADIOLOGY                │                ▼            PRESCRIPTION                │                ▼             PHARMACY                │                ▼              CHARGES                │                ▼              BILLING                │                ▼              PAYMENT
+This conceptual model will later influence:
+domain architecture;
+module boundaries;
+database entities;
+API resources;
+React feature modules.
+However, those technical designs shall not be finalized until the detailed requirements are documented.
+
+2.18 Overall Product Quality Direction
+CuraSphere shall be engineered with the following quality direction:
+                           CURASPHERE QUALITY                                  │          ┌───────────────────────┼───────────────────────┐          │                       │                       │          ▼                       ▼                       ▼       SECURITY               RELIABILITY              USABILITY          │                       │                       │          ├── Access Control      ├── Data Integrity      ├── Clear UI          ├── Audit               ├── Error Handling      ├── Fast Tasks          ├── Encryption          ├── Recovery            ├── Consistency          └── Privacy             └── Availability        └── Accessibility                                  │                                  ▼                            MAINTAINABILITY                                  │                     Modular + Testable + Observable
+The detailed measurable quality requirements shall be defined under the Non-Functional Requirements section.
+
+SECTION 2 SUMMARY
+Section 2 establishes that CuraSphere is:
+a web-based Hospital Management System;
+an integrated hospital information platform;
+built around controlled information access;
+designed for clinical, administrative, operational, and financial workflows;
+initially targeted at a single hospital;
+designed with future scalability in mind;
+based on React.js for the frontend;
+based on C# and ASP.NET Core for the backend;
+based on PostgreSQL for relational data storage;
+designed for container-compatible deployment;
+based on modular system boundaries;
+accessed by multiple hospital user classes;
+integrated with external services only through controlled interfaces.
+
+SECTION 2 STATUS
+Section: Overall DescriptionSection ID: CS-SRS-SEC-002Project: CuraSphereDocument: CS-SRS-001Version: 1.0 DraftStatus: Completed
+The product perspective, system boundary, product functions, user classes, operating environment, technical constraints, documentation expectations, assumptions, dependencies, system context, information flow, and conceptual model have now been defined.
+

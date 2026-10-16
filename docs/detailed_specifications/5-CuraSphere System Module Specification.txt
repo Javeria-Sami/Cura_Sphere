@@ -1,0 +1,915 @@
+﻿CURASPHERE
+Hospital Management System
+Software Requirements Specification
+SECTION 4 — SYSTEM MODULE SPECIFICATION
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-004Project: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+4. SYSTEM MODULE SPECIFICATION
+4.1 Purpose
+The purpose of this section is to divide CuraSphere into clearly defined functional modules.
+A software module represents a cohesive business capability or system responsibility.
+CuraSphere shall not be treated as one large application containing unrelated features.
+The system shall be decomposed into controlled modules.
+                    CURASPHERE                         │                         ▼                 SYSTEM CAPABILITIES                         │                         ▼                 FUNCTIONAL DOMAINS                         │                         ▼                      MODULES                         │                         ▼                    SUBMODULES                         │                         ▼                     FEATURES                         │                         ▼                   REQUIREMENTS
+The module decomposition shall help:
+separate business responsibilities;
+reduce system complexity;
+improve maintainability;
+support parallel development;
+improve testability;
+define API boundaries;
+define data ownership;
+support future scalability;
+reduce unnecessary coupling.
+
+4.2 Module Design Principles
+CuraSphere modules shall follow the following principles.
+4.2.1 Single Business Responsibility
+Each module should represent a clear business capability.
+Example:
+Patient Module
+is responsible for patient administrative information.
+It should not become responsible for:
+Billing calculationsMedicine inventoryUser authenticationDeployment configuration
+
+4.2.2 High Cohesion
+Related functionality shall remain within the same logical module.
+Example:
+Appointment Module├── Appointment Booking├── Appointment Rescheduling├── Appointment Cancellation├── Appointment Status└── Appointment History
+These functions belong together.
+
+4.2.3 Controlled Coupling
+Modules may depend on other modules where required.
+However, dependencies shall be explicit.
+Example:
+APPOINTMENT     │     ├────► PATIENT     │     └────► DOCTOR
+An appointment requires a patient and a doctor.
+The appointment module should not independently duplicate patient or doctor master information.
+
+4.2.4 Data Ownership
+Each major business concept shall have a logical owning module.
+Example:
+Business Information
+Logical Owner
+Patient demographic record
+Patient Module
+Appointment
+Appointment Module
+Clinical encounter
+EMR/Clinical Module
+Prescription
+Prescription/Clinical Module
+Medicine batch
+Pharmacy Module
+Laboratory result
+Laboratory Module
+Invoice
+Billing Module
+User account
+Identity and Access Module
+Other modules may use approved information without becoming its logical owner.
+
+4.2.5 Authorization at Module Boundaries
+A user’s access to one module shall not automatically provide access to every CuraSphere module.
+Example:
+RECEPTIONISTPatient Registration     ALLOWEDAppointment Booking      ALLOWEDClinical Diagnosis       NOT ALLOWEDLab Result Approval      NOT ALLOWEDRefund Approval          NOT ALLOWEDRole Management          NOT ALLOWED
+
+4.2.6 Auditability
+Sensitive module operations shall generate appropriate audit information.
+Examples include:
+permission changes;
+clinical record changes;
+laboratory result approval;
+radiology report release;
+refund processing;
+stock adjustment.
+
+4.3 CuraSphere Module Coding Convention
+Every module shall have a short module code.
+The module code shall be used in:
+requirement IDs;
+architecture documentation;
+API documentation;
+test documentation;
+project planning;
+issue tracking.
+The format is:
+CS-[MODULE]-[TYPE]-[NUMBER]
+Example:
+CS-PAT-FR-001
+means:
+CS      CuraSpherePAT     Patient ModuleFR      Functional Requirement001     Requirement Number
+
+4.4 Master Module Registry
+Code
+Module
+IAM
+Identity and Access Management
+DASH
+Dashboard and Analytics
+ORG
+Hospital Organization Management
+PAT
+Patient Management
+DOC
+Doctor Management
+NUR
+Nurse Management
+APT
+Appointment Management
+QUE
+Queue and Check-In Management
+OPD
+Outpatient Department Management
+IPD
+Inpatient Department Management
+ER
+Emergency Management
+EMR
+Electronic Medical Record
+VIT
+Vital Signs and Monitoring
+PRE
+Prescription Management
+PHA
+Pharmacy Management
+LAB
+Laboratory Management
+RAD
+Radiology Management
+BED
+Bed and Room Management
+BIL
+Billing Management
+PAY
+Payment Management
+INS
+Insurance Management
+INV
+General Inventory Management
+HR
+Human Resource Management
+FIN
+Finance Management
+NOT
+Notification Management
+REP
+Reporting and Analytics
+AUD
+Audit Management
+CFG
+System Configuration
+INT
+Integration Management
+OPS
+Operational and Technical Management
+
+4.5 Top-Level Module Architecture
+                              CURASPHERE                                   │       ┌───────────────────────────┼───────────────────────────┐       │                           │                           │       ▼                           ▼                           ▼  PLATFORM DOMAIN            CLINICAL DOMAIN           BUSINESS DOMAIN       │                           │                           │       │                           │                           │       ├── IAM                     ├── PAT                     ├── BIL       ├── DASH                    ├── DOC                     ├── PAY       ├── ORG                     ├── NUR                     ├── INS       ├── NOT                     ├── APT                     ├── INV       ├── AUD                     ├── QUE                     ├── HR       ├── CFG                     ├── OPD                     ├── FIN       ├── INT                     ├── IPD                     └── REP       └── OPS                     ├── ER                                   ├── EMR                                   ├── VIT                                   ├── PRE                                   ├── PHA                                   ├── LAB                                   ├── RAD                                   └── BED
+This is a functional decomposition model.
+It does not mean each module shall become a separate server or microservice.
+The initial CuraSphere architecture may implement these modules within a modular application.
+
+4.6 Platform Domain
+The Platform Domain provides shared system capabilities.
+PLATFORM DOMAIN      │      ├── Identity and Access      ├── Dashboard      ├── Organization      ├── Notification      ├── Audit      ├── Configuration      ├── Integration      └── Operations
+
+4.7 IAM — Identity and Access Management Module
+Module Code
+IAM
+Purpose
+The IAM module shall manage digital identities and control access to CuraSphere.
+Primary Responsibilities
+user accounts;
+authentication;
+roles;
+permissions;
+account status;
+access policies;
+authentication events.
+Primary Actors
+System Administrator
+IT Support
+All authenticated users
+Inputs
+login credentials;
+user information;
+role assignments;
+permission assignments;
+account management actions.
+Outputs
+authenticated user identity;
+access decisions;
+authentication status;
+security events.
+Submodules
+IAM │ ├── User Account Management ├── Authentication ├── Role Management ├── Permission Management ├── Access Policy ├── Account Recovery └── Security Event Management
+Module Boundary
+IAM owns:
+user account identity;
+authentication state;
+role definition;
+permission definition.
+IAM does not own:
+employee HR records;
+doctor clinical profiles;
+patient information.
+Example:
+EMPLOYEE RECORD      │      │ managed by      ▼      HRUSER ACCOUNT      │      │ managed by      ▼      IAM
+An employee may exist without an active CuraSphere user account.
+
+4.8 DASH — Dashboard and Analytics Module
+Purpose
+The Dashboard module shall provide role-aware summaries and operational indicators.
+Primary Responsibilities
+dashboard composition;
+role-aware indicators;
+operational summaries;
+alert summaries;
+quick-access information.
+Primary Actors
+Hospital Management
+Hospital Administrator
+Doctor
+Nurse
+Pharmacist
+Laboratory Staff
+Billing Officer
+Submodules
+DASH │ ├── Management Dashboard ├── Clinical Dashboard ├── Doctor Dashboard ├── Nursing Dashboard ├── Pharmacy Dashboard ├── Laboratory Dashboard ├── Billing Dashboard └── Operational Dashboard
+Dependencies
+DASH │ ├────► PAT ├────► APT ├────► IPD ├────► BED ├────► LAB ├────► PHA ├────► BIL └────► REP
+The Dashboard module primarily consumes summarized information.
+It shall not become the master owner of hospital transaction data.
+
+4.9 ORG — Hospital Organization Management Module
+Purpose
+The ORG module shall manage the organizational structure of the hospital.
+Responsibilities
+hospital information;
+departments;
+units;
+service locations;
+organizational relationships.
+Submodules
+ORG │ ├── Hospital Profile ├── Department Management ├── Unit Management ├── Service Location Management └── Organizational Structure
+Example Structure
+HOSPITAL   │   ├── CARDIOLOGY   │      ├── OPD   │      └── WARD   │   ├── RADIOLOGY   │   ├── LABORATORY   │   ├── PHARMACY   │   └── EMERGENCY
+
+4.10 PAT — Patient Management Module
+Purpose
+The Patient Management module shall manage the patient’s administrative identity within CuraSphere.
+Responsibilities
+patient registration;
+patient identification;
+Medical Record Number;
+demographic information;
+contact information;
+emergency contacts;
+patient search;
+duplicate patient detection;
+patient status.
+Primary Actors
+Receptionist
+Authorized Hospital Administrator
+Authorized Clinical Users
+Inputs
+patient identity information;
+demographic information;
+contact information.
+Outputs
+patient record;
+Medical Record Number;
+patient profile;
+patient search results.
+Submodules
+PAT │ ├── Patient Registration ├── Patient Identification ├── Patient Search ├── Demographic Management ├── Contact Management ├── Emergency Contact ├── Duplicate Detection └── Patient Status
+Patient Module Boundary
+PAT owns:
+NameDate of BirthSex/Gender information as configuredContact InformationAddress InformationEmergency ContactPatient IdentifierMRN
+PAT does not own:
+DiagnosisPrescriptionLaboratory ResultInvoiceMedicine Stock
+These belong to other modules.
+
+4.11 DOC — Doctor Management Module
+Purpose
+The Doctor Management module shall manage doctor administrative and professional profile information.
+Responsibilities
+doctor profile;
+specialization;
+department association;
+doctor status;
+professional information;
+availability references.
+Submodules
+DOC │ ├── Doctor Profile ├── Specialization ├── Department Assignment ├── Professional Information ├── Doctor Status └── Availability Profile
+Dependencies
+DOC ─────► HRDOC ─────► ORGDOC ─────► IAM
+A doctor may be:
+Employee   +Professional Clinical User   +System User
+These concepts shall remain logically separate.
+
+4.12 NUR — Nurse Management Module
+Purpose
+The Nurse Management module shall manage nurse administrative and care assignment information.
+Responsibilities
+nurse profile;
+department assignment;
+ward assignment;
+care assignment;
+nurse status.
+Submodules
+NUR │ ├── Nurse Profile ├── Department Assignment ├── Ward Assignment ├── Patient Care Assignment └── Nurse Status
+
+4.13 APT — Appointment Management Module
+Purpose
+The Appointment module shall manage scheduled patient and healthcare provider encounters.
+Responsibilities
+appointment booking;
+appointment scheduling;
+appointment rescheduling;
+cancellation;
+appointment status;
+appointment history.
+Primary Actors
+Receptionist
+Doctor
+Hospital Administrator
+Future Patient Portal
+Inputs
+patient;
+doctor;
+appointment service;
+date;
+time;
+appointment reason.
+Outputs
+appointment record;
+appointment status;
+appointment schedule information.
+Submodules
+APT │ ├── Appointment Booking ├── Schedule Validation ├── Rescheduling ├── Cancellation ├── Appointment Status └── Appointment History
+Dependencies
+APT │ ├────► PAT ├────► DOC └────► ORG
+Appointment Lifecycle
+REQUESTED    │    ▼SCHEDULED    │    ├────────► CANCELLED    │    ├────────► NO-SHOW    │    ▼CHECKED-IN    │    ▼IN-PROGRESS    │    ▼COMPLETED
+
+4.14 QUE — Queue and Check-In Management Module
+Purpose
+The Queue module shall manage patient arrival and service queues.
+Responsibilities
+patient check-in;
+queue creation;
+queue number or token;
+waiting status;
+service call status.
+Submodules
+QUE │ ├── Patient Check-In ├── Queue Entry ├── Token Management ├── Waiting List └── Queue Status
+Conceptual Flow
+APPOINTMENT / WALK-IN          │          ▼       CHECK-IN          │          ▼     QUEUE ENTRY          │          ▼        WAITING          │          ▼       CALLED          │          ▼    SERVICE STARTED
+
+4.15 OPD — Outpatient Department Management Module
+Purpose
+The OPD module shall manage outpatient clinical encounters.
+Responsibilities
+outpatient encounter initiation;
+doctor consultation workflow;
+OPD status;
+clinical service coordination;
+follow-up workflow.
+Submodules
+OPD │ ├── OPD Encounter ├── Consultation Workflow ├── Service Request Coordination ├── Follow-Up └── OPD Completion
+Dependencies
+OPD │ ├────► PAT ├────► DOC ├────► QUE ├────► EMR ├────► PRE ├────► LAB └────► RAD
+OPD Flow
+PATIENT CHECK-IN       │       ▼     QUEUE       │       ▼DOCTOR CONSULTATION       │       ▼ CLINICAL RECORD       │  ┌────┼────┐  │    │    │  ▼    ▼    ▼ LAB  RAD  PRESCRIPTION  │    │    │  └────┼────┘       │       ▼   FOLLOW-UP       │       ▼OPD ENCOUNTER COMPLETE
+
+4.16 IPD — Inpatient Department Management Module
+Purpose
+The IPD module shall manage hospitalized patient encounters.
+Responsibilities
+admission;
+inpatient encounter;
+transfer;
+inpatient status;
+discharge workflow.
+Submodules
+IPD │ ├── Admission Request ├── Admission ├── Inpatient Encounter ├── Ward Transfer ├── Clinical Coordination ├── Discharge Request └── Discharge
+Dependencies
+IPD │ ├────► PAT ├────► DOC ├────► NUR ├────► BED ├────► EMR ├────► VIT ├────► PRE ├────► LAB ├────► RAD └────► BIL
+Inpatient Lifecycle
+ADMISSION REQUESTED        │        ▼ADMISSION APPROVED        │        ▼BED ASSIGNED        │        ▼     ADMITTED        │        ├────► TRANSFERRED        │        ▼INPATIENT TREATMENT        │        ▼DISCHARGE REQUESTED        │        ▼DISCHARGE COMPLETED
+
+4.17 ER — Emergency Management Module
+Purpose
+The Emergency module shall support urgent patient care workflows.
+Responsibilities
+emergency patient entry;
+rapid identification;
+temporary patient handling;
+triage;
+emergency encounter;
+emergency disposition.
+Submodules
+ER │ ├── Emergency Registration ├── Rapid Identification ├── Temporary Patient ├── Triage ├── Emergency Encounter └── Emergency Disposition
+Emergency Flow
+PATIENT ARRIVAL      │      ▼RAPID IDENTIFICATION      │      ├────► KNOWN PATIENT      │      └────► TEMPORARY PATIENT                     │                     ▼                   TRIAGE                     │                     ▼              EMERGENCY CARE                     │          ┌──────────┼──────────┐          │          │          │          ▼          ▼          ▼      DISCHARGE    ADMIT      TRANSFER
+Emergency requirements shall balance:
+SPEED  +PATIENT SAFETY  +DATA QUALITY  +AUDITABILITY
+
+4.18 EMR — Electronic Medical Record Module
+Purpose
+The EMR module shall maintain the longitudinal clinical information associated with a patient.
+Responsibilities
+clinical encounters;
+clinical notes;
+medical history;
+allergy information;
+diagnosis records;
+clinical summaries.
+Submodules
+EMR │ ├── Clinical Encounter ├── Clinical Notes ├── Medical History ├── Allergy Management ├── Diagnosis Management └── Clinical Summary
+EMR Information Model
+                         PATIENT                            │                            ▼                    MEDICAL RECORD                            │       ┌────────────────────┼────────────────────┐       │                    │                    │       ▼                    ▼                    ▼   ENCOUNTERS            HISTORY              ALLERGIES       │       ├── OPD       ├── IPD       └── EMERGENCY       │       ▼   CLINICAL NOTES       │       ▼     DIAGNOSES
+EMR shall act as a clinical information domain.
+It shall not own medicine stock or billing transactions.
+
+4.19 VIT — Vital Signs and Monitoring Module
+Purpose
+The Vital Signs module shall manage recorded patient physiological observations.
+Potential Measurements
+temperature;
+blood pressure;
+heart rate;
+respiratory rate;
+oxygen saturation;
+weight;
+height;
+other approved observations.
+Submodules
+VIT │ ├── Vital Sign Recording ├── Observation History ├── Monitoring Schedule └── Monitoring Alert
+Primary Actors
+Nurse
+Doctor
+
+4.20 PRE — Prescription Management Module
+Purpose
+The Prescription module shall manage clinical medication orders.
+Responsibilities
+prescription creation;
+prescription items;
+medication instructions;
+prescription status;
+prescription history.
+Submodules
+PRE │ ├── Prescription Creation ├── Prescription Item ├── Dosage Instruction ├── Prescription Status └── Prescription History
+Boundary
+Prescription represents:
+CLINICAL MEDICATION ORDER
+Pharmacy represents:
+MEDICINE STOCK + DISPENSING
+Therefore:
+DOCTOR   │   ▼PRESCRIPTION MODULE   │   ▼PHARMACY MODULE   │   ▼DISPENSING
+A prescription does not automatically mean medicine has been dispensed.
+
+4.21 PHA — Pharmacy Management Module
+Purpose
+The Pharmacy module shall manage medicines, pharmacy stock, medicine batches, and dispensing.
+Responsibilities
+medicine catalog;
+medicine batches;
+stock;
+expiry;
+prescription queue;
+dispensing;
+pharmacy stock movement.
+Submodules
+PHA │ ├── Medicine Catalog ├── Medicine Category ├── Medicine Batch ├── Pharmacy Stock ├── Expiry Management ├── Prescription Queue ├── Dispensing └── Pharmacy Stock Movement
+Pharmacy Data Flow
+MEDICINE    │    ▼MEDICINE BATCH    │    ├── Batch Number    ├── Expiry Date    ├── Quantity    └── Cost Information    │    ▼PHARMACY STOCK    │    ▼PRESCRIPTION    │    ▼DISPENSING    │    ▼STOCK MOVEMENT
+
+4.22 LAB — Laboratory Management Module
+Purpose
+The Laboratory module shall manage diagnostic laboratory workflows.
+Responsibilities
+test catalog;
+laboratory orders;
+samples;
+processing;
+results;
+result verification.
+Submodules
+LAB │ ├── Laboratory Test Catalog ├── Test Request ├── Sample Management ├── Test Processing ├── Result Recording ├── Result Verification └── Result Release
+Laboratory Lifecycle
+REQUESTED    │    ▼ACCEPTED    │    ▼SAMPLE PENDING    │    ▼SAMPLE COLLECTED    │    ▼IN PROCESS    │    ▼RESULT RECORDED    │    ▼VERIFICATION PENDING    │    ├────► REJECTED    │    ▼VERIFIED    │    ▼RELEASED
+
+4.23 RAD — Radiology Management Module
+Purpose
+The Radiology module shall manage diagnostic imaging service workflows and reports.
+Responsibilities
+radiology service catalog;
+examination requests;
+scheduling;
+examination status;
+radiology reporting;
+report verification.
+Submodules
+RAD │ ├── Imaging Service Catalog ├── Radiology Request ├── Examination Scheduling ├── Examination Workflow ├── Radiology Report ├── Report Verification └── Report Release
+Boundary
+The initial RAD module is not a full PACS.
+Conceptually:
+CURASPHERE RAD      │      ├── Request      ├── Schedule      ├── Status      └── ReportPACS      │      └── Medical Imaging Storage
+Future integration may connect CuraSphere with a PACS.
+
+4.24 BED — Bed and Room Management Module
+Purpose
+The Bed Management module shall manage hospital accommodation resources.
+Responsibilities
+wards;
+rooms;
+beds;
+bed status;
+bed assignment;
+bed transfer.
+Submodules
+BED │ ├── Ward Management ├── Room Management ├── Bed Management ├── Bed Availability ├── Bed Assignment └── Bed Transfer
+Resource Hierarchy
+HOSPITAL   │   ▼WARD   │   ▼ROOM   │   ▼BED
+Example Bed Status Model
+AVAILABLE    │    ▼RESERVED    │    ▼OCCUPIED    │    ▼CLEANING    │    ▼AVAILABLE
+Additional statuses may be defined during detailed business rule analysis.
+
+4.25 BIL — Billing Management Module
+Purpose
+The Billing module shall manage patient financial charges and invoices.
+Responsibilities
+service charges;
+patient charges;
+invoice generation;
+invoice items;
+discounts;
+invoice status.
+Submodules
+BIL │ ├── Service Pricing ├── Patient Charge ├── Invoice ├── Invoice Item ├── Discount └── Billing Status
+Billing Flow
+HOSPITAL SERVICE       │       ▼     CHARGE       │       ▼PATIENT ACCOUNT       │       ▼     INVOICE       │       ▼  INVOICE STATUS
+Billing does not own payment transaction processing.
+Payments belong to the PAY module.
+
+4.26 PAY — Payment Management Module
+Purpose
+The Payment module shall manage payment and refund transactions.
+Responsibilities
+payment recording;
+payment methods;
+payment allocation;
+payment status;
+refund request;
+refund authorization;
+refund transaction.
+Submodules
+PAY │ ├── Payment Recording ├── Payment Method ├── Payment Allocation ├── Refund Request ├── Refund Authorization └── Refund Processing
+Payment Flow
+INVOICE   │   ▼PAYMENT   │   ├────► PARTIAL PAYMENT   │   └────► FULL PAYMENT   │   ▼PAYMENT ALLOCATION
+Refund flow:
+REFUND REQUEST      │      ▼AUTHORIZATION      │      ├────► REJECTED      │      ▼APPROVED      │      ▼REFUND PROCESSED      │      ▼AUDIT RECORD
+
+4.27 INS — Insurance Management Module
+Purpose
+The Insurance module shall manage patient insurance information and basic claim tracking.
+Responsibilities
+insurance providers;
+patient policies;
+coverage information;
+claim references;
+claim status.
+Submodules
+INS │ ├── Insurance Provider ├── Patient Insurance ├── Policy Information ├── Coverage Information └── Claim Tracking
+Direct real-time insurance processing may be added through future integrations.
+
+4.28 INV — General Inventory Management Module
+Purpose
+The Inventory module shall manage non-pharmacy hospital stock and supplies.
+Responsibilities
+inventory items;
+categories;
+suppliers;
+stock receipts;
+stock issues;
+stock adjustments;
+stock levels.
+Submodules
+INV │ ├── Item Catalog ├── Item Category ├── Supplier ├── Stock Receipt ├── Stock Issue ├── Stock Adjustment └── Stock Alert
+Boundary
+PHARMACY INVENTORY       │       ▼      PHAGENERAL HOSPITAL INVENTORY       │       ▼      INV
+This separation prevents medicine-specific business rules from being mixed with general hospital supplies.
+
+4.29 HR — Human Resource Management Module
+Purpose
+The HR module shall manage hospital employee administrative information.
+Responsibilities
+employee records;
+designation;
+department assignment;
+employment status;
+attendance;
+leave.
+Submodules
+HR │ ├── Employee Management ├── Designation ├── Department Assignment ├── Employment Status ├── Attendance └── Leave Management
+HR and IAM Relationship
+HR │ ▼EMPLOYEEEMPLOYEE │ ├──── MAY HAVE ────► USER ACCOUNT │                        │ │                        ▼ │                       IAM │ └──── MAY NOT HAVE SYSTEM ACCESS
+Not every hospital employee requires a CuraSphere account.
+
+4.30 FIN — Finance Management Module
+Purpose
+The Finance module shall provide hospital-level financial management capabilities beyond patient billing.
+Responsibilities
+expense information;
+financial categories;
+income summaries;
+expense summaries;
+financial reporting.
+Submodules
+FIN │ ├── Expense Management ├── Financial Category ├── Income Summary ├── Expense Summary └── Financial Reports
+Advanced accounting, general ledger, and enterprise resource planning capabilities may require a future dedicated financial system or integration.
+
+4.31 NOT — Notification Management Module
+Purpose
+The Notification module shall manage CuraSphere-generated notifications.
+Responsibilities
+internal notifications;
+notification templates;
+delivery requests;
+notification status;
+notification preferences.
+Submodules
+NOT │ ├── Internal Notification ├── Notification Template ├── Notification Preference ├── Delivery Request └── Delivery Status
+Delivery Model
+SYSTEM EVENT     │     ▼NOTIFICATION RULE     │     ▼NOTIFICATION     │ ┌───┼────┐ │   │    │ ▼   ▼    ▼IN-APP EMAIL SMS
+Email and SMS delivery depend on external integration services.
+
+4.32 REP — Reporting and Analytics Module
+Purpose
+The Reporting module shall provide authorized operational, clinical, and financial reports.
+Responsibilities
+report definition;
+report filters;
+report generation;
+report export;
+summarized analytics.
+Report Categories
+REP │ ├── Patient Reports ├── Appointment Reports ├── Clinical Reports ├── Admission Reports ├── Bed Reports ├── Laboratory Reports ├── Pharmacy Reports ├── Billing Reports ├── Inventory Reports └── Management Reports
+The reporting module shall primarily consume information from source modules.
+It shall not silently modify source transactions.
+
+4.33 AUD — Audit Management Module
+Purpose
+The Audit module shall maintain traceability for selected system activities.
+Responsibilities
+audit event recording;
+audit event classification;
+audit search;
+audit review;
+security event correlation support.
+Potential Audit Information
+WHO │ ▼USER IDENTITYWHAT │ ▼ACTIONWHEN │ ▼TIMESTAMPWHERE │ ▼SYSTEM CONTEXTTARGET │ ▼AFFECTED RESOURCERESULT │ ▼SUCCESS / FAILURE
+Audit Example
+Actor:Billing Officer 104Action:Approved RefundTarget:Refund RF-00041Time:2026-XX-XX 10:42Result:Successful
+Sensitive values shall not be indiscriminately copied into audit logs.
+
+4.34 CFG — System Configuration Module
+Purpose
+The Configuration module shall manage approved system-level configuration.
+Responsibilities
+hospital configuration;
+application settings;
+reference configuration;
+workflow configuration where approved.
+Submodules
+CFG │ ├── Hospital Settings ├── Application Settings ├── Reference Data └── Workflow Configuration
+Configuration changes may require audit logging.
+
+4.35 INT — Integration Management Module
+Purpose
+The Integration module shall provide controlled communication with approved external systems.
+Potential Integrations
+email provider;
+SMS provider;
+insurance service;
+payment service;
+PACS;
+healthcare interoperability services.
+Conceptual Model
+CURASPHERE    │    ▼INTEGRATION BOUNDARY    │    ├────► EMAIL    ├────► SMS    ├────► PAYMENT    ├────► INSURANCE    └────► HEALTHCARE SYSTEM
+External systems shall not directly control CuraSphere domain data without application validation.
+
+4.36 OPS — Operational and Technical Management Module
+Purpose
+The OPS module represents operational capabilities required to support the running application.
+Responsibilities
+application health information;
+technical diagnostics;
+operational status;
+maintenance support.
+Conceptual Submodules
+OPS │ ├── Application Health ├── Technical Diagnostics ├── Operational Status └── Maintenance Support
+Infrastructure monitoring implementation shall be defined in the DevOps Architecture Document.
+
+4.37 Module Dependency Model
+The major high-level dependency model is:
+                              IAM                               │                               ▼                      AUTHORIZED USERS                               │                 ┌─────────────┼─────────────┐                 │             │             │                 ▼             ▼             ▼                PAT           ORG            HR                 │             │             │                 └──────┬──────┴──────┬──────┘                        │             │                        ▼             ▼                       DOC           NUR                        │             │                        └──────┬──────┘                               │                               ▼                              APT                               │                               ▼                              QUE                               │                               ▼                     ┌─────────┼─────────┐                     │         │         │                     ▼         ▼         ▼                    OPD       IPD        ER                     │         │         │                     └─────────┼─────────┘                               │                               ▼                              EMR                               │             ┌─────────────────┼─────────────────┐             │                 │                 │             ▼                 ▼                 ▼            PRE               LAB               RAD             │             ▼            PHACLINICAL SERVICES       │       ▼      BIL       │       ▼      PAY       │       ▼      FINALL MODULES ─────► AUDALL MODULES ─────► NOTSOURCE MODULES ──► REPEXTERNAL COMMUNICATION ──► INT
+This diagram represents conceptual dependencies.
+Detailed software dependency direction shall be defined in the Software Architecture Document.
+
+4.38 Patient Journey to Module Mapping
+PATIENT ARRIVAL      │      ▼PATIENT SEARCH / REGISTRATION      │      ▼     PAT      │      ▼APPOINTMENT / WALK-IN      │      ▼  APT + QUE      │      ▼OPD / IPD / EMERGENCY      │      ▼ OPD / IPD / ER      │      ▼CLINICAL DOCUMENTATION      │      ▼     EMR      │ ┌────┼────┬────┐ │    │    │    │ ▼    ▼    ▼    ▼VIT  PRE  LAB   RAD      │      ▼     PHA      │      ▼     BIL      │      ▼     PAY      │      ▼     REP
+
+4.39 Module Ownership Matrix
+Module
+Primary Business Owner
+IAM
+System Administration / Security
+DASH
+Hospital Management
+ORG
+Hospital Administration
+PAT
+Patient Administration
+DOC
+Clinical Administration
+NUR
+Nursing Administration
+APT
+Reception / Patient Services
+QUE
+Reception / OPD Operations
+OPD
+Clinical Operations
+IPD
+Inpatient Operations
+ER
+Emergency Department
+EMR
+Clinical Governance
+VIT
+Nursing / Clinical Governance
+PRE
+Clinical Governance
+PHA
+Pharmacy
+LAB
+Laboratory
+RAD
+Radiology
+BED
+Inpatient Administration
+BIL
+Billing
+PAY
+Finance / Billing
+INS
+Insurance Administration
+INV
+Inventory / Procurement
+HR
+Human Resources
+FIN
+Finance
+NOT
+System Operations
+REP
+Management / Reporting
+AUD
+Security / Compliance
+CFG
+System Administration
+INT
+Technical Architecture
+OPS
+IT / DevOps
+Business ownership does not mean unrestricted technical access.
+
+4.40 Module Interaction Rules
+Rule 1 — No Uncontrolled Data Duplication
+A module should not create its own independent copy of another module’s master information without a documented reason.
+Example:
+APT should reference PATIENTNOT duplicate:AppointmentPatientNameAppointmentPatientDOBAppointmentPatientAddressas an independent patient master record.
+Historical snapshots may be permitted where business requirements require immutable historical information.
+
+Rule 2 — Business Rules Remain with the Responsible Domain
+Example:
+Can this appointment be cancelled?
+The Appointment domain should define the appointment cancellation rule.
+The React UI should not become the only location containing this business rule.
+
+Rule 3 — UI Is Not a Business Module
+React pages are not domain modules.
+Example:
+PatientPage.jsx
+is a UI implementation concept.
+PAT — Patient Management
+is a business module.
+
+Rule 4 — Database Tables Do Not Define Modules
+A table name does not automatically define the architecture.
+Example:
+patients
+may store patient data.
+However, the Patient module includes:
+validation;
+duplicate detection;
+patient search;
+MRN generation;
+authorization;
+business rules.
+A module is larger than a database table.
+
+Rule 5 — Module Communication Shall Be Explicit
+When one module requires another module’s information, the dependency shall be documented.
+Example:
+APT │ ├──── requires valid PATIENT │ └──── requires valid DOCTOR
+
+4.41 Module Criticality Classification
+CuraSphere modules shall be classified by operational criticality.
+Critical Clinical
+EMR
+ER
+IPD
+PRE
+LAB
+RAD
+VIT
+Critical Platform
+IAM
+AUD
+Critical Operational
+PAT
+APT
+BED
+PHA
+BIL
+PAY
+Business Support
+HR
+INV
+FIN
+REP
+Supporting Platform
+DASH
+NOT
+CFG
+INT
+OPS
+Criticality shall influence:
+testing depth;
+monitoring;
+deployment review;
+incident priority;
+change approval.
+
+4.42 Module Development Sequence Under RAD
+The RAD model shall not mean that all modules are developed simultaneously without planning.
+CuraSphere shall use controlled module increments.
+The recommended high-level development sequence is:
+RAD INCREMENT 1FOUNDATIONIAMORGPAT      │      ▼RAD INCREMENT 2PATIENT ACCESSDOCAPTQUEOPD      │      ▼RAD INCREMENT 3CLINICAL COREEMRVITPRENUR      │      ▼RAD INCREMENT 4DIAGNOSTIC SERVICESLABRAD      │      ▼RAD INCREMENT 5INPATIENT SERVICESBEDIPDER      │      ▼RAD INCREMENT 6PHARMACYPHA      │      ▼RAD INCREMENT 7FINANCIAL OPERATIONSBILPAYINS      │      ▼RAD INCREMENT 8BUSINESS OPERATIONSINVHRFIN      │      ▼RAD INCREMENT 9INTELLIGENCE AND CONTROLDASHREPNOTAUDCFG      │      ▼RAD INCREMENT 10OPERATIONS AND INTEGRATIONINTOPS
+Each RAD increment shall conceptually follow:
+REQUIREMENT PLANNING        │        ▼USER DESIGN        │        ▼PROTOTYPE        │        ▼STAKEHOLDER REVIEW        │        ▼CONSTRUCTION        │        ▼TESTING        │        ▼INCREMENT ACCEPTANCE
+
+4.43 Complete CuraSphere Functional Decomposition
+CURASPHERE│├── PLATFORM│   ││   ├── IAM│   │   ├── Users│   │   ├── Authentication│   │   ├── Roles│   │   ├── Permissions│   │   └── Account Recovery│   ││   ├── DASH│   │   ├── Management Dashboard│   │   ├── Clinical Dashboard│   │   └── Operational Dashboard│   ││   ├── ORG│   │   ├── Hospital│   │   ├── Department│   │   └── Unit│   ││   ├── NOT│   ├── AUD│   ├── CFG│   ├── INT│   └── OPS│├── PATIENT AND CLINICAL│   ││   ├── PAT│   │   ├── Registration│   │   ├── Identification│   │   ├── Search│   │   ├── Demographics│   │   └── Contacts│   ││   ├── DOC│   ├── NUR│   ││   ├── APT│   │   ├── Booking│   │   ├── Rescheduling│   │   ├── Cancellation│   │   └── Status│   ││   ├── QUE│   ││   ├── OPD│   ├── IPD│   ├── ER│   ││   ├── EMR│   │   ├── Encounters│   │   ├── Clinical Notes│   │   ├── Medical History│   │   ├── Allergies│   │   └── Diagnoses│   ││   ├── VIT│   ├── PRE│   ├── PHA│   ├── LAB│   ├── RAD│   └── BED│└── BUSINESS    │    ├── BIL    │   ├── Charges    │   ├── Invoices    │   └── Discounts    │    ├── PAY    │   ├── Payments    │   └── Refunds    │    ├── INS    ├── INV    ├── HR    ├── FIN    └── REP
+
+4.44 Module Specification Template
+All detailed module specifications shall use the following structure:
+Module Code:Module Name:Purpose:Business Owner:Primary Actors:Responsibilities:Inputs:Outputs:Submodules:Dependencies:Owned Information:Consumed Information:Business Rules:Security Classification:Audit Requirements:Availability Importance:Functional Requirements:Non-Functional Requirements:Use Cases:User Stories:API Requirements:Data Requirements:UI Requirements:Test Requirements:Traceability:
+This template shall be used when CuraSphere modules are expanded into detailed engineering specifications.
+
+4.45 Module Architecture Summary
+CuraSphere has been decomposed into three broad domains:
+PLATFORM    │    ▼Controls access, configuration, audit,notifications, and technical operations.CLINICAL    │    ▼Controls the patient journey andhealthcare service workflows.BUSINESS    │    ▼Controls billing, payment, inventory,HR, finance, and management reporting.
+The module decomposition provides a bridge between:
+STAKEHOLDER REQUIREMENTS          │          ▼       MODULES          │          ▼FUNCTIONAL REQUIREMENTS          │          ▼      USE CASES          │          ▼     ARCHITECTURE          │          ▼    IMPLEMENTATION
+
+SECTION 4 STATUS
+Section: System Module SpecificationSection ID: CS-SRS-SEC-004Project: CuraSphereDocument: CS-SRS-001Version: 1.0 DraftStatus: Completed
+The CuraSphere system has been formally decomposed into platform, clinical, and business modules.
+The following have been documented:
+module design principles;
+module coding convention;
+master module registry;
+platform domain;
+clinical domain;
+business domain;
+module responsibilities;
+module boundaries;
+module inputs and outputs;
+module submodules;
+module dependencies;
+logical data ownership;
+patient journey mapping;
+module ownership matrix;
+module interaction rules;
+module criticality;
+RAD development sequence;
+complete functional decomposition model.
+The module specification now provides the structural foundation for detailed functional requirements.
+

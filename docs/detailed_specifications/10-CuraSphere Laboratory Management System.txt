@@ -1,0 +1,1791 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.5 — LABORATORY MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: LABModule Name: Laboratory Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.158 MODULE PURPOSE
+The Laboratory Management System shall manage the operational and clinical workflow associated with laboratory test orders, specimen collection, specimen accessioning, laboratory processing, result entry, technical or clinical verification, critical result handling, final laboratory reporting, and authorized result availability to the Electronic Medical Record.
+The Laboratory module shall support the following high-level workflow:
+CLINICAL ENCOUNTER        │        ▼LABORATORY ORDER        │        ▼TEST REQUEST        │        ▼SPECIMEN REQUIREMENT        │        ▼SPECIMEN COLLECTION        │        ▼SPECIMEN IDENTIFICATION        │        ▼LAB ACCESSION        │        ▼SPECIMEN RECEIPT        │        ▼SPECIMEN ACCEPTANCE / REJECTION        │        ▼LABORATORY PROCESSING        │        ▼RESULT ENTRY / INSTRUMENT RESULT        │        ▼RESULT REVIEW        │        ▼RESULT VERIFICATION        │        ├── CRITICAL RESULT WORKFLOW        │        ▼FINAL LABORATORY REPORT        │        ▼EMR AVAILABILITY
+The Laboratory module shall provide traceability from the original clinical order to the finalized laboratory result.
+Conceptually:
+WHO ORDERED THE TEST?        │        ▼FOR WHICH PATIENT?        │        ▼DURING WHICH CLINICAL CONTEXT?        │        ▼WHAT TEST WAS REQUESTED?        │        ▼WHAT SPECIMEN WAS REQUIRED?        │        ▼WHAT SPECIMEN WAS COLLECTED?        │        ▼WHO COLLECTED IT?        │        ▼WHEN WAS IT RECEIVED?        │        ▼WAS IT ACCEPTED?        │        ▼WHAT RESULT WAS PRODUCED?        │        ▼WHO VERIFIED THE RESULT?        │        ▼WHEN DID IT BECOME FINAL?
+This traceability is a fundamental laboratory requirement.
+
+5.159 LABORATORY DOMAIN BOUNDARY
+The Laboratory module shall manage laboratory operational workflow.
+It shall not own the complete outpatient consultation.
+The domain relationship is:
+OPD / CLINICAL ENCOUNTER          │          ▼     LAB ORDER          │          ▼         LAB          │          ├── Test Catalog          ├── Specimen Requirements          ├── Collection          ├── Accession          ├── Processing          ├── Result Entry          ├── Verification          └── Laboratory Report          │          ▼         EMR
+The responsibilities shall conceptually be divided as follows:
+OPDDoctor decides:"Patient requires a CBC."
+LABLaboratory manages:"How is the CBC specimen collected,received, processed, resulted,verified, and reported?"
+EMRClinical record provides:"Authorized access to the finalizedCBC result in the patient'slongitudinal record."
+The Laboratory module shall not be designed as a simple:
+test_nameresult
+table.
+A real laboratory workflow contains multiple operational and clinical states.
+
+5.160 CRITICAL LABORATORY ARCHITECTURE CONCEPT
+CuraSphere shall distinguish the following concepts:
+LAB ORDER
+ORDERED TEST
+SPECIMEN
+ACCESSION
+TEST PROCESSING
+RESULT
+LABORATORY REPORT
+These concepts shall not automatically be treated as identical.
+Conceptually:
+LAB ORDER    │    ▼WHY AND WHAT WAS REQUESTED?
+ORDERED TEST    │    ▼WHICH LABORATORY TEST?
+SPECIMEN    │    ▼WHAT BIOLOGICAL MATERIALWAS COLLECTED?
+ACCESSION    │    ▼HOW DID THE LAB RECEIVEAND TRACK THE WORK?
+RESULT    │    ▼WHAT OBSERVATION OR VALUEWAS PRODUCED?
+LABORATORY REPORT    │    ▼WHAT VERIFIED CLINICALLAB INFORMATION WAS RELEASED?
+Example:
+LAB ORDERORD-LAB-1001        │        ├── Complete Blood Count        ├── Blood Glucose        └── Liver Function Test
+The order contains three requested tests.
+The tests may not necessarily have identical specimen or processing requirements.
+Another example:
+COMPLETE BLOOD COUNT        │        ▼EDTA BLOOD SPECIMEN
+URINE ROUTINE EXAMINATION        │        ▼URINE SPECIMEN
+Therefore:
+LAB ORDER = SPECIMEN
+is an incorrect assumption.
+
+5.161 LABORATORY ACTORS
+Actor
+Responsibility
+Doctor / Authorized Prescriber
+Creates eligible laboratory order
+Nurse
+Performs permitted collection-related activities
+Phlebotomist
+Collects eligible specimens
+Laboratory Reception Staff
+Receives laboratory work and specimens
+Laboratory Technician
+Processes tests and records permitted results
+Laboratory Technologist
+Performs authorized technical laboratory activities
+Pathologist / Laboratory Physician
+Reviews or verifies applicable laboratory results
+Laboratory Supervisor
+Manages permitted laboratory operational workflows
+Hospital Administrator
+Performs approved configuration activities
+Patient
+Provides specimen and receives permitted services
+Billing Module
+Manages applicable financial workflow
+OPD Module
+Initiates laboratory order
+IPD Module
+Initiates inpatient laboratory order
+Emergency Module
+Initiates emergency laboratory order
+EMR Module
+Provides authorized finalized result history
+CuraSphere System
+Enforces laboratory workflow and validation
+
+5.162 LABORATORY FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-LAB-FR-001
+Maintain Laboratory Test Catalog
+M
+CS-LAB-FR-002
+Create Laboratory Test Definition
+M
+CS-LAB-FR-003
+Update Laboratory Test Definition
+M
+CS-LAB-FR-004
+Activate or Deactivate Laboratory Test
+M
+CS-LAB-FR-005
+Define Specimen Requirement
+M
+CS-LAB-FR-006
+Define Test Result Components
+M
+CS-LAB-FR-007
+Define Reference Range
+M
+CS-LAB-FR-008
+Search Laboratory Test Catalog
+M
+CS-LAB-FR-009
+Receive Laboratory Order
+M
+CS-LAB-FR-010
+Validate Laboratory Order
+M
+CS-LAB-FR-011
+Generate Laboratory Order Identifier
+M
+CS-LAB-FR-012
+View Laboratory Order
+M
+CS-LAB-FR-013
+View Ordered Tests
+M
+CS-LAB-FR-014
+Cancel Eligible Laboratory Order
+M
+CS-LAB-FR-015
+Track Laboratory Order Status
+M
+CS-LAB-FR-016
+Identify Specimen Collection Requirement
+M
+CS-LAB-FR-017
+Create Specimen Collection Record
+M
+CS-LAB-FR-018
+Generate Specimen Identifier
+M
+CS-LAB-FR-019
+Record Specimen Collection
+M
+CS-LAB-FR-020
+Record Collector Information
+M
+CS-LAB-FR-021
+Print Specimen Label
+M
+CS-LAB-FR-022
+Reprint Specimen Label
+M
+CS-LAB-FR-023
+Prevent Invalid Specimen Association
+M
+CS-LAB-FR-024
+Receive Specimen in Laboratory
+M
+CS-LAB-FR-025
+Create Laboratory Accession
+M
+CS-LAB-FR-026
+Generate Accession Number
+M
+CS-LAB-FR-027
+Record Specimen Receipt
+M
+CS-LAB-FR-028
+Accept Specimen
+M
+CS-LAB-FR-029
+Reject Specimen
+M
+CS-LAB-FR-030
+Record Specimen Rejection Reason
+M
+CS-LAB-FR-031
+Request Specimen Recollection
+M
+CS-LAB-FR-032
+Track Specimen Status
+M
+CS-LAB-FR-033
+Create Laboratory Worklist
+M
+CS-LAB-FR-034
+Filter Laboratory Worklist
+M
+CS-LAB-FR-035
+Assign Laboratory Work
+S
+CS-LAB-FR-036
+Start Test Processing
+M
+CS-LAB-FR-037
+Record Processing Status
+M
+CS-LAB-FR-038
+Record Manual Laboratory Result
+M
+CS-LAB-FR-039
+Record Multi-Component Result
+M
+CS-LAB-FR-040
+Validate Result Data Type
+M
+CS-LAB-FR-041
+Validate Result Unit
+M
+CS-LAB-FR-042
+Apply Applicable Reference Range
+M
+CS-LAB-FR-043
+Identify Abnormal Result
+M
+CS-LAB-FR-044
+Identify Critical Result
+M
+CS-LAB-FR-045
+Save Draft Laboratory Result
+M
+CS-LAB-FR-046
+Update Draft Laboratory Result
+M
+CS-LAB-FR-047
+Submit Result for Verification
+M
+CS-LAB-FR-048
+Review Laboratory Result
+M
+CS-LAB-FR-049
+Verify Laboratory Result
+M
+CS-LAB-FR-050
+Reject Result Verification
+M
+CS-LAB-FR-051
+Record Result Correction
+M
+CS-LAB-FR-052
+Create Corrected Laboratory Result
+M
+CS-LAB-FR-053
+Initiate Critical Result Workflow
+M
+CS-LAB-FR-054
+Record Critical Result Notification
+M
+CS-LAB-FR-055
+Record Notification Recipient
+M
+CS-LAB-FR-056
+Track Critical Result Acknowledgement
+M
+CS-LAB-FR-057
+Generate Final Laboratory Report
+M
+CS-LAB-FR-058
+View Final Laboratory Report
+M
+CS-LAB-FR-059
+Make Final Result Available to EMR
+M
+CS-LAB-FR-060
+Record Laboratory Audit Events
+M
+CS-LAB-FR-061
+Prevent Invalid Laboratory State Transition
+M
+CS-LAB-FR-062
+Search Laboratory Orders
+M
+CS-LAB-FR-063
+View Patient Laboratory History
+M
+CS-LAB-FR-064
+Track Laboratory Turnaround Time
+S
+CS-LAB-FR-065
+Support Instrument Integration Architecture
+S
+
+5.163 LABORATORY TEST CATALOG MANAGEMENT
+CS-LAB-FR-001 — Maintain Laboratory Test Catalog
+Requirement Name
+Maintain Laboratory Test Catalog
+Description
+The system shall maintain a controlled catalog of laboratory tests available within CuraSphere.
+Priority
+Must Have
+Purpose
+Doctors and clinical users shall order laboratory tests from an approved laboratory catalog rather than relying exclusively on unrestricted free-text test names.
+Weak design:
+Doctor types:"blood test""cbc""C.B.C""complete blood""complete blood count"
+The system may interpret these as five unrelated values.
+A controlled catalog provides:
+TEST CODELAB-CBC
+TEST NAMEComplete Blood Count
+Conceptual Test Definition
+LABORATORY TEST       │       ├── Test Code       ├── Test Name       ├── Department / Section       ├── Specimen Requirements       ├── Result Components       ├── Processing Information       ├── Active Status       └── Applicable Configuration
+Example
+Test CodeLAB-CBCTest NameComplete Blood CountLaboratory SectionHematologySpecimenWhole BloodContainerEDTA TubeStatusACTIVE
+Business Rules
+CS-LAB-BR-001
+Each laboratory test definition shall have a unique internal identity.
+CS-LAB-BR-002
+Laboratory test codes shall be unique within their applicable coding scope.
+CS-LAB-BR-003
+Only active and orderable tests shall normally be available for new clinical orders.
+CS-LAB-BR-004
+Historical orders shall preserve their relationship to the applicable test definition.
+
+CS-LAB-FR-002 — Create Laboratory Test Definition
+Description
+The system shall allow an authorized laboratory administrator to create a laboratory test definition.
+Priority
+Must Have
+Required Information May Include
+test code;
+test name;
+laboratory section;
+test category;
+orderable status;
+active status.
+Main Flow
+AUTHORIZED LAB ADMIN        │        ▼OPEN TEST CATALOG        │        ▼CREATE TEST        │        ▼ENTER TEST INFORMATION        │        ▼VALIDATE TEST CODE        │        ▼VALIDATE TEST CONFIGURATION        │        ▼SAVE TEST DEFINITION        │        ▼AUDIT EVENT
+
+CS-LAB-FR-003 — Update Laboratory Test Definition
+Description
+The system shall allow authorized users to update eligible laboratory test configuration.
+Priority
+Must Have
+Important Historical Requirement
+Updating:
+Test NameComplete Blood Count
+shall not corrupt the meaning of previously finalized laboratory reports.
+The architecture shall preserve required historical clinical interpretation.
+
+CS-LAB-FR-004 — Activate or Deactivate Laboratory Test
+Description
+The system shall allow authorized laboratory administrators to activate or deactivate an eligible laboratory test.
+Priority
+Must Have
+Rule
+Deactivation shall normally prevent new ordering.
+It shall not erase historical orders or results.
+Conceptually:
+LAB-CBCACTIVE   │   ▼AVAILABLE FOR ORDERING
+Compared with:
+LAB-OLD-001INACTIVE   │   ▼NOT AVAILABLE FOR NEW ORDERS   │   ▼HISTORICAL RESULTS REMAIN TRACEABLE
+
+5.164 SPECIMEN REQUIREMENT CONFIGURATION
+CS-LAB-FR-005 — Define Specimen Requirement
+Description
+The system shall allow authorized laboratory users to define applicable specimen requirements for laboratory tests.
+Priority
+Must Have
+Specimen Requirement May Include
+specimen type;
+container type;
+minimum quantity;
+collection instructions;
+handling instructions;
+storage requirements;
+transport requirements.
+Example
+TESTComplete Blood Count        │        ▼SPECIMEN TYPEWhole Blood        │        ▼CONTAINEREDTA Tube        │        ▼MINIMUM QUANTITYConfigured Laboratory Requirement
+Important Architecture Principle
+Do not hardcode specimen rules in React.
+Weak design:
+if (testName === "CBC") {    container = "Purple Tube";}
+The laboratory test configuration shall be a trusted backend-managed domain concern.
+
+5.165 RESULT COMPONENT CONFIGURATION
+CS-LAB-FR-006 — Define Test Result Components
+Description
+The system shall allow authorized laboratory users to define the result components applicable to a laboratory test.
+Priority
+Must Have
+Example
+A CBC does not produce only:
+CBC = 12
+A CBC may contain multiple result components.
+Conceptually:
+COMPLETE BLOOD COUNT        │        ├── Hemoglobin        ├── White Blood Cell Count        ├── Red Blood Cell Count        ├── Platelet Count        ├── Hematocrit        └── Other Configured Components
+Therefore:
+ONE TEST   │   ▼MANY RESULT COMPONENTS
+Result Component Information May Include
+component code;
+component name;
+data type;
+unit;
+display order;
+reference range configuration;
+critical range configuration;
+active status.
+Example
+Component CodeHGBComponent NameHemoglobinData TypeNUMERICUnitg/dL
+Business Rules
+CS-LAB-BR-005
+A laboratory test may contain one or more result components.
+CS-LAB-BR-006
+Result components shall define the applicable result data type.
+
+5.166 REFERENCE RANGE CONFIGURATION
+CS-LAB-FR-007 — Define Reference Range
+Description
+The system shall support configuration of applicable laboratory reference ranges.
+Priority
+Must Have
+Reference Range Concept
+RESULTHemoglobin = 10.2 g/dL        │        ▼APPLICABLE REFERENCE RANGEConfigured Range        │        ▼RESULT INTERPRETATIONLOW / NORMAL / HIGH
+Reference Range Context May Depend On
+laboratory test;
+result component;
+patient sex;
+patient age;
+applicable population;
+laboratory methodology;
+other approved laboratory criteria.
+Important Requirement
+The system shall not assume:
+ONE RESULT COMPONENT        │        ▼ONE UNIVERSAL REFERENCE RANGE
+Example concept:
+COMPONENTHemoglobin        │        ├── Reference Context A        ├── Reference Context B        └── Reference Context C
+The exact reference range rules shall be approved by laboratory stakeholders.
+Business Rule
+CS-LAB-BR-007
+The applicable reference range shall be determined using approved laboratory configuration.
+
+CS-LAB-FR-008 — Search Laboratory Test Catalog
+Description
+The system shall allow authorized users to search the active laboratory test catalog.
+Priority
+Must Have
+Search Criteria May Include
+test code;
+test name;
+laboratory section;
+test category.
+
+5.167 LABORATORY ORDER RECEIPT
+CS-LAB-FR-009 — Receive Laboratory Order
+Requirement Name
+Receive Laboratory Order
+Description
+The Laboratory module shall receive eligible laboratory orders from approved clinical workflows.
+Priority
+Must Have
+Potential Order Sources
+OPD │ ▼LAB ORDER
+IPD │ ▼LAB ORDER
+EMERGENCY │ ▼LAB ORDER
+The source module shall create the clinical order according to its authorized workflow.
+The Laboratory module shall manage laboratory execution.
+Conceptual Flow
+DOCTOR   │   ▼CLINICAL ENCOUNTER   │   ▼LAB ORDER CREATED   │   ▼LAB MODULE RECEIVES ORDER   │   ▼VALIDATE ORDER   │   ▼CREATE LAB WORKFLOW
+Laboratory Order Information May Include
+order identifier;
+patient;
+encounter;
+ordering clinician;
+ordering department;
+ordered date and time;
+priority;
+ordered tests;
+clinical information;
+order status.
+Business Rules
+CS-LAB-BR-008
+A laboratory order shall reference an identifiable patient.
+CS-LAB-BR-009
+A clinical laboratory order shall maintain applicable ordering provenance.
+CS-LAB-BR-010
+The laboratory order shall contain at least one eligible ordered test.
+
+CS-LAB-FR-010 — Validate Laboratory Order
+Description
+The system shall validate a laboratory order before creating or continuing the applicable laboratory workflow.
+Priority
+Must Have
+Validation May Include
+PATIENT EXISTS?ORDER SOURCE VALID?ORDERING CLINICIAN AUTHORIZED?ENCOUNTER VALID?AT LEAST ONE TEST?TEST ACTIVE?TEST ORDERABLE?DUPLICATE REQUEST RULE APPLICABLE?ORDER STATE VALID?
+Important Safety Requirement
+The Laboratory module shall validate patient and order relationships through trusted backend logic.
+The React application shall not be considered authoritative.
+
+CS-LAB-FR-011 — Generate Laboratory Order Identifier
+Description
+The system shall generate a unique identifier for each laboratory order.
+Priority
+Must Have
+Example
+LAB-ORD-00000182
+The final identifier format shall be determined during Data Architecture.
+Rule
+Laboratory order identifiers shall not be reused for unrelated orders.
+
+CS-LAB-FR-012 — View Laboratory Order
+Description
+The system shall allow authorized users to view laboratory order information.
+Priority
+Must Have
+Order View May Include
+Patient IdentityMRNOrder IDEncounterOrdering DoctorDepartmentPriorityOrdered Date / TimeClinical InformationOrdered TestsOrder Status
+Patient Safety Requirement
+Patient identity context shall be appropriately visible in laboratory operational workflows.
+
+CS-LAB-FR-013 — View Ordered Tests
+Description
+The system shall allow authorized users to view the tests requested within a laboratory order.
+Priority
+Must Have
+Example
+LAB ORDERLAB-ORD-182        │        ├── CBC        │        ├── Blood Glucose        │        └── Liver Function Test
+
+CS-LAB-FR-014 — Cancel Eligible Laboratory Order
+Description
+The system shall allow an authorized user to cancel an eligible laboratory order according to approved laboratory workflow rules.
+Priority
+Must Have
+Important Requirement
+Cancellation shall depend on workflow state.
+Example:
+ORDER CREATED     │     ▼CANCELLATION MAY BE ELIGIBLE
+Compared with:
+FINAL RESULT VERIFIED        │        ▼NORMAL ORDER CANCELLATIONIS NOT AN APPROPRIATE ACTION
+Business Rule
+CS-LAB-BR-011
+Only eligible laboratory orders may be cancelled.
+CS-LAB-BR-012
+Laboratory order cancellation shall record applicable reason and actor information.
+
+CS-LAB-FR-015 — Track Laboratory Order Status
+Description
+The system shall track the operational status of laboratory orders.
+Priority
+Must Have
+Conceptual Order Status Model
+ORDERED   │   ▼AWAITING_COLLECTION   │   ▼COLLECTED   │   ▼RECEIVED   │   ▼IN_PROCESS   │   ▼RESULT_PENDING_VERIFICATION   │   ▼FINAL
+Alternative paths may include:
+CANCELLED
+SPECIMEN_REJECTED
+RECOLLECTION_REQUIRED
+The exact status vocabulary shall be finalized during Laboratory Domain Design.
+
+5.168 SPECIMEN COLLECTION REQUIREMENT
+CS-LAB-FR-016 — Identify Specimen Collection Requirement
+Description
+The system shall determine and present applicable specimen collection requirements for ordered laboratory tests.
+Priority
+Must Have
+Example
+ORDERED TESTSCBCBlood GlucoseUrine Routine Examination        │        ▼SPECIMEN REQUIREMENTSWhole Blood / EDTABlood / Configured ContainerUrine / Urine Container
+Important Domain Problem
+Consider:
+TEST ARequires EDTA BloodTEST BRequires EDTA Blood
+Can one specimen support both tests?
+Possibly, depending on laboratory policy and specimen requirements.
+Now consider:
+TEST ARequires EDTA BloodTEST CRequires Urine
+One specimen cannot represent both biological materials.
+Therefore specimen planning requires explicit domain rules.
+The SRS shall support specimen requirement configuration.
+The exact specimen consolidation algorithm shall be defined during Laboratory Detailed Design.
+
+5.169 SPECIMEN COLLECTION RECORD
+CS-LAB-FR-017 — Create Specimen Collection Record
+Description
+The system shall create an identifiable specimen collection record for an applicable laboratory collection requirement.
+Priority
+Must Have
+Conceptual Specimen Record
+SPECIMEN   │   ├── Specimen ID   ├── Patient   ├── Specimen Type   ├── Collection Status   ├── Collected At   ├── Collected By   ├── Container   └── Associated Laboratory Work
+Important Principle
+The specimen requires its own identity.
+Weak design:
+lab_ordersample_collected = true
+This cannot answer:
+Which specimen?What type?Who collected it?When?Was it rejected?Was another specimen collected?Which tests used the specimen?
+Therefore:
+SPECIMEN
+shall be modeled as an identifiable laboratory domain concept.
+
+CS-LAB-FR-018 — Generate Specimen Identifier
+Description
+The system shall generate a unique identifier for each tracked laboratory specimen.
+Priority
+Must Have
+Example
+SPM-00000482
+The final identifier and barcode strategy shall be defined during Data and Integration Architecture.
+Business Rules
+CS-LAB-BR-013
+Each tracked specimen shall have a unique identifier.
+CS-LAB-BR-014
+A specimen identifier shall not be reassigned to an unrelated specimen.
+
+5.170 RECORD SPECIMEN COLLECTION
+CS-LAB-FR-019 — Record Specimen Collection
+Requirement Name
+Record Specimen Collection
+Description
+The system shall allow an authorized user to record the collection of an eligible specimen.
+Priority
+Must Have
+Main Flow
+COLLECTION WORKLIST        │        ▼SELECT PATIENT        │        ▼VERIFY PATIENT CONTEXT        │        ▼SELECT COLLECTION REQUIREMENT        │        ▼VALIDATE SPECIMEN REQUIREMENT        │        ▼COLLECT SPECIMEN        │        ▼RECORD COLLECTION        │        ▼RECORD COLLECTOR        │        ▼RECORD COLLECTION TIME        │        ▼GENERATE / CONFIRM SPECIMEN ID        │        ▼LABEL SPECIMEN        │        ▼STATUS = COLLECTED
+Required Information May Include
+specimen identifier;
+patient;
+specimen type;
+collection date and time;
+collector;
+container;
+applicable laboratory order or test relationships.
+Patient Safety Requirement
+Before specimen collection is recorded, the system shall establish the correct patient context.
+Conceptually:
+SELECTED PATIENT        │        ▼PATIENT IDENTITY VERIFICATION        │        ▼LAB ORDER PATIENT MATCH?        │     ┌──┴──┐     │     │    NO    YES     │     │     ▼     ▼ REJECT   CONTINUE
+Acceptance Criteria
+An authorized collector shall be able to record an eligible specimen collection against the correct patient and laboratory work context.
+
+CS-LAB-FR-020 — Record Collector Information
+Description
+The system shall record the identifiable authorized user responsible for the recorded specimen collection.
+Priority
+Must Have
+Example
+SpecimenSPM-482Collected ByUSR-208Collected At14 JUL 2026 10:42
+Business Rule
+CS-LAB-BR-015
+Recorded specimen collection shall maintain appropriate collection provenance.
+
+5.171 SPECIMEN LABEL MANAGEMENT
+CS-LAB-FR-021 — Print Specimen Label
+Description
+The system shall support printing an applicable specimen identification label.
+Priority
+Must Have
+Label Information May Include
+specimen identifier;
+machine-readable identifier;
+patient identifier;
+patient name according to approved policy;
+specimen type;
+collection information.
+Conceptual Label
+┌─────────────────────────────┐│ CURASPHERE LAB              ││                             ││ Ahmad Khan                  ││ MRN-000102                  ││                             ││ SPM-00000482                ││ █║█║║██║█║██║║█            ││                             ││ EDTA BLOOD                  ││ 14 JUL 2026 10:42           │└─────────────────────────────┘
+The exact label content and barcode standard shall be defined during Laboratory Integration Design.
+Important Safety Principle
+A specimen label is a patient safety control.
+It is not merely visual decoration.
+
+CS-LAB-FR-022 — Reprint Specimen Label
+Description
+The system shall allow an authorized user to reprint an eligible specimen label.
+Priority
+Must Have
+Audit Requirement
+Specimen label reprints shall be traceable according to approved laboratory policy.
+Reason
+Uncontrolled label printing creates specimen identification risk.
+Conceptually:
+LABEL REPRINT     │     ▼WHO?     │     ▼WHEN?     │     ▼WHICH SPECIMEN?     │     ▼WHY, IF REQUIRED?
+
+CS-LAB-FR-023 — Prevent Invalid Specimen Association
+Description
+The system shall prevent a specimen from being incorrectly associated with unrelated patient laboratory work.
+Priority
+Must Have
+Example Validation
+SPECIMENSPM-482Patient = MRN-100        │        ▼ORDERLAB-ORD-200Patient = MRN-500        │        ▼ASSOCIATE?        │        ▼REJECT
+Business Rule
+CS-LAB-BR-016
+The specimen patient context shall match the applicable laboratory order patient context.
+
+5.172 SPECIMEN RECEIPT
+CS-LAB-FR-024 — Receive Specimen in Laboratory
+Description
+The system shall allow authorized laboratory users to record receipt of an eligible specimen in the laboratory.
+Priority
+Must Have
+Main Flow
+SPECIMEN ARRIVES       │       ▼SCAN / IDENTIFY SPECIMEN       │       ▼LOAD SPECIMEN CONTEXT       │       ▼VERIFY PATIENT / ORDER CONTEXT       │       ▼RECORD RECEIPT TIME       │       ▼EVALUATE SPECIMEN       │       ├── ACCEPT       │       └── REJECT
+Important Time Concepts
+The system shall distinguish:
+ORDERED AT
+COLLECTED AT
+RECEIVED AT
+RESULTED AT
+VERIFIED AT
+These timestamps represent different workflow events.
+Weak design:
+lab_date
+cannot adequately represent the laboratory workflow.
+
+5.173 LABORATORY ACCESSION MANAGEMENT
+CS-LAB-FR-025 — Create Laboratory Accession
+Description
+The system shall create an accession or equivalent laboratory tracking context for eligible received laboratory work.
+Priority
+Must Have
+Definition
+A laboratory accession represents an identifiable laboratory processing or receipt context according to approved laboratory workflow.
+Conceptual Model
+LAB ORDER     │     ▼SPECIMEN     │     ▼LAB RECEIPT     │     ▼ACCESSION     │     ▼LAB WORK
+Important Requirement
+The exact relationship between:
+ORDERSPECIMENACCESSIONTEST
+shall be finalized with laboratory stakeholders.
+The SRS shall not force an incorrect universal assumption such as:
+ONE ORDER = ONE ACCESSION = ONE SPECIMEN
+Real laboratory workflows may require more flexible relationships.
+
+CS-LAB-FR-026 — Generate Accession Number
+Description
+The system shall generate a unique accession number for each applicable laboratory accession.
+Priority
+Must Have
+Example
+ACC-20260714-00182
+Business Rules
+CS-LAB-BR-017
+Each accession shall have a unique identity.
+CS-LAB-BR-018
+Accession numbers shall not be reused for unrelated laboratory processing contexts.
+
+CS-LAB-FR-027 — Record Specimen Receipt
+Description
+The system shall record applicable specimen receipt information.
+Priority
+Must Have
+Information May Include
+specimen;
+accession;
+received date and time;
+receiving user;
+specimen condition;
+receipt location.
+
+5.174 SPECIMEN ACCEPTANCE
+CS-LAB-FR-028 — Accept Specimen
+Description
+The system shall allow an authorized laboratory user to accept an eligible specimen for laboratory processing.
+Priority
+Must Have
+Conceptual Flow
+SPECIMEN RECEIVED        │        ▼SPECIMEN ASSESSMENT        │        ▼MEETS ACCEPTANCE CRITERIA?        │     ┌──┴──┐     │     │    NO    YES     │     │     ▼     ▼ REJECT   ACCEPT
+Acceptance Criteria May Include
+correct identification;
+correct specimen type;
+correct container;
+sufficient quantity;
+acceptable specimen condition;
+acceptable collection or transport context.
+The exact criteria shall be configured or defined by laboratory policy.
+
+5.175 SPECIMEN REJECTION
+CS-LAB-FR-029 — Reject Specimen
+Description
+The system shall allow an authorized laboratory user to reject an ineligible specimen.
+Priority
+Must Have
+Example Rejection Reasons
+INSUFFICIENT QUANTITYWRONG CONTAINERCLOTTED SPECIMENHEMOLYZED SPECIMENUNLABELED SPECIMENIDENTIFICATION MISMATCHLEAKING CONTAINERIMPROPER TRANSPORT
+The final controlled rejection reason catalog shall be defined by laboratory governance.
+Important Requirement
+Specimen rejection shall not mean:
+DELETE SPECIMEN
+Instead:
+SPECIMEN   │   ▼STATUS = REJECTED   │   ▼REJECTION REASON   │   ▼REJECTED BY   │   ▼REJECTED AT
+The rejected specimen remains part of laboratory workflow history.
+
+CS-LAB-FR-030 — Record Specimen Rejection Reason
+Description
+The system shall require an applicable reason when a specimen is rejected.
+Priority
+Must Have
+Business Rules
+CS-LAB-BR-019
+A rejected specimen shall have an applicable rejection reason.
+CS-LAB-BR-020
+Specimen rejection shall maintain actor and timestamp information.
+
+CS-LAB-FR-031 — Request Specimen Recollection
+Description
+The system shall allow an authorized laboratory user to identify that a new specimen collection is required.
+Priority
+Must Have
+Conceptual Flow
+SPECIMEN REJECTED       │       ▼RECOLLECTION REQUIRED?       │    ┌──┴──┐    │     │   NO    YES    │     │    ▼     ▼ END   CREATE RECOLLECTION REQUIREMENT             │             ▼       COLLECTION WORKLIST
+Important Relationship
+The new specimen shall receive its own identity.
+Example:
+SPM-482REJECTEDWrong Container        │        ▼RECOLLECTION        │        ▼SPM-501COLLECTED
+Do not reuse:
+SPM-482
+for the physically different specimen.
+
+CS-LAB-FR-032 — Track Specimen Status
+Description
+The system shall track the current operational state of laboratory specimens.
+Priority
+Must Have
+Conceptual Specimen State Model
+REQUIRED    │    ▼COLLECTION_PENDING    │    ▼COLLECTED    │    ▼IN_TRANSIT    │    ▼RECEIVED    │    ├──────────────► REJECTED    │                    │    │                    ▼    │             RECOLLECTION_REQUIRED    │    ▼ACCEPTED    │    ▼IN_PROCESS    │    ▼PROCESSED
+The exact state vocabulary shall be finalized during Domain Design.
+
+5.176 LABORATORY WORKLIST
+CS-LAB-FR-033 — Create Laboratory Worklist
+Description
+The system shall provide authorized laboratory users with a worklist of applicable laboratory work.
+Priority
+Must Have
+Example Concept
+LABORATORY WORKLIST┌─────────────┬──────────────┬─────────────┬──────────────┐│ Accession   │ Patient      │ Test        │ Status       │├─────────────┼──────────────┼─────────────┼──────────────┤│ ACC-182     │ MRN-100      │ CBC         │ RECEIVED     ││ ACC-183     │ MRN-205      │ Glucose     │ IN_PROCESS   ││ ACC-184     │ MRN-310      │ LFT         │ PENDING      │└─────────────┴──────────────┴─────────────┴──────────────┘
+The exact UI shall be designed during UI/UX Architecture.
+Worklist Information May Include
+accession;
+patient context;
+test;
+priority;
+received time;
+current status;
+laboratory section.
+
+CS-LAB-FR-034 — Filter Laboratory Worklist
+Description
+The system shall allow authorized laboratory users to filter laboratory worklists.
+Priority
+Must Have
+Potential Filters
+LAB SECTIONTESTSTATUSPRIORITYDATEPENDING VERIFICATIONCRITICAL RESULT
+
+CS-LAB-FR-035 — Assign Laboratory Work
+Description
+The system should allow eligible laboratory work to be assigned to an authorized laboratory user where laboratory workflow requires assignment.
+Priority
+Should Have
+Rule
+Assignment shall not automatically replace permission validation.
+ASSIGNED TO USER A
+does not mean:
+USER A CAN PERFORM ANY LAB ACTION
+Authorization shall still apply.
+
+5.177 TEST PROCESSING
+CS-LAB-FR-036 — Start Test Processing
+Description
+The system shall allow an authorized laboratory user to begin eligible laboratory test processing.
+Priority
+Must Have
+Preconditions
+Applicable laboratory work exists.
+Required specimen is available.
+Specimen is eligible for processing.
+User is authorized.
+Test state permits processing.
+Main Flow
+LAB WORKLIST      │      ▼SELECT LAB WORK      │      ▼VALIDATE SPECIMEN      │      ▼VALIDATE TEST STATUS      │      ▼VALIDATE USER AUTHORITY      │      ▼START PROCESSING      │      ▼STATUS = IN_PROCESS      │      ▼RECORD PROCESSING EVENT
+
+CS-LAB-FR-037 — Record Processing Status
+Description
+The system shall record applicable laboratory processing status.
+Priority
+Must Have
+Processing States May Include
+PENDINGIN_PROCESSRESULT_PENDINGPENDING_VERIFICATIONFINAL
+The exact workflow shall depend on laboratory domain design.
+
+5.178 MANUAL LABORATORY RESULT ENTRY
+CS-LAB-FR-038 — Record Manual Laboratory Result
+Requirement Name
+Record Manual Laboratory Result
+Description
+The system shall allow an authorized laboratory user to record a result for an eligible laboratory result component.
+Priority
+Must Have
+Example
+TESTComplete Blood CountCOMPONENTHemoglobinRESULT10.2UNITg/dL
+Main Flow
+SELECT LAB WORK       │       ▼OPEN RESULT ENTRY       │       ▼LOAD RESULT COMPONENTS       │       ▼ENTER RESULT       │       ▼VALIDATE DATA TYPE       │       ▼VALIDATE UNIT CONTEXT       │       ▼APPLY REFERENCE RANGE       │       ▼EVALUATE ABNORMAL FLAG       │       ▼EVALUATE CRITICAL FLAG       │       ▼SAVE DRAFT RESULT
+Business Rules
+CS-LAB-BR-021
+A laboratory result shall reference identifiable laboratory work.
+CS-LAB-BR-022
+Result entry shall require appropriate authorization.
+CS-LAB-BR-023
+Result data shall conform to the applicable configured result type.
+
+5.179 MULTI-COMPONENT LABORATORY RESULTS
+CS-LAB-FR-039 — Record Multi-Component Result
+Description
+The system shall support laboratory tests containing multiple result components.
+Priority
+Must Have
+Example
+COMPLETE BLOOD COUNTHemoglobin              10.2 g/dLWhite Blood Cells       8.4 × 10⁹/LRed Blood Cells         4.2 × 10¹²/LPlatelets               250 × 10⁹/LHematocrit              36 %
+Conceptual Relationship
+LAB TEST    │    ▼RESULT SET    │    ├── RESULT COMPONENT 1    ├── RESULT COMPONENT 2    ├── RESULT COMPONENT 3    └── RESULT COMPONENT N
+This is why:
+lab_result.result varchar(500)
+is not sufficient as the entire laboratory result architecture.
+
+5.180 RESULT DATA TYPE VALIDATION
+CS-LAB-FR-040 — Validate Result Data Type
+Description
+The system shall validate laboratory result values against the configured result component data type.
+Priority
+Must Have
+Potential Data Types
+NUMERICTEXTCODEDBOOLEANQUALITATIVE
+The exact result type model shall be finalized during Laboratory Domain Design.
+Example
+Configured:
+HemoglobinData Type = NUMERIC
+Submitted:
+"HELLO"
+Expected:
+REJECT INVALID RESULT
+Another example:
+Blood GroupResult Type = CODED
+Allowed values may include approved configured values.
+The system shall not rely only on React input validation.
+
+5.181 RESULT UNIT VALIDATION
+CS-LAB-FR-041 — Validate Result Unit
+Description
+The system shall validate applicable result unit context.
+Priority
+Must Have
+Example
+Hemoglobin10.2 g/dL
+The value:
+10.2
+without unit context may be clinically ambiguous in some laboratory workflows.
+Important Engineering Concept
+The result should conceptually preserve:
+VALUE   +UNIT   +REFERENCE CONTEXT
+The exact unit standard and configuration approach shall be finalized during Clinical Data Architecture.
+
+5.182 REFERENCE RANGE APPLICATION
+CS-LAB-FR-042 — Apply Applicable Reference Range
+Description
+The system shall determine and associate the applicable configured reference range with an eligible laboratory result.
+Priority
+Must Have
+Conceptual Flow
+RESULT COMPONENT        │        ▼PATIENT CONTEXT        │        ▼TEST / METHOD CONTEXT        │        ▼REFERENCE RANGE RULES        │        ▼SELECT APPLICABLE RANGE        │        ▼EVALUATE RESULT
+Important Historical Requirement
+The final report may need to preserve the reference range applicable at the time of result finalization.
+Why?
+Suppose:
+2026 RANGE4.0 – 10.0
+Later laboratory configuration changes:
+2027 RANGE4.5 – 11.0
+A historical 2026 report should not silently appear as though the 2027 range was used.
+The detailed historical configuration strategy shall be defined during Data Architecture.
+
+5.183 ABNORMAL RESULT IDENTIFICATION
+CS-LAB-FR-043 — Identify Abnormal Result
+Description
+The system shall identify laboratory results outside the applicable configured reference criteria.
+Priority
+Must Have
+Potential Flags
+LOWNORMALHIGH
+Other laboratory-specific flags may be configured according to approved requirements.
+Example
+HemoglobinResult:10.2 g/dLReference:Configured Applicable RangeFlag:LOW
+Important Requirement
+An abnormal result is not automatically a critical result.
+ABNORMAL    │    ▼OUTSIDE APPLICABLE REFERENCE CRITERIA
+Compared with:
+CRITICAL    │    ▼MEETS APPROVED CRITICAL RESULT CRITERIAAND MAY REQUIRE URGENT NOTIFICATION
+These are different clinical concepts.
+
+5.184 CRITICAL RESULT IDENTIFICATION
+CS-LAB-FR-044 — Identify Critical Result
+Description
+The system shall identify applicable laboratory results meeting configured critical result criteria.
+Priority
+Must Have
+Conceptual Flow
+LAB RESULT    │    ▼APPLY CRITICAL VALUE RULE    │ ┌──┴──┐ │     │NO    YES │     │ ▼     ▼NORMAL  CRITICAL RESULT FLAGFLOW           │               ▼      CRITICAL RESULT WORKFLOW
+Business Rules
+CS-LAB-BR-024
+Critical result determination shall use approved laboratory criteria.
+CS-LAB-BR-025
+A critical result shall initiate the applicable critical result workflow.
+Important Safety Requirement
+Critical value limits shall not be casually hardcoded throughout the React application.
+Configuration and trusted backend rules shall control critical result evaluation.
+
+5.185 DRAFT LABORATORY RESULTS
+CS-LAB-FR-045 — Save Draft Laboratory Result
+Description
+The system shall allow eligible laboratory results to remain in a draft state before verification.
+Priority
+Must Have
+Conceptual Model
+RESULT ENTERED      │      ▼DRAFT      │      ├── Editable by Authorized User      ├── Not Final      └── Not Released as Verified Result
+Important Requirement
+Draft result information shall be distinguishable from finalized laboratory results.
+
+CS-LAB-FR-046 — Update Draft Laboratory Result
+Description
+The system shall allow an authorized user to modify an eligible draft laboratory result.
+Priority
+Must Have
+Rule
+DRAFT RESULT      │      ▼EDITABLE
+Compared with:
+FINAL VERIFIED RESULT          │          ▼CONTROLLED CORRECTION WORKFLOW
+
+5.186 SUBMIT RESULT FOR VERIFICATION
+CS-LAB-FR-047 — Submit Result for Verification
+Description
+The system shall allow an authorized laboratory user to submit an eligible laboratory result for verification.
+Priority
+Must Have
+Main Flow
+DRAFT RESULT     │     ▼RESULT COMPLETENESS VALIDATION     │     ▼DATA TYPE VALIDATION     │     ▼REFERENCE RANGE EVALUATION     │     ▼ABNORMAL / CRITICAL EVALUATION     │     ▼SUBMIT FOR VERIFICATION     │     ▼STATUS = PENDING_VERIFICATION
+Business Rule
+CS-LAB-BR-026
+Only eligible results may be submitted for verification.
+
+5.187 LABORATORY RESULT REVIEW
+CS-LAB-FR-048 — Review Laboratory Result
+Description
+The system shall allow an authorized laboratory reviewer to review an eligible result before verification.
+Priority
+Must Have
+Review Context May Include
+PATIENT CONTEXTTESTRESULT COMPONENTSRESULT VALUESUNITSREFERENCE RANGESABNORMAL FLAGSCRITICAL FLAGSSPECIMEN INFORMATIONRESULT ENTRY PROVENANCE
+The final review UI shall be designed during Clinical UI Architecture.
+
+5.188 LABORATORY RESULT VERIFICATION
+CS-LAB-FR-049 — Verify Laboratory Result
+Requirement Name
+Verify Laboratory Result
+Description
+The system shall allow an authorized laboratory verifier to verify an eligible laboratory result.
+Priority
+Must Have
+Primary Actor
+Authorized Laboratory Verifier
+Preconditions
+The result exists.
+The result is eligible for verification.
+Required result information is available.
+The user has verification authority.
+Applicable critical result rules have been evaluated.
+Main Flow
+PENDING VERIFICATION        │        ▼AUTHORIZED REVIEWER OPENS RESULT        │        ▼VERIFY PATIENT CONTEXT        │        ▼REVIEW SPECIMEN INFORMATION        │        ▼REVIEW RESULT VALUES        │        ▼REVIEW FLAGS        │        ▼VALIDATE RESULT STATE        │        ▼SELECT VERIFY        │        ▼SERVER AUTHORIZATION        │        ▼FINAL VALIDATION        │        ▼RESULT = VERIFIED / FINAL        │        ▼VERIFIER RECORDED        │        ▼VERIFICATION TIME RECORDED        │        ▼FINAL REPORT GENERATED / UPDATED        │        ▼EMR AVAILABILITY        │        ▼AUDIT EVENT
+Business Rules
+CS-LAB-BR-027
+Laboratory result verification shall require appropriate authorization.
+CS-LAB-BR-028
+Verification shall record the responsible verifier.
+CS-LAB-BR-029
+Verification time shall be recorded.
+CS-LAB-BR-030
+A verified result shall not remain freely editable as an ordinary draft.
+Acceptance Criteria
+AC-001
+An authorized verifier shall be able to verify an eligible result.
+AC-002
+An unauthorized user shall not verify the result.
+AC-003
+A verified result shall become available according to approved result release rules.
+AC-004
+Verification provenance shall be traceable.
+
+5.189 REJECT RESULT VERIFICATION
+CS-LAB-FR-050 — Reject Result Verification
+Description
+The system shall allow an authorized reviewer to reject an eligible result from verification and return it to an approved correction workflow.
+Priority
+Must Have
+Example
+PENDING VERIFICATION        │        ▼REVIEWER IDENTIFIES PROBLEM        │        ▼REJECT VERIFICATION        │        ▼RECORD REASON        │        ▼RESULT REQUIRES CORRECTION
+Verification Rejection Reasons May Include
+incomplete result;
+data inconsistency;
+suspected transcription error;
+specimen concern;
+result requires repeat testing;
+other approved laboratory reason.
+Rule
+Verification rejection shall not delete the laboratory workflow history.
+
+5.190 LABORATORY RESULT CORRECTION
+CS-LAB-FR-051 — Record Result Correction
+Description
+The system shall support controlled correction of eligible laboratory results.
+Priority
+Must Have
+Critical Clinical Record Principle
+Weak design:
+FINAL RESULTPotassium = 6.8        │        ▼UPDATE DATABASEPotassium = 4.8        │        ▼NO HISTORY
+This destroys result traceability.
+The required concept is:
+ORIGINAL FINAL RESULT          │          ▼CORRECTION WORKFLOW          │          ▼ORIGINAL REMAINS TRACEABLE          │          +          ▼CORRECTED RESULT
+Correction Information May Include
+original result reference;
+correction reason;
+corrected value;
+correction author;
+correction date and time;
+verification information.
+Business Rules
+CS-LAB-BR-031
+A finalized laboratory result correction shall follow an approved controlled workflow.
+CS-LAB-BR-032
+The original finalized result shall remain appropriately traceable.
+CS-LAB-BR-033
+The correction actor and time shall be identifiable.
+
+CS-LAB-FR-052 — Create Corrected Laboratory Result
+Description
+The system shall create an appropriately identified corrected result when an approved finalized result correction is completed.
+Priority
+Must Have
+Example
+ORIGINAL RESULTPotassium6.8 mmol/LFinalized:10:45        │        ▼CORRECTIONReason:Approved laboratory correction reason        │        ▼CORRECTED RESULTPotassium4.8 mmol/LCorrected:11:20Corrected By:Authorized Laboratory User
+EMR Requirement
+The EMR shall identify that the laboratory result has been corrected.
+The corrected result shall not appear as though it was the only value ever recorded.
+
+5.191 CRITICAL RESULT WORKFLOW
+CS-LAB-FR-053 — Initiate Critical Result Workflow
+Requirement Name
+Initiate Critical Result Workflow
+Description
+The system shall initiate an applicable critical result workflow when an eligible laboratory result meets approved critical result criteria.
+Priority
+Must Have
+Conceptual Flow
+RESULT ENTERED      │      ▼CRITICAL CRITERIA EVALUATION      │   ┌──┴──┐   │     │  NO    YES   │     │   ▼     ▼NORMAL   CRITICAL FLAGFLOW          │              ▼     CRITICAL RESULT CASE              │              ▼     NOTIFICATION REQUIRED              │              ▼     AUTHORIZED RECIPIENT              │              ▼     NOTIFICATION ATTEMPT              │              ▼     NOTIFICATION RECORDED              │              ▼     ACKNOWLEDGEMENT TRACKED
+Important Safety Principle
+Displaying:
+CRITICAL
+in red on a laboratory screen may not be sufficient.
+A real critical result workflow may require:
+IDENTIFY   │   ▼NOTIFY   │   ▼RECORD WHO WAS NOTIFIED   │   ▼RECORD WHEN   │   ▼TRACK ACKNOWLEDGEMENT
+The exact hospital notification policy shall be approved by clinical and laboratory governance.
+
+5.192 CRITICAL RESULT NOTIFICATION
+CS-LAB-FR-054 — Record Critical Result Notification
+Description
+The system shall allow an authorized user to record an applicable critical result notification event.
+Priority
+Must Have
+Notification Information May Include
+critical result;
+notification date and time;
+notifying user;
+recipient;
+notification method;
+notification outcome.
+Example
+CRITICAL RESULTPotassium6.8 mmol/LPatientMRN-000102Notified ByLAB-USR-20RecipientDr. AhmadNotification Time14 JUL 2026 10:52MethodTelephoneOutcomeCommunicated
+Business Rule
+CS-LAB-BR-034
+Critical result notification events shall maintain appropriate provenance.
+
+CS-LAB-FR-055 — Record Notification Recipient
+Description
+The system shall record the identifiable recipient or approved recipient context of a critical result notification.
+Priority
+Must Have
+Important Requirement
+The system should avoid unrestricted information such as:
+Notified someone.
+Where approved workflows permit, the system shall provide sufficient traceability to answer:
+WHO RECEIVED THE CRITICAL RESULT?
+
+CS-LAB-FR-056 — Track Critical Result Acknowledgement
+Description
+The system shall track applicable acknowledgement of a critical result notification.
+Priority
+Must Have
+Conceptual States
+CRITICAL RESULT IDENTIFIED          │          ▼NOTIFICATION PENDING          │          ▼NOTIFIED          │          ▼ACKNOWLEDGED
+Alternative paths may include:
+NOTIFICATION FAILED
+ESCALATION REQUIRED
+The exact escalation workflow shall be defined with hospital stakeholders.
+
+5.193 FINAL LABORATORY REPORT
+CS-LAB-FR-057 — Generate Final Laboratory Report
+Description
+The system shall generate a final laboratory report for eligible verified laboratory results.
+Priority
+Must Have
+Report Information May Include
+Hospital / Laboratory IdentityPatient IdentityMRNOrder InformationAccession InformationOrdering ClinicianSpecimen InformationCollection TimeReceipt TimeTest NameResult ComponentsResult ValuesUnitsReference RangesAbnormal FlagsCritical FlagsResult CommentsVerification InformationReport Status
+Conceptual Report
+┌────────────────────────────────────────────────────────────┐│ CURASPHERE LABORATORY                                     │├────────────────────────────────────────────────────────────┤│ Patient: Ahmad Khan              MRN: MRN-000102           ││ Accession: ACC-20260714-00182                              ││ Ordering Doctor: Dr. Ahmad                                │├────────────────────────────────────────────────────────────┤│ COMPLETE BLOOD COUNT                                      │├─────────────────────┬────────────┬───────────┬─────────────┤│ Component           │ Result     │ Unit      │ Flag        │├─────────────────────┼────────────┼───────────┼─────────────┤│ Hemoglobin          │ 10.2       │ g/dL      │ LOW         ││ WBC                 │ 8.4        │ ×10⁹/L    │             ││ Platelets           │ 250        │ ×10⁹/L    │             │├────────────────────────────────────────────────────────────┤│ Status: FINAL                                             ││ Verified By: Authorized Laboratory Verifier               ││ Verified At: 14 JUL 2026 10:50                            │└────────────────────────────────────────────────────────────┘
+The exact printable report design shall be documented during Report and UI Design.
+Important Requirement
+The laboratory report is a clinical artifact.
+Its data shall come from trusted finalized laboratory information.
+React shall not construct an authoritative laboratory report using uncontrolled browser state.
+
+CS-LAB-FR-058 — View Final Laboratory Report
+Description
+The system shall allow authorized users to view an eligible final laboratory report.
+Priority
+Must Have
+Access May Include
+laboratory users;
+authorized doctors;
+authorized clinical users;
+authorized medical records users;
+patient-facing access where formally specified.
+Patient portal access shall be documented separately.
+
+5.194 EMR LABORATORY RESULT AVAILABILITY
+CS-LAB-FR-059 — Make Final Result Available to EMR
+Description
+The system shall make eligible finalized laboratory result information available to the Electronic Medical Record.
+Priority
+Must Have
+Conceptual Integration
+LAB RESULTDRAFT  │  ▼PENDING VERIFICATION  │  ▼VERIFIED / FINAL  │  ▼AUTHORIZED RESULT RELEASE  │  ▼EMR
+Important Requirement
+The EMR shall normally consume permitted finalized laboratory information according to result release rules.
+It shall not treat every laboratory draft value as a final clinical result.
+Conceptual Query
+EMR REQUESTS PATIENT LAB HISTORY              │              ▼AUTHORIZED?              │              ▼LAB RESULT READ MODEL              │              ▼ELIGIBLE RELEASED RESULTS              │              ▼EMR TIMELINE
+Business Rules
+CS-LAB-BR-035
+Only eligible laboratory result information shall be released to the EMR.
+CS-LAB-BR-036
+Laboratory result status shall be identifiable in clinical result views.
+
+5.195 LABORATORY AUDIT EVENTS
+CS-LAB-FR-060 — Record Laboratory Audit Events
+Description
+The system shall record appropriate audit events for significant laboratory operations.
+Priority
+Must Have
+Events May Include
+LAB_ORDER_RECEIVEDLAB_ORDER_CANCELLEDSPECIMEN_COLLECTEDSPECIMEN_LABEL_PRINTEDSPECIMEN_LABEL_REPRINTEDSPECIMEN_RECEIVEDSPECIMEN_ACCEPTEDSPECIMEN_REJECTEDRECOLLECTION_REQUESTEDTEST_PROCESSING_STARTEDLAB_RESULT_ENTEREDLAB_RESULT_UPDATEDLAB_RESULT_SUBMITTEDLAB_RESULT_VERIFIEDLAB_RESULT_CORRECTEDCRITICAL_RESULT_IDENTIFIEDCRITICAL_RESULT_NOTIFICATION_RECORDEDLAB_REPORT_FINALIZED
+Example
+EVENTLAB_RESULT_VERIFIEDTARGETLAB-RESULT-882ACCESSIONACC-20260714-00182ACTORLAB-USR-020TIME2026-07-14 10:50RESULTSUCCESS
+Privacy Requirement
+Audit logs shall contain sufficient traceability without unnecessarily duplicating sensitive clinical information.
+
+5.196 LABORATORY STATE TRANSITION VALIDATION
+CS-LAB-FR-061 — Prevent Invalid Laboratory State Transition
+Description
+The system shall enforce approved laboratory workflow state transitions.
+Priority
+Must Have
+Conceptual Laboratory Order State Model
+ORDERED   │   ▼AWAITING_COLLECTION   │   ▼COLLECTED   │   ▼RECEIVED   │   ▼IN_PROCESS   │   ▼RESULT_DRAFT   │   ▼PENDING_VERIFICATION   │   ▼FINAL
+Possible controlled branches:
+ORDERED   │   ▼CANCELLED
+RECEIVED   │   ▼SPECIMEN_REJECTED   │   ▼RECOLLECTION_REQUIRED
+PENDING_VERIFICATION   │   ▼VERIFICATION_REJECTED   │   ▼RESULT_CORRECTION_REQUIRED
+Invalid Transition Example
+AWAITING_COLLECTION        │        ▼FINAL RESULT
+without specimen, processing, and result workflow.
+Another invalid transition:
+FINAL  │  ▼DRAFT
+as an ordinary edit operation.
+Business Rules
+CS-LAB-BR-037
+Laboratory workflow states shall follow approved transitions.
+CS-LAB-BR-038
+Invalid client-requested state transitions shall be rejected by the trusted backend.
+CS-LAB-BR-039
+Finalized results shall not return to ordinary draft editing.
+
+5.197 SEARCH LABORATORY ORDERS
+CS-LAB-FR-062 — Search Laboratory Orders
+Description
+The system shall allow authorized users to search permitted laboratory orders.
+Priority
+Must Have
+Search Criteria May Include
+laboratory order identifier;
+accession number;
+specimen identifier;
+MRN;
+patient name;
+test;
+order date;
+ordering clinician;
+status.
+Security Requirement
+Search results shall be restricted according to authorization and clinical access policies.
+
+5.198 PATIENT LABORATORY HISTORY
+CS-LAB-FR-063 — View Patient Laboratory History
+Description
+The system shall allow authorized clinical and laboratory users to view permitted patient laboratory result history.
+Priority
+Must Have
+Example
+PATIENT LABORATORY HISTORYPatientAhmad KhanMRNMRN-000102─────────────────────────────────────14 JUL 2026Complete Blood CountStatus:FINALAbnormal Components:Hemoglobin — LOW─────────────────────────────────────20 JUN 2026Blood GlucoseStatus:FINAL─────────────────────────────────────04 MAR 2026Complete Blood CountStatus:FINAL
+Important Difference
+LAB WORKLIST
+answers:
+What work does the laboratory need to process?
+While:
+PATIENT LAB HISTORY
+answers:
+What laboratory results are available for this patient’s clinical history?
+These are different read models.
+
+5.199 LABORATORY TURNAROUND TIME
+CS-LAB-FR-064 — Track Laboratory Turnaround Time
+Description
+The system should support measurement of applicable laboratory turnaround time.
+Priority
+Should Have
+Potential Time Measurements
+ORDER TO COLLECTIONCOLLECTION TO RECEIPTRECEIPT TO PROCESSINGPROCESSING TO RESULTRESULT TO VERIFICATIONRECEIPT TO FINAL RESULT
+Example
+Specimen Received10:00        │        ▼Final Result11:30        │        ▼TURNAROUND TIME90 Minutes
+Important Engineering Principle
+Turnaround time should be derived from meaningful workflow event timestamps.
+Do not create:
+tat = "90 minutes"
+as the only source of truth.
+Conceptually:
+VERIFIED_AT - RECEIVED_AT        │        ▼TURNAROUND TIME
+The final metric definition shall be approved by laboratory stakeholders.
+
+5.200 LABORATORY INSTRUMENT INTEGRATION ARCHITECTURE
+CS-LAB-FR-065 — Support Instrument Integration Architecture
+Description
+The system architecture should permit future integration with compatible laboratory instruments or laboratory middleware.
+Priority
+Should Have
+Conceptual Future Flow
+LAB INSTRUMENT       │       ▼INSTRUMENT INTERFACE / MIDDLEWARE       │       ▼INTEGRATION ADAPTER       │       ▼CURASPHERE LAB       │       ▼RESULT MATCHING       │       ▼VALIDATION       │       ▼DRAFT / IMPORTED RESULT       │       ▼VERIFICATION WORKFLOW
+Critical Safety Requirement
+An instrument result shall not be blindly associated with a patient merely because a frontend screen is open.
+The integration shall validate appropriate identifiers.
+Conceptually:
+INSTRUMENT RESULTAccession = ACC-182        │        ▼CURASPHEREFind ACC-182        │        ▼Validate Test        │        ▼Validate Result Component        │        ▼Validate Instrument Mapping        │        ▼Create Eligible Result Data
+Important Scope Statement
+This SRS does not finalize:
+instrument communication protocol;
+HL7 interface;
+ASTM interface;
+FHIR laboratory implementation;
+middleware vendor;
+device driver;
+analyzer communication library.
+These shall be evaluated during Integration Architecture.
+
+5.201 LABORATORY ENTITY RELATIONSHIP CONCEPT
+The following is a conceptual domain relationship model.
+It is not yet the final PostgreSQL ERD.
+                         PATIENT                            │                            ▼                       LAB ORDER                            │                            │                    ┌───────┴───────┐                    │               │                    ▼               ▼              ORDERED TEST      ORDER CONTEXT                    │                    ▼           SPECIMEN REQUIREMENT                    │                    ▼                 SPECIMEN                    │                    ▼              SPECIMEN RECEIPT                    │                    ▼                 ACCESSION                    │                    ▼               LABORATORY WORK                    │                    ▼                 TEST RESULT                    │                    ▼              RESULT COMPONENTS                    │                    ▼             RESULT VERIFICATION                    │             ┌──────┴──────┐             │             │             ▼             ▼       CRITICAL RESULT   FINAL REPORT             │             │             ▼             ▼       NOTIFICATION        EMR
+
+5.202 LABORATORY ORDER RELATIONSHIP MODEL
+LAB ORDER    │    ├── Ordered Test A    │    ├── Ordered Test B    │    └── Ordered Test C
+Conceptually:
+ONE LAB ORDER      │      ▼MANY ORDERED TESTS
+An ordered test references a laboratory test definition.
+ORDERED TEST      │      ▼LAB TEST DEFINITION
+Example:
+LAB ORDERLAB-ORD-182      │      ├── Ordered Test 1      │       │      │       ▼      │      CBC      │      ├── Ordered Test 2      │       │      │       ▼      │   Blood Glucose      │      └── Ordered Test 3              │              ▼             LFT
+This prevents the weak design:
+lab_ordertest1test2test3test4test5
+
+5.203 SPECIMEN RELATIONSHIP MODEL
+The Laboratory architecture shall support explicit specimen relationships.
+Conceptually:
+PATIENT   │   ▼SPECIMEN   │   ├── Specimen Type   ├── Container   ├── Collected At   ├── Collected By   └── Status
+Laboratory work may reference applicable specimen information.
+SPECIMEN    │    ▼LABORATORY WORK
+The detailed many-to-many or linking model shall be determined during Data Architecture based on validated laboratory workflow requirements.
+The SRS intentionally avoids forcing:
+ONE SPECIMEN     │     ▼EXACTLY ONE TEST
+because specimen utilization may vary by laboratory workflow.
+
+5.204 LABORATORY RESULT RELATIONSHIP MODEL
+LAB TESTComplete Blood Count        │        ▼RESULT SET        │        ├── Hemoglobin Result        │        ├── WBC Result        │        ├── RBC Result        │        ├── Platelet Result        │        └── Hematocrit Result
+Each result component may conceptually contain:
+RESULT COMPONENT       │       ├── Component Definition       ├── Value       ├── Unit       ├── Reference Range       ├── Abnormal Flag       ├── Critical Flag       ├── Status       └── Provenance
+The final physical database structure shall be designed later.
+
+5.205 COMPLETE LABORATORY WORKFLOW MODEL
+                              DOCTOR                                 │                                 ▼                         CLINICAL ENCOUNTER                                 │                                 ▼                         CREATE LAB ORDER                                 │                                 ▼                       SELECT LABORATORY TESTS                                 │                                 ▼                        VALIDATE LAB ORDER                                 │                                 ▼                           ORDER CREATED                                 │                                 ▼                    DETERMINE SPECIMEN REQUIREMENTS                                 │                                 ▼                        COLLECTION WORKLIST                                 │                                 ▼                       VERIFY PATIENT CONTEXT                                 │                                 ▼                         COLLECT SPECIMEN                                 │                                 ▼                       GENERATE SPECIMEN ID                                 │                                 ▼                          LABEL SPECIMEN                                 │                                 ▼                       TRANSPORT TO LABORATORY                                 │                                 ▼                         RECEIVE SPECIMEN                                 │                                 ▼                         CREATE ACCESSION                                 │                                 ▼                        ASSESS SPECIMEN                                 │                       ┌─────────┴─────────┐                       │                   │                       ▼                   ▼                    REJECT               ACCEPT                       │                   │                       ▼                   ▼              RECORD REJECTION      LAB WORKLIST                       │                   │                       ▼                   ▼               RECOLLECTION?       START PROCESSING                       │                   │                       ▼                   ▼               NEW SPECIMEN          TEST PROCESSING                                           │                                           ▼                                      RESULT ENTRY                                           │                                           ▼                                    RESULT VALIDATION                                           │                                           ▼                                  REFERENCE RANGE RULES                                           │                                           ▼                                   ABNORMAL EVALUATION                                           │                                           ▼                                   CRITICAL EVALUATION                                           │                               ┌───────────┴───────────┐                               │                       │                               ▼                       ▼                          NON-CRITICAL              CRITICAL                               │                       │                               │                       ▼                               │              NOTIFICATION WORKFLOW                               │                       │                               └───────────┬───────────┘                                           │                                           ▼                                SUBMIT FOR VERIFICATION                                           │                                           ▼                                      RESULT REVIEW                                           │                               ┌───────────┴───────────┐                               │                       │                               ▼                       ▼                       REJECT VERIFICATION           VERIFY                               │                       │                               ▼                       ▼                      CORRECTION REQUIRED         FINAL RESULT                                                       │                                                       ▼                                              FINAL LAB REPORT                                                       │                                                       ▼                                                     EMR
+
+5.206 LABORATORY SEQUENCE MODEL
+DOCTOR      OPD        LAB        COLLECTOR      TECH       VERIFIER      EMR   │         │          │             │            │            │          │   │ Order   │          │             │            │            │          │   ├────────►│          │             │            │            │          │   │         │ Create   │             │            │            │          │   │         │ Lab Order│             │            │            │          │   │         ├─────────►│             │            │            │          │   │         │          │             │            │            │          │   │         │          │ Collection  │            │            │          │   │         │          │ Requirement │            │            │          │   │         │          ├────────────►│            │            │          │   │         │          │             │            │            │          │   │         │          │             │ Collect    │            │          │   │         │          │◄────────────┤ Specimen   │            │          │   │         │          │             │            │            │          │   │         │          │ Receive     │            │            │          │   │         │          │ Specimen    │            │            │          │   │         │          │             │            │            │          │   │         │          │ Lab Work    │            │            │          │   │         │          ├─────────────────────────►│            │          │   │         │          │             │            │            │          │   │         │          │             │            │ Enter      │          │   │         │          │◄─────────────────────────┤ Result     │          │   │         │          │             │            │            │          │   │         │          │ Verification Request     │            │          │   │         │          ├──────────────────────────────────────►│          │   │         │          │             │            │            │          │   │         │          │             │            │            │ Verify   │   │         │          │◄──────────────────────────────────────┤          │   │         │          │             │            │            │          │   │         │          │ Final Result                                      │   │         │          ├──────────────────────────────────────────────────►│
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be developed during Detailed Design.
+
+5.207 LABORATORY STATE MODEL
+Laboratory Order State
+                 ORDERED                    │          ┌─────────┴─────────┐          │                   │          ▼                   ▼AWAITING_COLLECTION       CANCELLED          │          ▼       COLLECTED          │          ▼        RECEIVED          │          ▼       IN_PROCESS          │          ▼      RESULT_DRAFT          │          ▼PENDING_VERIFICATION          │          ▼         FINAL
+Specimen State
+COLLECTION_PENDING        │        ▼     COLLECTED        │        ▼    IN_TRANSIT        │        ▼     RECEIVED        │   ┌────┴─────┐   │          │   ▼          ▼REJECTED    ACCEPTED   │          │   ▼          ▼RECOLLECT   IN_PROCESS
+Laboratory Result State
+DRAFT  │  ▼PENDING_VERIFICATION  │  ├──────────────► VERIFICATION_REJECTED  │                         │  │                         ▼  │                  CORRECTION_REQUIRED  │                         │  │                         ▼  │                       DRAFT  │  ▼FINAL  │  ▼CORRECTED
+The exact state names and aggregate boundaries shall be finalized during Domain Architecture.
+
+5.208 LABORATORY BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-LAB-BR-001
+Each laboratory test shall have a unique identity
+CS-LAB-BR-002
+Laboratory test codes shall be unique within applicable scope
+CS-LAB-BR-003
+Only eligible active tests shall normally be orderable
+CS-LAB-BR-004
+Historical orders shall preserve test relationships
+CS-LAB-BR-005
+A test may contain multiple result components
+CS-LAB-BR-006
+Result components shall define applicable data type
+CS-LAB-BR-007
+Reference range selection shall use approved configuration
+CS-LAB-BR-008
+Laboratory order shall reference an identifiable patient
+CS-LAB-BR-009
+Laboratory order shall maintain ordering provenance
+CS-LAB-BR-010
+Laboratory order shall contain at least one eligible test
+CS-LAB-BR-011
+Only eligible orders may be cancelled
+CS-LAB-BR-012
+Order cancellation shall record applicable reason and actor
+CS-LAB-BR-013
+Each tracked specimen shall have a unique identifier
+CS-LAB-BR-014
+Specimen identifiers shall not be reused
+CS-LAB-BR-015
+Specimen collection shall maintain provenance
+CS-LAB-BR-016
+Specimen and laboratory order patient context shall match
+CS-LAB-BR-017
+Each accession shall have a unique identity
+CS-LAB-BR-018
+Accession numbers shall not be reused
+CS-LAB-BR-019
+Rejected specimens shall have an applicable reason
+CS-LAB-BR-020
+Specimen rejection shall maintain actor and timestamp
+CS-LAB-BR-021
+Laboratory result shall reference identifiable laboratory work
+CS-LAB-BR-022
+Result entry requires authorization
+CS-LAB-BR-023
+Result data shall conform to configured result type
+CS-LAB-BR-024
+Critical result determination shall use approved criteria
+CS-LAB-BR-025
+Critical results shall initiate applicable critical workflow
+CS-LAB-BR-026
+Only eligible results may be submitted for verification
+CS-LAB-BR-027
+Result verification requires authorization
+CS-LAB-BR-028
+Verification shall identify the verifier
+CS-LAB-BR-029
+Verification time shall be recorded
+CS-LAB-BR-030
+Verified results shall not remain freely editable
+CS-LAB-BR-031
+Final result correction shall use controlled workflow
+CS-LAB-BR-032
+Original finalized result shall remain traceable
+CS-LAB-BR-033
+Result correction shall maintain actor and time
+CS-LAB-BR-034
+Critical result notification shall maintain provenance
+CS-LAB-BR-035
+Only eligible results shall be released to EMR
+CS-LAB-BR-036
+Result status shall be identifiable
+CS-LAB-BR-037
+Laboratory states shall follow approved transitions
+CS-LAB-BR-038
+Backend shall reject invalid laboratory state transitions
+CS-LAB-BR-039
+Finalized results shall not return to ordinary draft editing
+
+5.209 LABORATORY PERMISSION CONCEPT
+Potential laboratory permissions include:
+LAB_TEST_CATALOG_VIEWLAB_TEST_CATALOG_CREATELAB_TEST_CATALOG_UPDATELAB_TEST_CATALOG_ACTIVATELAB_ORDER_VIEWLAB_ORDER_RECEIVELAB_ORDER_CANCELLAB_COLLECTION_VIEWLAB_SPECIMEN_COLLECTLAB_SPECIMEN_LABEL_PRINTLAB_SPECIMEN_LABEL_REPRINTLAB_SPECIMEN_RECEIVELAB_SPECIMEN_ACCEPTLAB_SPECIMEN_REJECTLAB_RECOLLECTION_REQUESTLAB_WORKLIST_VIEWLAB_WORK_ASSIGNLAB_PROCESSING_STARTLAB_RESULT_VIEWLAB_RESULT_ENTERLAB_RESULT_UPDATE_DRAFTLAB_RESULT_SUBMITLAB_RESULT_REVIEWLAB_RESULT_VERIFYLAB_RESULT_CORRECTLAB_CRITICAL_RESULT_VIEWLAB_CRITICAL_NOTIFICATION_RECORDLAB_REPORT_VIEW
+Example Laboratory Technician Concept
+LAB TECHNICIAN      │      ├── LAB_ORDER_VIEW      ├── LAB_SPECIMEN_RECEIVE      ├── LAB_SPECIMEN_ACCEPT      ├── LAB_SPECIMEN_REJECT      ├── LAB_WORKLIST_VIEW      ├── LAB_PROCESSING_START      ├── LAB_RESULT_VIEW      ├── LAB_RESULT_ENTER      ├── LAB_RESULT_UPDATE_DRAFT      └── LAB_RESULT_SUBMIT
+An ordinary laboratory technician may not automatically receive:
+LAB_RESULT_VERIFY
+or:
+LAB_RESULT_CORRECT
+The final role-permission matrix shall be defined during Security Architecture.
+
+5.210 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Maintain laboratory test catalog
+CS-LAB-FR-001 to 004
+Configure specimen requirements
+CS-LAB-FR-005
+Configure result components
+CS-LAB-FR-006
+Configure reference ranges
+CS-LAB-FR-007
+Search test catalog
+CS-LAB-FR-008
+Receive laboratory order
+CS-LAB-FR-009 to 015
+Determine specimen requirements
+CS-LAB-FR-016
+Create specimen record
+CS-LAB-FR-017 to 018
+Record specimen collection
+CS-LAB-FR-019 to 020
+Manage specimen labels
+CS-LAB-FR-021 to 023
+Receive specimen
+CS-LAB-FR-024
+Manage accession
+CS-LAB-FR-025 to 027
+Accept specimen
+CS-LAB-FR-028
+Reject specimen
+CS-LAB-FR-029 to 030
+Request recollection
+CS-LAB-FR-031
+Track specimen state
+CS-LAB-FR-032
+Laboratory worklist
+CS-LAB-FR-033 to 035
+Laboratory processing
+CS-LAB-FR-036 to 037
+Manual result entry
+CS-LAB-FR-038
+Multi-component results
+CS-LAB-FR-039
+Validate result data
+CS-LAB-FR-040 to 041
+Apply reference ranges
+CS-LAB-FR-042
+Identify abnormal results
+CS-LAB-FR-043
+Identify critical results
+CS-LAB-FR-044
+Draft result management
+CS-LAB-FR-045 to 046
+Submit result
+CS-LAB-FR-047
+Review result
+CS-LAB-FR-048
+Verify result
+CS-LAB-FR-049 to 050
+Correct final result
+CS-LAB-FR-051 to 052
+Critical result workflow
+CS-LAB-FR-053 to 056
+Final laboratory report
+CS-LAB-FR-057 to 058
+EMR laboratory integration
+CS-LAB-FR-059
+Laboratory auditing
+CS-LAB-FR-060
+Laboratory state integrity
+CS-LAB-FR-061
+Search laboratory orders
+CS-LAB-FR-062
+Patient laboratory history
+CS-LAB-FR-063
+Turnaround time
+CS-LAB-FR-064
+Future instrument integration
+CS-LAB-FR-065
+
+5.211 LABORATORY MODULE RISK ANALYSIS
+Risk 1 — Wrong Patient Specimen
+Problem
+A specimen collected from Patient A is associated with Patient B’s laboratory order.
+Impact
+Severe patient safety risk.
+The wrong patient may receive:
+an incorrect diagnosis;
+inappropriate treatment;
+unnecessary medication;
+delayed treatment.
+Mitigation
+CuraSphere shall validate:
+PATIENT   │   ▼LAB ORDER   │   ▼SPECIMEN
+relationships through trusted backend logic.
+Specimen identification and patient-context controls shall be treated as safety-critical requirements.
+
+Risk 2 — Specimen Has No Unique Identity
+Problem
+The system only records:
+sample_collected = true
+Impact
+The system cannot trace individual physical specimens.
+Mitigation
+Each tracked specimen shall receive a unique specimen identifier.
+
+Risk 3 — Rejected Specimen Deleted
+Problem
+A laboratory user deletes the rejected specimen record.
+Impact
+The laboratory loses operational and quality traceability.
+Mitigation
+Use:
+SPECIMEN   │   ▼REJECTED   │   ▼REASON   │   ▼RECOLLECTION
+rather than uncontrolled deletion.
+
+Risk 4 — One Result Column for Complex Tests
+Problem
+Database design:
+lab_resultstest_nameresult
+Impact
+Multi-component tests become difficult to model.
+Mitigation
+Use:
+TEST  │  ▼RESULT SET  │  ▼RESULT COMPONENTS
+
+Risk 5 — Reference Range Hardcoded in React
+Problem
+if (hemoglobin < 12) {    status = "LOW";}
+Impact
+Clinical rules become duplicated and inconsistent.
+Mitigation
+Reference range evaluation shall use approved laboratory configuration and trusted backend logic.
+
+Risk 6 — Abnormal and Critical Results Treated as Identical
+Problem
+Every abnormal result creates an emergency alert.
+Impact
+Alert fatigue and incorrect clinical workflow.
+Mitigation
+Distinguish:
+ABNORMAL
+from:
+CRITICAL
+using approved laboratory rules.
+
+Risk 7 — Critical Result Only Displayed in Red
+Problem
+The UI shows:
+CRITICAL
+but no notification workflow exists.
+Impact
+Urgent laboratory information may not reach an appropriate clinical recipient.
+Mitigation
+Implement a formal critical result notification workflow.
+
+Risk 8 — Final Result Silently Edited
+Problem
+A finalized result changes from:
+6.8
+to:
+4.8
+without correction history.
+Impact
+Clinical record integrity is lost.
+Mitigation
+Use controlled result correction and preserve the original result traceability.
+
+Risk 9 — Draft Result Appears in EMR as Final
+Problem
+A technician enters an incomplete draft value.
+The EMR immediately displays it as a final result.
+Impact
+Doctors may make clinical decisions using unverified information.
+Mitigation
+Result release shall respect result status and approved release rules.
+
+Risk 10 — Instrument Result Matched by Patient Name
+Problem
+An instrument result is matched using:
+"Ahmad Khan"
+Impact
+Duplicate names can cause incorrect patient result association.
+Mitigation
+Future instrument integration shall use validated laboratory identifiers and explicit mappings.
+
+Risk 11 — One Date Field for Entire Laboratory Workflow
+Problem
+Database contains:
+lab_date
+Impact
+The system cannot measure:
+collection time;
+transport time;
+receipt time;
+processing time;
+verification time.
+Mitigation
+Record meaningful laboratory workflow timestamps.
+
+Risk 12 — Recollection Reuses Old Specimen ID
+Problem
+Rejected specimen:
+SPM-100
+New physical specimen:
+SPM-100
+Impact
+Physical specimen traceability becomes ambiguous.
+Mitigation
+Every newly collected physical specimen shall receive its own applicable specimen identity.
+
+5.212 COMPLETE LABORATORY CAPABILITY MODEL
+                         LABORATORY MANAGEMENT                                   │         ┌─────────────────────────┼──────────────────────────┐         │                         │                          │         ▼                         ▼                          ▼    TEST CATALOG               LAB ORDERS                 SPECIMENS         │                         │                          │         ├── Tests                 ├── Patient                ├── ID         ├── Components            ├── Encounter              ├── Type         ├── Specimens             ├── Doctor                 ├── Container         ├── Units                 ├── Priority               ├── Collector         ├── Ranges                └── Tests                  ├── Collection         └── Critical Rules                                   └── Status                                   │                                   ▼                              ACCESSION                                   │                                   ▼                              LAB WORKLIST                                   │                                   ▼                              PROCESSING                                   │                                   ▼                               RESULTS                                   │                    ┌──────────────┼──────────────┐                    │              │              │                    ▼              ▼              ▼               DATA TYPE       REFERENCE       CRITICAL               VALIDATION       RANGE           RULES                    │              │              │                    └──────────────┼──────────────┘                                   │                                   ▼                           RESULT VERIFICATION                                   │                    ┌──────────────┴──────────────┐                    │                             │                    ▼                             ▼              RESULT CORRECTION            FINAL RESULT                                                  │                                    ┌─────────────┴─────────────┐                                    │                           │                                    ▼                           ▼                              LAB REPORT                       EMR
+
+5.213 LABORATORY MODULE COMPLETION STATUS
+Module: Laboratory Management SystemModule Code: LABRequirement Range: CS-LAB-FR-001 to CS-LAB-FR-065Business Rule Range: CS-LAB-BR-001 to CS-LAB-BR-039
+Laboratory Domain Boundary: DefinedLaboratory Test Catalog: DefinedTest Definition Model: DefinedSpecimen Requirement Concept: DefinedResult Component Model: DefinedReference Range Concept: DefinedLaboratory Order Workflow: DefinedLaboratory Order Validation: DefinedOrder State Concept: DefinedSpecimen Identity: DefinedSpecimen Collection Workflow: DefinedCollector Provenance: DefinedSpecimen Label Concept: DefinedSpecimen Label Reprint Control: DefinedPatient-Specimen Relationship Validation: DefinedSpecimen Receipt Workflow: DefinedLaboratory Accession Concept: DefinedSpecimen Acceptance: DefinedSpecimen Rejection: DefinedRecollection Workflow: DefinedSpecimen State Model: DefinedLaboratory Worklist: DefinedTest Processing Workflow: DefinedManual Result Entry: DefinedMulti-Component Results: DefinedResult Data Type Validation: DefinedResult Unit Context: DefinedReference Range Evaluation: DefinedAbnormal Result Concept: DefinedCritical Result Concept: DefinedDraft Result Workflow: DefinedResult Verification Workflow: DefinedVerification Rejection: DefinedFinal Result Correction: DefinedCritical Result Notification: DefinedCritical Result Acknowledgement: DefinedFinal Laboratory Report: DefinedEMR Result Availability: DefinedLaboratory Audit Events: DefinedLaboratory State Models: DefinedPatient Laboratory History: DefinedTurnaround Time Concept: DefinedFuture Instrument Integration Boundary: DefinedLaboratory Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The Laboratory Management System requirements establish the laboratory operational and clinical workflow of CuraSphere.
+These requirements shall later be transformed into:
+Laboratory use case specification;
+laboratory order use case;
+specimen collection use case;
+specimen receipt use case;
+specimen rejection use case;
+recollection use case;
+result entry use case;
+result verification use case;
+critical result notification use case;
+laboratory result correction use case;
+laboratory order activity diagram;
+specimen collection activity diagram;
+accession activity diagram;
+result processing activity diagram;
+result verification activity diagram;
+critical result activity diagram;
+Laboratory Order state machine;
+Specimen state machine;
+Laboratory Result state machine;
+Create Laboratory Order sequence diagram;
+Collect Specimen sequence diagram;
+Receive Specimen sequence diagram;
+Enter Result sequence diagram;
+Verify Result sequence diagram;
+Critical Result Notification sequence diagram;
+Laboratory Test domain model;
+Ordered Test domain model;
+Specimen domain model;
+Accession domain model;
+Laboratory Work domain model;
+Laboratory Result domain model;
+Result Component domain model;
+Reference Range domain model;
+Critical Result domain model;
+PostgreSQL laboratory schema;
+laboratory result versioning strategy;
+laboratory audit architecture;
+barcode and specimen label architecture;
+laboratory integration architecture;
+React Laboratory Worklist requirements;
+React Specimen Collection requirements;
+React Specimen Receipt requirements;
+React Result Entry requirements;
+React Result Verification requirements;
+React Critical Result Dashboard requirements;
+ASP.NET Core Laboratory Order API;
+ASP.NET Core Specimen API;
+ASP.NET Core Laboratory Result API;
+laboratory authorization policies;
+laboratory workflow integration tests;
+patient-specimen relationship tests;
+result state transition tests;
+reference range evaluation tests;
+critical result workflow tests;
+result correction integrity tests.
+No React laboratory component library, barcode library, barcode standard, printer integration library, ASP.NET Core entity structure, PostgreSQL table structure, HL7 implementation, FHIR implementation, ASTM implementation, laboratory analyzer protocol, middleware vendor, instrument driver, reference range engine, or clinical decision support technology has been finalized by this SRS section.
+Those decisions shall be made during Architecture and Detailed Design.
+

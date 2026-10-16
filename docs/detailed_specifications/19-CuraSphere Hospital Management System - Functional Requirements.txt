@@ -1,0 +1,2062 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.14 — SYSTEM ADMINISTRATION, CONFIGURATION AND MASTER DATA MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: ADM/CFGModule Name: System Administration, Configuration and Master Data Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.892 MODULE PURPOSE
+The System Administration, Configuration and Master Data Management System shall provide centralized, controlled, traceable, and authorized capabilities for managing CuraSphere operational configuration, system-level settings, hospital configuration, organizational reference data, application master data, configuration lifecycle, and administrative system operations.
+The module shall support:
+system administration;
+hospital configuration;
+organization configuration;
+facility configuration;
+department master data;
+service master data;
+specialization master data;
+room type master data;
+ward type master data;
+appointment type master data;
+payment method master data;
+billing reference data;
+clinical reference configuration boundaries;
+laboratory reference configuration boundaries;
+pharmacy reference configuration boundaries;
+inventory reference configuration boundaries;
+employee reference configuration boundaries;
+notification configuration boundaries;
+report configuration boundaries;
+configuration categories;
+configuration keys;
+configuration values;
+configuration data types;
+configuration validation;
+configuration defaults;
+configuration activation;
+configuration deactivation;
+effective configuration resolution;
+configuration versioning;
+configuration history;
+configuration comparison;
+configuration import boundaries;
+configuration export boundaries;
+configuration approval boundaries;
+sensitive configuration protection;
+secret configuration separation;
+configuration caching boundaries;
+cache invalidation requirements;
+configuration propagation;
+environment-specific configuration boundaries;
+feature configuration boundaries;
+feature flag boundaries;
+master data creation;
+master data modification;
+master data activation;
+master data deactivation;
+master data ordering;
+master data search;
+master data filtering;
+master data duplicate prevention;
+master data dependency protection;
+administrative audit integration;
+administrative authorization;
+configuration observability;
+configuration health verification;
+future multi-hospital configuration support.
+The high-level administration lifecycle shall be:
+AUTHORIZED ADMINISTRATOR          │          ▼ADMINISTRATION FUNCTION          │          ▼SELECT CONFIGURATION / MASTER DATA          │          ▼LOAD CURRENT STATE          │          ▼REQUEST CHANGE          │          ▼VALIDATE PERMISSION          │          ▼VALIDATE BUSINESS RULES          │          ▼VALIDATE CONFIGURATION          │          ▼DEPENDENCY CHECK          │          ▼SAVE CHANGE          │          ▼INVALIDATE ELIGIBLE CACHE          │          ▼PROPAGATE CONFIGURATION          │          ▼CREATE AUDIT EVENT          │          ▼UPDATED SYSTEM BEHAVIOR
+The module shall help CuraSphere answer questions such as:
+WHAT IS THE CURRENT SYSTEM CONFIGURATION?WHICH HOSPITAL SETTINGS ARE ACTIVE?WHICH DEPARTMENTS ARE AVAILABLE?WHICH SERVICES ARE ACTIVE?WHICH APPOINTMENT TYPES ARE ALLOWED?WHICH PAYMENT METHODS ARE ENABLED?WHICH MASTER DATA VALUE IS DEACTIVATED?WHO CHANGED A CONFIGURATION?WHAT WAS THE PREVIOUS CONFIGURATION VALUE?WHAT IS THE NEW CONFIGURATION VALUE?WHEN DID THE CONFIGURATION CHANGE?WHICH CONFIGURATION VERSION IS ACTIVE?IS THE CONFIGURATION VALUE VALID?IS A MASTER DATA VALUE CURRENTLY IN USE?CAN THE VALUE BE DEACTIVATED?CAN THE VALUE BE DELETED?DOES THE CONFIGURATION CONTAIN A SECRET?SHOULD THE CONFIGURATION BE CACHED?HOW DOES A CONFIGURATION CHANGE REACH APPLICATION COMPONENTS?CAN DEVELOPMENT CONFIGURATION DIFFER FROM PRODUCTION?CAN A FEATURE BE ENABLED WITHOUT DEPLOYING NEW CODE?CAN MULTIPLE HOSPITALS HAVE DIFFERENT CONFIGURATION IN THE FUTURE?
+
+5.893 ADMINISTRATION DOMAIN BOUNDARY
+The ADM/CFG module shall manage administrative configuration and shared reference data.
+It shall not become the owner of every business entity in CuraSphere.
+Example:
+ADM/CFG MODULE      │      ▼OWNS DEPARTMENT MASTER DEFINITION
+Department:
+CARDIOLOGY
+However:
+HRM MODULE      │      ▼OWNS EMPLOYEE ASSIGNMENT
+Example:
+DOCTOR  │  ▼ASSIGNED TO CARDIOLOGY
+Therefore:
+DEPARTMENT MASTER DATA          ≠EMPLOYEE DEPARTMENT ASSIGNMENT
+Another example:
+ADM/CFG    │    ▼OWNS PAYMENT METHOD REFERENCE
+Example:
+CASHBANK TRANSFERCARD
+Billing module:
+BIL │ ▼OWNS PAYMENT TRANSACTION
+Therefore:
+PAYMENT METHOD      ≠PAYMENT
+Another example:
+ADM/CFG    │    ▼OWNS APPOINTMENT TYPE
+Example:
+INITIAL CONSULTATIONFOLLOW-UP CONSULTATION
+Appointment module:
+APT │ ▼OWNS APPOINTMENT
+Therefore:
+APPOINTMENT TYPE        ≠APPOINTMENT
+Critical Principle
+MASTER DATA     │     ▼DEFINES ALLOWED REFERENCE VALUE
+BUSINESS MODULE       │       ▼USES REFERENCE VALUE
+The Administration module shall not:
+REGISTER PATIENTSCREATE APPOINTMENTSADMIT PATIENTSWRITE CLINICAL NOTESVERIFY LAB RESULTSFINALIZE RADIOLOGY REPORTSDISPENSE MEDICINESGENERATE INVOICESRECEIVE PAYMENTSAPPROVE LEAVEPROCESS SALARIES
+It shall provide approved system configuration and shared reference data required by those modules.
+
+5.894 CRITICAL CONFIGURATION ARCHITECTURE CONCEPT
+CuraSphere shall distinguish:
+APPLICATION CONFIGURATION
+BUSINESS CONFIGURATION
+MASTER DATA
+SECRET
+FEATURE FLAG
+USER PREFERENCE
+TRANSACTIONAL DATA
+These concepts shall not be treated as identical.
+Example application configuration:
+MAXIMUM API REQUEST SIZEDEFAULT PAGE SIZEBACKGROUND WORKER INTERVAL
+Business configuration:
+APPOINTMENT CANCELLATION WINDOWINVOICE DUE PERIODLOW STOCK THRESHOLD POLICY
+Master data:
+DEPARTMENTSPECIALIZATIONPAYMENT METHODAPPOINTMENT TYPE
+Secret:
+DATABASE PASSWORDAPI SECRETPRIVATE KEYSIGNING KEY
+Feature flag:
+ENABLE_PATIENT_PORTAL_V2
+User preference:
+DARK MODEDASHBOARD LAYOUTLANGUAGE PREFERENCE
+Transactional data:
+PATIENTAPPOINTMENTINVOICEPAYMENT
+Therefore:
+CONFIGURATION      ≠MASTER DATA      ≠SECRET      ≠FEATURE FLAG      ≠USER PREFERENCE      ≠TRANSACTION
+The architecture may provide controlled relationships between these concepts.
+
+5.895 APPLICATION CONFIGURATION CONCEPT
+Application configuration shall represent technical or application-level behavior settings.
+Conceptually:
+APPLICATION CONFIGURATION          │          ├── Configuration Key          ├── Configuration Value          ├── Data Type          ├── Category          ├── Default Value          ├── Validation Rule          ├── Environment Scope          ├── Hospital Scope          ├── Is Sensitive          ├── Is Runtime Changeable          ├── Is Cacheable          ├── Effective From          ├── Status          └── Version
+Example:
+CONFIGURATION KEYPagination.DefaultPageSizeVALUE25DATA TYPEINTEGERCATEGORYAPPLICATIONRUNTIME CHANGEABLEYES
+Another example:
+CONFIGURATION KEYAppointments.CancellationWindowHoursVALUE24DATA TYPEINTEGERCATEGORYAPPOINTMENT
+Configuration keys shall use approved stable identifiers.
+React display labels shall not become authoritative configuration keys.
+
+5.896 MASTER DATA CONCEPT
+Master data shall represent centrally managed reference values used by one or more CuraSphere business modules.
+Conceptual model:
+MASTER DATA     │     ├── Master Data ID     ├── Master Data Type     ├── Code     ├── Name     ├── Description     ├── Display Order     ├── Status     ├── Effective From     ├── Effective To     └── Additional Type-Specific Attributes
+Example:
+MASTER DATA TYPEPAYMENT_METHODCODECASHNAMECashSTATUSACTIVE
+Another example:
+MASTER DATA TYPEAPPOINTMENT_TYPECODEFOLLOW_UPNAMEFollow-Up ConsultationSTATUSACTIVE
+Critical Principle
+Master data codes shall be stable machine-readable values.
+Example:
+CODEFOLLOW_UP
+Display name:
+Follow-Up Consultation
+Future display name:
+Follow-Up Visit
+The code may remain:
+FOLLOW_UP
+Therefore:
+MASTER DATA CODE        ≠DISPLAY LABEL
+
+5.897 ADMINISTRATION ACTORS
+Actor
+Administrative Responsibility
+Hospital Administrator
+Manages approved hospital configuration
+System Administrator
+Manages approved technical system configuration
+Master Data Administrator
+Manages approved shared reference data
+Billing Administrator
+Manages approved billing reference configuration
+HR Administrator
+Manages approved HR reference configuration
+Pharmacy Administrator
+Manages approved pharmacy reference configuration
+Laboratory Administrator
+Manages approved laboratory reference configuration
+Inventory Administrator
+Manages approved inventory reference configuration
+Notification Administrator
+Manages approved notification configuration
+Reporting Administrator
+Manages approved reporting configuration
+Security Administrator
+Reviews security-sensitive configuration boundaries
+Audit User
+Reviews eligible administrative audit history
+CuraSphere Application
+Reads and resolves effective configuration
+Background Worker
+Applies eligible configuration-driven processing
+DevOps Operator
+Manages approved deployment and environment configuration outside normal business administration boundaries
+
+5.898 ADMINISTRATION FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-ADM-FR-001
+View Administration Dashboard
+M
+CS-ADM-FR-002
+View Configuration Categories
+M
+CS-ADM-FR-003
+View Configuration
+M
+CS-ADM-FR-004
+Search Configuration
+M
+CS-ADM-FR-005
+Filter Configuration
+M
+CS-ADM-FR-006
+Create Eligible Configuration
+S
+CS-ADM-FR-007
+Update Configuration
+M
+CS-ADM-FR-008
+Validate Configuration Key
+M
+CS-ADM-FR-009
+Validate Configuration Value
+M
+CS-ADM-FR-010
+Validate Configuration Data Type
+M
+CS-ADM-FR-011
+Apply Configuration Default
+M
+CS-ADM-FR-012
+Activate Configuration
+M
+CS-ADM-FR-013
+Deactivate Configuration
+M
+CS-ADM-FR-014
+Resolve Effective Configuration
+M
+CS-ADM-FR-015
+Support Configuration Scope
+M
+CS-ADM-FR-016
+Support Hospital Configuration Scope
+M
+CS-ADM-FR-017
+Support Environment Configuration Boundary
+M
+CS-ADM-FR-018
+Support Configuration Effective Date
+S
+CS-ADM-FR-019
+Version Configuration
+M
+CS-ADM-FR-020
+View Configuration History
+M
+CS-ADM-FR-021
+Compare Configuration Versions
+S
+CS-ADM-FR-022
+Restore Configuration from Previous Value
+S
+CS-ADM-FR-023
+Audit Configuration Change
+M
+CS-ADM-FR-024
+Protect Sensitive Configuration
+M
+CS-ADM-FR-025
+Separate Secret Configuration
+M
+CS-ADM-FR-026
+Prevent Secret Exposure in UI
+M
+CS-ADM-FR-027
+Prevent Secret Exposure in API
+M
+CS-ADM-FR-028
+Prevent Secret Exposure in Audit
+M
+CS-ADM-FR-029
+Cache Eligible Configuration
+S
+CS-ADM-FR-030
+Invalidate Configuration Cache
+M
+CS-ADM-FR-031
+Propagate Configuration Change
+M
+CS-ADM-FR-032
+Verify Configuration Health
+M
+CS-ADM-FR-033
+Export Eligible Configuration
+S
+CS-ADM-FR-034
+Import Eligible Configuration
+S
+CS-ADM-FR-035
+Validate Configuration Import
+M
+CS-ADM-FR-036
+Preview Configuration Import
+S
+CS-ADM-FR-037
+Record Configuration Import Result
+M
+CS-ADM-FR-038
+Support Feature Configuration
+S
+CS-ADM-FR-039
+Support Feature Flag Boundary
+S
+CS-ADM-FR-040
+Create Master Data
+M
+CS-ADM-FR-041
+Generate Master Data Identifier
+M
+CS-ADM-FR-042
+Assign Master Data Type
+M
+CS-ADM-FR-043
+Assign Master Data Code
+M
+CS-ADM-FR-044
+Validate Master Data Code
+M
+CS-ADM-FR-045
+Assign Master Data Name
+M
+CS-ADM-FR-046
+Update Master Data
+M
+CS-ADM-FR-047
+Activate Master Data
+M
+CS-ADM-FR-048
+Deactivate Master Data
+M
+CS-ADM-FR-049
+Prevent Unsafe Master Data Deletion
+M
+CS-ADM-FR-050
+Check Master Data Dependencies
+M
+CS-ADM-FR-051
+Search Master Data
+M
+CS-ADM-FR-052
+Filter Master Data
+M
+CS-ADM-FR-053
+Paginate Master Data
+M
+CS-ADM-FR-054
+Sort Master Data
+M
+CS-ADM-FR-055
+Configure Master Data Display Order
+S
+CS-ADM-FR-056
+Prevent Duplicate Master Data
+M
+CS-ADM-FR-057
+View Master Data Usage
+S
+CS-ADM-FR-058
+Audit Master Data Change
+M
+CS-ADM-FR-059
+Manage Hospital Master Data
+M
+CS-ADM-FR-060
+Manage Department Master Data
+M
+CS-ADM-FR-061
+Manage Specialization Master Data
+M
+CS-ADM-FR-062
+Manage Service Master Data
+M
+CS-ADM-FR-063
+Manage Appointment Type Master Data
+M
+CS-ADM-FR-064
+Manage Room Type Master Data
+M
+CS-ADM-FR-065
+Manage Ward Type Master Data
+M
+CS-ADM-FR-066
+Manage Payment Method Master Data
+M
+CS-ADM-FR-067
+Manage Billing Reference Data
+M
+CS-ADM-FR-068
+Manage HR Reference Data
+M
+CS-ADM-FR-069
+Manage Inventory Reference Data
+M
+CS-ADM-FR-070
+Manage Pharmacy Reference Data
+M
+CS-ADM-FR-071
+Manage Laboratory Reference Data
+M
+CS-ADM-FR-072
+Restrict Administration Access
+M
+CS-ADM-FR-073
+Apply Administration Data Scope
+M
+CS-ADM-FR-074
+Require Elevated Permission for Critical Configuration
+M
+CS-ADM-FR-075
+Support Configuration Change Approval Boundary
+S
+CS-ADM-FR-076
+Monitor Configuration Change Activity
+M
+CS-ADM-FR-077
+Monitor Configuration Resolution Failure
+M
+CS-ADM-FR-078
+Support Configuration Fallback
+M
+CS-ADM-FR-079
+Detect Invalid Active Configuration
+M
+CS-ADM-FR-080
+Support Future Multi-Hospital Configuration
+S
+
+5.899 VIEW ADMINISTRATION DASHBOARD
+CS-ADM-FR-001 — View Administration Dashboard
+The system shall provide an administration dashboard to authorized administrative users.
+Potential dashboard information includes:
+ACTIVE CONFIGURATION COUNTINACTIVE CONFIGURATION COUNTMASTER DATA TYPE COUNTACTIVE MASTER DATA COUNTINACTIVE MASTER DATA COUNTRECENT CONFIGURATION CHANGESRECENT MASTER DATA CHANGESCONFIGURATION HEALTH STATUSINVALID CONFIGURATION ALERTSCONFIGURATION RESOLUTION FAILURES
+Example:
+ADMINISTRATION DASHBOARD          │          ├── CONFIGURATION          │      ├── Active: 142          │      ├── Inactive: 12          │      └── Invalid: 1          │          ├── MASTER DATA          │      ├── Types: 24          │      ├── Active: 310          │      └── Inactive: 18          │          └── SYSTEM HEALTH                 └── Configuration: WARNING
+The dashboard shall not expose secret configuration values.
+
+5.900 VIEW CONFIGURATION CATEGORIES
+CS-ADM-FR-002 — View Configuration Categories
+The system shall allow authorized users to view configuration categories.
+Potential categories include:
+APPLICATIONHOSPITALPATIENTAPPOINTMENTADMISSIONCLINICALLABORATORYRADIOLOGYPHARMACYBILLINGINSURANCEINVENTORYHRNOTIFICATIONREPORTINGSECURITYINTEGRATION
+The final configuration category registry shall be defined during Domain and Application Architecture.
+Example:
+CONFIGURATION      │      ├── APPOINTMENT      ├── BILLING      ├── INVENTORY      ├── NOTIFICATION      └── REPORTING
+
+5.901 VIEW CONFIGURATION
+CS-ADM-FR-003 — View Configuration
+The system shall allow authorized users to view eligible configuration.
+Potential fields include:
+CONFIGURATION KEYDISPLAY NAMEDESCRIPTIONCATEGORYDATA TYPEEFFECTIVE VALUEDEFAULT VALUESCOPESTATUSRUNTIME CHANGEABLECACHEABLEVERSIONLAST MODIFIED TIME
+Sensitive values shall be masked or excluded.
+Example:
+KEYAppointments.CancellationWindowHoursVALUE24DATA TYPEINTEGERSTATUSACTIVE
+
+5.902 SEARCH CONFIGURATION
+CS-ADM-FR-004 — Search Configuration
+The system shall allow authorized users to search configuration.
+Potential search fields include:
+CONFIGURATION KEYDISPLAY NAMEDESCRIPTION
+Example:
+SEARCHappointment cancellation
+Possible result:
+Appointments.CancellationWindowHours
+Search results shall remain subject to administrative authorization.
+
+5.903 FILTER CONFIGURATION
+CS-ADM-FR-005 — Filter Configuration
+The system shall allow authorized users to filter configuration.
+Potential filters include:
+CATEGORYDATA TYPESTATUSSCOPERUNTIME CHANGEABLECACHEABLESENSITIVE
+Example:
+CATEGORYBILLINGSTATUSACTIVE
+The backend shall enforce configuration visibility rules.
+
+5.904 CREATE ELIGIBLE CONFIGURATION
+CS-ADM-FR-006 — Create Eligible Configuration
+Priority
+Should Have
+The system should allow specifically authorized users to create eligible runtime-managed configuration definitions.
+Main flow:
+ADMINISTRATOR      │      ▼CREATE CONFIGURATION      │      ▼ENTER KEY      │      ▼SELECT CATEGORY      │      ▼SELECT DATA TYPE      │      ▼DEFINE VALUE      │      ▼DEFINE VALIDATION      │      ▼VALIDATE      │      ▼DUPLICATE KEY CHECK      │      ▼SAVE      │      ▼AUDIT EVENT
+Important Boundary
+Not every application configuration key shall be created through the administration UI.
+Certain configuration definitions may be code-owned.
+Example:
+CODE-OWNED CONFIGURATION DEFINITION               │               ▼VALUE MAY BE ADMINISTRATIVELY MANAGED
+The final configuration definition ownership strategy shall be selected during Application Architecture.
+
+5.905 UPDATE CONFIGURATION
+CS-ADM-FR-007 — Update Configuration
+The system shall allow authorized users to update eligible configuration values.
+Example:
+KEYAppointments.CancellationWindowHoursOLD VALUE24NEW VALUE12
+Main flow:
+LOAD CONFIGURATION       │       ▼CHECK PERMISSION       │       ▼CHECK RUNTIME CHANGEABLE       │       ▼ENTER NEW VALUE       │       ▼VALIDATE DATA TYPE       │       ▼VALIDATE BUSINESS RULE       │       ▼SAVE NEW VERSION       │       ▼INVALIDATE CACHE       │       ▼PROPAGATE CHANGE       │       ▼AUDIT EVENT
+The previous configuration history shall be preserved where versioning applies.
+
+5.906 CONFIGURATION KEY VALIDATION
+CS-ADM-FR-008 — Validate Configuration Key
+The system shall validate configuration keys.
+Potential key format:
+Domain.ConfigurationName
+Examples:
+Appointments.CancellationWindowHoursBilling.InvoiceDueDaysInventory.DefaultLowStockThresholdNotifications.MaxRetryCount
+Invalid examples may include:
+my settingsetting#1password123
+The final key naming convention shall be defined during Application Architecture.
+Configuration keys shall be unique within the applicable configuration definition scope.
+
+5.907 CONFIGURATION VALUE VALIDATION
+CS-ADM-FR-009 — Validate Configuration Value
+The system shall validate configuration values before activation.
+Example:
+CONFIGURATIONAppointments.CancellationWindowHoursVALID RANGE0 TO 720
+Input:
+-500
+Result:
+VALIDATION FAILED
+Another example:
+CONFIGURATIONNotifications.MaxRetryCountVALID RANGE0 TO 20
+Input:
+100000
+Result:
+VALIDATION FAILED
+React validation may improve user experience.
+ASP.NET Core shall enforce authoritative validation.
+
+5.908 CONFIGURATION DATA TYPE VALIDATION
+CS-ADM-FR-010 — Validate Configuration Data Type
+The system shall support approved configuration data types.
+Potential types include:
+STRINGINTEGERDECIMALBOOLEANDATEDATETIMEDURATIONENUMJSON
+Example:
+DATA TYPEINTEGERVALUE25
+Valid.
+Example:
+DATA TYPEINTEGERVALUE"twenty-five"
+Invalid.
+JSON Configuration Boundary
+JSON configuration may be supported only for approved structured configuration.
+It shall not become:
+PUT EVERYTHING IN JSON
+architecture.
+Structured domain data shall use appropriate domain models.
+
+5.909 CONFIGURATION DEFAULT
+CS-ADM-FR-011 — Apply Configuration Default
+The system shall support approved default configuration values.
+Conceptually:
+REQUEST CONFIGURATION        │        ▼ACTIVE VALUE EXISTS?     ┌──┴──┐     │     │    YES    NO     │     │     ▼     ▼ACTIVE   DEFAULTVALUE    VALUE
+Example:
+KEYPagination.DefaultPageSizeACTIVE VALUENOT DEFINEDDEFAULT VALUE25
+Effective value:
+25
+The fallback behavior shall be deterministic.
+
+5.910 ACTIVATE CONFIGURATION
+CS-ADM-FR-012 — Activate Configuration
+The system shall allow authorized users to activate eligible configuration.
+Main flow:
+INACTIVE CONFIGURATION          │          ▼ACTIVATE REQUEST          │          ▼PERMISSION CHECK          │          ▼VALUE VALIDATION          │          ▼DEPENDENCY CHECK          │          ▼ACTIVATE          │          ▼CACHE INVALIDATION          │          ▼AUDIT EVENT
+Invalid configuration shall not become active.
+
+5.911 DEACTIVATE CONFIGURATION
+CS-ADM-FR-013 — Deactivate Configuration
+The system shall allow authorized users to deactivate eligible configuration.
+Before deactivation, the system shall determine:
+IS DEFAULT AVAILABLE?IS CONFIGURATION REQUIRED?IS FALLBACK AVAILABLE?WILL MODULE BECOME INVALID?
+Example:
+CONFIGURATIONBilling.DefaultCurrency
+If required by the billing architecture:
+DEACTIVATE     │     ▼NO FALLBACK     │     ▼REJECT
+The system shall not allow configuration deactivation that knowingly creates an invalid critical system state.
+
+5.912 EFFECTIVE CONFIGURATION RESOLUTION
+CS-ADM-FR-014 — Resolve Effective Configuration
+The system shall resolve the effective configuration value.
+Conceptually:
+CONFIGURATION REQUEST          │          ▼CONFIGURATION KEY          │          ▼RESOLVE SCOPE          │          ▼ACTIVE SCOPED VALUE?       ┌──┴──┐       │     │      YES    NO       │     │       ▼     ▼USE SCOPED  GLOBAL VALUE?VALUE         │           ┌──┴──┐           │     │          YES    NO           │     │           ▼     ▼        GLOBAL  DEFAULT        VALUE   VALUE
+Potential future resolution hierarchy:
+HOSPITAL-SPECIFIC VALUE          │          ▼GLOBAL VALUE          │          ▼DEFAULT VALUE
+The exact hierarchy shall be finalized during Configuration Architecture.
+
+5.913 CONFIGURATION SCOPE
+CS-ADM-FR-015 — Support Configuration Scope
+The system shall support configuration scope.
+Potential scopes include:
+GLOBALHOSPITALMODULE
+Future scopes may include:
+FACILITYDEPARTMENT
+Example:
+GLOBALPagination.DefaultPageSize = 25
+Hospital-specific:
+HOSPITAL-AAppointments.CancellationWindowHours = 24
+Hospital B:
+HOSPITAL-BAppointments.CancellationWindowHours = 12
+The final scope hierarchy shall be defined during Multi-Tenancy and Domain Architecture.
+
+5.914 HOSPITAL CONFIGURATION SCOPE
+CS-ADM-FR-016 — Support Hospital Configuration Scope
+The system shall support hospital-scoped configuration where approved.
+Conceptually:
+CURASPHERE     │     ├── HOSPITAL A     │       └── CONFIGURATION A     │     └── HOSPITAL B             └── CONFIGURATION B
+For the initial CuraSphere deployment, a single hospital configuration may be used.
+However, the architecture should avoid unnecessary assumptions such as:
+const int HospitalId = 1;
+The final multi-hospital implementation scope shall be selected during Architecture Design.
+
+5.915 ENVIRONMENT CONFIGURATION BOUNDARY
+CS-ADM-FR-017 — Support Environment Configuration Boundary
+The system shall distinguish runtime business configuration from environment and deployment configuration.
+Environment examples:
+DEVELOPMENTTESTINGSTAGINGPRODUCTION
+Deployment configuration may include:
+DATABASE CONNECTIONAPPLICATION HOSTLOGGING SINKTELEMETRY ENDPOINTSECRET PROVIDER
+These values shall normally be managed through DevOps and secure deployment configuration.
+They shall not automatically appear in the CuraSphere administration dashboard.
+Therefore:
+BUSINESS ADMIN CONFIGURATION             ≠DEVOPS ENVIRONMENT CONFIGURATION
+Example:
+Appointments.CancellationWindowHours
+may be business configuration.
+However:
+PostgreSQL.Password
+shall not be editable through a normal hospital administration UI.
+
+5.916 CONFIGURATION EFFECTIVE DATE
+CS-ADM-FR-018 — Support Configuration Effective Date
+Priority
+Should Have
+The system should support future-dated configuration where business requirements require it.
+Example:
+CURRENT VALUEBilling.InvoiceDueDays = 30
+Future configuration:
+EFFECTIVE FROM01 JAN 2027VALUEBilling.InvoiceDueDays = 15
+Conceptually:
+CONFIGURATION VERSION A         │         ▼ACTIVE UNTIL 31 DEC 2026
+CONFIGURATION VERSION B         │         ▼ACTIVE FROM 01 JAN 2027
+Overlapping effective configuration shall be prevented where ambiguity would occur.
+
+5.917 CONFIGURATION VERSIONING
+CS-ADM-FR-019 — Version Configuration
+The system shall preserve configuration versions for approved runtime-managed configuration.
+Example:
+VERSION 1VALUE = 24
+VERSION 2VALUE = 12
+Conceptually:
+CONFIGURATION KEY        │        ├── VERSION 1        ├── VERSION 2        └── VERSION 3
+One version may represent the current effective value.
+Configuration history shall not be implemented by silently overwriting all historical information.
+
+5.918 CONFIGURATION HISTORY
+CS-ADM-FR-020 — View Configuration History
+The system shall allow authorized users to view configuration history.
+Example:
+KEYAppointments.CancellationWindowHours
+History:
+VERSION 1VALUE: 48CHANGED: 01 JAN 2026VERSION 2VALUE: 24CHANGED: 01 MAR 2026VERSION 3VALUE: 12CHANGED: 14 JUL 2026
+Eligible information may include:
+VERSIONVALUE OR MASKED VALUESTATUSEFFECTIVE DATECHANGED BYCHANGED TIME
+Sensitive values shall remain protected.
+
+5.919 CONFIGURATION VERSION COMPARISON
+CS-ADM-FR-021 — Compare Configuration Versions
+Priority
+Should Have
+The system should allow authorized users to compare eligible configuration versions.
+Example:
+VERSION 2VALUE = 24
+Compared with:
+VERSION 3VALUE = 12
+Difference:
+VALUE24 ↓12
+For structured configuration:
+VERSION 1{  "maxRetries": 3,  "delayMinutes": 5}
+Version 2:
+{  "maxRetries": 5,  "delayMinutes": 10}
+Difference:
+maxRetries3 → 5delayMinutes5 → 10
+Sensitive fields shall not be exposed through comparison.
+
+5.920 RESTORE PREVIOUS CONFIGURATION VALUE
+CS-ADM-FR-022 — Restore Configuration from Previous Value
+Priority
+Should Have
+The system should allow authorized users to restore an eligible previous configuration value.
+Conceptually:
+CURRENT VERSIONVERSION 5
+Administrator selects:
+VERSION 3
+The system shall not normally make Version 3 the current record by deleting Versions 4 and 5.
+Preferred:
+VERSION 3 VALUE      │      ▼COPY AS NEW VERSION      │      ▼VERSION 6
+Therefore:
+RESTORE   ≠DELETE HISTORY
+The restoration shall generate an audit event.
+
+5.921 CONFIGURATION CHANGE AUDIT
+CS-ADM-FR-023 — Audit Configuration Change
+The system shall audit approved configuration changes.
+Potential events include:
+CONFIGURATION_CREATEDCONFIGURATION_UPDATEDCONFIGURATION_ACTIVATEDCONFIGURATION_DEACTIVATEDCONFIGURATION_RESTOREDCONFIGURATION_IMPORTED
+Example:
+EVENTCONFIGURATION_UPDATEDACTORUSR-ADMIN-001TARGETAppointments.CancellationWindowHoursOLD VALUE24NEW VALUE12RESULTSUCCESS
+Sensitive configuration values shall not be copied into audit history.
+
+5.922 SENSITIVE CONFIGURATION PROTECTION
+CS-ADM-FR-024 — Protect Sensitive Configuration
+The system shall classify and protect sensitive configuration.
+Potential sensitive configuration includes:
+EXTERNAL SERVICE CREDENTIAL REFERENCEPRIVATE ENDPOINT CONFIGURATIONSECURITY-SENSITIVE SYSTEM SETTING
+Sensitive configuration may require:
+MASKINGRESTRICTED ACCESSENCRYPTIONSEPARATE STORAGEADDITIONAL AUDITING
+The final classification model shall be defined during Security Architecture.
+
+5.923 SECRET CONFIGURATION SEPARATION
+CS-ADM-FR-025 — Separate Secret Configuration
+The system shall separate secrets from normal administrative configuration.
+Secrets include:
+DATABASE PASSWORDAPI SECRETPRIVATE KEYJWT SIGNING SECRETENCRYPTION KEYSMTP PASSWORDEXTERNAL PROVIDER SECRET
+Conceptually:
+NORMAL CONFIGURATION         │         ▼CONFIGURATION STORE
+Secrets:
+SECRET  │  ▼APPROVED SECRET MANAGEMENT BOUNDARY
+Therefore:
+CONFIGURATION TABLE        ≠SECRET VAULT
+No secret management product is selected by this SRS.
+
+5.924 SECRET UI PROTECTION
+CS-ADM-FR-026 — Prevent Secret Exposure in UI
+The React administration application shall not display secret values.
+Incorrect:
+DATABASE PASSWORDSuperSecretPassword123
+Preferred:
+DATABASE CREDENTIALCONFIGURED
+or:
+SECRET REFERENCEdb-production-credential
+where approved.
+Browser developer tools shall not receive secret values hidden only through CSS.
+Incorrect architecture:
+API RETURNS SECRET        │        ▼REACT HIDES SECRET
+Preferred:
+API DOES NOT RETURN SECRET
+
+5.925 SECRET API PROTECTION
+CS-ADM-FR-027 — Prevent Secret Exposure in API
+The ASP.NET Core API shall not return secret values through normal administration endpoints.
+Incorrect:
+{  "key": "Database.Password",  "value": "SuperSecretPassword123"}
+This shall not be permitted.
+The API may return approved metadata such as:
+{  "key": "Database.Credential",  "configured": true}
+The final secret administration workflow shall be defined during Security and DevOps Architecture.
+
+5.926 SECRET AUDIT PROTECTION
+CS-ADM-FR-028 — Prevent Secret Exposure in Audit
+The system shall prevent secret configuration values from being recorded in audit events.
+Unsafe:
+OLD SECRETabc123NEW SECRETxyz789
+Preferred:
+EVENTSECRET_CONFIGURATION_UPDATEDTARGETSMTP_CREDENTIALRESULTSUCCESS
+No secret value shall be recorded.
+
+5.927 CONFIGURATION CACHING
+CS-ADM-FR-029 — Cache Eligible Configuration
+Priority
+Should Have
+The system should cache eligible frequently accessed configuration.
+Conceptually:
+APPLICATION     │     ▼REQUEST CONFIGURATION     │     ▼CACHE  ┌──┴──┐  │     │ HIT   MISS  │     │  ▼     ▼VALUE  CONFIGURATION STORE          │          ▼        VALUE          │          ▼      UPDATE CACHE
+Not all configuration shall automatically be cached.
+Potential cache eligibility factors include:
+READ FREQUENCYCHANGE FREQUENCYSENSITIVITYCONSISTENCY REQUIREMENT
+No caching product is selected by this SRS.
+
+5.928 CONFIGURATION CACHE INVALIDATION
+CS-ADM-FR-030 — Invalidate Configuration Cache
+The system shall invalidate eligible cached configuration when the authoritative value changes.
+Conceptually:
+CONFIGURATION UPDATED          │          ▼DATABASE COMMIT          │          ▼CACHE INVALIDATION          │          ▼NEXT READ          │          ▼NEW VALUE
+Risk:
+DATABASE VALUE = 12
+Cache:
+CACHE VALUE = 24
+If cache invalidation fails:
+INCONSISTENT SYSTEM BEHAVIOR
+The system shall detect eligible configuration propagation or cache invalidation failures.
+
+5.929 CONFIGURATION CHANGE PROPAGATION
+CS-ADM-FR-031 — Propagate Configuration Change
+The system shall support propagation of eligible runtime configuration changes.
+Conceptually:
+ADMINISTRATOR      │      ▼UPDATE CONFIGURATION      │      ▼CONFIGURATION STORE      │      ▼CHANGE SIGNAL      │   ┌──┼───────────┐   │  │           │   ▼  ▼           ▼API  WORKER    OTHER COMPONENT
+Potential strategies may include:
+CACHE EXPIRATIONCACHE INVALIDATIONPOLLINGDATABASE NOTIFICATIONMESSAGE EVENTCONFIGURATION SERVICE
+No propagation technology is selected by this SRS.
+
+5.930 CONFIGURATION HEALTH VERIFICATION
+CS-ADM-FR-032 — Verify Configuration Health
+The system shall support configuration health verification.
+Potential checks include:
+REQUIRED CONFIGURATION EXISTSACTIVE VALUE IS VALIDDATA TYPE IS VALIDNO INVALID DUPLICATE EXISTSNO AMBIGUOUS EFFECTIVE VERSION EXISTSREQUIRED FALLBACK EXISTSCONFIGURATION STORE IS AVAILABLE
+Example:
+Billing.DefaultCurrencySTATUSMISSING
+Health:
+CRITICAL CONFIGURATION ERROR
+Another example:
+Pagination.DefaultPageSizeVALUE25
+Health:
+VALID
+
+5.931 CONFIGURATION EXPORT
+CS-ADM-FR-033 — Export Eligible Configuration
+Priority
+Should Have
+The system should allow authorized users to export eligible non-secret configuration.
+Potential purposes include:
+REVIEWENVIRONMENT COMPARISONBACKUP SUPPORTMIGRATION PREPARATION
+Potential formats may include:
+JSONCSV
+Secret values shall be excluded.
+The export action shall be audited.
+
+5.932 CONFIGURATION IMPORT
+CS-ADM-FR-034 — Import Eligible Configuration
+Priority
+Should Have
+The system should support controlled import of eligible configuration.
+Conceptually:
+CONFIGURATION FILE        │        ▼UPLOAD        │        ▼FORMAT VALIDATION        │        ▼KEY VALIDATION        │        ▼VALUE VALIDATION        │        ▼SENSITIVE DATA CHECK        │        ▼DEPENDENCY CHECK        │        ▼PREVIEW        │        ▼AUTHORIZED APPLY
+Configuration import shall not directly overwrite production configuration without validation.
+
+5.933 CONFIGURATION IMPORT VALIDATION
+CS-ADM-FR-035 — Validate Configuration Import
+The system shall validate imported configuration.
+Validation shall include, where applicable:
+FILE FORMATSCHEMA VERSIONCONFIGURATION KEYDATA TYPEVALUE RANGEENUM VALUEDUPLICATE KEYSCOPESENSITIVE DATAUNKNOWN CONFIGURATION
+Example import:
+Notifications.MaxRetryCount = -500
+Result:
+INVALID VALUE
+The system shall reject or isolate invalid import entries according to the approved import strategy.
+
+5.934 CONFIGURATION IMPORT PREVIEW
+CS-ADM-FR-036 — Preview Configuration Import
+Priority
+Should Have
+The system should provide an import preview.
+Example:
+CONFIGURATION IMPORT PREVIEW12 NEW VALUES18 UPDATED VALUES2 UNCHANGED VALUES3 INVALID VALUES
+Potential comparison:
+Configuration
+Current
+Imported
+Result
+Pagination.DefaultPageSize
+25
+50
+Update
+Notifications.MaxRetryCount
+3
+5
+Update
+Billing.InvoiceDueDays
+30
+30
+No Change
+Appointments.CancellationWindowHours
+24
+-100
+Invalid
+The administrator shall review eligible changes before applying the import.
+
+5.935 CONFIGURATION IMPORT RESULT
+CS-ADM-FR-037 — Record Configuration Import Result
+The system shall record the result of configuration imports.
+Potential result information includes:
+IMPORT IDFILE REFERENCETOTAL ENTRIESCREATED COUNTUPDATED COUNTUNCHANGED COUNTFAILED COUNTSTART TIMECOMPLETION TIMEACTORRESULT
+Potential audit event:
+CONFIGURATION_IMPORT_COMPLETED
+The full imported file shall not automatically be copied into the audit event.
+
+5.936 FEATURE CONFIGURATION
+CS-ADM-FR-038 — Support Feature Configuration
+Priority
+Should Have
+The system should support configuration that controls eligible feature behavior.
+Example:
+PatientPortal.AllowAppointmentCancellationTRUE
+Another example:
+Billing.AllowPartialPaymentTRUE
+Feature configuration may affect business behavior.
+It shall remain distinct from deployment feature flags where appropriate.
+
+5.937 FEATURE FLAG BOUNDARY
+CS-ADM-FR-039 — Support Feature Flag Boundary
+Priority
+Should Have
+The architecture should support future feature flag capability.
+Example:
+FEATUREPATIENT_PORTAL_V2STATUSENABLED
+Conceptually:
+FEATURE FLAG      │      ▼FEATURE ENABLED?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼NEW UI  CURRENT UI
+Critical Requirement
+Feature flags shall not be used to bypass authorization.
+Incorrect:
+FEATURE FLAG ENABLED        │        ▼USER BECOMES ADMIN
+Authorization shall remain controlled by IAM.
+No feature flag product has been selected.
+
+5.938 CREATE MASTER DATA
+CS-ADM-FR-040 — Create Master Data
+The system shall allow authorized users to create approved master data values.
+Main flow:
+ADMINISTRATOR      │      ▼SELECT MASTER DATA TYPE      │      ▼ENTER CODE      │      ▼ENTER NAME      │      ▼ENTER DESCRIPTION      │      ▼VALIDATE      │      ▼DUPLICATE CHECK      │      ▼SAVE      │      ▼AUDIT EVENT
+Example:
+MASTER DATA TYPEAPPOINTMENT_TYPECODETELECONSULTATIONNAMETeleconsultation
+
+5.939 MASTER DATA IDENTIFIER
+CS-ADM-FR-041 — Generate Master Data Identifier
+The system shall generate a unique master data identifier.
+Example:
+MST-00000421
+Type-specific master data may use separate identifiers.
+Example:
+DEP-000421
+for department.
+The final identifier strategy shall be defined during Data Architecture.
+Internal PostgreSQL keys may remain separate from public references.
+
+5.940 MASTER DATA TYPE
+CS-ADM-FR-042 — Assign Master Data Type
+The system shall assign a master data type.
+Potential types include:
+HOSPITALDEPARTMENTSPECIALIZATIONSERVICEAPPOINTMENT_TYPEROOM_TYPEWARD_TYPEPAYMENT_METHODBILLING_CATEGORYEMPLOYEE_TYPEEMPLOYMENT_STATUSINVENTORY_CATEGORYMEDICINE_CATEGORYLABORATORY_CATEGORY
+The final registry shall be defined during Domain Architecture.
+
+5.941 MASTER DATA CODE
+CS-ADM-FR-043 — Assign Master Data Code
+The system shall assign a stable code to master data.
+Example:
+TYPEPAYMENT_METHODCODEBANK_TRANSFER
+Display name:
+Bank Transfer
+The code may be used by:
+API CONTRACTSBUSINESS RULESINTEGRATIONSREPORTING
+where approved.
+Display names shall not be used as permanent technical identifiers.
+
+5.942 MASTER DATA CODE VALIDATION
+CS-ADM-FR-044 — Validate Master Data Code
+The system shall validate master data codes.
+Potential code convention:
+UPPER_SNAKE_CASE
+Examples:
+CASHBANK_TRANSFERFOLLOW_UPPRIVATE_ROOM
+Invalid examples:
+Cash Payment!Follow up visit 1my-code???
+The final code convention shall be defined during Domain Architecture.
+Codes shall be unique within the applicable master data type.
+
+5.943 MASTER DATA NAME
+CS-ADM-FR-045 — Assign Master Data Name
+The system shall allow an approved display name for master data.
+Example:
+CODEFOLLOW_UPNAMEFollow-Up Consultation
+Future localization may support:
+ENGLISH NAMEURDU NAMEPASHTO NAME
+No localization model is selected by this SRS section.
+
+5.944 UPDATE MASTER DATA
+CS-ADM-FR-046 — Update Master Data
+The system shall allow authorized users to update eligible master data attributes.
+Potential editable fields include:
+NAMEDESCRIPTIONDISPLAY ORDERTYPE-SPECIFIC ATTRIBUTES
+Stable codes should not normally be freely editable after widespread use.
+Example:
+CODECASH
+shall not casually become:
+CREDIT_CARD
+because the semantic meaning changes.
+If a semantic value changes:
+CREATE NEW MASTER DATA VALUE        │        ▼DEACTIVATE OLD VALUE
+may be safer.
+The final code immutability policy shall be defined during Domain Architecture.
+
+5.945 ACTIVATE MASTER DATA
+CS-ADM-FR-047 — Activate Master Data
+The system shall allow authorized users to activate eligible master data.
+Example:
+PAYMENT METHODBANK_TRANSFERSTATUSINACTIVE
+Activation:
+INACTIVE   │   ▼VALIDATE   │   ▼ACTIVATE   │   ▼AVAILABLE FOR ELIGIBLE NEW TRANSACTIONS
+The activation shall be audited.
+
+5.946 DEACTIVATE MASTER DATA
+CS-ADM-FR-048 — Deactivate Master Data
+The system shall allow authorized users to deactivate eligible master data.
+Example:
+APPOINTMENT TYPEWALK_IN_LEGACY
+Deactivation:
+ACTIVE  │  ▼DEACTIVATE  │  ▼NOT AVAILABLE FOR NEW ELIGIBLE TRANSACTIONS
+Historical transactions shall preserve their reference.
+Conceptually:
+OLD APPOINTMENT       │       ▼TYPE = WALK_IN_LEGACY       │       ▼PRESERVED
+New appointment:
+TYPE SELECTION      │      ▼WALK_IN_LEGACY      │      ▼NOT AVAILABLE
+Critical Principle
+DEACTIVATION      ≠HISTORICAL DATA DESTRUCTION
+
+5.947 MASTER DATA DELETION PROTECTION
+CS-ADM-FR-049 — Prevent Unsafe Master Data Deletion
+The system shall prevent unsafe deletion of master data.
+Example:
+PAYMENT METHODCASH
+used by:
+2,000,000 PAYMENTS
+Administrator selects:
+DELETE
+The system shall reject unsafe deletion.
+Preferred:
+DEACTIVATE
+Master data deletion may only be allowed for eligible unused records under approved rules.
+
+5.948 MASTER DATA DEPENDENCY CHECK
+CS-ADM-FR-050 — Check Master Data Dependencies
+The system shall check eligible dependencies before deactivation or deletion.
+Conceptually:
+MASTER DATA CHANGE        │        ▼DEPENDENCY CHECK        │   ┌────┼────┐   │         │   ▼         ▼USED       UNUSED   │         │   ▼         ▼RESTRICT /  ALLOWDEACTIVATE  ELIGIBLE ACTION
+Example:
+DEPARTMENTCARDIOLOGY
+Dependencies may include:
+EMPLOYEESAPPOINTMENTSSERVICESADMISSIONSREPORTS
+The final dependency model shall be defined during Domain and Data Architecture.
+
+5.949 SEARCH MASTER DATA
+CS-ADM-FR-051 — Search Master Data
+The system shall allow authorized users to search master data.
+Potential search fields include:
+CODENAMEDESCRIPTION
+Example:
+SEARCHcardio
+Possible results:
+CARDIOLOGYCARDIAC SURGERY
+Search shall remain scoped to eligible master data types.
+
+5.950 FILTER MASTER DATA
+CS-ADM-FR-052 — Filter Master Data
+The system shall allow master data filtering.
+Potential filters include:
+MASTER DATA TYPESTATUSEFFECTIVE DATE
+Example:
+TYPEPAYMENT_METHODSTATUSACTIVE
+
+5.951 MASTER DATA PAGINATION
+CS-ADM-FR-053 — Paginate Master Data
+The system shall paginate master data collections.
+Example:
+PAGE1PAGE SIZE25
+The React application shall not require all master data administration records to be loaded at once.
+Reference lookup endpoints may use separate optimized contracts for small approved datasets.
+Example:
+GET ACTIVE PAYMENT METHODS
+may differ from:
+ADMINISTRATIVE PAYMENT METHOD SEARCH
+
+5.952 MASTER DATA SORTING
+CS-ADM-FR-054 — Sort Master Data
+The system shall support approved sorting.
+Potential sort fields include:
+CODENAMEDISPLAY ORDERCREATED TIMEUPDATED TIME
+Default UI sorting may depend on master data type.
+
+5.953 MASTER DATA DISPLAY ORDER
+CS-ADM-FR-055 — Configure Master Data Display Order
+Priority
+Should Have
+The system should allow display ordering for eligible master data.
+Example:
+PAYMENT METHODS1. CASH2. CARD3. BANK TRANSFER
+The order may control dropdown presentation.
+It shall not determine business authorization.
+Incorrect:
+FIRST ITEM    │    ▼ADMIN-ONLY PAYMENT METHOD
+Display order is a presentation concern.
+
+5.954 DUPLICATE MASTER DATA PREVENTION
+CS-ADM-FR-056 — Prevent Duplicate Master Data
+The system shall prevent invalid duplicate master data.
+Example:
+TYPEDEPARTMENTCODECARDIOLOGY
+Existing:
+CARDIOLOGY
+New request:
+CARDIOLOGY
+Result:
+DUPLICATE CODE
+The system may also detect potential duplicate names.
+Example:
+CardiologyCardiology DepartmentCARDIOLOGY
+Potential duplicate detection may require administrator review.
+Code uniqueness shall be authoritative.
+
+5.955 MASTER DATA USAGE VIEW
+CS-ADM-FR-057 — View Master Data Usage
+Priority
+Should Have
+The system should allow authorized users to view eligible master data usage information.
+Example:
+MASTER DATAPAYMENT_METHOD:CASH
+Usage summary:
+PAYMENTS2,000,000LAST USED14 JUL 2026
+Another example:
+APPOINTMENT_TYPE:FOLLOW_UP
+Usage:
+ACTIVE FUTURE APPOINTMENTS420
+This capability may help administrators understand change impact.
+The module shall not expose unauthorized source-domain details.
+
+5.956 MASTER DATA CHANGE AUDIT
+CS-ADM-FR-058 — Audit Master Data Change
+The system shall audit master data administration actions.
+Potential events include:
+MASTER_DATA_CREATEDMASTER_DATA_UPDATEDMASTER_DATA_ACTIVATEDMASTER_DATA_DEACTIVATEDMASTER_DATA_DELETED
+Example:
+EVENTMASTER_DATA_DEACTIVATEDACTORUSR-ADMIN-001TYPEPAYMENT_METHODTARGETMST-000421CODECHEQUERESULTSUCCESS
+Audit requirements shall align with Part 5.13.
+
+5.957 HOSPITAL MASTER DATA
+CS-ADM-FR-059 — Manage Hospital Master Data
+The system shall support hospital master data.
+Potential attributes include:
+HOSPITAL IDHOSPITAL CODEHOSPITAL NAMEDISPLAY NAMEREGISTRATION REFERENCECONTACT INFORMATIONTIME ZONEDEFAULT LANGUAGESTATUS
+Example:
+HOSPITAL CODECSH-001
+The final hospital entity model shall be defined during Domain Architecture.
+Sensitive legal and registration information shall follow approved access controls.
+
+5.958 DEPARTMENT MASTER DATA
+CS-ADM-FR-060 — Manage Department Master Data
+The system shall support department master data.
+Potential attributes include:
+DEPARTMENT IDDEPARTMENT CODEDEPARTMENT NAMEDESCRIPTIONDEPARTMENT TYPESTATUS
+Examples:
+CARDIOLOGYNEUROLOGYRADIOLOGYLABORATORYPHARMACYEMERGENCYBILLINGHUMAN RESOURCES
+Department master data may be referenced by:
+EMPLOYEE ASSIGNMENTSAPPOINTMENTSSERVICESADMISSIONSREPORTS
+Department master data shall not itself contain employee lists as embedded JSON.
+
+5.959 SPECIALIZATION MASTER DATA
+CS-ADM-FR-061 — Manage Specialization Master Data
+The system shall support medical specialization reference data.
+Examples:
+CARDIOLOGYNEUROLOGYDERMATOLOGYPEDIATRICSORTHOPEDICSGENERAL MEDICINE
+Potential attributes include:
+SPECIALIZATION IDCODENAMEDESCRIPTIONSTATUS
+Doctor-specialization assignment remains owned by the appropriate workforce or clinical provider domain.
+Therefore:
+SPECIALIZATION MASTER          ≠DOCTOR SPECIALIZATION ASSIGNMENT
+
+5.960 SERVICE MASTER DATA
+CS-ADM-FR-062 — Manage Service Master Data
+The system shall support hospital service reference data.
+Examples:
+GENERAL CONSULTATIONCARDIOLOGY CONSULTATIONX-RAYMRICBC TESTPRIVATE ROOM DAILY CHARGE
+Potential service attributes include:
+SERVICE IDSERVICE CODESERVICE NAMESERVICE CATEGORYDEPARTMENT REFERENCESTATUS
+Important Boundary
+Service master data shall define a service.
+Billing price configuration may remain in the Billing or Pricing domain.
+Therefore:
+SERVICE   ≠SERVICE PRICE
+unless the final Domain Architecture explicitly combines them.
+
+5.961 APPOINTMENT TYPE MASTER DATA
+CS-ADM-FR-063 — Manage Appointment Type Master Data
+The system shall support appointment type master data.
+Examples:
+INITIAL_CONSULTATIONFOLLOW_UPTELECONSULTATIONPROCEDURE_VISIT
+Potential attributes include:
+CODENAMEDESCRIPTIONDEFAULT DURATION REFERENCESTATUS
+Appointment scheduling rules remain owned by the Appointment module.
+
+5.962 ROOM TYPE MASTER DATA
+CS-ADM-FR-064 — Manage Room Type Master Data
+The system shall support room type reference data.
+Examples:
+GENERAL_ROOMPRIVATE_ROOMSEMI_PRIVATE_ROOMICU_ROOMISOLATION_ROOM
+Room type master data shall not represent a physical room.
+Example:
+ROOM TYPEPRIVATE_ROOM
+Physical room:
+ROOM 201
+Therefore:
+ROOM TYPE    ≠ROOM
+The physical facility entity model shall be defined during Admission and Facility Architecture.
+
+5.963 WARD TYPE MASTER DATA
+CS-ADM-FR-065 — Manage Ward Type Master Data
+The system shall support ward type reference data.
+Examples:
+GENERAL_WARDICUCCUPEDIATRIC_WARDMATERNITY_WARD
+Ward type:
+ICU
+Physical ward:
+ICU-A
+Therefore:
+WARD TYPE    ≠WARD
+
+5.964 PAYMENT METHOD MASTER DATA
+CS-ADM-FR-066 — Manage Payment Method Master Data
+The system shall support payment method reference data.
+Potential methods include:
+CASHCARDBANK_TRANSFERMOBILE_WALLETINSURANCE_SETTLEMENT
+The final methods shall be approved by hospital financial governance.
+Potential attributes include:
+PAYMENT METHOD IDCODENAMEREQUIRES REFERENCESTATUS
+Example:
+BANK_TRANSFERREQUIRES REFERENCETRUE
+Billing shall validate payment method business rules.
+
+5.965 BILLING REFERENCE DATA
+CS-ADM-FR-067 — Manage Billing Reference Data
+The system shall support approved billing reference data.
+Potential reference data may include:
+BILLING CATEGORYDISCOUNT REASONPAYMENT REVERSAL REASONREFUND REASONINVOICE ADJUSTMENT REASON
+Example:
+MASTER DATA TYPEPAYMENT_REVERSAL_REASON
+Values:
+DUPLICATE_PAYMENTINCORRECT_AMOUNTPAYMENT_PROVIDER_FAILURE
+Financial transaction processing remains owned by BIL.
+
+5.966 HR REFERENCE DATA
+CS-ADM-FR-068 — Manage HR Reference Data
+The system shall support approved HR reference data.
+Potential types include:
+EMPLOYEE_TYPEEMPLOYMENT_STATUSLEAVE_TYPEATTENDANCE_STATUSJOB_GRADE
+Example:
+LEAVE_TYPEANNUAL_LEAVESICK_LEAVEEMERGENCY_LEAVE
+Leave requests and employee records remain owned by HRM.
+
+5.967 INVENTORY REFERENCE DATA
+CS-ADM-FR-069 — Manage Inventory Reference Data
+The system shall support approved inventory reference data.
+Potential types include:
+INVENTORY_CATEGORYSTORAGE_TYPESTOCK_ADJUSTMENT_REASONSTOCK_ISSUE_REASONUNIT_OF_MEASURE
+Example:
+UNIT_OF_MEASUREBOXPACKPIECEBOTTLEVIAL
+Inventory transactions remain owned by INV.
+
+5.968 PHARMACY REFERENCE DATA
+CS-ADM-FR-070 — Manage Pharmacy Reference Data
+The system shall support approved pharmacy reference data.
+Potential reference types include:
+MEDICINE_CATEGORYDOSAGE_FORMROUTE_OF_ADMINISTRATIONDISPENSING_REASONPRESCRIPTION_CANCELLATION_REASON
+Examples:
+DOSAGE FORMTABLETCAPSULESYRUPINJECTION
+Clinical medication definitions may require a separate Medication Master domain.
+This SRS section does not declare all medicine records as generic ADM master data.
+Critical Boundary
+GENERIC REFERENCE DATA          ≠CLINICAL MEDICATION KNOWLEDGE BASE
+
+5.969 LABORATORY REFERENCE DATA
+CS-ADM-FR-071 — Manage Laboratory Reference Data
+The system shall support approved laboratory reference data boundaries.
+Potential generic reference types include:
+SPECIMEN TYPELAB ORDER PRIORITYLAB REJECTION REASONLAB RESULT STATUS REFERENCE
+Example:
+SPECIMEN TYPEBLOODURINESERUMPLASMA
+However:
+LAB TEST DEFINITIONREFERENCE RANGETEST COMPONENTANALYTE
+may require a dedicated Laboratory Master domain.
+This SRS section shall not force complex clinical laboratory definitions into generic master data tables.
+
+5.970 ADMINISTRATION ACCESS CONTROL
+CS-ADM-FR-072 — Restrict Administration Access
+The system shall restrict administration capabilities.
+A normal user shall not automatically access:
+SYSTEM CONFIGURATIONMASTER DATA ADMINISTRATIONFEATURE CONFIGURATIONCONFIGURATION IMPORTCONFIGURATION EXPORT
+Example:
+RECEPTIONIST     │     ▼USES APPOINTMENT TYPE
+does not imply:
+RECEPTIONIST     │     ▼CAN CREATE APPOINTMENT TYPE
+Usage permission and administration permission shall remain separate.
+
+5.971 ADMINISTRATION DATA SCOPE
+CS-ADM-FR-073 — Apply Administration Data Scope
+The system shall apply administration data scope.
+Example:
+BILLING ADMINISTRATOR         │         ▼BILLING REFERENCE DATA
+shall not automatically manage:
+SECURITY CONFIGURATIONHR REFERENCE DATACLINICAL REFERENCE DATA
+Potential scopes include:
+SYSTEM CONFIGURATIONHOSPITAL CONFIGURATIONBILLING CONFIGURATIONHR MASTER DATAPHARMACY MASTER DATALABORATORY MASTER DATAINVENTORY MASTER DATA
+The final scope model shall align with IAM.
+
+5.972 CRITICAL CONFIGURATION PERMISSION
+CS-ADM-FR-074 — Require Elevated Permission for Critical Configuration
+The system shall require elevated permission for approved critical configuration changes.
+Potential critical configuration includes:
+AUTHENTICATION POLICYAUDIT POLICYSECURITY CONFIGURATIONFINANCIAL CONTROL CONFIGURATIONINTEGRATION CONFIGURATION
+Example:
+NORMAL ADMINISTRATOR        │        ▼UPDATE DEPARTMENT NAME
+Critical configuration:
+SECURITY ADMINISTRATOR          │          ▼UPDATE SECURITY POLICY
+The exact critical configuration registry shall be defined during Security Architecture.
+
+5.973 CONFIGURATION CHANGE APPROVAL BOUNDARY
+CS-ADM-FR-075 — Support Configuration Change Approval Boundary
+Priority
+Should Have
+The architecture should support approval workflows for critical configuration changes.
+Conceptually:
+CONFIGURATION CHANGE REQUEST             │             ▼CRITICAL?        ┌────┴────┐        │         │       YES        NO        │         │        ▼         ▼APPROVAL FLOW   DIRECT APPLY        │        ▼APPROVED?    ┌───┴───┐    │       │   YES      NO    │       │    ▼       ▼ APPLY    REJECT
+Potential future statuses:
+DRAFTPENDING_APPROVALAPPROVEDREJECTEDAPPLIEDCANCELLED
+No universal configuration approval workflow is mandated by this SRS.
+
+5.974 CONFIGURATION CHANGE MONITORING
+CS-ADM-FR-076 — Monitor Configuration Change Activity
+The system shall support monitoring of configuration change activity.
+Potential indicators include:
+CONFIGURATION CHANGES TODAYCRITICAL CONFIGURATION CHANGESFAILED CONFIGURATION CHANGESCONFIGURATION IMPORT COUNTCONFIGURATION RESTORE COUNTMASTER DATA DEACTIVATION COUNT
+These indicators support system administration and operational review.
+
+5.975 CONFIGURATION RESOLUTION FAILURE MONITORING
+CS-ADM-FR-077 — Monitor Configuration Resolution Failure
+The system shall detect eligible configuration resolution failures.
+Potential causes include:
+CONFIGURATION KEY NOT FOUNDACTIVE VALUE MISSINGDEFAULT VALUE MISSINGINVALID DATA TYPEINVALID VALUEAMBIGUOUS SCOPED VALUECONFIGURATION STORE UNAVAILABLE
+Example:
+REQUESTBilling.DefaultCurrency
+Resolution:
+NO ACTIVE VALUENO GLOBAL VALUENO DEFAULT
+Result:
+CONFIGURATION RESOLUTION FAILURE
+The system shall generate an approved technical observability signal.
+
+5.976 CONFIGURATION FALLBACK
+CS-ADM-FR-078 — Support Configuration Fallback
+The system shall support deterministic fallback where approved.
+Potential hierarchy:
+HOSPITAL VALUE      │      ▼GLOBAL VALUE      │      ▼DEFAULT VALUE
+Example:
+HOSPITAL VALUENOT DEFINED
+Global:
+24
+Effective value:
+24
+Critical Requirement
+Fallback shall not silently apply to every configuration.
+For critical configuration:
+MISSING CONFIGURATION        │        ▼FAIL CONFIGURATION HEALTH
+may be required.
+The final fallback policy shall be configuration-specific.
+
+5.977 INVALID ACTIVE CONFIGURATION DETECTION
+CS-ADM-FR-079 — Detect Invalid Active Configuration
+The system shall detect invalid active configuration.
+Example:
+Notifications.MaxRetryCountVALUE-5
+Validation:
+INVALID
+The system shall not silently continue indefinitely without a technical signal.
+Potential response:
+INVALID CONFIGURATION        │        ├── HEALTH WARNING        ├── TECHNICAL ALERT        ├── FALLBACK IF APPROVED        └── ADMINISTRATION VISIBILITY
+Critical invalid configuration may affect system health status.
+
+5.978 FUTURE MULTI-HOSPITAL CONFIGURATION
+CS-ADM-FR-080 — Support Future Multi-Hospital Configuration
+Priority
+Should Have
+The architecture should support future hospital-specific configuration.
+Conceptually:
+CURASPHERE PLATFORM         │    ┌────┴────┐    │         │    ▼         ▼HOSPITAL A  HOSPITAL B    │         │    ▼         ▼CONFIG A    CONFIG B
+Example:
+HOSPITAL AAppointment Cancellation Window = 24 Hours
+Hospital B:
+HOSPITAL BAppointment Cancellation Window = 12 Hours
+Critical Principle
+Future multi-hospital support does not automatically mean:
+FULL MULTI-TENANT SAAS
+The tenancy, isolation, deployment, and data partitioning strategy shall be defined during Architecture Design.
+
+5.979 CONFIGURATION DATA FLOW MODEL
+REACT ADMIN APPLICATION           │           ▼ASP.NET CORE ADMIN API           │           ▼AUTHENTICATION           │           ▼AUTHORIZATION           │           ▼ADMINISTRATION SERVICE           │           ▼CONFIGURATION VALIDATOR           │           ▼CONFIGURATION STORE           │           ▼CONFIGURATION VERSION           │           ▼CACHE INVALIDATION           │           ▼CONFIGURATION PROPAGATION           │           ▼APPLICATION COMPONENTS           │           ▼UPDATED SYSTEM BEHAVIOR           +           │           ▼AUDIT EVENT
+
+5.980 MASTER DATA FLOW MODEL
+AUTHORIZED ADMINISTRATOR           │           ▼MASTER DATA ADMIN UI           │           ▼ASP.NET CORE API           │           ▼MASTER DATA SERVICE           │           ▼TYPE VALIDATION           │           ▼CODE VALIDATION           │           ▼DUPLICATE CHECK           │           ▼DEPENDENCY CHECK           │           ▼POSTGRESQL           │           ▼MASTER DATA           │      ┌────┼────┐      │    │    │      ▼    ▼    ▼     APT  BIL  HRM      │    │    │      └────┼────┘           ▼REFERENCE VALUE USAGE
+
+5.981 EFFECTIVE CONFIGURATION RESOLUTION MODEL
+APPLICATION COMPONENT          │          ▼REQUEST CONFIGURATION KEY          │          ▼CONFIGURATION RESOLVER          │          ▼CHECK CACHE      ┌───┴───┐      │       │     HIT     MISS      │       │      ▼       ▼   RETURN   RESOLVE SCOPE   VALUE        │                ▼        HOSPITAL VALUE?           ┌────┴────┐           │         │          YES        NO           │         │           ▼         ▼        VALUE     GLOBAL VALUE?                      │                 ┌────┴────┐                 │         │                YES        NO                 │         │                 ▼         ▼               VALUE     DEFAULT?                            │                       ┌────┴────┐                       │         │                      YES        NO                       │         │                       ▼         ▼                     VALUE     FAILURE                       │                       ▼                  UPDATE CACHE                       │                       ▼                  RETURN VALUE
+
+5.982 CONFIGURATION CHANGE MODEL
+CURRENT CONFIGURATION          │          ▼ADMINISTRATOR REQUESTS CHANGE          │          ▼PERMISSION CHECK          │          ▼CRITICAL CONFIGURATION?      ┌───┴───┐      │       │     YES      NO      │       │      ▼       ▼ELEVATED     STANDARDCONTROL      CONTROL      │       │      └───┬───┘          ▼VALUE VALIDATION          │          ▼DEPENDENCY VALIDATION          │          ▼CREATE NEW VERSION          │          ▼SAVE          │          ▼INVALIDATE CACHE          │          ▼PROPAGATE CHANGE          │          ▼AUDIT EVENT
+
+5.983 CONFIGURATION IMPORT MODEL
+CONFIGURATION FILE        │        ▼UPLOAD        │        ▼FILE VALIDATION        │        ▼SCHEMA VALIDATION        │        ▼CONFIGURATION PARSING        │        ▼SENSITIVE DATA SCAN        │        ▼KEY VALIDATION        │        ▼VALUE VALIDATION        │        ▼CURRENT VALUE COMPARISON        │        ▼IMPORT PREVIEW        │        ▼AUTHORIZED CONFIRMATION        │        ▼APPLY CHANGES        │        ▼CACHE INVALIDATION        │        ▼AUDIT EVENT
+
+5.984 MASTER DATA DEACTIVATION MODEL
+MASTER DATA     │     ▼DEACTIVATION REQUEST     │     ▼PERMISSION CHECK     │     ▼DEPENDENCY CHECK     │     ▼ACTIVE TRANSACTION IMPACT?   ┌─┴─┐   │   │  YES  NO   │   │   ▼   ▼APPLY  DEACTIVATEDOMAINRULE   │   ▼DEACTIVATE / REJECT     │     ▼REMOVE FROM NEW SELECTION     │     ▼PRESERVE HISTORICAL REFERENCES     │     ▼AUDIT EVENT
+
+5.985 CONFIGURATION SEQUENCE MODEL
+ADMIN       API       CONFIG SERVICE     VALIDATOR      DATABASE      CACHE  │          │              │                │              │           │  │ Update   │              │                │              │           │  ├─────────►│              │                │              │           │  │          │ Authorize    │                │              │           │  │          │              │                │              │           │  │          │ Update       │                │              │           │  │          ├─────────────►│                │              │           │  │          │              │ Validate       │              │           │  │          │              ├───────────────►│              │           │  │          │              │ Valid          │              │           │  │          │              │◄───────────────┤              │           │  │          │              │ Save Version   │              │           │  │          │              ├──────────────────────────────►│           │  │          │              │ Saved          │              │           │  │          │              │◄──────────────────────────────┤           │  │          │              │ Invalidate     │              │           │  │          │              ├──────────────────────────────────────────►│  │          │              │ Complete       │              │           │  │          │◄─────────────┤                │              │           │  │ Success  │              │                │              │           │  │◄─────────┤              │                │              │           │
+This is a conceptual sequence model.
+The final cache and transaction strategy shall be defined during Detailed Design.
+
+5.986 MASTER DATA STATE MODEL
+CREATED   │   ▼ACTIVE   │   ├──────────────► UPDATED   │                    │   │                    ▼   │                  ACTIVE   │   ▼INACTIVE   │   ▼REACTIVATED   │   ▼ACTIVE
+Eligible unused master data may follow:
+CREATED   │   ▼UNUSED   │   ▼DELETE ELIGIBLE   │   ▼DELETED
+Used historical master data should normally follow:
+ACTIVE   │   ▼INACTIVE   │   ▼PRESERVED
+
+5.987 CONFIGURATION STATE MODEL
+Potential configuration lifecycle:
+DEFINED   │   ▼INACTIVE   │   ▼VALIDATED   │   ▼ACTIVE   │   ├──────────────► NEW VERSION   │                     │   │                     ▼   │                  VALIDATED   │                     │   │                     ▼   │                   ACTIVE   │   ▼DEACTIVATED
+Future approval lifecycle:
+DRAFT   │   ▼PENDING APPROVAL   │   ├────────────► REJECTED   │   ▼APPROVED   │   ▼APPLIED
+The approval lifecycle shall only apply where approved.
+
+5.988 ADMINISTRATION BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-ADM-BR-001
+Master data shall remain separate from transactional business data
+CS-ADM-BR-002
+Configuration shall remain separate from secrets
+CS-ADM-BR-003
+Business administration configuration shall remain separate from DevOps environment configuration
+CS-ADM-BR-004
+Configuration keys shall use stable approved identifiers
+CS-ADM-BR-005
+Master data codes shall remain separate from display names
+CS-ADM-BR-006
+Configuration values shall be validated before activation
+CS-ADM-BR-007
+Invalid critical configuration shall not silently become active
+CS-ADM-BR-008
+Configuration resolution shall follow a deterministic hierarchy
+CS-ADM-BR-009
+Configuration fallback shall be configuration-specific
+CS-ADM-BR-010
+Configuration history shall be preserved for approved versioned configuration
+CS-ADM-BR-011
+Configuration restoration shall not silently delete newer history
+CS-ADM-BR-012
+Secret values shall not be exposed to React
+CS-ADM-BR-013
+Secret values shall not be returned by normal administration APIs
+CS-ADM-BR-014
+Secret values shall not be recorded in audit events
+CS-ADM-BR-015
+Configuration cache shall be invalidated when authoritative cached values change
+CS-ADM-BR-016
+Configuration import shall be validated before application
+CS-ADM-BR-017
+Feature flags shall not bypass authorization
+CS-ADM-BR-018
+Master data codes shall be unique within the applicable type
+CS-ADM-BR-019
+Master data deactivation shall preserve historical references
+CS-ADM-BR-020
+Used master data shall not be unsafely deleted
+CS-ADM-BR-021
+Master data administration permission shall remain separate from master data usage permission
+CS-ADM-BR-022
+Critical configuration changes may require elevated permission
+CS-ADM-BR-023
+Administrative changes shall be auditable
+CS-ADM-BR-024
+Generic master data shall not replace complex clinical domain models
+CS-ADM-BR-025
+Future multi-hospital configuration shall not automatically imply a full SaaS multi-tenancy architecture
+
+5.989 ADMINISTRATION PERMISSION CONCEPT
+Potential permissions include:
+ADM_DASHBOARD_VIEWADM_CONFIG_VIEWADM_CONFIG_SEARCHADM_CONFIG_CREATEADM_CONFIG_UPDATEADM_CONFIG_ACTIVATEADM_CONFIG_DEACTIVATEADM_CONFIG_HISTORY_VIEWADM_CONFIG_COMPAREADM_CONFIG_RESTOREADM_CONFIG_EXPORTADM_CONFIG_IMPORTADM_CRITICAL_CONFIG_MANAGEADM_FEATURE_CONFIG_MANAGEADM_MASTER_DATA_VIEWADM_MASTER_DATA_CREATEADM_MASTER_DATA_UPDATEADM_MASTER_DATA_ACTIVATEADM_MASTER_DATA_DEACTIVATEADM_MASTER_DATA_DELETEADM_MASTER_DATA_USAGE_VIEWADM_HOSPITAL_MANAGEADM_DEPARTMENT_MANAGEADM_SPECIALIZATION_MANAGEADM_SERVICE_MANAGEADM_APPOINTMENT_REFERENCE_MANAGEADM_BILLING_REFERENCE_MANAGEADM_HR_REFERENCE_MANAGEADM_INVENTORY_REFERENCE_MANAGEADM_PHARMACY_REFERENCE_MANAGEADM_LAB_REFERENCE_MANAGEADM_HEALTH_VIEWADM_ADMIN
+Example Master Data Administrator
+MASTER DATA ADMINISTRATOR          │          ├── ADM_MASTER_DATA_VIEW          ├── ADM_MASTER_DATA_CREATE          ├── ADM_MASTER_DATA_UPDATE          ├── ADM_MASTER_DATA_ACTIVATE          └── ADM_MASTER_DATA_DEACTIVATE
+Example Billing Administrator
+BILLING ADMINISTRATOR         │         ├── ADM_MASTER_DATA_VIEW         └── ADM_BILLING_REFERENCE_MANAGE
+with:
+DATA SCOPEBILLING REFERENCE DATA
+Example System Administrator
+SYSTEM ADMINISTRATOR         │         ├── ADM_DASHBOARD_VIEW         ├── ADM_CONFIG_VIEW         ├── ADM_CONFIG_SEARCH         ├── ADM_CONFIG_UPDATE         └── ADM_HEALTH_VIEW
+Critical security configuration may still require:
+ADM_CRITICAL_CONFIG_MANAGE
+Critical Principle
+Permission:
+ADM_ADMIN
+shall not automatically grant:
+PATIENT CLINICAL RECORD ACCESSPAYMENT REVERSAL PERMISSIONSALARY APPROVAL PERMISSIONAUDIT PURGE PERMISSION
+Administration access and business-domain access shall remain distinct.
+
+5.990 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Administration dashboard
+CS-ADM-FR-001
+Configuration discovery
+CS-ADM-FR-002 to 005
+Configuration creation and update
+CS-ADM-FR-006 to 007
+Configuration validation
+CS-ADM-FR-008 to 010
+Configuration defaults and lifecycle
+CS-ADM-FR-011 to 013
+Effective configuration resolution
+CS-ADM-FR-014 to 017
+Effective-dated configuration
+CS-ADM-FR-018
+Configuration versioning and history
+CS-ADM-FR-019 to 023
+Sensitive configuration protection
+CS-ADM-FR-024
+Secret configuration protection
+CS-ADM-FR-025 to 028
+Configuration caching
+CS-ADM-FR-029 to 030
+Configuration propagation
+CS-ADM-FR-031
+Configuration health
+CS-ADM-FR-032
+Configuration export and import
+CS-ADM-FR-033 to 037
+Feature configuration
+CS-ADM-FR-038 to 039
+Master data creation
+CS-ADM-FR-040 to 045
+Master data update and lifecycle
+CS-ADM-FR-046 to 050
+Master data search and organization
+CS-ADM-FR-051 to 055
+Duplicate prevention and usage review
+CS-ADM-FR-056 to 057
+Master data auditing
+CS-ADM-FR-058
+Hospital master data
+CS-ADM-FR-059
+Department master data
+CS-ADM-FR-060
+Specialization master data
+CS-ADM-FR-061
+Service master data
+CS-ADM-FR-062
+Appointment reference data
+CS-ADM-FR-063
+Room and ward type reference data
+CS-ADM-FR-064 to 065
+Payment method reference data
+CS-ADM-FR-066
+Billing reference data
+CS-ADM-FR-067
+HR reference data
+CS-ADM-FR-068
+Inventory reference data
+CS-ADM-FR-069
+Pharmacy reference data
+CS-ADM-FR-070
+Laboratory reference data
+CS-ADM-FR-071
+Administration authorization
+CS-ADM-FR-072 to 074
+Configuration approval boundary
+CS-ADM-FR-075
+Administration monitoring
+CS-ADM-FR-076 to 077
+Configuration fallback and validation
+CS-ADM-FR-078 to 079
+Future multi-hospital configuration
+CS-ADM-FR-080
+
+5.991 ADMINISTRATION AND CONFIGURATION RISK ANALYSIS
+Risk 1 — Every Setting Is Stored in One Configuration Table
+Problem
+Architecture:
+settings├── key└── value
+Everything is stored as text.
+Impact
+NO DATA TYPE SAFETYNO VALIDATIONNO SCOPENO VERSIONINGNO SENSITIVITY CLASSIFICATION
+Mitigation
+Define configuration metadata and typed validation.
+
+Risk 2 — Secrets Stored with Normal Configuration
+Problem
+Database.Password
+is stored beside:
+Pagination.DefaultPageSize
+Impact
+Administrative users may access infrastructure secrets.
+Mitigation
+Separate secret management boundaries.
+
+Risk 3 — React Receives Secrets and Hides Them
+Problem
+API returns:
+SuperSecretPassword123
+React displays:
+********
+Impact
+The secret remains available in browser network tools.
+Mitigation
+Never return secret values to the browser.
+
+Risk 4 — Configuration Change Has No Validation
+Problem
+Administrator sets:
+Pagination.DefaultPageSize = 10000000
+Impact
+Application performance may degrade.
+Mitigation
+Apply configuration-specific validation.
+
+Risk 5 — Configuration Change Is an SQL Update
+Problem
+Administrator or developer runs:
+UPDATE settingsSET value = '0';
+Impact
+NO VALIDATIONNO VERSION HISTORYNO AUDITNO CACHE INVALIDATION
+Mitigation
+Use controlled configuration services and operational procedures.
+
+Risk 6 — Cache Never Invalidates
+Problem
+Database:
+Cancellation Window = 12
+API server A:
+24
+API server B:
+12
+Impact
+Users receive inconsistent system behavior.
+Mitigation
+Define cache invalidation and propagation strategy.
+
+Risk 7 — Every Configuration Change Requires Deployment
+Problem
+Hospital wants to change:
+Appointment Cancellation Window
+Developer changes source code and redeploys production.
+Impact
+Operational configuration becomes tightly coupled to software deployment.
+Mitigation
+Identify approved runtime-managed business configuration.
+
+Risk 8 — Every Technical Setting Is Editable in Admin UI
+Problem
+Hospital administrator changes:
+DATABASE HOSTTOKEN SIGNING KEYTELEMETRY ENDPOINT
+Impact
+Security and production availability may be compromised.
+Mitigation
+Separate business administration configuration from DevOps configuration.
+
+Risk 9 — Master Data and Transaction Data Are Mixed
+Problem
+Payment method record contains:
+PAYMENT AMOUNTPATIENT IDINVOICE ID
+Impact
+Reference data and transactional data become tightly coupled.
+Mitigation
+Maintain clear domain boundaries.
+
+Risk 10 — Master Data Is Hardcoded in React
+Problem
+const paymentMethods = [  "Cash",  "Card",  "Bank Transfer"];
+Impact
+Administrative changes require frontend deployment.
+Mitigation
+Load approved active reference data through backend contracts.
+
+Risk 11 — Display Name Used as Database Meaning
+Problem
+Business logic:
+if (paymentMethod.Name == "Cash")
+Administrator renames:
+Cash
+to:
+Cash Payment
+Impact
+Business logic fails.
+Mitigation
+Use stable codes.
+
+Risk 12 — Master Data Code Can Be Freely Renamed
+Problem
+CASH
+becomes:
+CARD
+Impact
+Historical semantic meaning changes.
+Mitigation
+Apply stable code governance.
+
+Risk 13 — Used Master Data Is Deleted
+Problem
+PAYMENT METHOD: CASH
+is deleted.
+Historical payments reference the deleted value.
+Impact
+Financial history becomes incomplete.
+Mitigation
+Use deactivation and dependency protection.
+
+Risk 14 — Deactivation Removes Historical Meaning
+Problem
+Department is deactivated.
+Old employee and appointment records no longer show the department.
+Impact
+Historical reporting becomes misleading.
+Mitigation
+Preserve historical references to inactive master data.
+
+Risk 15 — Feature Flag Bypasses Authorization
+Problem
+ENABLE_ADMIN_PANEL = TRUE
+causes all users to access the admin panel.
+Impact
+Authorization is bypassed.
+Mitigation
+Feature availability and user authorization shall remain separate.
+
+Risk 16 — Configuration Restore Deletes History
+Problem
+Administrator restores Version 2.
+Versions 3, 4, and 5 are deleted.
+Impact
+Configuration change history is lost.
+Mitigation
+Create a new version using the restored value.
+
+Risk 17 — Configuration Import Directly Applies Changes
+Problem
+User uploads:
+500 CONFIGURATION VALUES
+The system immediately applies them.
+Impact
+One invalid value may disrupt multiple modules.
+Mitigation
+Validate and preview imports.
+
+Risk 18 — Configuration Export Contains Secrets
+Problem
+Administrator exports:
+ALL CONFIGURATION
+File contains:
+DATABASE PASSWORDAPI KEYSSIGNING SECRET
+Impact
+Critical credential leakage.
+Mitigation
+Exclude secrets from normal configuration exports.
+
+Risk 19 — Generic Master Data Table Stores Complex Clinical Knowledge
+Problem
+All laboratory test definitions are stored as:
+typecodenamevalue
+Impact
+Complex clinical rules become impossible to model correctly.
+Mitigation
+Use dedicated clinical domain models for complex knowledge.
+
+Risk 20 — One Global Configuration for Every Hospital
+Problem
+Future Hospital B requires:
+12 HOUR CANCELLATION WINDOW
+Hospital A requires:
+24 HOURS
+Architecture supports only one global value.
+Impact
+Future hospital expansion requires major redesign.
+Mitigation
+Preserve a future configuration scope boundary.
+
+Risk 21 — Full SaaS Multi-Tenancy Is Built Too Early
+Problem
+Initial CuraSphere deployment is for one hospital.
+The development team builds:
+COMPLEX TENANT SHARDINGCROSS-REGION TENANT ROUTINGTENANT BILLING PLATFORM
+Impact
+RAD development becomes unnecessarily complex.
+Mitigation
+Design extension boundaries without prematurely implementing full SaaS infrastructure.
+
+Risk 22 — Missing Configuration Silently Returns Null
+Problem
+Code:
+var value = config.Value;
+Value:
+NULL
+Application continues.
+Impact
+Unpredictable runtime failures may occur later.
+Mitigation
+Use explicit configuration resolution and failure handling.
+
+Risk 23 — Invalid Configuration Is Only Detected by Users
+Problem
+Configuration is invalid.
+No health signal exists.
+The first indication is:
+PATIENT CANNOT BOOK APPOINTMENT
+Impact
+Operational disruption occurs before technical teams know the cause.
+Mitigation
+Implement configuration health verification.
+
+Risk 24 — Admin Permission Grants All Business Permissions
+Problem
+System administrator automatically receives:
+PATIENT RECORD ACCESSPAYMENT REVERSALSALARY APPROVAL
+Impact
+Administrative access becomes excessive.
+Mitigation
+Separate administration permissions from domain permissions.
+
+Risk 25 — Master Data Usage Endpoint Exposes Sensitive Records
+Problem
+Master data administrator checks:
+DEPARTMENT USAGE
+and receives complete patient records.
+Impact
+Source-domain authorization is bypassed.
+Mitigation
+Return usage summaries rather than unauthorized source records.
+
+5.992 COMPLETE ADMINISTRATION CAPABILITY MODEL
+              SYSTEM ADMINISTRATION                       │        ┌──────────────┼──────────────┐        │              │              │        ▼              ▼              ▼ CONFIGURATION     MASTER DATA      SYSTEM HEALTH        │              │              │        ▼              ▼              ▼    CATEGORIES        TYPES         VALIDATION        │              │              │        ▼              ▼              ▼      KEYS            CODES         RESOLUTION        │              │              │        ▼              ▼              ▼     VALUES           NAMES          FALLBACK        │              │              │        ▼              ▼              ▼   VALIDATION      DEPENDENCIES     MONITORING        │              │              │        ▼              ▼              │    VERSIONING      LIFECYCLE         │        │              │              │        └──────────────┼──────────────┘                       ▼                  ACCESS CONTROL                       │                       ▼                    AUDITING                       │                       ▼              CONTROLLED SYSTEM                 ADMINISTRATION
+
+5.993 ADMINISTRATION MODULE COMPLETION STATUS
+Module: System Administration, Configuration and Master Data Management SystemModule Code: ADM/CFGRequirement Range: CS-ADM-FR-001 to CS-ADM-FR-080Business Rule Range: CS-ADM-BR-001 to CS-ADM-BR-025
+Administration Domain Boundary: DefinedConfiguration vs Master Data Boundary: DefinedConfiguration vs Secret Boundary: DefinedConfiguration vs Feature Flag Boundary: DefinedConfiguration vs User Preference Boundary: DefinedMaster Data vs Transactional Data Boundary: DefinedApplication Configuration Concept: DefinedBusiness Configuration Boundary: DefinedMaster Data Concept: DefinedAdministration Actors: DefinedAdministration Dashboard: DefinedConfiguration Categories: DefinedConfiguration View: DefinedConfiguration Search: DefinedConfiguration Filtering: DefinedConfiguration Creation Boundary: DefinedConfiguration Update: DefinedConfiguration Key Validation: DefinedConfiguration Value Validation: DefinedConfiguration Data Type Validation: DefinedConfiguration Defaults: DefinedConfiguration Activation: DefinedConfiguration Deactivation: DefinedEffective Configuration Resolution: DefinedConfiguration Scope: DefinedHospital Configuration Scope: DefinedEnvironment Configuration Boundary: DefinedEffective-Dated Configuration: DefinedConfiguration Versioning: DefinedConfiguration History: DefinedConfiguration Version Comparison: DefinedConfiguration Restoration: DefinedConfiguration Change Auditing: DefinedSensitive Configuration Protection: DefinedSecret Configuration Separation: DefinedSecret UI Protection: DefinedSecret API Protection: DefinedSecret Audit Protection: DefinedConfiguration Caching Boundary: DefinedConfiguration Cache Invalidation: DefinedConfiguration Propagation: DefinedConfiguration Health Verification: DefinedConfiguration Export: DefinedConfiguration Import: DefinedConfiguration Import Validation: DefinedConfiguration Import Preview: DefinedConfiguration Import Result: DefinedFeature Configuration: DefinedFeature Flag Boundary: DefinedMaster Data Creation: DefinedMaster Data Identifier: DefinedMaster Data Type: DefinedMaster Data Code: DefinedMaster Data Code Validation: DefinedMaster Data Name: DefinedMaster Data Update: DefinedMaster Data Activation: DefinedMaster Data Deactivation: DefinedMaster Data Deletion Protection: DefinedMaster Data Dependency Check: DefinedMaster Data Search: DefinedMaster Data Filtering: DefinedMaster Data Pagination: DefinedMaster Data Sorting: DefinedMaster Data Display Order: DefinedDuplicate Master Data Prevention: DefinedMaster Data Usage View: DefinedMaster Data Change Audit: DefinedHospital Master Data: DefinedDepartment Master Data: DefinedSpecialization Master Data: DefinedService Master Data: DefinedAppointment Type Master Data: DefinedRoom Type Master Data: DefinedWard Type Master Data: DefinedPayment Method Master Data: DefinedBilling Reference Data: DefinedHR Reference Data: DefinedInventory Reference Data: DefinedPharmacy Reference Data Boundary: DefinedLaboratory Reference Data Boundary: DefinedAdministration Access Control: DefinedAdministration Data Scope: DefinedCritical Configuration Permission: DefinedConfiguration Change Approval Boundary: DefinedConfiguration Change Monitoring: DefinedConfiguration Resolution Failure Monitoring: DefinedConfiguration Fallback: DefinedInvalid Active Configuration Detection: DefinedFuture Multi-Hospital Configuration Boundary: DefinedConfiguration Data Flow Model: DefinedMaster Data Flow Model: DefinedEffective Configuration Resolution Model: DefinedConfiguration Change Model: DefinedConfiguration Import Model: DefinedMaster Data Deactivation Model: DefinedConfiguration Sequence Model: DefinedMaster Data State Model: DefinedConfiguration State Model: DefinedAdministration Permission Concept: DefinedRequirement Traceability: EstablishedAdministration and Configuration Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The System Administration, Configuration and Master Data Management requirements establish the centralized operational configuration and reference data governance foundation of CuraSphere.
+These requirements shall later be transformed into:
+View Administration Dashboard use case;
+View Configuration use case;
+Search Configuration use case;
+Update Configuration use case;
+Activate Configuration use case;
+Deactivate Configuration use case;
+View Configuration History use case;
+Compare Configuration Versions use case;
+Restore Configuration use case;
+Export Configuration use case;
+Import Configuration use case;
+Preview Configuration Import use case;
+Create Master Data use case;
+Update Master Data use case;
+Activate Master Data use case;
+Deactivate Master Data use case;
+View Master Data Usage use case;
+Manage Department use case;
+Manage Specialization use case;
+Manage Service Reference use case;
+Manage Appointment Type use case;
+Manage Room Type use case;
+Manage Ward Type use case;
+Manage Payment Method use case;
+manage configuration activity diagram;
+configuration validation activity diagram;
+effective configuration resolution activity diagram;
+configuration activation activity diagram;
+configuration deactivation activity diagram;
+configuration restoration activity diagram;
+configuration import activity diagram;
+configuration export activity diagram;
+master data creation activity diagram;
+master data update activity diagram;
+master data activation activity diagram;
+master data deactivation activity diagram;
+master data dependency validation activity diagram;
+configuration lifecycle state diagram;
+master data lifecycle state diagram;
+Update Configuration sequence diagram;
+Resolve Effective Configuration sequence diagram;
+Restore Configuration sequence diagram;
+Import Configuration sequence diagram;
+Create Master Data sequence diagram;
+Update Master Data sequence diagram;
+Deactivate Master Data sequence diagram;
+Check Master Data Usage sequence diagram;
+administration domain model;
+Configuration Definition domain model;
+Configuration Value domain model;
+Configuration Version domain model;
+Configuration Scope domain model;
+Master Data Type domain model;
+Master Data Value domain model;
+Hospital domain model;
+Department domain model;
+Specialization domain model;
+Service Reference domain model;
+Appointment Type domain model;
+Room Type domain model;
+Ward Type domain model;
+Payment Method domain model;
+PostgreSQL configuration schema;
+PostgreSQL master data schema;
+configuration key indexing strategy;
+configuration scope indexing strategy;
+configuration version indexing strategy;
+master data type indexing strategy;
+master data code uniqueness strategy;
+master data dependency strategy;
+configuration metadata registry;
+configuration key registry;
+configuration data type strategy;
+configuration validation strategy;
+configuration default strategy;
+configuration resolution strategy;
+configuration scope hierarchy;
+hospital-scoped configuration strategy;
+environment configuration strategy;
+runtime configuration strategy;
+configuration versioning strategy;
+configuration history strategy;
+configuration restoration strategy;
+sensitive configuration classification;
+secret configuration strategy;
+secret provider strategy;
+configuration caching strategy;
+configuration cache invalidation strategy;
+configuration propagation strategy;
+configuration health strategy;
+configuration import schema;
+configuration import validation strategy;
+configuration export strategy;
+feature configuration strategy;
+feature flag strategy;
+master data governance strategy;
+master data code governance;
+master data code immutability strategy;
+master data lifecycle strategy;
+master data dependency strategy;
+master data deactivation strategy;
+master data deletion strategy;
+master data usage summary strategy;
+hospital master data strategy;
+department reference strategy;
+specialization reference strategy;
+service reference strategy;
+appointment type strategy;
+room type strategy;
+ward type strategy;
+payment method strategy;
+billing reference data strategy;
+HR reference data strategy;
+inventory reference data strategy;
+pharmacy reference data boundary;
+laboratory reference data boundary;
+critical configuration strategy;
+configuration approval strategy;
+configuration observability strategy;
+future multi-hospital configuration strategy;
+React Administration Dashboard requirements;
+React Configuration List requirements;
+React Configuration Detail requirements;
+React Configuration Editor requirements;
+React Configuration History requirements;
+React Configuration Comparison requirements;
+React Configuration Import requirements;
+React Configuration Import Preview requirements;
+React Master Data Dashboard requirements;
+React Master Data List requirements;
+React Master Data Editor requirements;
+React Master Data Usage requirements;
+React administration loading states;
+React administration empty states;
+React administration validation states;
+React administration error states;
+React administration permission-denied states;
+ASP.NET Core Administration API;
+ASP.NET Core Configuration API;
+ASP.NET Core Master Data API;
+ASP.NET Core Configuration Service;
+ASP.NET Core Configuration Resolver;
+ASP.NET Core Configuration Validator;
+ASP.NET Core Configuration Version Service;
+ASP.NET Core Configuration Cache Adapter;
+ASP.NET Core Configuration Change Propagator;
+ASP.NET Core Configuration Import Service;
+ASP.NET Core Configuration Export Service;
+ASP.NET Core Master Data Service;
+ASP.NET Core Master Data Dependency Service;
+ASP.NET Core Master Data Usage Service;
+administration authorization policies;
+configuration data scope policies;
+master data data scope policies;
+configuration validation tests;
+configuration data type tests;
+configuration range tests;
+configuration default tests;
+configuration fallback tests;
+configuration resolution tests;
+hospital configuration scope tests;
+configuration version tests;
+configuration history tests;
+configuration restore tests;
+sensitive configuration tests;
+secret UI exposure tests;
+secret API exposure tests;
+secret audit exposure tests;
+configuration cache tests;
+configuration cache invalidation tests;
+configuration propagation tests;
+configuration health tests;
+configuration export tests;
+configuration import tests;
+configuration import validation tests;
+configuration import preview tests;
+feature configuration tests;
+feature flag authorization tests;
+master data creation tests;
+master data code validation tests;
+master data duplicate tests;
+master data update tests;
+master data activation tests;
+master data deactivation tests;
+master data dependency tests;
+master data deletion protection tests;
+master data historical reference tests;
+master data search tests;
+master data pagination tests;
+master data sorting tests;
+master data usage tests;
+department master data tests;
+specialization master data tests;
+service reference tests;
+appointment type tests;
+room type tests;
+ward type tests;
+payment method tests;
+administration permission tests;
+administration data scope tests;
+critical configuration permission tests;
+configuration resolution failure tests;
+invalid active configuration tests;
+high-volume configuration read tests;
+configuration cache consistency tests.
+No Azure App Configuration deployment, AWS AppConfig deployment, HashiCorp Consul deployment, Spring Cloud Config deployment, dedicated configuration microservice, Redis configuration cache, in-memory configuration cache strategy, distributed cache strategy, PostgreSQL LISTEN/NOTIFY configuration propagation, RabbitMQ configuration event, Kafka configuration event, Azure Service Bus configuration event, feature flag platform, LaunchDarkly deployment, Azure App Configuration Feature Management deployment, secret vault, Azure Key Vault deployment, AWS Secrets Manager deployment, HashiCorp Vault deployment, Kubernetes Secrets strategy, Docker Secrets strategy, configuration encryption algorithm, configuration key naming convention, configuration schema format, configuration JSON schema standard, configuration scope hierarchy, hospital configuration override policy, department configuration scope, facility configuration scope, configuration cache duration, configuration polling interval, configuration propagation SLA, configuration import file size, configuration import format, configuration export format, configuration approval workflow, four-eyes approval policy, dual-control policy, master data identifier format, master data code naming convention, master data code immutability rule, master data localization model, Urdu localization model, Pashto localization model, service catalog architecture, medication master architecture, laboratory test master architecture, clinical terminology service, SNOMED CT integration, ICD integration, LOINC integration, RxNorm integration, payment method provider integration, multi-hospital tenancy strategy, tenant identifier strategy, tenant database strategy, schema-per-hospital strategy, database-per-hospital strategy, row-level hospital partitioning strategy, or full SaaS multi-tenancy architecture has been finalized by this SRS section.
+Those decisions shall be made during Domain Architecture, Application Architecture, Configuration Architecture, Security Architecture, Identity and Access Architecture, Clinical Architecture, Data Architecture, Integration Architecture, Multi-Hospital Architecture, Observability Architecture, DevOps Architecture, Detailed Design, hospital governance, financial governance, clinical governance, and approved legal or compliance review.
+

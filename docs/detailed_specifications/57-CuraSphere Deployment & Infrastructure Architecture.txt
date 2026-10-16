@@ -1,0 +1,354 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 7 - System Architecture
+Part 7.5 - Deployment & Infrastructure Architecture
+
+7.5 Deployment & Infrastructure Architecture
+
+7.5.1 Introduction
+The Deployment & Infrastructure Architecture defines how the CuraSphere Hospital Management System is physically deployed, hosted, interconnected, secured, monitored, and maintained across development, testing, staging, and production environments.
+While the previous sections described the logical and component architecture, this section focuses on the physical implementation of the solution, including application servers, database servers, network topology, cloud infrastructure, storage systems, disaster recovery facilities, monitoring platforms, and deployment pipelines.
+The architecture is designed to support healthcare organizations ranging from small clinics to multi-hospital enterprise networks while ensuring high availability, fault tolerance, security, regulatory compliance, and operational efficiency.
+
+7.5.2 Objectives
+The Deployment & Infrastructure Architecture shall:
+Support scalable deployments.
+Ensure high availability.
+Provide secure infrastructure.
+Enable continuous deployment.
+Support disaster recovery.
+Facilitate centralized monitoring.
+Optimize infrastructure utilization.
+Minimize downtime.
+Simplify maintenance.
+Support hybrid cloud and on-premises deployments.
+
+7.5.3 Deployment Environments
+CuraSphere shall maintain separate environments throughout the software lifecycle.
+Environment
+Purpose
+Users
+Development (DEV)
+Feature development and unit testing
+Developers
+Testing (TEST)
+Functional, integration, and QA testing
+QA Team
+Staging (UAT)
+User acceptance testing and release validation
+Business Users
+Production (PROD)
+Live hospital operations
+End Users
+
+Environment Isolation
+Each environment shall have:
+Independent databases.
+Separate configuration files.
+Dedicated credentials.
+Independent storage.
+Separate monitoring.
+Isolated network segments.
+No production data shall be used in development unless it has been properly anonymized.
+
+7.5.4 Enterprise Deployment Topology
+                         Internet
+                             │
+                             ▼
+                   Firewall / WAF (Web Application Firewall)
+                             │
+                             ▼
+                     Reverse Proxy / Load Balancer
+                             │
+              ┌──────────────┴──────────────┐
+              ▼                             ▼
+       Application Server 1         Application Server 2
+              │                             │
+              └──────────────┬──────────────┘
+                             ▼
+                      API Gateway Cluster
+                             │
+          ┌──────────────────┼──────────────────┐
+          ▼                  ▼                  ▼
+     Business Services   Notification     Background Workers
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             ▼
+                    PostgreSQL Primary Database
+                             │
+              ┌──────────────┴──────────────┐
+              ▼                             ▼
+      Read Replica 1                Read Replica 2
+              │
+              ▼
+        Backup Repository
+
+7.5.5 Deployment Models
+CuraSphere supports multiple deployment strategies.
+On-Premises Deployment
+Suitable for:
+Government hospitals
+Military hospitals
+Organizations with strict data residency requirements
+Characteristics
+Local servers
+Local database
+Hospital-managed infrastructure
+Internal network access
+Custom security policies
+
+Cloud Deployment
+Suitable for:
+Private hospitals
+Multi-branch healthcare organizations
+SaaS deployments
+Characteristics
+Elastic scalability
+Managed infrastructure
+Automatic backups
+Global accessibility
+High availability
+
+Hybrid Deployment
+Suitable for organizations requiring both local and cloud capabilities.
+Examples:
+Patient records stored on-premises.
+Analytics hosted in the cloud.
+Disaster recovery maintained in a secondary cloud region.
+Secure VPN connectivity between environments.
+
+7.5.6 Container Architecture
+All major application services shall be containerized.
+Containerized Components
+Web Application
+API Gateway
+Business Services
+Notification Service
+Background Worker
+Reporting Engine
+Benefits
+Consistent deployments.
+Environment portability.
+Faster scaling.
+Simplified rollback.
+Resource isolation.
+
+7.5.7 Kubernetes Architecture
+The production deployment shall support orchestration using Kubernetes.
+Kubernetes Components
+Control Plane
+Worker Nodes
+Pods
+Deployments
+Services
+Ingress Controller
+ConfigMaps
+Secrets
+Persistent Volumes
+
+Kubernetes Deployment
+Kubernetes Cluster
+        │
+ ┌──────┼───────────────┐
+ ▼      ▼               ▼
+Frontend Pods     API Pods     Worker Pods
+        │              │            │
+        └──────────────┼────────────┘
+                       ▼
+               PostgreSQL Service
+
+7.5.8 Load Balancing
+Incoming traffic shall be distributed across multiple application instances.
+Responsibilities
+Even request distribution.
+Session persistence (if required).
+Health checks.
+Automatic failover.
+SSL termination.
+Benefits
+Improved performance.
+Increased availability.
+Fault tolerance.
+Horizontal scalability.
+
+7.5.9 Reverse Proxy
+The reverse proxy shall:
+Route HTTPS requests.
+Terminate TLS connections.
+Forward traffic to backend services.
+Apply request filtering.
+Compress responses.
+Cache static assets where appropriate.
+
+7.5.10 Database Infrastructure
+The production database architecture shall include:
+Primary PostgreSQL instance.
+One or more read replicas.
+Automated backups.
+Point-in-time recovery support.
+Replication monitoring.
+Failover management.
+
+Database Topology
+Application Cluster
+        │
+        ▼
+Primary PostgreSQL
+        │
+ ┌──────┴──────────┐
+ ▼                 ▼
+Read Replica 1   Read Replica 2
+        │
+        ▼
+Backup Storage
+
+7.5.11 Storage Architecture
+The infrastructure shall provide separate storage for:
+Storage Type
+Purpose
+Database Storage
+Structured application data
+File Storage
+Medical documents and attachments
+Image Storage
+Diagnostic images and scans
+Log Storage
+Application and audit logs
+Backup Storage
+Backup archives
+Report Storage
+Generated reports and exports
+
+7.5.12 Network Architecture
+The network shall be logically segmented to improve security and performance.
+Internet
+    │
+    ▼
+DMZ
+    │
+    ▼
+Web Tier
+    │
+    ▼
+Application Tier
+    │
+    ▼
+Database Tier
+    │
+    ▼
+Backup Network
+Network Zones
+Public Zone
+DMZ
+Application Zone
+Database Zone
+Backup Zone
+Management Zone
+Traffic between zones shall be controlled through firewalls and access control policies.
+
+7.5.13 High Availability Architecture
+To minimize downtime, CuraSphere shall implement:
+Multiple application instances.
+Database replication.
+Load-balanced services.
+Health monitoring.
+Automatic service restart.
+Redundant storage.
+Redundant networking.
+Failover mechanisms.
+
+7.5.14 Disaster Recovery Topology
+Primary Data Center
+        │
+Database Replication
+        │
+        ▼
+Secondary Data Center
+        │
+        ▼
+Standby Application Cluster
+        │
+        ▼
+Recovery Operations
+The disaster recovery environment shall be regularly synchronized and tested according to the organization's disaster recovery plan.
+
+7.5.15 Infrastructure Monitoring
+The infrastructure shall continuously monitor:
+Server health.
+CPU utilization.
+Memory usage.
+Disk capacity.
+Network latency.
+Database performance.
+API response time.
+Background job execution.
+Queue depth.
+Backup status.
+Alerts shall be generated for threshold breaches and critical failures.
+
+7.5.16 Security Zones
+Zone
+Accessible By
+Purpose
+Public
+Internet Users
+Public access points
+DMZ
+Reverse Proxy
+Isolate external traffic
+Application
+Internal Services
+Business logic
+Database
+Application Layer Only
+Persistent data
+Management
+Authorized Administrators
+Infrastructure management
+Backup
+Backup Services
+Data protection
+
+7.5.17 Infrastructure Sizing Guidelines
+The following baseline sizing is recommended for a medium-sized hospital. Actual sizing shall be refined through capacity planning and performance testing.
+Component
+Minimum Recommendation
+Application Servers
+2 instances (4–8 vCPU, 16–32 GB RAM each)
+Database Server
+8–16 vCPU, 32–64 GB RAM, SSD storage
+Read Replica
+1–2 instances matching workload requirements
+Storage
+High-performance SSD/NVMe with redundant configuration
+Network
+Redundant 1–10 Gbps links (based on deployment scale)
+Backup Storage
+Capacity sufficient for retention policy and growth projections
+
+7.5.18 Deployment Best Practices
+The deployment process shall follow these practices:
+Immutable application artifacts.
+Infrastructure as Code (IaC) where applicable.
+Blue-Green or Rolling Deployments.
+Automated health checks before traffic switching.
+Secure secrets management.
+Configuration externalization.
+Version-controlled deployment manifests.
+Rollback capability for every production release.
+
+7.5.19 Acceptance Criteria
+The Deployment & Infrastructure Architecture shall be considered complete when:
+All deployment environments are defined and isolated.
+Supported deployment models (on-premises, cloud, hybrid) are documented.
+Containerization and orchestration strategies are specified.
+Load balancing and reverse proxy architecture are defined.
+Database replication and storage architecture are documented.
+Network segmentation and security zones are established.
+High availability and disaster recovery topologies are described.
+Infrastructure monitoring requirements are defined.
+Baseline infrastructure sizing guidance is provided.
+Deployment best practices support secure, reliable, and repeatable releases.
+
+
+

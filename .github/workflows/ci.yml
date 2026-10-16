@@ -1,0 +1,60 @@
+name: CuraSphere HMS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  backend-build-test:
+    name: Backend Build & Unit/Integration Tests (.NET 8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore Backend Dependencies
+        run: dotnet restore backend/CuraSphere.slnx
+
+      - name: Build Backend Solution
+        run: dotnet build backend/CuraSphere.slnx --no-restore -c Release
+
+      - name: Run Backend Unit Tests
+        run: dotnet run --project backend/tests/CuraSphere.UnitTests/CuraSphere.UnitTests.csproj
+
+      - name: Run Backend Integration Tests
+        run: dotnet run --project backend/tests/CuraSphere.IntegrationTests/CuraSphere.IntegrationTests.csproj
+
+  frontend-build-test:
+    name: Frontend Vitest & TypeScript Build Check (React 18 + Vite)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run Vitest Suite
+        working-directory: ./frontend
+        run: npx vitest run
+
+      - name: Run TypeScript Type Checker
+        working-directory: ./frontend
+        run: npx tsc --noEmit
+
+      - name: Build Production Web Bundle
+        working-directory: ./frontend
+        run: npm run build

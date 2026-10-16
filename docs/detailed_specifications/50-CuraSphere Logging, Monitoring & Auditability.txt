@@ -1,0 +1,403 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.19 - Logging, Monitoring & Auditability (NFR-12)
+
+6.19 Logging, Monitoring & Auditability Requirements
+
+6.19.1 Introduction
+The Logging, Monitoring, and Auditability requirements define how the CuraSphere Hospital Management System records operational activities, monitors application health, detects abnormal behavior, and provides complete traceability of user and system actions.
+Hospitals process thousands of critical operations every day, including patient registrations, clinical documentation, laboratory testing, medication dispensing, billing, admissions, and emergency care. Every significant system event must be traceable for operational support, security investigations, regulatory compliance, troubleshooting, and performance optimization.
+CuraSphere shall implement centralized logging, real-time monitoring, comprehensive audit trails, alerting mechanisms, and analytics dashboards to ensure complete operational visibility across the platform.
+
+6.19.2 Purpose
+The purpose of this section is to establish enterprise-level requirements for:
+Operational Logging
+Security Logging
+Audit Logging
+Infrastructure Monitoring
+Performance Monitoring
+Alert Management
+Health Checks
+Traceability
+Operational Analytics
+
+6.19.3 Objectives
+The Logging and Monitoring framework shall:
+Record all significant activities.
+Detect failures quickly.
+Monitor infrastructure continuously.
+Improve incident response.
+Support troubleshooting.
+Detect suspicious activities.
+Improve system availability.
+Support compliance audits.
+Provide operational dashboards.
+Maintain complete traceability.
+
+6.19.4 Scope
+These requirements apply to:
+Web Application
+Mobile Interface
+APIs
+Database
+Authentication Services
+Integration Services
+Background Jobs
+Notification Services
+DevOps Infrastructure
+Backup Services
+Cloud Resources
+
+6.19.5 Enterprise Monitoring Architecture
+                      Users
+                        │
+                        ▼
+               CuraSphere Platform
+                        │
+        ┌───────────────┼────────────────┐
+        ▼               ▼                ▼
+ Application       Database        Infrastructure
+    Logs              Logs             Metrics
+        │               │                │
+        └───────────────┼────────────────┘
+                        ▼
+              Central Log Collector
+                        │
+         ┌──────────────┼───────────────┐
+         ▼              ▼               ▼
+   Monitoring      Alert Engine    Audit Repository
+         │
+         ▼
+ Operations Dashboard
+
+6.19.6 Logging Requirements
+The system shall maintain structured logs for all major operations.
+
+Log Categories
+Category
+Description
+Application Logs
+Application execution events
+Security Logs
+Authentication and security events
+Audit Logs
+User activities
+Database Logs
+Database transactions and errors
+API Logs
+API requests and responses
+System Logs
+Operating system and server events
+Integration Logs
+External system communications
+Error Logs
+Exceptions and failures
+Performance Logs
+Performance metrics
+Backup Logs
+Backup and restore activities
+
+6.19.7 Log Information
+Every log record shall include, where applicable:
+Log ID
+Timestamp (UTC)
+User ID
+Employee ID
+Patient ID (where appropriate)
+Session ID
+IP Address
+Device Information
+Module Name
+Action Performed
+Previous Value
+New Value
+Status
+Error Code
+Correlation ID
+API Endpoint
+Processing Time
+
+Example Log Structure
+Field
+Example
+Log ID
+LOG-2026-000001
+Timestamp
+2026-08-10 10:15:32 UTC
+User
+DR001
+Module
+Pharmacy
+Action
+Dispense Medicine
+Status
+Success
+
+6.19.8 Audit Trail Requirements
+The audit trail shall provide a complete history of critical business activities.
+
+Auditable Events
+User Login
+User Logout
+Failed Login
+Password Reset
+Patient Registration
+Patient Record Update
+Medical Diagnosis Entry
+Prescription Creation
+Laboratory Result Entry
+Billing Generation
+Payment Processing
+Inventory Adjustment
+HR Record Changes
+Permission Changes
+Configuration Changes
+Report Generation
+Backup Execution
+Data Export
+Record Deletion
+API Configuration Changes
+
+Audit Workflow
+User Activity
+      │
+      ▼
+Business Validation
+      │
+      ▼
+Audit Logger
+      │
+      ▼
+Immutable Audit Repository
+      │
+      ▼
+Compliance Reports
+
+6.19.9 Monitoring Requirements
+The system shall continuously monitor operational health.
+
+Infrastructure Monitoring
+CPU Usage
+Memory Usage
+Disk Space
+Network Utilization
+Server Temperature (where available)
+Process Health
+Virtual Machine Status
+Container Status
+
+Application Monitoring
+Active Users
+API Latency
+Database Connections
+Queue Length
+Background Jobs
+Session Count
+Login Failures
+Error Rates
+
+Database Monitoring
+Query Execution Time
+Slow Queries
+Deadlocks
+Connection Pool Usage
+Storage Growth
+Replication Status
+Backup Status
+
+6.19.10 Health Check Requirements
+The application shall expose configurable health-check endpoints.
+
+Health Check Components
+Component
+Status
+Application
+Healthy / Unhealthy
+Database
+Connected / Failed
+Cache
+Connected / Failed
+Queue
+Running / Failed
+Notification Service
+Running / Failed
+Storage
+Available / Unavailable
+
+Health Check Flow
+Monitoring Agent
+        │
+        ▼
+Health Endpoint
+        │
+        ▼
+Component Status
+        │
+        ▼
+Dashboard
+
+6.19.11 Alert Management
+The monitoring system shall generate alerts based on configurable thresholds.
+
+Alert Types
+Critical
+High
+Medium
+Low
+Informational
+
+Example Alert Rules
+Event
+Threshold
+CPU Usage
+>85%
+Memory Usage
+>90%
+Disk Space
+<15% Free
+API Response Time
+>5 Seconds
+Database Failure
+Immediate Alert
+Backup Failure
+Immediate Alert
+Login Attack
+Configurable Threshold
+
+6.19.12 Dashboard Requirements
+System administrators shall have access to real-time monitoring dashboards.
+
+Dashboard Widgets
+Server Health
+Active Users
+Today's Appointments
+API Performance
+Database Performance
+Failed Jobs
+Security Events
+Backup Status
+Disk Usage
+Network Traffic
+
+Dashboard Overview
++------------------------------------------------+
+| Server Health | Users | Database | APIs |
++------------------------------------------------+
+| Alerts | Jobs | Security | Backup |
++------------------------------------------------+
+| Performance Graphs | Audit Timeline |
++------------------------------------------------+
+
+6.19.13 Log Retention Policy
+Log Type
+Retention Period
+Application Logs
+180 Days
+Security Logs
+1 Year
+Audit Logs
+7 Years
+Performance Logs
+180 Days
+Backup Logs
+3 Years
+API Logs
+1 Year
+Retention periods shall be configurable according to hospital policies and legal requirements.
+
+6.19.14 Log Security
+The logging infrastructure shall implement:
+Encryption at Rest
+Encryption in Transit
+Role-Based Access
+Immutable Audit Logs
+Digital Integrity Verification
+Secure Archiving
+Tamper Detection
+
+6.19.15 Incident Management
+When abnormal events occur, the system shall:
+Detect the issue.
+Record detailed logs.
+Generate alerts.
+Notify administrators.
+Escalate critical incidents.
+Support root cause analysis.
+Track incident resolution.
+
+Incident Workflow
+System Event
+      │
+      ▼
+Monitoring Engine
+      │
+      ▼
+Alert Generated
+      │
+      ▼
+Administrator
+      │
+      ▼
+Investigation
+      │
+      ▼
+Resolution
+
+6.19.16 Business Rules
+Rule ID
+Rule
+NFR-MON-001
+Every critical transaction shall generate an audit record.
+NFR-MON-002
+System clocks shall use synchronized time sources.
+NFR-MON-003
+Logs shall not contain plain-text passwords or sensitive authentication secrets.
+NFR-MON-004
+Audit records shall be protected from unauthorized modification.
+NFR-MON-005
+Critical alerts shall be delivered immediately to designated administrators.
+NFR-MON-006
+Monitoring services shall continue operating independently of application modules where feasible.
+NFR-MON-007
+All log retention policies shall be configurable by authorized administrators.
+
+6.19.17 Acceptance Criteria
+The monitoring and logging solution shall be accepted when:
+All defined system events are logged successfully.
+Audit trails provide complete traceability.
+Monitoring dashboards accurately display system health.
+Critical alerts are generated within configured thresholds.
+Health checks accurately report service status.
+Log retention policies operate according to configuration.
+Audit records remain protected from unauthorized alteration.
+
+6.19.18 Requirement Traceability Matrix
+Requirement ID
+Description
+NFR-MON-001
+Logging
+NFR-MON-002
+Audit Trail
+NFR-MON-003
+Infrastructure Monitoring
+NFR-MON-004
+Health Checks
+NFR-MON-005
+Alert Management
+NFR-MON-006
+Dashboards
+NFR-MON-007
+Log Retention
+NFR-MON-008
+Log Security
+NFR-MON-009
+Incident Management
+NFR-MON-010
+Acceptance Criteria
+
+6.19.19 Section Summary
+The Logging, Monitoring, and Auditability framework provides complete operational visibility into the CuraSphere Hospital Management System. By combining structured logging, comprehensive audit trails, proactive monitoring, real-time alerting, and centralized dashboards, the system enables rapid incident detection, efficient troubleshooting, regulatory compliance, and continuous operational improvement while maintaining the security and integrity of healthcare information.
+
+
+

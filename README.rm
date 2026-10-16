@@ -1,0 +1,3270 @@
+# CURASPHERE HOSPITAL MANAGEMENT SYSTEM
+# COMPLETE MASTER README / SYSTEM BUILD DOCUMENT
+
+Document Type: Master Project README / Engineering Handbook
+Project: CuraSphere Hospital Management System
+Version: 1.0
+Status: Master Development Baseline
+Purpose: Complete reference for understanding, designing, building, testing, deploying, and maintaining CuraSphere.
+
+---
+
+# 1. DOCUMENT PURPOSE
+
+This README is the master entry point for the complete CuraSphere project.
+
+It explains:
+
+- What CuraSphere is
+- Why the system is being built
+- What the system contains
+- Complete functional scope
+- All major modules
+- Users and roles
+- User permissions
+- Complete system workflows
+- Frontend technology
+- Backend technology
+- Database technology
+- Development tools
+- Design tools
+- Testing tools
+- DevOps tools
+- Security architecture
+- Application architecture
+- Database architecture
+- API architecture
+- Frontend architecture
+- Backend architecture
+- Real-time architecture
+- Folder structure
+- Documentation structure
+- Figma workflow
+- Development workflow
+- Testing workflow
+- Deployment workflow
+- Backup and recovery
+- Environment configuration
+- Coding rules
+- Git workflow
+- Definition of Done
+- Development phases
+- Future expansion
+- What should and should not be built first
+
+This document should be read before starting development.
+
+---
+
+# 2. WHAT IS CURASPHERE?
+
+CuraSphere is a Hospital Management System designed to centralize hospital operations into one connected platform.
+
+The system connects:
+
+Patient Registration
+        ↓
+Appointment
+        ↓
+Check-In
+        ↓
+Triage / Nursing
+        ↓
+Clinical Encounter
+        ↓
+Laboratory / Radiology / Pharmacy / Surgery
+        ↓
+Billing / Insurance
+        ↓
+Payment
+        ↓
+Discharge / Follow-Up
+        ↓
+Reporting
+        ↓
+Audit
+
+The system is not a collection of unrelated CRUD pages.
+
+The patient journey is the central business workflow.
+
+---
+
+# 3. MAIN OBJECTIVE
+
+The objective of CuraSphere is to provide a centralized, secure, maintainable and scalable hospital platform that reduces manual work and connects hospital departments.
+
+The system should provide:
+
+- Faster patient registration
+- Better appointment management
+- Centralized patient records
+- Structured clinical workflows
+- Connected laboratory workflows
+- Connected radiology workflows
+- Connected pharmacy workflows
+- Reliable billing and payments
+- Inventory visibility
+- Hospital administration
+- HR and attendance
+- Reports and analytics
+- Notifications
+- Auditability
+- Role-based security
+- Real-time operational updates where required
+
+---
+
+# 4. DOCUMENTATION ECOSYSTEM
+
+CuraSphere documentation is divided into layers.
+
+## 4.1 SRS
+
+SRS means Software Requirements Specification.
+
+The SRS answers:
+
+"What must CuraSphere do?"
+
+It contains:
+
+- Functional requirements
+- Non-functional requirements
+- User roles
+- Business requirements
+- System scope
+- Constraints
+- Assumptions
+- Business rules
+- Acceptance criteria
+- Requirements traceability
+
+The SRS is the requirements baseline.
+
+---
+
+## 4.2 Product Documentation
+
+Product documentation explains:
+
+- Product vision
+- Product goals
+- Target users
+- Product scope
+- MVP
+- Future versions
+- Success criteria
+- Product modules
+- Business value
+
+---
+
+## 4.3 Master Build Documentation
+
+The Build Documentation answers:
+
+"How are we going to build CuraSphere?"
+
+It contains:
+
+- Architecture
+- Technology stack
+- Frontend architecture
+- Backend architecture
+- Database architecture
+- API architecture
+- Security
+- Testing
+- Deployment
+- Development phases
+- Coding practices
+- Folder structure
+- Real-time architecture
+- DevOps
+
+---
+
+## 4.4 Flow Documentation
+
+Flow documentation answers:
+
+"How does every process work?"
+
+Each flow should document:
+
+1. Purpose
+2. Actor
+3. Preconditions
+4. Trigger
+5. Main flow
+6. Alternative flow
+7. Exception flow
+8. Business rules
+9. UI screens
+10. API calls
+11. Database changes
+12. Permissions
+13. Audit events
+14. Notifications
+15. Real-time events
+16. Success state
+17. Failure state
+18. Related requirements
+19. Related tables
+20. Related APIs
+
+---
+
+## 4.5 UI/UX Documentation
+
+UI/UX documentation explains:
+
+- Design system
+- Colors
+- Typography
+- Spacing
+- Components
+- Layouts
+- Responsive behavior
+- Accessibility
+- Screen hierarchy
+- User interactions
+- Loading states
+- Empty states
+- Error states
+- Success states
+- Figma organization
+- Prototype flows
+
+---
+
+## 4.6 Database Documentation
+
+Database documentation contains:
+
+- ERD
+- Entities
+- Tables
+- Columns
+- Data types
+- Primary keys
+- Foreign keys
+- Relationships
+- Indexes
+- Constraints
+- Migrations
+- Seed data
+- Reference data
+- Backup strategy
+
+---
+
+## 4.7 API Documentation
+
+API documentation contains:
+
+- Endpoint
+- HTTP method
+- URL
+- Authentication
+- Permission
+- Request DTO
+- Validation
+- Response DTO
+- Status codes
+- Errors
+- Business rules
+- Audit events
+- Transaction behavior
+
+---
+
+## 4.8 Testing Documentation
+
+Testing documentation contains:
+
+- Test strategy
+- Test cases
+- Unit tests
+- Component tests
+- Integration tests
+- API tests
+- E2E tests
+- Security tests
+- Performance tests
+- UAT
+- Regression tests
+
+---
+
+## 4.9 Deployment Documentation
+
+Deployment documentation contains:
+
+- Development environment
+- QA environment
+- Staging
+- Production
+- Docker
+- Docker Compose
+- Nginx
+- CI/CD
+- Environment variables
+- Secrets
+- Database migrations
+- Backup
+- Restore
+- Monitoring
+- Rollback
+
+---
+
+# 5. COMPLETE SYSTEM SCOPE
+
+CuraSphere contains the following major areas.
+
+## Core
+
+- Authentication
+- Dashboard
+- Users
+- Roles
+- Permissions
+- Patient Management
+- Appointments
+
+## Clinical
+
+- OPD
+- IPD
+- Emergency
+- ICU
+- Surgery
+- Nursing
+- EMR
+- Laboratory
+- Radiology
+- Pharmacy
+
+## Financial
+
+- Billing
+- Payments
+- Refunds
+- Insurance
+
+## Operational
+
+- Inventory
+- Medical Supplies
+- Equipment
+- Departments
+- Scheduling
+
+## Human Resources
+
+- Employees
+- Staff
+- Attendance
+- Shifts
+
+## Management
+
+- Reports
+- Analytics
+- Notifications
+- Audit Logs
+- Settings
+- System Administration
+
+---
+
+# 6. USERS AND ROLES
+
+## 6.1 Super Administrator
+
+Responsibilities:
+
+- System configuration
+- Users
+- Roles
+- Permissions
+- Security
+- Audit
+- Global settings
+
+---
+
+## 6.2 Hospital Administrator
+
+Responsibilities:
+
+- Hospital operations
+- Departments
+- Staff
+- Services
+- Scheduling
+- Reports
+- Operational configuration
+
+---
+
+## 6.3 Doctor
+
+Responsibilities:
+
+- Patient encounters
+- Medical history
+- Examination
+- Diagnosis
+- Treatment
+- Prescriptions
+- Lab orders
+- Radiology orders
+- Follow-up
+
+---
+
+## 6.4 Nurse
+
+Responsibilities:
+
+- Patient assignment
+- Vitals
+- Nursing notes
+- Care tasks
+- Medication administration
+- Shift handover
+
+---
+
+## 6.5 Receptionist
+
+Responsibilities:
+
+- Patient registration
+- Patient search
+- Appointments
+- Check-in
+- Queue management
+
+---
+
+## 6.6 Laboratory Technician
+
+Responsibilities:
+
+- Lab requests
+- Sample collection
+- Sample processing
+- Result entry
+- Result verification
+
+---
+
+## 6.7 Radiologist
+
+Responsibilities:
+
+- Radiology studies
+- Reports
+- Verification
+- Result publication
+
+---
+
+## 6.8 Pharmacist
+
+Responsibilities:
+
+- Prescription queue
+- Medication validation
+- Availability
+- Dispensing
+- Stock interaction
+
+---
+
+## 6.9 Cashier / Accountant
+
+Responsibilities:
+
+- Invoice
+- Payment
+- Partial payment
+- Refund
+- Receipt
+- Financial reports
+
+---
+
+## 6.10 HR
+
+Responsibilities:
+
+- Employees
+- Staff records
+- Attendance
+- Shifts
+- HR reports
+
+---
+
+## 6.11 Manager
+
+Responsibilities:
+
+- Dashboard
+- KPIs
+- Reports
+- Financial overview
+- Operational overview
+
+---
+
+## 6.12 Patient
+
+Optional patient portal responsibilities:
+
+- Profile
+- Appointments
+- Results
+- Prescriptions
+- Billing
+- Follow-up
+
+---
+
+## 6.13 IT Support
+
+Responsibilities:
+
+- Technical support
+- System monitoring
+- Operational troubleshooting
+
+---
+
+# 7. RBAC SYSTEM
+
+RBAC means Role-Based Access Control.
+
+Permission format:
+
+RESOURCE.ACTION
+
+Examples:
+
+patients.read
+patients.create
+patients.update
+patients.delete
+
+appointments.read
+appointments.create
+appointments.update
+appointments.cancel
+
+emr.read
+emr.create
+emr.amend
+emr.sign
+
+billing.read
+billing.create
+billing.pay
+billing.refund
+
+users.read
+users.create
+users.update
+users.disable
+
+Important:
+
+Frontend visibility is not security.
+
+The backend must always enforce permissions.
+
+---
+
+# 8. TECHNOLOGY STACK
+
+# 8.1 FRONTEND
+
+## React
+
+Used to build the user interface.
+
+Responsibilities:
+
+- Components
+- Pages
+- Forms
+- Dashboards
+- Tables
+- Navigation
+- User interactions
+
+---
+
+## TypeScript
+
+Used for:
+
+- Type safety
+- Interfaces
+- API models
+- Component props
+- Domain types
+- Better maintainability
+
+---
+
+## Vite
+
+Used for:
+
+- Development server
+- Fast builds
+- Frontend bundling
+- Environment configuration
+
+---
+
+## Tailwind CSS
+
+Used for:
+
+- Styling
+- Responsive design
+- Layout
+- Spacing
+- Typography
+- Design tokens
+
+---
+
+## shadcn/ui
+
+Used for reusable UI components.
+
+Examples:
+
+- Button
+- Dialog
+- Input
+- Select
+- Table
+- Dropdown
+- Tabs
+- Sheet
+- Toast
+- Form components
+
+---
+
+## Lucide React
+
+Used for interface icons.
+
+---
+
+## React Router
+
+Used for:
+
+- Routes
+- Protected routes
+- Nested layouts
+- Role-based navigation
+
+---
+
+## Zustand
+
+Used for client-side/global UI state.
+
+Examples:
+
+- Sidebar state
+- Theme
+- Temporary UI state
+- Session-related client state where appropriate
+
+Do not use Zustand as a duplicate database/cache.
+
+---
+
+## TanStack Query
+
+Used for server state.
+
+Responsibilities:
+
+- Fetching
+- Caching
+- Mutations
+- Refetching
+- Query invalidation
+- Loading/error states
+
+---
+
+## React Hook Form
+
+Used for forms.
+
+---
+
+## Zod
+
+Used for schema validation.
+
+Frontend validation improves UX.
+
+Backend validation remains authoritative.
+
+---
+
+## Recharts
+
+Used for dashboards and analytics.
+
+---
+
+# 9. BACKEND TECHNOLOGY
+
+## ASP.NET Core Web API
+
+Main backend framework.
+
+Responsibilities:
+
+- REST APIs
+- Authentication
+- Authorization
+- Business operations
+- Validation
+- Transactions
+- Audit
+- Real-time integration
+
+---
+
+## C#
+
+Main backend programming language.
+
+---
+
+## Entity Framework Core
+
+Used for:
+
+- ORM
+- Database access
+- Relationships
+- Queries
+- Migrations
+- Transactions
+
+---
+
+## ASP.NET Core Identity
+
+Used for:
+
+- Users
+- Passwords
+- Identity
+- Roles
+- Account management
+
+---
+
+## JWT / Secure Session Strategy
+
+Used for authenticated API access.
+
+Authentication strategy must be selected and documented before production.
+
+---
+
+## SignalR
+
+Used for real-time updates.
+
+Examples:
+
+- New patient check-in
+- Queue update
+- Lab result available
+- Prescription ready
+- Payment completed
+- Notifications
+
+---
+
+## Serilog
+
+Used for structured application logging.
+
+---
+
+## Swagger / OpenAPI
+
+Used for:
+
+- API documentation
+- API exploration
+- Development testing
+
+---
+
+# 10. DATABASE TECHNOLOGY
+
+## PostgreSQL
+
+Primary relational database.
+
+Reasons:
+
+- Strong relational model
+- Transactions
+- Constraints
+- Indexes
+- Scalability
+- Reliable data integrity
+
+---
+
+## pgAdmin
+
+Optional administration tool for PostgreSQL.
+
+---
+
+# 11. DATABASE PRINCIPLES
+
+The database is the source of truth.
+
+Never allow:
+
+Frontend
+    ↓
+PostgreSQL
+
+Instead:
+
+Frontend
+    ↓
+API
+    ↓
+Business Rules
+    ↓
+EF Core
+    ↓
+PostgreSQL
+
+Use:
+
+- Primary keys
+- Foreign keys
+- Unique constraints
+- Check constraints
+- Indexes
+- Transactions
+- Timestamps
+- Audit references
+
+---
+
+# 12. DATABASE MODULES
+
+## Identity
+
+users
+roles
+permissions
+user_roles
+role_permissions
+
+## Hospital
+
+departments
+staff
+doctors
+nurses
+doctor_schedules
+shifts
+attendance
+
+## Patient
+
+patients
+patient_contacts
+patient_allergies
+patient_documents
+patient_identifiers
+
+## Clinical
+
+encounters
+vitals
+clinical_notes
+diagnoses
+treatment_plans
+medications
+prescriptions
+prescription_items
+
+## Laboratory
+
+lab_tests
+lab_requests
+lab_request_items
+samples
+lab_results
+result_verifications
+
+## Radiology
+
+radiology_orders
+radiology_studies
+radiology_reports
+
+## Hospitalization
+
+admissions
+wards
+rooms
+beds
+bed_assignments
+nursing_notes
+
+## Finance
+
+invoices
+invoice_items
+payments
+refunds
+
+## Insurance
+
+insurance_providers
+insurance_policies
+insurance_claims
+
+## Inventory
+
+inventory_items
+inventory_batches
+stock_movements
+equipment
+equipment_assignments
+
+## System
+
+notifications
+audit_logs
+system_settings
+attachments
+
+---
+
+# 13. MAIN DATABASE RELATIONSHIPS
+
+Patient 1 -> many Appointments
+
+Patient 1 -> many Encounters
+
+Patient 1 -> many Admissions
+
+Encounter 1 -> many Clinical Notes
+
+Encounter 1 -> many Diagnoses
+
+Encounter 1 -> many Prescriptions
+
+Prescription 1 -> many Prescription Items
+
+Encounter 1 -> many Laboratory Requests
+
+Laboratory Request 1 -> many Results
+
+Encounter 1 -> many Radiology Orders
+
+Patient 1 -> many Invoices
+
+Invoice 1 -> many Payments
+
+User many -> many Roles
+
+Role many -> many Permissions
+
+User 1 -> many Audit Logs
+
+Inventory Item 1 -> many Stock Movements
+
+---
+
+# 14. FRONTEND ARCHITECTURE
+
+Recommended:
+
+frontend/src/
+
+app/
+components/
+features/
+hooks/
+lib/
+routes/
+services/
+stores/
+types/
+assets/
+
+Feature structure:
+
+features/patients/
+
+pages/
+components/
+api/
+hooks/
+schemas/
+types/
+routes.ts
+
+Each feature should be independently understandable.
+
+---
+
+# 15. BACKEND ARCHITECTURE
+
+backend/
+
+CuraSphere.Api/
+    Controllers/
+    Hubs/
+    Middleware/
+    Extensions/
+
+CuraSphere.Application/
+    DTOs/
+    Interfaces/
+    Services/
+    Validators/
+
+CuraSphere.Domain/
+    Entities/
+    Enums/
+    ValueObjects/
+    Interfaces/
+
+CuraSphere.Infrastructure/
+    Persistence/
+    Identity/
+    Services/
+
+Principles:
+
+Controllers should be thin.
+
+Application services contain use-case orchestration.
+
+Domain layer contains business rules.
+
+Infrastructure handles database/external implementation.
+
+---
+
+# 16. API ARCHITECTURE
+
+Base:
+
+/api
+
+Main groups:
+
+/api/auth
+/api/users
+/api/roles
+/api/permissions
+/api/patients
+/api/doctors
+/api/nurses
+/api/appointments
+/api/opd
+/api/ipd
+/api/emergency
+/api/icu
+/api/surgery
+/api/emr
+/api/laboratory
+/api/radiology
+/api/pharmacy
+/api/billing
+/api/payments
+/api/insurance
+/api/inventory
+/api/hr
+/api/attendance
+/api/reports
+/api/notifications
+
+---
+
+# 17. API DESIGN RULES
+
+Every API should define:
+
+- HTTP method
+- Endpoint
+- Authentication
+- Permission
+- Request DTO
+- Validation
+- Response DTO
+- Error codes
+- Business rules
+- Audit behavior
+- Transaction behavior
+
+Example:
+
+POST /api/patients
+
+Request:
+
+{
+  "firstName": "...",
+  "lastName": "...",
+  "dateOfBirth": "...",
+  "phone": "..."
+}
+
+Response:
+
+{
+  "success": true,
+  "data": {
+    "id": "...",
+    "mrn": "..."
+  }
+}
+
+---
+
+# 18. API STATUS CODES
+
+200
+Successful request
+
+201
+Created
+
+204
+Successful request without response body
+
+400
+Validation error
+
+401
+Unauthenticated
+
+403
+Unauthorized
+
+404
+Resource not found
+
+409
+Business conflict
+
+422
+Semantic validation
+
+429
+Rate limited
+
+500
+Unexpected server error
+
+---
+
+# 19. MASTER SYSTEM FLOW
+
+USER
+ ↓
+AUTHENTICATION
+ ↓
+ROLE + PERMISSIONS
+ ↓
+DASHBOARD
+ ↓
+PATIENT
+ ↓
+APPOINTMENT / WALK-IN
+ ↓
+CHECK-IN
+ ↓
+TRIAGE / NURSING
+ ↓
+OPD / IPD / EMERGENCY / ICU
+ ↓
+DOCTOR ENCOUNTER
+ ↓
+DIAGNOSIS + TREATMENT
+ ↓
+LAB / RADIOLOGY / PHARMACY / SURGERY
+ ↓
+BILLING / INSURANCE
+ ↓
+PAYMENT
+ ↓
+DISCHARGE / FOLLOW-UP
+ ↓
+REPORTING
+ ↓
+AUDIT
+
+---
+
+# 20. AUTHENTICATION FLOW
+
+Login
+ ↓
+Submit Credentials
+ ↓
+API
+ ↓
+Identity Validation
+ ↓
+Credentials Valid?
+ ├── NO -> Error
+ └── YES
+       ↓
+Load User
+       ↓
+Load Roles
+       ↓
+Load Permissions
+       ↓
+Create Session/Token
+       ↓
+Protected Dashboard
+
+---
+
+# 21. PATIENT REGISTRATION FLOW
+
+Search Patient
+ ↓
+Existing Patient?
+ ├── YES -> Open Profile
+ └── NO
+       ↓
+Registration Form
+       ↓
+Validation
+       ↓
+Duplicate Warning
+       ↓
+Generate MRN
+       ↓
+Save Patient
+       ↓
+Audit
+       ↓
+Patient Profile
+       ↓
+Appointment / Check-In
+
+Never silently create duplicates.
+
+---
+
+# 22. APPOINTMENT FLOW
+
+Patient
+ ↓
+Department
+ ↓
+Doctor
+ ↓
+Availability
+ ↓
+Date/Time
+ ↓
+Conflict Check
+ ↓
+Create Appointment
+ ↓
+Notification
+ ↓
+Scheduled
+ ↓
+Patient Arrives
+ ↓
+Check-In
+ ↓
+Clinical Queue
+
+States:
+
+SCHEDULED
+CHECKED_IN
+IN_PROGRESS
+READY_FOR_BILLING
+BILLED
+PAID
+DISCHARGED
+
+Exceptions:
+
+CANCELLED
+NO_SHOW
+ON_HOLD
+
+---
+
+# 23. OPD FLOW
+
+Check-In
+ ↓
+OPD Queue
+ ↓
+Triage
+ ↓
+Doctor
+ ↓
+Consultation
+ ↓
+Diagnosis
+ ↓
+Treatment
+ ↓
+Orders
+ ↓
+Prescription / Laboratory / Radiology
+ ↓
+Billing
+ ↓
+Follow-Up
+
+---
+
+# 24. EMR FLOW
+
+Create Encounter
+ ↓
+Vitals
+ ↓
+Chief Complaint
+ ↓
+History
+ ↓
+Examination
+ ↓
+Assessment
+ ↓
+Diagnosis
+ ↓
+Treatment
+ ↓
+Orders
+ ↓
+Prescription
+ ↓
+Sign / Finalize
+ ↓
+Follow-Up
+
+Finalized clinical records should not be silently overwritten.
+
+Use controlled amendment workflows.
+
+---
+
+# 25. NURSING FLOW
+
+Patient Assignment
+ ↓
+Nursing Queue
+ ↓
+Vitals
+ ↓
+Care Tasks
+ ↓
+Nursing Notes
+ ↓
+Medication Administration
+ ↓
+Shift Handover
+
+Every clinical nursing record should identify:
+
+- Patient
+- User
+- Timestamp
+- Action
+- Relevant encounter/admission
+
+---
+
+# 26. IPD FLOW
+
+Admission Request
+ ↓
+Ward Availability
+ ↓
+Room/Bed Assignment
+ ↓
+Admission
+ ↓
+Nursing Care
+ ↓
+Doctor Rounds
+ ↓
+Orders
+ ↓
+Laboratory/Radiology/Pharmacy
+ ↓
+Daily Charges
+ ↓
+Discharge Planning
+ ↓
+Billing
+ ↓
+Discharge
+
+---
+
+# 27. EMERGENCY FLOW
+
+Emergency Arrival
+ ↓
+Rapid Registration
+ ↓
+Triage
+ ↓
+Clinical Assessment
+ ↓
+Immediate Treatment
+ ↓
+Orders
+ ↓
+Disposition
+
+Disposition:
+
+Discharge
+OPD
+IPD
+ICU
+Surgery
+
+---
+
+# 28. ICU FLOW
+
+ICU Admission
+ ↓
+Bed Assignment
+ ↓
+Continuous Monitoring
+ ↓
+Vitals
+ ↓
+Nursing
+ ↓
+Doctor Review
+ ↓
+Orders
+ ↓
+Daily Review
+ ↓
+Transfer / Discharge
+
+ICU access requires strict authorization and auditing.
+
+---
+
+# 29. SURGERY FLOW
+
+Surgery Request
+ ↓
+Clinical Review
+ ↓
+Approval
+ ↓
+OT Scheduling
+ ↓
+Pre-Op
+ ↓
+Procedure
+ ↓
+Post-Op
+ ↓
+Recovery
+ ↓
+Ward / ICU / Discharge
+
+---
+
+# 30. LABORATORY FLOW
+
+Doctor Order
+ ↓
+Lab Queue
+ ↓
+Sample Collection
+ ↓
+Sample Received
+ ↓
+Processing
+ ↓
+Result Entry
+ ↓
+Verification
+ ↓
+Publication
+ ↓
+Doctor Notification
+
+Statuses:
+
+ORDERED
+SAMPLE_PENDING
+COLLECTED
+RECEIVED
+PROCESSING
+RESULT_ENTERED
+VERIFIED
+
+---
+
+# 31. RADIOLOGY FLOW
+
+Doctor Order
+ ↓
+Radiology Queue
+ ↓
+Scheduling
+ ↓
+Study
+ ↓
+Report
+ ↓
+Verification
+ ↓
+Publication
+ ↓
+Authorized Clinical Users
+
+Future PACS/DICOM integration can be added without changing the core order/report model.
+
+---
+
+# 32. PHARMACY FLOW
+
+Prescription
+ ↓
+Pharmacy Queue
+ ↓
+Prescription Validation
+ ↓
+Medication Availability
+ ↓
+Dispensing
+ ↓
+Record Dispensed Quantity
+ ↓
+Complete
+
+No unauthorized dispensing.
+
+---
+
+# 33. INVENTORY FLOW
+
+Receive
+ ↓
+Stock Entry
+ ↓
+Storage
+ ↓
+Issue / Dispense
+ ↓
+Stock Movement
+ ↓
+Reorder Alert
+ ↓
+Reporting
+
+Stock movement types:
+
+RECEIPT
+ISSUE
+RETURN
+ADJUSTMENT
+
+Never directly overwrite stock without recording the reason/movement.
+
+---
+
+# 34. BILLING FLOW
+
+Services
+ ↓
+Charge Capture
+ ↓
+Invoice
+ ↓
+Subtotal
+ ↓
+Discount
+ ↓
+Tax
+ ↓
+Total
+ ↓
+Payment
+ ↓
+Receipt
+ ↓
+Audit
+
+Payment states:
+
+PENDING
+PARTIALLY_PAID
+PAID
+FAILED
+REFUNDED
+PARTIALLY_REFUNDED
+
+Financial operations must be transactional.
+
+---
+
+# 35. INSURANCE FLOW
+
+Patient Policy
+ ↓
+Eligibility
+ ↓
+Coverage
+ ↓
+Claim
+ ↓
+Processing
+ ↓
+Approval / Rejection
+ ↓
+Insurance Portion
+ ↓
+Patient Responsibility
+ ↓
+Settlement
+
+---
+
+# 36. DISCHARGE FLOW
+
+Clinical Completion
+ ↓
+Diagnosis Review
+ ↓
+Medication Review
+ ↓
+Pending Results
+ ↓
+Discharge Summary
+ ↓
+Follow-Up
+ ↓
+Billing Check
+ ↓
+Payment/Financial Completion
+ ↓
+Discharge
+ ↓
+Audit
+
+---
+
+# 37. NOTIFICATION FLOW
+
+Action
+ ↓
+API
+ ↓
+Validation
+ ↓
+Business Logic
+ ↓
+Database Transaction
+ ↓
+COMMIT
+ ↓
+Domain Event
+ ↓
+SignalR
+ ↓
+Connected Clients
+ ↓
+TanStack Query Update
+ ↓
+UI Update
+
+Important:
+
+Never use a UI event as proof that a transaction succeeded.
+
+Database commit is the authority.
+
+---
+
+# 38. AUDIT FLOW
+
+Sensitive Action
+ ↓
+Authenticate
+ ↓
+Authorize
+ ↓
+Business Operation
+ ↓
+Database Change
+ ↓
+Audit Record
+ ↓
+Commit
+
+Audit examples:
+
+- Patient access
+- Clinical amendments
+- Prescription changes
+- Lab verification
+- Payment
+- Refund
+- Discount override
+- Role change
+- Settings change
+- Sensitive export
+
+---
+
+# 39. ERROR FLOW
+
+User Action
+ ↓
+API
+ ↓
+Validation
+ ↓
+Success?
+ ├── YES -> Database -> Success
+ └── NO
+       ↓
+Standard Error
+       ↓
+User-Friendly Message
+       ↓
+Retry if Safe
+
+Never expose:
+
+- SQL
+- Stack traces
+- Passwords
+- Tokens
+- Internal secrets
+
+---
+
+# 40. TRANSACTION FLOW
+
+Critical operation:
+
+Request
+ ↓
+Validate
+ ↓
+Begin Transaction
+ ↓
+Business Rules
+ ↓
+Database Changes
+ ↓
+Audit
+ ↓
+Commit
+ ↓
+Publish Event
+
+If failure:
+
+Rollback
+ ↓
+Return Error
+
+Examples:
+
+- Payment
+- Refund
+- Admission
+- Discharge
+- Inventory transaction
+- Clinical finalization where multiple records change
+
+---
+
+# 41. UI/UX TECHNOLOGY
+
+Primary tool:
+
+Figma
+
+Supporting:
+
+Figma AI
+Figma Components
+Variants
+Auto Layout
+Prototype
+Design Tokens
+
+---
+
+# 42. FIGMA PROJECT STRUCTURE
+
+CuraSphere HMS
+│
+├── Cover
+├── Design System
+├── Components
+├── Authentication
+├── Dashboard
+├── Patients
+├── Doctors
+├── Nurses
+├── Appointments
+├── OPD
+├── IPD
+├── Emergency
+├── ICU
+├── Surgery
+├── EMR
+├── Laboratory
+├── Radiology
+├── Pharmacy
+├── Billing
+├── Payments
+├── Insurance
+├── Inventory
+├── HR
+├── Reports
+├── Administration
+├── Settings
+├── Responsive
+└── Prototypes
+
+Use Figma AI for first concepts.
+
+Use manual refinement for final design.
+
+---
+
+# 43. DESIGN SYSTEM
+
+Suggested foundation:
+
+Primary:
+#2563EB
+
+Success:
+#16A34A
+
+Warning:
+#D97706
+
+Danger:
+#DC2626
+
+Info:
+#0891B2
+
+Background:
+#F8FAFC
+
+Surface:
+#FFFFFF
+
+Text:
+#111827
+
+Muted:
+#64748B
+
+Border:
+#E2E8F0
+
+Typography:
+
+Inter or equivalent modern UI font.
+
+The final design tokens must be stored centrally and reused.
+
+---
+
+# 44. UI STATES
+
+Every major screen should support:
+
+- Loading
+- Loaded
+- Empty
+- Error
+- Success
+- Disabled
+- Permission denied
+- Offline/network failure where appropriate
+
+Forms should support:
+
+- Required validation
+- Invalid values
+- Server errors
+- Duplicate submission prevention
+- Saving state
+- Success state
+
+---
+
+# 45. SECURITY ARCHITECTURE
+
+Security layers:
+
+Browser
+ ↓
+HTTPS
+ ↓
+Authentication
+ ↓
+Authorization
+ ↓
+Validation
+ ↓
+Business Rules
+ ↓
+Database
+
+Security requirements:
+
+- Password hashing
+- Secure sessions/tokens
+- Authorization
+- Rate limiting
+- HTTPS
+- Secure headers
+- Audit
+- Least privilege
+- Secret management
+- Secure uploads
+- Session expiration
+- Database access control
+
+---
+
+# 46. FILE UPLOAD SECURITY
+
+For attachments:
+
+1. Authenticate
+2. Authorize
+3. Validate file type
+4. Validate file size
+5. Generate safe storage identifier
+6. Scan where required
+7. Store outside public executable paths
+8. Record metadata
+9. Audit access
+
+Never trust original filenames.
+
+---
+
+# 47. TESTING TECHNOLOGIES
+
+Frontend:
+
+Vitest
+React Testing Library
+
+Backend:
+
+xUnit
+
+E2E:
+
+Playwright
+
+API:
+
+Postman / Newman or automated API tests
+
+Performance:
+
+k6 or equivalent
+
+Security:
+
+OWASP-oriented testing
+
+---
+
+# 48. TESTING LEVELS
+
+## Unit Testing
+
+Test:
+
+- Business functions
+- Utility functions
+- Validation
+- Domain rules
+
+## Component Testing
+
+Test:
+
+- Forms
+- Tables
+- Dialogs
+- Buttons
+- Loading states
+- Error states
+
+## Integration Testing
+
+Test:
+
+- API
+- Database
+- Services
+- Authentication
+- Transactions
+
+## E2E Testing
+
+Test complete user journeys.
+
+---
+
+# 49. CRITICAL E2E TEST
+
+Receptionist Login
+ ↓
+Search/Register Patient
+ ↓
+Create Appointment
+ ↓
+Check-In
+ ↓
+Doctor Opens Patient
+ ↓
+Create Encounter
+ ↓
+Vitals
+ ↓
+Diagnosis
+ ↓
+Treatment
+ ↓
+Lab / Prescription
+ ↓
+Result / Dispensing
+ ↓
+Invoice
+ ↓
+Payment
+ ↓
+Discharge
+ ↓
+Report
+ ↓
+Audit Verification
+
+---
+
+# 50. PERFORMANCE
+
+Recommended principles:
+
+- Pagination
+- Server-side filtering
+- Indexes
+- Avoid N+1 queries
+- Efficient EF Core queries
+- Lazy-load frontend modules
+- Cache stable reference data
+- Background jobs for heavy reports
+
+Initial development targets should be treated as engineering targets, not absolute guarantees.
+
+---
+
+# 51. DEVOPS TOOLS
+
+## Git
+
+Version control.
+
+## GitHub
+
+Repository, issues, pull requests, actions.
+
+## Docker
+
+Consistent environments.
+
+## Docker Compose
+
+Local multi-service environment.
+
+## Nginx
+
+Reverse proxy and frontend serving.
+
+## GitHub Actions
+
+CI/CD automation.
+
+---
+
+# 52. ENVIRONMENTS
+
+Development:
+
+Local development.
+
+QA:
+
+Automated/manual testing.
+
+Staging:
+
+Production-like validation.
+
+Production:
+
+Live environment.
+
+Never use production credentials in local configuration.
+
+---
+
+# 53. ENVIRONMENT VARIABLES
+
+Example:
+
+POSTGRES_DB
+POSTGRES_USER
+POSTGRES_PASSWORD
+DATABASE_URL
+API_BASE_URL
+FRONTEND_URL
+JWT_SECRET or session configuration
+SIGNALR_URL
+EMAIL_PROVIDER
+SMS_PROVIDER
+FILE_STORAGE
+LOG_LEVEL
+
+Real secrets must never be committed to Git.
+
+---
+
+# 54. DOCKER SERVICES
+
+Recommended:
+
+frontend
+api
+postgres
+nginx
+
+Optional:
+
+redis
+background worker
+monitoring
+
+Do not add infrastructure unless it solves an actual requirement.
+
+---
+
+# 55. CI PIPELINE
+
+Git Push
+ ↓
+Checkout
+ ↓
+Install
+ ↓
+Lint
+ ↓
+Build
+ ↓
+Unit Tests
+ ↓
+Integration Tests
+ ↓
+Security Checks
+ ↓
+Docker Build
+ ↓
+Artifact
+
+---
+
+# 56. CD PIPELINE
+
+Artifact
+ ↓
+Staging
+ ↓
+Smoke Tests
+ ↓
+UAT
+ ↓
+Approval
+ ↓
+Production
+ ↓
+Health Check
+ ↓
+Monitoring
+
+Rollback must be possible.
+
+---
+
+# 57. BACKUP
+
+Database backups should be automated.
+
+Backup process:
+
+PostgreSQL
+ ↓
+Backup
+ ↓
+Secure Storage
+ ↓
+Retention
+ ↓
+Monitoring
+ ↓
+Restore Testing
+
+A backup is not considered reliable until restoration has been tested.
+
+---
+
+# 58. DEVELOPMENT ORDER
+
+Phase 1:
+Project setup + Figma design system
+
+Phase 2:
+Database foundation
+
+Phase 3:
+Authentication + RBAC
+
+Phase 4:
+Hospital configuration
+
+Phase 5:
+Patient Management
+
+Phase 6:
+Appointments
+
+Phase 7:
+OPD + EMR
+
+Phase 8:
+Nursing
+
+Phase 9:
+IPD
+
+Phase 10:
+Emergency
+
+Phase 11:
+ICU
+
+Phase 12:
+Surgery
+
+Phase 13:
+Laboratory
+
+Phase 14:
+Radiology
+
+Phase 15:
+Pharmacy
+
+Phase 16:
+Inventory
+
+Phase 17:
+Billing + Payments
+
+Phase 18:
+Insurance
+
+Phase 19:
+HR + Attendance
+
+Phase 20:
+Notifications + SignalR
+
+Phase 21:
+Reports + Audit
+
+Phase 22:
+Testing + Hardening
+
+Phase 23:
+Docker + Staging
+
+Phase 24:
+UAT
+
+Phase 25:
+Production
+
+---
+
+# 59. VERTICAL-SLICE DEVELOPMENT
+
+Every feature should be completed through:
+
+Requirement
+ ↓
+Flow
+ ↓
+Figma
+ ↓
+Database
+ ↓
+API
+ ↓
+Backend
+ ↓
+Frontend
+ ↓
+Validation
+ ↓
+Permissions
+ ↓
+Audit
+ ↓
+Real-Time
+ ↓
+Tests
+ ↓
+Review
+ ↓
+Staging
+ ↓
+UAT
+ ↓
+Production
+
+Example:
+
+Patient Registration is not complete merely because the registration page exists.
+
+It is complete when:
+
+- Form exists
+- API exists
+- Database exists
+- MRN is generated
+- Duplicate detection works
+- Permissions work
+- Validation works
+- Audit works
+- Error states work
+- Tests pass
+- Workflow works end-to-end
+
+---
+
+# 60. GIT WORKFLOW
+
+main
+    production
+
+develop
+    integration
+
+feature/*
+    new feature
+
+fix/*
+    bug fix
+
+release/*
+    release preparation
+
+Typical workflow:
+
+Create branch
+ ↓
+Develop
+ ↓
+Test
+ ↓
+Commit
+ ↓
+Pull Request
+ ↓
+Code Review
+ ↓
+CI
+ ↓
+Merge
+
+---
+
+# 61. COMMIT STYLE
+
+Recommended:
+
+feat: add patient registration
+feat: add appointment scheduling
+fix: correct payment validation
+fix: prevent duplicate patient creation
+refactor: simplify appointment service
+test: add patient registration e2e
+docs: update API documentation
+chore: update dependencies
+
+---
+
+# 62. DOCUMENTATION UPDATE RULE
+
+Whenever behavior changes:
+
+1. Update SRS if requirement changes.
+2. Update flow.
+3. Update Figma.
+4. Update database documentation.
+5. Update API documentation.
+6. Update implementation.
+7. Update tests.
+8. Update changelog.
+
+Documentation must remain synchronized with software.
+
+---
+
+# 63. DEFINITION OF DONE
+
+A feature is DONE only when:
+
+[ ] Requirement understood
+[ ] Flow documented
+[ ] Figma designed
+[ ] Database implemented
+[ ] API implemented
+[ ] Backend implemented
+[ ] Frontend implemented
+[ ] Validation implemented
+[ ] Authorization implemented
+[ ] Error states implemented
+[ ] Audit implemented where required
+[ ] Real-time implemented where required
+[ ] Unit tests pass
+[ ] Integration tests pass
+[ ] E2E tests pass where applicable
+[ ] Responsive behavior verified
+[ ] Documentation updated
+[ ] Code reviewed
+[ ] Staging verified
+[ ] UAT accepted
+
+---
+
+# 64. COMPLETE FOLDER STRUCTURE
+
+curasphere/
+
+├── README.rm
+
+├── docs/
+│   ├── 00-project/
+│   ├── 01-requirements/
+│   │   └── SRS/
+│   ├── 02-product/
+│   ├── 03-architecture/
+│   ├── 04-flows/
+│   ├── 05-database/
+│   ├── 06-api/
+│   ├── 07-ui-ux/
+│   ├── 08-security/
+│   ├── 09-testing/
+│   ├── 10-deployment/
+│   ├── 11-user-manual/
+│   ├── 12-admin-manual/
+│   ├── 13-decisions/
+│   └── 14-changelog/
+
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   ├── layout/
+│   │   │   ├── forms/
+│   │   │   └── data-display/
+│   │   ├── features/
+│   │   ├── hooks/
+│   │   ├── lib/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── stores/
+│   │   └── types/
+│   └── tests/
+
+├── backend/
+│   ├── CuraSphere.Api/
+│   ├── CuraSphere.Application/
+│   ├── CuraSphere.Domain/
+│   ├── CuraSphere.Infrastructure/
+│   └── tests/
+
+├── database/
+│   ├── migrations/
+│   ├── seeds/
+│   ├── scripts/
+│   ├── erd/
+│   └── reference-data/
+
+├── docker/
+│   ├── nginx/
+│   └── postgres/
+
+├── scripts/
+
+├── config/
+
+└── .github/
+    └── workflows/
+
+---
+
+# 65. DOCUMENT DIRECTORY EXPLANATION
+
+docs/00-project
+
+Project overview, goals, constraints, roadmap and checklists.
+
+docs/01-requirements/SRS
+
+Approved requirements.
+
+docs/02-product
+
+Product vision, product requirements, scope and roadmap.
+
+docs/03-architecture
+
+System architecture and architectural decisions.
+
+docs/04-flows
+
+All system, module, user, exception, technical and DevOps flows.
+
+docs/05-database
+
+ERD, schema, tables, relationships and migration documentation.
+
+docs/06-api
+
+Endpoint and contract documentation.
+
+docs/07-ui-ux
+
+Figma, design system and UI behavior.
+
+docs/08-security
+
+Security architecture and policies.
+
+docs/09-testing
+
+Test plans and test cases.
+
+docs/10-deployment
+
+Infrastructure and deployment.
+
+docs/11-user-manual
+
+End-user documentation.
+
+docs/12-admin-manual
+
+Administrator documentation.
+
+docs/13-decisions
+
+Architecture Decision Records.
+
+docs/14-changelog
+
+Project change history.
+
+---
+
+# 66. COMPLETE FLOW DIRECTORY
+
+The flow library should eventually include:
+
+00-master
+01-authentication
+02-users-rbac
+03-patients
+04-appointments
+05-opd
+06-emr
+07-nursing
+08-ipd
+09-emergency
+10-icu
+11-surgery
+12-laboratory
+13-radiology
+14-pharmacy
+15-inventory
+16-billing
+17-insurance
+18-hr
+19-reports
+20-notifications
+21-audit
+22-administration
+23-error-exception
+24-security
+25-system
+26-testing
+27-devops
+
+Each directory contains detailed process flows.
+
+---
+
+# 67. IMPORTANT FUTURE FEATURES
+
+These should be treated as future expansion unless specifically approved for the current release:
+
+- Patient mobile application
+- Telemedicine
+- AI-assisted clinical decision support
+- Predictive analytics
+- Wearable integrations
+- Advanced BI
+- Multi-hospital management
+- Advanced PACS/DICOM
+- External health integrations
+- Cloud-native scaling
+- Microservices migration
+
+Do not build future complexity before the core hospital workflow is stable.
+
+---
+
+# 68. WHAT NOT TO DO
+
+Do not:
+
+- Put business rules only in React.
+- Connect React directly to PostgreSQL.
+- Store passwords in plaintext.
+- Commit secrets.
+- Build every module simultaneously.
+- Create a huge generic dashboard.
+- Duplicate server state in many Zustand stores.
+- Delete historical financial records.
+- Silently overwrite finalized clinical records.
+- Publish real-time events before successful persistence.
+- Skip permission checks.
+- Skip error states.
+- Skip testing.
+- Skip backups.
+- Treat documentation as optional.
+
+---
+
+# 69. MASTER ENGINEERING RULES
+
+RULE 1:
+Database is the source of truth.
+
+RULE 2:
+Backend enforces business rules.
+
+RULE 3:
+Frontend never directly accesses the database.
+
+RULE 4:
+Authorization happens on the backend.
+
+RULE 5:
+Sensitive operations are audited.
+
+RULE 6:
+Critical operations use transactions.
+
+RULE 7:
+Real-time events occur after successful persistence.
+
+RULE 8:
+Clinical and financial history must be protected.
+
+RULE 9:
+Secrets never go into Git.
+
+RULE 10:
+Every feature is built as a vertical slice.
+
+RULE 11:
+Every feature must be tested.
+
+RULE 12:
+Documentation must stay synchronized with code.
+
+---
+
+# 70. FINAL BUILD MODEL
+
+The complete CuraSphere engineering model is:
+
+SRS
+ ↓
+PRODUCT REQUIREMENTS
+ ↓
+SYSTEM ARCHITECTURE
+ ↓
+USER FLOWS
+ ↓
+FIGMA DESIGN
+ ↓
+DATABASE DESIGN
+ ↓
+API DESIGN
+ ↓
+BACKEND
+ ↓
+FRONTEND
+ ↓
+REAL-TIME
+ ↓
+SECURITY
+ ↓
+TESTING
+ ↓
+CI/CD
+ ↓
+STAGING
+ ↓
+UAT
+ ↓
+PRODUCTION
+ ↓
+MONITORING
+ ↓
+MAINTENANCE
+
+---
+
+# 71. FINAL PATIENT-CENTERED MODEL
+
+CuraSphere should always be understood through the patient journey:
+
+PATIENT
+ ↓
+REGISTRATION
+ ↓
+APPOINTMENT / WALK-IN
+ ↓
+CHECK-IN
+ ↓
+TRIAGE
+ ↓
+CLINICAL ENCOUNTER
+ ↓
+DIAGNOSIS
+ ↓
+TREATMENT
+ ↓
+LAB / RADIOLOGY / PHARMACY / SURGERY
+ ↓
+BILLING / INSURANCE
+ ↓
+PAYMENT
+ ↓
+DISCHARGE
+ ↓
+FOLLOW-UP
+ ↓
+REPORTING
+ ↓
+AUDIT
+
+This is the central workflow around which the modules are connected.
+
+---
+
+# 72. FINAL TECHNICAL MODEL
+
+React
++
+TypeScript
++
+Vite
++
+Tailwind CSS
++
+shadcn/ui
++
+Zustand
++
+TanStack Query
++
+React Hook Form
++
+Zod
++
+ASP.NET Core
++
+C#
++
+Entity Framework Core
++
+ASP.NET Identity
++
+PostgreSQL
++
+SignalR
++
+Serilog
++
+Swagger/OpenAPI
++
+Docker
++
+Nginx
++
+GitHub
++
+GitHub Actions
++
+Figma
++
+Figma AI
++
+Vitest
++
+React Testing Library
++
+xUnit
++
+Playwright
++
+Postman
++
+k6
+
+Together these tools form the planned CuraSphere development ecosystem.
+
+---
+
+# 73. FINAL CHECKLIST BEFORE DEVELOPMENT
+
+[ ] SRS approved
+[ ] Product scope approved
+[ ] User roles approved
+[ ] Permissions defined
+[ ] Master architecture approved
+[ ] Flow library created
+[ ] Figma project created
+[ ] Design system created
+[ ] Database ERD approved
+[ ] API conventions approved
+[ ] Security model approved
+[ ] Repository created
+[ ] Environment strategy defined
+[ ] Docker foundation prepared
+[ ] CI foundation prepared
+[ ] Backup strategy documented
+[ ] Testing strategy documented
+
+Then:
+
+START IMPLEMENTATION.
+
+---
+
+# 74. FINAL CHECKLIST BEFORE PRODUCTION
+
+[ ] All critical requirements implemented
+[ ] All critical flows tested
+[ ] RBAC verified
+[ ] Security tests completed
+[ ] Clinical workflows verified
+[ ] Financial workflows verified
+[ ] Inventory workflows verified
+[ ] Audit verified
+[ ] Reports verified
+[ ] Database migrations verified
+[ ] Backup verified
+[ ] Restore verified
+[ ] Monitoring configured
+[ ] CI/CD verified
+[ ] Staging verified
+[ ] UAT approved
+[ ] Documentation completed
+[ ] User manual completed
+[ ] Admin manual completed
+[ ] Rollback plan ready
+[ ] Production approval obtained
+
+---
+
+# 75. FINAL DEFINITION OF CURASPHERE
+
+CuraSphere is complete when a hospital can use the system to manage the complete authorized patient journey and the supporting operational processes in a secure, auditable and maintainable environment.
+
+The software is not considered complete because all pages exist.
+
+It is complete when:
+
+Requirements
++
+Flows
++
+UI
++
+Database
++
+API
++
+Backend
++
+Frontend
++
+Security
++
+Real-Time
++
+Testing
++
+Deployment
++
+Documentation
+
+all work together as one coherent hospital information system.
+
+END OF MASTER README
+
+
+docs/04-flows/
+│
+├── 00-master/
+│   ├── 00-system-overview.md
+│   ├── 01-master-patient-journey.md
+│   ├── 02-master-data-flow.md
+│   ├── 03-master-api-flow.md
+│   ├── 04-master-auth-flow.md
+│   └── 05-master-real-time-flow.md
+│
+├── 01-authentication/
+│   ├── login.md
+│   ├── logout.md
+│   ├── forgot-password.md
+│   ├── reset-password.md
+│   ├── session.md
+│   ├── refresh-token.md
+│   ├── account-lockout.md
+│   └── unauthorized-access.md
+│
+├── 02-users-rbac/
+│   ├── create-user.md
+│   ├── update-user.md
+│   ├── disable-user.md
+│   ├── role-management.md
+│   ├── permission-management.md
+│   └── role-permission-resolution.md
+│
+├── 03-patients/
+│   ├── patient-registration.md
+│   ├── patient-search.md
+│   ├── duplicate-patient.md
+│   ├── patient-profile.md
+│   ├── patient-update.md
+│   ├── patient-documents.md
+│   ├── patient-allergies.md
+│   ├── patient-timeline.md
+│   └── patient-deactivation.md
+│
+├── 04-appointments/
+│   ├── create-appointment.md
+│   ├── availability.md
+│   ├── reschedule.md
+│   ├── cancellation.md
+│   ├── check-in.md
+│   ├── no-show.md
+│   ├── appointment-queue.md
+│   └── appointment-notification.md
+│
+├── 05-opd/
+│   ├── opd-registration.md
+│   ├── triage.md
+│   ├── opd-queue.md
+│   ├── doctor-consultation.md
+│   ├── diagnosis.md
+│   ├── treatment-plan.md
+│   ├── follow-up.md
+│   └── opd-completion.md
+│
+├── 06-emr/
+│   ├── create-encounter.md
+│   ├── vitals.md
+│   ├── medical-history.md
+│   ├── examination.md
+│   ├── diagnosis.md
+│   ├── clinical-notes.md
+│   ├── treatment-plan.md
+│   ├── prescription.md
+│   ├── encounter-finalization.md
+│   └── clinical-amendment.md
+│
+├── 07-nursing/
+│   ├── nursing-queue.md
+│   ├── patient-assignment.md
+│   ├── vitals-recording.md
+│   ├── nursing-notes.md
+│   ├── care-tasks.md
+│   ├── medication-administration.md
+│   └── shift-handover.md
+│
+├── 08-ipd/
+│   ├── admission-request.md
+│   ├── admission.md
+│   ├── ward-assignment.md
+│   ├── room-assignment.md
+│   ├── bed-assignment.md
+│   ├── inpatient-care.md
+│   ├── doctor-rounds.md
+│   ├── daily-charges.md
+│   ├── transfer.md
+│   └── discharge.md
+│
+├── 09-emergency/
+│   ├── emergency-arrival.md
+│   ├── rapid-registration.md
+│   ├── emergency-triage.md
+│   ├── emergency-assessment.md
+│   ├── emergency-treatment.md
+│   ├── emergency-orders.md
+│   ├── emergency-disposition.md
+│   └── emergency-admission.md
+│
+├── 10-icu/
+│   ├── icu-admission.md
+│   ├── icu-bed-assignment.md
+│   ├── continuous-monitoring.md
+│   ├── icu-vitals.md
+│   ├── icu-nursing.md
+│   ├── icu-doctor-round.md
+│   ├── icu-orders.md
+│   ├── icu-transfer.md
+│   └── icu-discharge.md
+│
+├── 11-surgery/
+│   ├── surgery-request.md
+│   ├── surgery-approval.md
+│   ├── ot-scheduling.md
+│   ├── pre-op.md
+│   ├── surgical-procedure.md
+│   ├── anesthesia.md
+│   ├── post-op.md
+│   ├── recovery.md
+│   └── surgery-disposition.md
+│
+├── 12-laboratory/
+│   ├── lab-order.md
+│   ├── lab-queue.md
+│   ├── sample-collection.md
+│   ├── sample-receiving.md
+│   ├── sample-processing.md
+│   ├── result-entry.md
+│   ├── result-verification.md
+│   ├── result-publication.md
+│   └── critical-result-notification.md
+│
+├── 13-radiology/
+│   ├── radiology-order.md
+│   ├── scheduling.md
+│   ├── study-processing.md
+│   ├── report-writing.md
+│   ├── report-verification.md
+│   └── result-publication.md
+│
+├── 14-pharmacy/
+│   ├── prescription-queue.md
+│   ├── prescription-validation.md
+│   ├── medication-availability.md
+│   ├── dispensing.md
+│   ├── partial-dispensing.md
+│   ├── dispensing-completion.md
+│   └── pharmacy-notification.md
+│
+├── 15-inventory/
+│   ├── item-management.md
+│   ├── stock-receiving.md
+│   ├── stock-issue.md
+│   ├── stock-return.md
+│   ├── stock-adjustment.md
+│   ├── batch-management.md
+│   ├── expiry-management.md
+│   ├── low-stock-alert.md
+│   └── equipment-management.md
+│
+├── 16-billing/
+│   ├── charge-capture.md
+│   ├── invoice-generation.md
+│   ├── invoice-update.md
+│   ├── discount.md
+│   ├── tax.md
+│   ├── payment.md
+│   ├── partial-payment.md
+│   ├── refund.md
+│   ├── receipt.md
+│   └── billing-completion.md
+│
+├── 17-insurance/
+│   ├── policy-registration.md
+│   ├── eligibility.md
+│   ├── claim-creation.md
+│   ├── claim-processing.md
+│   ├── approval.md
+│   ├── rejection.md
+│   └── patient-responsibility.md
+│
+├── 18-hr/
+│   ├── employee-registration.md
+│   ├── employee-update.md
+│   ├── department-assignment.md
+│   ├── attendance.md
+│   ├── shift-management.md
+│   └── employee-deactivation.md
+│
+├── 19-reports/
+│   ├── dashboard-report.md
+│   ├── patient-report.md
+│   ├── appointment-report.md
+│   ├── clinical-report.md
+│   ├── laboratory-report.md
+│   ├── pharmacy-report.md
+│   ├── inventory-report.md
+│   ├── financial-report.md
+│   ├── hr-report.md
+│   └── audit-report.md
+│
+├── 20-notifications/
+│   ├── in-app-notification.md
+│   ├── appointment-notification.md
+│   ├── lab-notification.md
+│   ├── pharmacy-notification.md
+│   ├── billing-notification.md
+│   └── signalr-event-flow.md
+│
+├── 21-audit/
+│   ├── audit-generation.md
+│   ├── patient-access-audit.md
+│   ├── clinical-audit.md
+│   ├── financial-audit.md
+│   ├── security-audit.md
+│   └── audit-report.md
+│
+├── 22-administration/
+│   ├── hospital-settings.md
+│   ├── department-management.md
+│   ├── service-management.md
+│   ├── configuration.md
+│   ├── user-management.md
+│   └── system-settings.md
+│
+├── 23-error-exception/
+│   ├── validation-error.md
+│   ├── authentication-error.md
+│   ├── authorization-error.md
+│   ├── duplicate-request.md
+│   ├── concurrency-conflict.md
+│   ├── database-error.md
+│   ├── payment-failure.md
+│   ├── lab-failure.md
+│   └── network-failure.md
+│
+├── 24-security/
+│   ├── authorization-flow.md
+│   ├── sensitive-data-access.md
+│   ├── rate-limit.md
+│   ├── file-upload-security.md
+│   ├── session-expiry.md
+│   └── security-incident.md
+│
+├── 25-system/
+│   ├── frontend-api-flow.md
+│   ├── api-database-flow.md
+│   ├── transaction-flow.md
+│   ├── cache-flow.md
+│   ├── real-time-flow.md
+│   ├── background-job-flow.md
+│   └── file-storage-flow.md
+│
+├── 26-testing/
+│   ├── unit-test-flow.md
+│   ├── integration-test-flow.md
+│   ├── e2e-flow.md
+│   ├── security-test-flow.md
+│   ├── performance-test-flow.md
+│   └── uat-flow.md
+│
+└── 27-devops/
+    ├── git-flow.md
+    ├── ci-flow.md
+    ├── cd-flow.md
+    ├── staging-flow.md
+    ├── production-flow.md
+    ├── backup-flow.md
+    ├── restore-flow.md
+    └── rollback-flow.md

@@ -1,0 +1,6120 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 9 - User Interface (UI/UX) Design Specification
+Part 9.1 - UI/UX Design Principles & Design Philosophy
+
+9.1 User Interface (UI/UX) Design Specification
+
+9.1.1 Introduction
+The User Interface (UI) and User Experience (UX) Design Specification defines the visual, interactive, and usability standards for the CuraSphere Hospital Management System. It ensures that every screen, workflow, and interaction provides a consistent, intuitive, efficient, and accessible experience for all users.
+Since CuraSphere is used by healthcare professionals working in high-pressure environments, the interface is designed to minimize cognitive load, reduce user errors, improve workflow efficiency, and support rapid decision-making while maintaining compliance with healthcare usability and accessibility standards.
+The UI/UX specification applies to all modules of the system, including:
+Authentication
+Dashboard
+Patient Registration
+Appointment Management
+OPD
+IPD
+Emergency
+Electronic Medical Records (EMR)
+Laboratory
+Radiology
+Pharmacy
+Billing
+Inventory
+Human Resources
+Reports
+Administration
+Patient Portal
+
+9.1.2 Objectives
+The UI/UX design shall:
+Provide a consistent user experience.
+Reduce the number of clicks required for common tasks.
+Support efficient clinical workflows.
+Improve user productivity.
+Minimize data entry errors.
+Ensure accessibility for all users.
+Maintain visual consistency across modules.
+Support responsive layouts for multiple devices.
+Enhance user satisfaction.
+Follow modern UI/UX best practices.
+
+9.1.3 Design Philosophy
+The CuraSphere interface is based on the following principles:
+Simplicity
+Interfaces shall present only the information necessary for the current task.
+
+Consistency
+Buttons, colors, icons, typography, layouts, and navigation shall behave consistently throughout the application.
+
+Efficiency
+Frequently used functions shall require minimal navigation and user interaction.
+
+Clarity
+Information shall be presented using clear labels, readable typography, meaningful icons, and logical grouping.
+
+Safety
+Interfaces shall help prevent clinical errors through validation, confirmations for destructive actions, and prominent display of critical patient information (such as allergies).
+
+Accessibility
+The application shall comply with recognized accessibility standards to support users with diverse needs.
+
+Scalability
+The design system shall support future modules and features without requiring major redesign.
+
+9.1.4 UI Design Goals
+Goal
+Description
+Fast Navigation
+Users reach tasks with minimal clicks
+Clean Interface
+Avoid visual clutter
+Error Prevention
+Prevent invalid actions through validation
+Mobile Friendly
+Responsive layouts
+Professional Appearance
+Modern healthcare-oriented interface
+High Readability
+Clear typography and spacing
+Consistency
+Uniform components and behavior
+
+9.1.5 User-Centered Design Principles
+The UI shall be developed around user needs rather than system complexity.
+Primary User Groups
+User Role
+Primary Tasks
+Administrator
+System management
+Receptionist
+Patient registration and appointments
+Doctor
+Clinical documentation and treatment
+Nurse
+Patient care and monitoring
+Laboratory Staff
+Sample processing and reporting
+Radiologist
+Imaging review and reporting
+Pharmacist
+Medication dispensing
+Cashier
+Billing and payments
+HR Officer
+Employee management
+Inventory Officer
+Stock management
+Patient
+Self-service portal
+Each user interface shall expose only the features relevant to that role.
+
+9.1.6 UI Architecture
+                    CuraSphere UI
+
+                         │
+      ┌──────────────────┼──────────────────┐
+      ▼                  ▼                  ▼
+ Authentication      Dashboard         Module Pages
+                                             │
+     ┌───────────────────────────────────────┼────────────────────────────────────┐
+     ▼               ▼             ▼            ▼           ▼           ▼
+ Patient       Appointment      EMR      Laboratory    Billing    Inventory
+
+9.1.7 Information Hierarchy
+Information shall be displayed according to importance.
+Level 1
+Critical Information
+Examples:
+Patient allergies
+Emergency alerts
+Critical laboratory values
+Outstanding balance warnings
+
+Level 2
+Primary Task Information
+Examples:
+Patient demographics
+Appointment details
+Diagnosis
+Prescriptions
+
+Level 3
+Supporting Information
+Examples:
+Notes
+Historical records
+Attachments
+Audit details
+
+Level 4
+Administrative Information
+Examples:
+Internal IDs
+Metadata
+System timestamps
+
+9.1.8 Screen Design Principles
+Every screen shall maintain a consistent structure.
++-----------------------------------------------------------+
+| Top Navigation Bar                                        |
++-----------------------------------------------------------+
+| Sidebar | Page Header                                     |
+|         +-------------------------------------------------+
+|         | Toolbar / Filters / Search                      |
+|         +-------------------------------------------------+
+|         | Main Content Area                               |
+|         |                                                 |
+|         | Tables / Cards / Forms / Charts                |
+|         |                                                 |
+|         +-------------------------------------------------+
+|         | Footer / Pagination                             |
++-----------------------------------------------------------+
+
+9.1.9 Navigation Principles
+Navigation shall be:
+Predictable
+Consistent
+Role-based
+Hierarchical
+Keyboard accessible
+Primary navigation shall include:
+Dashboard
+Patients
+Appointments
+Clinical Services
+Billing
+Pharmacy
+Inventory
+Reports
+Administration
+
+9.1.10 Interaction Principles
+The interface shall provide immediate feedback for all user actions.
+Examples include:
+Loading indicators
+Success messages
+Error notifications
+Confirmation dialogs
+Progress indicators
+Form validation messages
+
+9.1.11 Error Prevention
+The UI shall minimize user errors through:
+Required field indicators.
+Real-time validation.
+Date and time validation.
+Duplicate record detection.
+Confirmation before deletion.
+Clear error messages.
+Intelligent default values.
+
+9.1.12 Feedback Principles
+Every user action shall produce appropriate feedback.
+Action
+Feedback
+Save
+Success notification
+Delete
+Confirmation dialog
+Update
+Success message
+Login Failure
+Error notification
+Long Processing
+Loading spinner
+Data Export
+Progress indicator
+
+9.1.13 Visual Consistency
+The interface shall use standardized:
+Buttons
+Forms
+Tables
+Cards
+Icons
+Dialogs
+Badges
+Alerts
+Typography
+Color palette
+Navigation menus
+These standards shall be documented in the Design System (Section 9.2).
+
+9.1.14 Clinical Safety Considerations
+Healthcare interfaces shall prominently display critical clinical information.
+Examples include:
+Allergy alerts
+Drug interaction warnings
+Critical laboratory values
+High-risk medications
+Isolation precautions
+Code status
+Outstanding clinical tasks
+These elements shall remain visible during relevant workflows.
+
+9.1.15 Accessibility Principles
+The interface shall support accessibility by providing:
+Keyboard navigation
+Screen reader compatibility
+Sufficient color contrast
+Visible focus indicators
+Alternative text for icons and images
+Accessible form labels
+Clear validation messages
+The application should target conformance with WCAG 2.1 Level AA.
+
+9.1.16 Responsive Design Principles
+The UI shall adapt to different screen sizes.
+Device
+Minimum Width
+Mobile
+320 px
+Tablet
+768 px
+Laptop
+1024 px
+Desktop
+1280 px
+Large Monitor
+1920 px and above
+Responsive layouts shall preserve functionality while optimizing content presentation for each form factor.
+
+9.1.17 Security-Oriented UI Principles
+The user interface shall support security by:
+Masking passwords.
+Automatically ending inactive sessions according to organizational policy.
+Confirming sensitive operations.
+Hiding unauthorized features.
+Displaying permission-based menus.
+Preventing browser autofill where inappropriate.
+Clearly identifying authenticated users and active roles.
+
+9.1.18 Performance Guidelines
+The UI should provide a responsive experience.
+Operation
+Target Response Time
+Page Navigation
+≤ 2 seconds
+Search Results
+≤ 2 seconds
+Dashboard Load
+≤ 3 seconds
+Record Save
+≤ 2 seconds
+Login
+≤ 3 seconds
+Report Generation
+≤ 10 seconds (depending on report complexity)
+
+9.1.19 UI Design Principles Summary
+Principle
+Implementation
+Simplicity
+Clean layouts with focused tasks
+Consistency
+Shared design system and reusable components
+Accessibility
+WCAG 2.1 Level AA target
+Efficiency
+Reduced clicks and optimized workflows
+Security
+Role-based UI with secure interactions
+Scalability
+Modular component architecture
+Responsiveness
+Mobile-first responsive layouts
+Reliability
+Clear feedback and robust validation
+
+9.1.20 Acceptance Criteria
+The UI/UX Design Principles shall be considered complete when:
+User-centered design principles are documented.
+Navigation standards are defined.
+Screen layout standards are established.
+Interaction and feedback guidelines are specified.
+Accessibility requirements are included.
+Clinical safety considerations are documented.
+Responsive design principles are defined.
+Security-oriented UI requirements are addressed.
+Performance expectations for the user interface are documented.
+9.2 Enterprise Design System
+
+9.2.1 Introduction
+The CuraSphere Design System establishes a unified visual language and reusable component library for the Hospital Management System. It defines standardized colors, typography, spacing, icons, layout rules, and UI components to ensure consistency, accessibility, scalability, and maintainability across all modules.
+The design system is intended for implementation using:
+Frontend Framework: React.js
+Styling: Tailwind CSS
+UI Components: shadcn/ui
+Icons: Lucide React
+Charts: Recharts
+Fonts: Inter (Primary), JetBrains Mono (Monospace)
+This design system provides a single source of truth for designers, frontend developers, and QA teams.
+
+9.2.2 Design Goals
+The design system shall:
+Ensure visual consistency across the application.
+Reduce UI development time through reusable components.
+Support accessibility and responsive design.
+Simplify maintenance and future enhancements.
+Improve usability for healthcare professionals.
+Maintain a professional and trustworthy healthcare appearance.
+
+9.2.3 Brand Identity
+Element
+Specification
+Product Name
+CuraSphere
+Industry
+Healthcare / Hospital Management
+Design Style
+Modern, Minimal, Professional
+Theme
+Clean Clinical Interface
+Visual Tone
+Calm, Trustworthy, Efficient
+Primary Shape
+Rounded Corners (8px–12px)
+Icon Style
+Outline Icons
+Layout
+Spacious, Grid-Based
+
+9.2.4 Color Palette
+Primary Colors
+Token
+Hex Code
+Usage
+Primary 50
+#EFF6FF
+Light backgrounds
+Primary 100
+#DBEAFE
+Hover backgrounds
+Primary 200
+#BFDBFE
+Borders
+Primary 300
+#93C5FD
+Secondary accents
+Primary 400
+#60A5FA
+Interactive elements
+Primary 500
+#3B82F6
+Primary buttons
+Primary 600
+#2563EB
+Active states
+Primary 700
+#1D4ED8
+Links
+Primary 800
+#1E40AF
+Navigation
+Primary 900
+#1E3A8A
+Dark emphasis
+
+Neutral Colors
+Token
+Hex Code
+Usage
+Gray 50
+#F9FAFB
+Background
+Gray 100
+#F3F4F6
+Surface
+Gray 200
+#E5E7EB
+Border
+Gray 300
+#D1D5DB
+Divider
+Gray 400
+#9CA3AF
+Placeholder
+Gray 500
+#6B7280
+Secondary text
+Gray 600
+#4B5563
+Labels
+Gray 700
+#374151
+Headings
+Gray 800
+#1F2937
+Navigation
+Gray 900
+#111827
+Primary text
+
+Semantic Colors
+Type
+Color
+Purpose
+Success
+#22C55E
+Successful actions
+Warning
+#F59E0B
+Warnings
+Error
+#EF4444
+Errors
+Info
+#0EA5E9
+Information
+Critical
+#B91C1C
+Medical emergencies
+
+Clinical Status Colors
+Status
+Color
+Stable
+Green
+Critical
+Red
+Observation
+Orange
+Discharged
+Blue
+Pending
+Yellow
+Completed
+Emerald
+Cancelled
+Gray
+
+9.2.5 Typography System
+Primary Font
+Inter
+Used for:
+Navigation
+Forms
+Cards
+Tables
+Dialogs
+Dashboard
+
+Secondary Font
+JetBrains Mono
+Used for:
+IDs
+Invoice Numbers
+Medical Record Numbers (MRN)
+Logs
+Audit Records
+
+Typography Scale
+Style
+Size
+Weight
+Line Height
+Display
+48px
+700
+56px
+H1
+36px
+700
+44px
+H2
+30px
+600
+38px
+H3
+24px
+600
+32px
+H4
+20px
+600
+28px
+H5
+18px
+600
+26px
+H6
+16px
+600
+24px
+Body Large
+16px
+400
+24px
+Body
+14px
+400
+22px
+Small
+12px
+400
+18px
+Caption
+11px
+400
+16px
+
+9.2.6 Spacing System
+The design shall follow an 8-point spacing grid.
+Token
+Value
+XS
+4px
+SM
+8px
+MD
+16px
+LG
+24px
+XL
+32px
+2XL
+48px
+3XL
+64px
+
+9.2.7 Border Radius
+Token
+Value
+Small
+4px
+Medium
+8px
+Large
+12px
+Extra Large
+16px
+Full
+9999px
+
+9.2.8 Shadows
+Token
+Usage
+Shadow XS
+Input fields
+Shadow SM
+Cards
+Shadow MD
+Dropdowns
+Shadow LG
+Modals
+Shadow XL
+Floating dialogs
+
+9.2.9 Iconography
+Icon Library
+Lucide React
+Icon Size Standards
+Usage
+Size
+Small
+16px
+Medium
+20px
+Large
+24px
+Extra Large
+32px
+Icon Principles
+Outline style only
+Consistent stroke width
+Meaningful labels
+Accessible names
+Decorative icons hidden from screen readers where appropriate
+
+9.2.10 Grid System
+Device
+Columns
+Mobile
+4
+Tablet
+8
+Laptop
+12
+Desktop
+12
+Large Display
+12
+
+9.2.11 Layout Containers
+Container
+Max Width
+Small
+640px
+Medium
+768px
+Large
+1024px
+Extra Large
+1280px
+Full HD
+1536px
+
+9.2.12 Button Standards
+Button Types
+Type
+Usage
+Primary
+Main actions
+Secondary
+Alternative actions
+Outline
+Optional actions
+Ghost
+Toolbar actions
+Destructive
+Delete
+Success
+Confirm
+Warning
+Alerts
+
+Button Sizes
+Size
+Height
+Small
+32px
+Medium
+40px
+Large
+48px
+
+Button States
+Default
+Hover
+Focus
+Active
+Loading
+Disabled
+
+9.2.13 Form Controls
+Standard controls include:
+Text Field
+Text Area
+Password Field
+Search Field
+Email Field
+Number Field
+Date Picker
+Time Picker
+Date-Time Picker
+Checkbox
+Radio Button
+Toggle Switch
+Dropdown Select
+Multi Select
+Autocomplete
+File Upload
+Each control shall support:
+Label
+Placeholder
+Helper text
+Validation message
+Disabled state
+Read-only state
+Error state
+Success state
+
+9.2.14 Card Component
+Cards shall contain:
+Header
+Title
+Subtitle
+Body
+Footer
+Actions
+Common usage:
+Dashboard statistics
+Patient summary
+Appointment details
+Billing overview
+Laboratory results
+
+9.2.15 Table Standards
+Tables shall support:
+Sticky header
+Sorting
+Filtering
+Pagination
+Column resizing
+Column visibility
+Export
+Search
+Row selection
+Bulk actions
+Responsive scrolling
+
+9.2.16 Modal Standards
+Modal dialogs shall include:
+Title
+Description
+Close button
+Primary action
+Secondary action
+Keyboard accessibility
+Focus trapping
+Escape key support
+
+9.2.17 Alert Components
+Alert types include:
+Type
+Usage
+Success
+Completed action
+Info
+Informational message
+Warning
+Caution
+Error
+Validation/system error
+Critical
+Medical emergency
+
+9.2.18 Badge System
+Badge
+Color
+Active
+Green
+Inactive
+Gray
+Pending
+Yellow
+Completed
+Blue
+Cancelled
+Gray
+Critical
+Red
+Paid
+Emerald
+Unpaid
+Orange
+
+9.2.19 Toast Notifications
+Toast notifications shall be used for:
+Successful save
+Successful update
+Record deleted
+Login success
+Export completed
+Background task completed
+Each toast shall support:
+Auto-dismiss
+Manual close
+Progress indicator
+Success/Error icon
+
+9.2.20 Loading Components
+Loading indicators include:
+Spinner
+Skeleton Loader
+Progress Bar
+Circular Progress
+Table Placeholder
+Card Placeholder
+Loading indicators shall be displayed whenever data retrieval or processing exceeds approximately 300 milliseconds.
+
+9.2.21 Design Tokens
+Category
+Example Token
+Colors
+color.primary.500
+Typography
+font.heading.h2
+Spacing
+spacing.md
+Radius
+radius.lg
+Shadow
+shadow.md
+Border
+border.default
+Animation
+transition.fast
+
+9.2.22 Component States
+Every interactive component shall support:
+Default
+Hover
+Focus
+Active
+Disabled
+Loading
+Error
+Success
+Read-only
+State transitions should be visually distinct and keyboard accessible.
+
+9.2.23 Accessibility Requirements
+The design system shall:
+Meet WCAG 2.1 Level AA contrast requirements.
+Provide visible keyboard focus indicators.
+Support screen readers through semantic HTML and ARIA where appropriate.
+Avoid using color alone to communicate status.
+Ensure minimum touch target sizes for interactive controls.
+
+9.2.24 React + Tailwind CSS + shadcn/ui Implementation Standards
+The design system shall be implemented using reusable React components with Tailwind CSS utility classes and shadcn/ui primitives.
+Recommended component organization:
+src/
+├── components/
+│   ├── ui/
+│   │   ├── button
+│   │   ├── input
+│   │   ├── card
+│   │   ├── table
+│   │   ├── dialog
+│   │   ├── badge
+│   │   ├── alert
+│   │   ├── form
+│   │   ├── dropdown
+│   │   ├── toast
+│   │   └── tabs
+│   │
+│   ├── shared/
+│   ├── dashboard/
+│   ├── patient/
+│   ├── appointment/
+│   ├── laboratory/
+│   ├── pharmacy/
+│   ├── billing/
+│   └── inventory/
+All custom components should build upon shared design tokens to ensure consistency and simplify maintenance.
+
+9.2.25 Acceptance Criteria
+The Enterprise Design System shall be accepted when:
+Brand identity and visual language are defined.
+Color palette and typography standards are documented.
+Spacing, layout, and grid systems are specified.
+Standard UI components and their states are defined.
+Accessibility requirements are incorporated.
+Design tokens are established for implementation.
+React, Tailwind CSS, and shadcn/ui implementation guidelines are documented.
+The design system supports consistent, scalable, and maintainable UI development.
+9.3 Responsive Layout Standards & Application Layout Architecture
+
+9.3.1 Introduction
+The Responsive Layout Standards define how the CuraSphere Hospital Management System adapts to different screen sizes, devices, and orientations while maintaining usability, accessibility, and performance.
+The application shall provide a consistent experience across:
+Desktop Workstations
+Laptop Computers
+Tablets
+Mobile Phones
+Large Medical Displays
+The layout architecture is designed around reusable React layouts, allowing each user role to share a consistent application shell while displaying role-specific navigation and content.
+
+9.3.2 Objectives
+The responsive layout architecture shall:
+Provide consistent layouts across all modules.
+Optimize workflows for healthcare professionals.
+Support responsive behavior on all supported devices.
+Reduce visual clutter.
+Improve readability.
+Maximize screen utilization.
+Maintain accessibility.
+Support scalable frontend development.
+
+9.3.3 Responsive Design Strategy
+CuraSphere shall follow a Desktop-First design strategy because the primary users (doctors, nurses, receptionists, laboratory staff, pharmacists, and administrators) typically use desktop computers within hospital environments.
+Mobile and tablet layouts shall be fully supported for:
+Patient Portal
+Management approvals
+Quick clinical review
+Emergency notifications
+Telemedicine access
+On-call physicians
+
+9.3.4 Supported Devices
+Device
+Resolution
+Mobile Small
+320px–479px
+Mobile Large
+480px–767px
+Tablet
+768px–1023px
+Laptop
+1024px–1279px
+Desktop
+1280px–1919px
+Large Display
+1920px and above
+
+9.3.5 Tailwind CSS Breakpoints
+Breakpoint
+Width
+sm
+≥ 640px
+md
+≥ 768px
+lg
+≥ 1024px
+xl
+≥ 1280px
+2xl
+≥ 1536px
+These breakpoints shall be used consistently throughout the application.
+
+9.3.6 Overall Application Shell
+Every authenticated screen shall follow a common application shell.
++----------------------------------------------------------------------------------+
+|                              Top Navigation Bar                                  |
++----------------------------------------------------------------------------------+
+| Sidebar | Breadcrumb | Page Title | Action Buttons                              |
+|         +-----------------------------------------------------------------------+
+|         | Search / Filters / Quick Actions                                      |
+|         +-----------------------------------------------------------------------+
+|         |                                                                       |
+|         |                      Main Content Area                                |
+|         |                                                                       |
+|         |  Cards • Forms • Tables • Charts • Reports • Dialogs                 |
+|         |                                                                       |
+|         +-----------------------------------------------------------------------+
+|         | Pagination / Footer / Status Bar                                      |
++----------------------------------------------------------------------------------+
+
+9.3.7 Layout Components
+The application layout consists of the following reusable components:
+Component
+Purpose
+App Layout
+Root authenticated layout
+Sidebar
+Main navigation
+Top Navigation Bar
+Global actions
+Breadcrumb
+Current location
+Page Header
+Screen title
+Toolbar
+Search and actions
+Main Content
+Module content
+Footer
+Status and version information
+
+9.3.8 Sidebar Layout
+The sidebar provides access to system modules based on the authenticated user's role.
+Features
+Expandable
+Collapsible
+Fixed position on desktop
+Drawer mode on mobile
+Nested menus
+Searchable navigation
+Role-based visibility
+Active menu highlighting
+Notification badges
+
+Desktop Sidebar
++----------------------+
+| CuraSphere Logo      |
++----------------------+
+| Dashboard            |
+| Patients             |
+| Appointments         |
+| OPD                  |
+| IPD                  |
+| Laboratory           |
+| Radiology            |
+| Pharmacy             |
+| Billing              |
+| Inventory            |
+| Reports              |
+| Administration       |
++----------------------+
+
+Mobile Sidebar
++--------------------+
+| ☰  Menu            |
++--------------------+
+
+Slide Drawer
+
+Dashboard
+Patients
+Appointments
+Laboratory
+Billing
+Settings
+Logout
+
+9.3.9 Top Navigation Bar
+The top navigation bar shall remain visible during scrolling.
+Components
+Hospital Logo
+Search Bar
+Global Search
+Notifications
+Messages
+Help
+User Profile
+Theme Toggle
+Language Selector
+
+Desktop Example
++--------------------------------------------------------------------------------+
+| Logo | Search | Notifications | Help | Language | User Avatar |
++--------------------------------------------------------------------------------+
+
+9.3.10 Dashboard Layout
+Dashboard pages shall prioritize the most important operational information.
+Recommended structure:
+Page Header
+
+Quick Statistics
+
+Charts
+
+Recent Activities
+
+Today's Schedule
+
+Notifications
+
+Tasks
+
+System Alerts
+
+Dashboard Grid
++---------------------------------------------------------------+
+| KPI | KPI | KPI | KPI                                         |
++---------------------------------------------------------------+
+
++--------------------------+-------------------------------+
+| Chart                    | Recent Activities             |
++--------------------------+-------------------------------+
+
++--------------------------+-------------------------------+
+| Schedule                 | Notifications                 |
++--------------------------+-------------------------------+
+
+9.3.11 Form Layout Standards
+Forms shall follow a consistent grid structure.
+Desktop
+Patient Information
+
++----------------------+----------------------+
+| First Name           | Last Name           |
++----------------------+----------------------+
+
++----------------------+----------------------+
+| DOB                  | Gender              |
++----------------------+----------------------+
+
++---------------------------------------------+
+| Address                                    |
++---------------------------------------------+
+
+Save      Cancel
+
+Mobile
+First Name
+
+Last Name
+
+DOB
+
+Gender
+
+Address
+
+Save
+
+Cancel
+
+9.3.12 Table Responsiveness
+Tables shall support:
+Horizontal scrolling on smaller screens.
+Sticky headers.
+Sticky action columns (where appropriate).
+Column hiding based on priority.
+Responsive pagination.
+Search and filtering.
+Responsive Priority
+Priority
+Example Columns
+High
+Patient Name, MRN, Status
+Medium
+Doctor, Department
+Low
+Created Date, Updated Date, Internal ID
+Lower-priority columns may be hidden on smaller devices while remaining accessible through row expansion or detail views.
+
+9.3.13 Card Layout Standards
+Cards shall maintain consistent:
+Padding
+Border radius
+Shadows
+Header spacing
+Footer spacing
+Responsive width
+Cards shall stack vertically on mobile devices.
+
+9.3.14 Dialog Responsiveness
+Modal dialogs shall behave as follows:
+Device
+Behavior
+Desktop
+Centered modal
+Tablet
+Medium-width modal
+Mobile
+Full-screen dialog or bottom sheet
+
+9.3.15 Navigation Behavior
+Device
+Navigation
+Desktop
+Fixed sidebar
+Tablet
+Collapsible sidebar
+Mobile
+Drawer navigation
+The current page shall always be visually indicated through active states and breadcrumbs.
+
+9.3.16 Content Width Standards
+Screen Size
+Content Width
+Mobile
+100%
+Tablet
+95%
+Laptop
+90%
+Desktop
+85%
+Large Display
+80%
+Content shall remain centered within the available viewport to improve readability on large screens.
+
+9.3.17 Responsive Images & Media
+The interface shall ensure that:
+Images scale proportionally.
+Charts resize dynamically.
+Medical image viewers support zoom and pan.
+Uploaded documents adapt to screen size.
+Icons remain crisp on high-density displays.
+
+9.3.18 React Layout Architecture
+Recommended folder structure:
+src/
+│
+├── layouts/
+│   ├── AppLayout.tsx
+│   ├── AuthLayout.tsx
+│   ├── DashboardLayout.tsx
+│   ├── PatientPortalLayout.tsx
+│   ├── DoctorLayout.tsx
+│   ├── NurseLayout.tsx
+│   ├── AdminLayout.tsx
+│   └── MinimalLayout.tsx
+│
+├── components/
+│   ├── navigation/
+│   │   ├── Sidebar.tsx
+│   │   ├── TopNavbar.tsx
+│   │   ├── Breadcrumb.tsx
+│   │   ├── MobileDrawer.tsx
+│   │   └── NavigationMenu.tsx
+│   │
+│   ├── layout/
+│   │   ├── PageHeader.tsx
+│   │   ├── Toolbar.tsx
+│   │   ├── ContentContainer.tsx
+│   │   ├── Footer.tsx
+│   │   └── PageLoader.tsx
+This structure promotes modularity, code reuse, and separation of concerns.
+
+9.3.19 Tailwind CSS Responsive Guidelines
+Recommended utility classes:
+Purpose
+Example Classes
+Responsive Grid
+grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4
+Responsive Flex
+flex flex-col lg:flex-row
+Responsive Spacing
+p-4 md:p-6 lg:p-8
+Responsive Width
+w-full lg:w-1/2
+Responsive Visibility
+hidden lg:block, block lg:hidden
+These utilities shall be used consistently to ensure predictable responsive behavior.
+
+9.3.20 Performance Considerations
+Responsive layouts shall:
+Avoid unnecessary reflows.
+Use lazy loading for large components.
+Virtualize large tables where appropriate.
+Optimize images and media.
+Minimize layout shifts during loading.
+Cache reusable layout resources.
+
+9.3.21 Acceptance Criteria
+The Responsive Layout Standards shall be accepted when:
+A unified application shell is defined.
+Responsive behavior is documented for all supported devices.
+Navigation standards are specified for desktop, tablet, and mobile.
+Forms, tables, cards, and dialogs adapt appropriately to screen size.
+React layout architecture is documented.
+Tailwind CSS responsive implementation guidelines are established.
+Layout performance and accessibility considerations are included.
+9.4 Navigation Structure & Information Architecture
+
+9.4.1 Introduction
+The Navigation Structure and Information Architecture (IA) define how users discover, access, and move through the CuraSphere Hospital Management System. A well-structured navigation model reduces cognitive load, improves task efficiency, minimizes navigation errors, and ensures users can quickly locate the information needed for patient care and hospital operations.
+The navigation architecture shall support:
+Role-Based Navigation
+Hierarchical Information Architecture
+Global Search
+Contextual Navigation
+Breadcrumb Navigation
+Quick Actions
+Favorites
+Recently Visited Pages
+Keyboard Navigation
+Responsive Navigation
+
+9.4.2 Objectives
+The navigation system shall:
+Minimize navigation complexity.
+Reduce the number of clicks required to complete common tasks.
+Present only role-relevant modules.
+Maintain consistent navigation throughout the application.
+Support rapid switching between related workflows.
+Improve discoverability of system features.
+Support responsive and accessible navigation.
+
+9.4.3 Information Architecture Principles
+The application's information architecture shall follow these principles:
+Hierarchical Organization
+Information shall be grouped into logical modules and sub-modules.
+
+Task-Oriented Navigation
+Navigation shall prioritize user workflows rather than database structure.
+
+Progressive Disclosure
+Advanced functions shall remain hidden until required.
+
+Context Preservation
+The current patient, encounter, or workflow context shall remain visible during navigation where appropriate.
+
+Consistency
+Navigation labels, icons, and menu placement shall remain consistent across all modules.
+
+9.4.4 High-Level Sitemap
+CuraSphere
+│
+├── Authentication
+│     ├── Login
+│     ├── Forgot Password
+│     ├── Reset Password
+│     └── MFA Verification
+│
+├── Dashboard
+│
+├── Patient Management
+│     ├── Register Patient
+│     ├── Patient Directory
+│     ├── Patient Profile
+│     ├── Medical History
+│     └── Documents
+│
+├── Appointment Management
+│     ├── Appointment Calendar
+│     ├── Schedule Appointment
+│     ├── Queue Management
+│     └── Doctor Schedule
+│
+├── Clinical Services
+│     ├── OPD
+│     ├── IPD
+│     ├── Emergency
+│     ├── EMR
+│     ├── Diagnosis
+│     ├── Procedures
+│     └── Treatment Plans
+│
+├── Laboratory
+├── Radiology
+├── Pharmacy
+├── Billing
+├── Inventory
+├── Human Resources
+├── Reports
+├── Administration
+└── Patient Portal
+
+9.4.5 Global Navigation Structure
+The primary navigation shall appear in the left sidebar for desktop devices and as a drawer menu for mobile devices.
+Level
+Description
+Level 1
+Dashboard
+Level 2
+Core Modules
+Level 3
+Module Submenus
+Level 4
+Individual Pages
+
+9.4.6 Navigation Hierarchy
+Dashboard
+│
+├── Patients
+│      ├── Register Patient
+│      ├── Patient List
+│      ├── Patient Profile
+│      └── Documents
+│
+├── Appointments
+│      ├── Calendar
+│      ├── Queue
+│      └── Schedule
+│
+├── Clinical
+│      ├── OPD
+│      ├── IPD
+│      ├── Emergency
+│      └── EMR
+│
+├── Diagnostics
+│      ├── Laboratory
+│      └── Radiology
+│
+├── Pharmacy
+├── Billing
+├── Inventory
+├── HR
+├── Reports
+└── Settings
+
+9.4.7 Role-Based Navigation
+Menus shall be dynamically generated based on authenticated user roles.
+User Role
+Accessible Modules
+Super Administrator
+All Modules
+Hospital Administrator
+Administration, Reports, HR, Inventory, Billing
+Receptionist
+Dashboard, Patients, Appointments, Billing
+Doctor
+Dashboard, Patients, EMR, Laboratory, Radiology, Prescriptions
+Nurse
+Dashboard, Patients, OPD, IPD, Vitals
+Laboratory Staff
+Dashboard, Laboratory, Reports
+Radiologist
+Dashboard, Radiology
+Pharmacist
+Dashboard, Pharmacy, Inventory
+Cashier
+Dashboard, Billing, Payments
+HR Officer
+HR, Reports
+Inventory Officer
+Inventory, Purchase Orders
+Patient
+Patient Portal
+Unauthorized modules shall not be displayed in the navigation.
+
+9.4.8 Breadcrumb Navigation
+Breadcrumbs shall indicate the user's current location.
+Example
+Dashboard
+    >
+Patients
+    >
+Patient Profile
+    >
+Medical History
+Rules
+Always display the current page.
+Allow navigation to previous levels.
+Reflect the actual hierarchy.
+Update dynamically.
+
+9.4.9 Global Search
+A global search feature shall be available from the top navigation bar.
+Searchable Entities
+Patients
+Doctors
+Employees
+Appointments
+Invoices
+Laboratory Orders
+Radiology Orders
+Prescriptions
+Medicines
+Inventory Items
+Reports
+Search Features
+Instant search suggestions
+Keyboard navigation
+Recent searches
+Search history
+Advanced filters
+Result grouping
+Fuzzy matching
+Highlighted search terms
+
+9.4.10 Quick Actions
+Frequently performed tasks shall be accessible through quick action buttons.
+Examples
+Role
+Quick Actions
+Receptionist
+Register Patient, Book Appointment
+Doctor
+Open Patient Record, Create Prescription
+Nurse
+Record Vital Signs, Admit Patient
+Laboratory Staff
+Collect Sample, Enter Result
+Pharmacist
+Dispense Medication
+Cashier
+Generate Invoice, Receive Payment
+Administrator
+Create User, View Reports
+
+9.4.11 Favorites
+Users may bookmark frequently accessed pages.
+Features
+Add favorite
+Remove favorite
+Reorder favorites
+Personalized favorites list
+Persistent across sessions
+
+9.4.12 Recently Visited Pages
+The system shall maintain a list of recently accessed pages.
+Information stored:
+Page title
+Module
+Timestamp
+Context (where applicable)
+The list shall help users quickly return to recent tasks.
+
+9.4.13 Contextual Navigation
+Where appropriate, related modules shall be linked directly.
+Example Patient Workflow
+Patient Profile
+      │
+      ├── Appointments
+      ├── Medical History
+      ├── Laboratory Results
+      ├── Radiology Reports
+      ├── Prescriptions
+      ├── Billing
+      └── Documents
+This approach reduces unnecessary navigation and keeps related information readily accessible.
+
+9.4.14 Notifications Navigation
+Clicking a notification shall navigate users directly to the relevant record.
+Examples
+Notification
+Destination
+Appointment Reminder
+Appointment Details
+Critical Lab Result
+Laboratory Result
+Pending Payment
+Invoice
+Low Inventory
+Inventory Item
+New Message
+Message Center
+
+9.4.15 Navigation Accessibility
+Navigation shall support:
+Keyboard-only navigation
+Screen reader compatibility
+Visible focus indicators
+ARIA navigation landmarks
+Logical tab order
+Skip-to-content links
+Accessible menu labels
+
+9.4.16 Mobile Navigation
+Mobile devices shall use a collapsible navigation drawer.
+Features include:
+Touch-friendly controls
+Expandable submenus
+Search integration
+Persistent active page indicator
+Gesture support where appropriate
+
+9.4.17 Navigation Security
+Navigation shall enforce role-based permissions.
+Requirements:
+Unauthorized modules shall not appear.
+Direct URL access shall be validated by backend authorization.
+Sensitive administrative functions shall require appropriate privileges.
+Navigation shall update immediately when permissions change.
+
+9.4.18 Navigation Flow Example
+Login
+   │
+   ▼
+Dashboard
+   │
+   ▼
+Patients
+   │
+   ▼
+Patient Profile
+   │
+ ┌─┼─────────────┬───────────────┬───────────────┐
+ ▼ ▼             ▼               ▼               ▼
+Appointments EMR Laboratory Radiology Billing
+
+9.4.19 Navigation Performance
+The navigation system should:
+Load within 1 second after authentication.
+Expand and collapse menus without noticeable delay.
+Cache frequently used menu data.
+Support lazy loading of large menu structures.
+Minimize unnecessary re-rendering in the frontend.
+
+9.4.20 Navigation Design Guidelines
+The navigation interface shall:
+Use descriptive labels.
+Pair labels with consistent icons.
+Clearly indicate the active page.
+Group related functions together.
+Avoid excessive nesting (recommended maximum of three submenu levels).
+Maintain consistent spacing and alignment.
+
+9.4.21 Acceptance Criteria
+The Navigation Structure and Information Architecture shall be accepted when:
+A complete application sitemap is documented.
+Navigation hierarchy is defined.
+Role-based menus are specified.
+Breadcrumb behavior is documented.
+Global search capabilities are defined.
+Quick actions, favorites, and recently visited pages are supported.
+Contextual navigation between related records is available.
+Accessibility and responsive navigation requirements are addressed.
+Navigation security and performance expectations are documented.
+
+Part 9.5A - Dashboard Design Specifications (Administrator & Hospital Administrator)
+
+9.5 Dashboard Design Specifications by User Role
+
+9.5.1 Introduction
+The Dashboard is the primary workspace presented to users after successful authentication. Each dashboard is tailored to the responsibilities of the authenticated user, displaying relevant operational metrics, alerts, shortcuts, and pending tasks.
+Role-specific dashboards improve productivity by surfacing the most important information while reducing unnecessary navigation.
+
+9.5.2 Dashboard Design Objectives
+The dashboard shall:
+Present real-time operational information.
+Provide quick access to frequently used tasks.
+Display important notifications and alerts.
+Support role-based customization.
+Offer actionable insights through charts and KPIs.
+Enable fast navigation to detailed modules.
+Support responsive layouts for desktop, tablet, and mobile.
+
+9.5.3 Common Dashboard Components
+All dashboards shall share the following layout structure:
++--------------------------------------------------------------------------------------+
+| Top Navigation Bar                                                                   |
++--------------------------------------------------------------------------------------+
+| Sidebar | Page Header | Date | Notifications | User Profile                         |
+|         +----------------------------------------------------------------------+
+|         | KPI Cards                                                          |
+|         +----------------------------------------------------------------------+
+|         | Charts                | Quick Actions                              |
+|         +----------------------------------------------------------------------+
+|         | Recent Activity       | Pending Tasks                              |
+|         +----------------------------------------------------------------------+
+|         | Announcements         | Calendar / Schedule                        |
++--------------------------------------------------------------------------------------+
+
+9.5.4 Administrator Dashboard
+Purpose
+The Administrator Dashboard provides a comprehensive overview of hospital operations, system performance, user activity, and key organizational metrics. It serves as the primary control center for system administrators.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Administrator Dashboard                                                              |
++--------------------------------------------------------------------------------------+
+| KPI Cards (6)                                                                        |
++--------------------------------------------------------------------------------------+
+| Hospital Activity Chart          | User Activity                                     |
++--------------------------------------------------------------------------------------+
+| Department Performance           | System Health                                     |
++--------------------------------------------------------------------------------------+
+| Recent Audit Logs                | Pending Approvals                                |
++--------------------------------------------------------------------------------------+
+| Notifications                    | Quick Actions                                    |
++--------------------------------------------------------------------------------------+
+
+KPI Cards
+KPI
+Description
+Total Patients
+Registered patients
+Active Admissions
+Current inpatients
+Today's Appointments
+Scheduled appointments
+Revenue Today
+Daily revenue
+Active Users
+Logged-in users
+Critical Alerts
+High-priority system/clinical alerts
+
+Charts
+Hospital Activity
+Type:
+Line Chart
+Displays:
+Daily patient visits
+Admissions
+Discharges
+Emergency visits
+
+Revenue Analysis
+Type:
+Area Chart
+Displays:
+Daily revenue
+Weekly revenue
+Monthly revenue
+
+Department Performance
+Type:
+Bar Chart
+Displays:
+OPD visits
+Laboratory workload
+Radiology workload
+Pharmacy transactions
+Billing transactions
+
+Patient Distribution
+Type:
+Pie Chart
+Displays:
+OPD
+IPD
+Emergency
+Telemedicine
+
+System Health Panel
+Displays:
+Metric
+Example
+Server Status
+Online
+Database Status
+Healthy
+API Status
+Operational
+Storage Usage
+72%
+Backup Status
+Successful
+Security Events
+2 Warnings
+
+Recent Audit Logs
+Columns:
+Timestamp
+User
+Module
+Action
+Status
+
+Pending Administrative Tasks
+Examples:
+User approval requests
+Inventory approvals
+Purchase orders
+HR requests
+Insurance claim approvals
+
+Quick Actions
+Create User
+Create Department
+View Reports
+Backup Database
+Configure Settings
+Audit Logs
+System Monitoring
+
+Notifications
+Examples:
+Low stock alerts
+Critical laboratory results
+System updates
+Security notifications
+Failed backups
+
+9.5.5 Administrator Dashboard Components
+Component
+Type
+KPI Cards
+Card
+Revenue Chart
+Area Chart
+Patient Statistics
+Pie Chart
+Activity Trend
+Line Chart
+Department Performance
+Bar Chart
+Audit Log
+Data Table
+Notifications
+List
+Calendar
+Widget
+Quick Actions
+Button Group
+
+9.5.6 Administrator Workflow
+Login
+   │
+   ▼
+Administrator Dashboard
+   │
+ ┌─┼──────────────┬───────────────┬───────────────┐
+ ▼ ▼              ▼               ▼               ▼
+Users Reports Inventory Billing Settings
+
+9.5.7 Hospital Administrator Dashboard
+Purpose
+The Hospital Administrator Dashboard focuses on operational management rather than system configuration. It provides hospital executives with performance indicators, financial summaries, patient flow, staffing information, and departmental efficiency.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Hospital Administrator Dashboard                                                     |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Admissions | Revenue | Patient Flow                                                  |
++--------------------------------------------------------------------------------------+
+| Department KPIs             | Financial Summary                                      |
++--------------------------------------------------------------------------------------+
+| Staff Attendance            | Pending Approvals                                      |
++--------------------------------------------------------------------------------------+
+| Announcements               | Calendar                                               |
++--------------------------------------------------------------------------------------+
+
+KPI Cards
+KPI
+Description
+Total Patients Today
+Daily registrations
+OPD Visits
+Outpatient visits
+IPD Admissions
+Current admissions
+Bed Occupancy
+Occupied beds
+Revenue Today
+Daily collections
+Pending Bills
+Outstanding invoices
+
+Operational Charts
+Patient Flow
+Type:
+Sankey or Flow Diagram (where supported), otherwise a Line Chart
+Displays:
+Registrations
+OPD
+IPD
+Discharges
+
+Financial Summary
+Type:
+Column Chart
+Displays:
+Daily income
+Weekly income
+Monthly income
+
+Bed Occupancy
+Type:
+Donut Chart
+Displays:
+Available beds
+Occupied beds
+Maintenance beds
+
+Department Utilization
+Type:
+Horizontal Bar Chart
+Displays utilization by:
+OPD
+Emergency
+Laboratory
+Radiology
+Pharmacy
+Surgery
+
+Staff Attendance Summary
+Displays:
+Present staff
+Absent staff
+On leave
+Late arrivals
+
+Pending Approvals
+Examples:
+Leave requests
+Purchase requests
+Equipment maintenance
+Budget approvals
+
+Quick Actions
+Register Patient
+View Admissions
+Generate Reports
+Monitor Departments
+Review Finance
+View Staff Attendance
+
+Announcements
+Displays:
+Hospital announcements
+Policy updates
+Emergency notices
+Maintenance schedules
+
+9.5.8 Hospital Administrator Components
+Component
+Type
+KPI Cards
+Cards
+Revenue Chart
+Column Chart
+Bed Occupancy
+Donut Chart
+Patient Flow
+Flow/Line Chart
+Attendance Summary
+Table
+Pending Approvals
+Table
+Notifications
+List
+Calendar
+Widget
+
+9.5.9 Responsive Dashboard Behavior
+Device
+Layout
+Desktop
+4-column KPI grid with multi-panel dashboard
+Laptop
+3-column KPI grid with responsive charts
+Tablet
+2-column KPI grid and stacked panels
+Mobile
+Single-column layout with collapsible sections
+
+9.5.10 Dashboard Refresh Strategy
+Dashboard data shall refresh according to the following intervals:
+Widget
+Refresh Interval
+Critical Alerts
+Real-time / Push
+Active Users
+30 seconds
+Today's Appointments
+1 minute
+Revenue Metrics
+5 minutes
+Inventory Alerts
+5 minutes
+Reports & Analytics
+On-demand or scheduled refresh
+Where supported by the infrastructure, WebSockets or Server-Sent Events (SSE) should be used for real-time updates to critical operational widgets.
+
+9.5.11 Accessibility Requirements
+Administrator dashboards shall:
+Support keyboard navigation.
+Provide descriptive labels for charts and controls.
+Offer text alternatives for visual indicators.
+Maintain WCAG 2.1 Level AA contrast targets.
+Allow resizing without loss of functionality.
+
+9.5.12 Acceptance Criteria
+The Administrator and Hospital Administrator dashboards shall be accepted when:
+KPI cards display accurate real-time metrics.
+Charts visualize operational and financial performance.
+Quick actions provide one-click access to common administrative tasks.
+Notifications and alerts are prioritized by severity.
+Dashboard layouts are responsive across supported devices.
+Role-based access ensures only authorized information is displayed.
+Performance and accessibility requirements are satisfied.
+9.5B Dashboard Design Specifications
+Receptionist, Doctor & Nurse Dashboards
+
+9.5.13 Introduction
+The Receptionist, Doctor, and Nurse dashboards are the most frequently used operational interfaces within CuraSphere. These dashboards support patient registration, appointment scheduling, clinical consultations, inpatient care, and nursing activities. They are optimized for rapid access to information, minimal navigation, and efficient completion of daily tasks.
+
+9.5.14 Receptionist Dashboard
+Purpose
+The Receptionist Dashboard serves as the front-office control center, enabling staff to manage patient registration, appointments, check-ins, billing initiation, and queue management efficiently.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Receptionist Dashboard                                                               |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Today's Appointments          | Patient Queue                                        |
++--------------------------------------------------------------------------------------+
+| New Registrations             | Calendar                                             |
++--------------------------------------------------------------------------------------+
+| Pending Payments              | Quick Actions                                        |
++--------------------------------------------------------------------------------------+
+| Recent Activity               | Notifications                                        |
++--------------------------------------------------------------------------------------+
+
+KPI Cards
+KPI
+Description
+Patients Registered Today
+Number of new registrations
+Today's Appointments
+Total scheduled appointments
+Checked-in Patients
+Patients currently checked in
+Waiting Queue
+Patients awaiting consultation
+Pending Bills
+Outstanding invoices
+Completed Visits
+Finished consultations
+
+Primary Widgets
+Appointment Calendar
+Displays:
+Daily schedule
+Weekly schedule
+Doctor availability
+Time slots
+Holidays
+
+Queue Management
+Displays:
+Token Number
+Patient Name
+Doctor
+Department
+Waiting Time
+Queue Status
+
+Recent Registrations
+Displays:
+MRN
+Patient Name
+Registration Time
+Assigned Department
+
+Notifications
+Examples:
+Appointment cancellations
+Doctor unavailable
+Duplicate patient warning
+Insurance verification pending
+
+Quick Actions
+Register New Patient
+Schedule Appointment
+Print Token
+Check-In Patient
+Generate Invoice
+Search Patient
+
+Receptionist Workflow
+Login
+   │
+   ▼
+Receptionist Dashboard
+   │
+ ┌──────┼───────────────┬───────────────┐
+ ▼      ▼               ▼               ▼
+Register Patient   Book Appointment   Check-In   Billing
+
+9.5.15 Doctor Dashboard
+Purpose
+The Doctor Dashboard provides physicians with rapid access to patient records, clinical documentation, diagnostic results, prescriptions, and treatment planning.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Doctor Dashboard                                                                     |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Today's Schedule              | Patient Queue                                        |
++--------------------------------------------------------------------------------------+
+| Recent Patients               | Laboratory Results                                   |
++--------------------------------------------------------------------------------------+
+| Radiology Reports             | Prescriptions                                        |
++--------------------------------------------------------------------------------------+
+| Clinical Alerts               | Quick Actions                                        |
++--------------------------------------------------------------------------------------+
+
+KPI Cards
+KPI
+Description
+Patients Today
+Scheduled consultations
+Waiting Patients
+Queue size
+Completed Consultations
+Finished encounters
+Pending Reports
+Awaiting laboratory/radiology results
+Prescriptions Issued
+Today's prescriptions
+Follow-Up Patients
+Scheduled follow-up visits
+
+Patient Queue Widget
+Displays:
+Queue Number
+Patient Name
+Age
+Gender
+Visit Type
+Priority
+Waiting Time
+
+Today's Schedule
+Displays:
+Appointment Time
+Patient
+Department
+Visit Type
+Status
+
+Clinical Alerts
+Examples:
+Drug allergies
+Critical laboratory values
+High-risk medications
+Abnormal radiology reports
+Outstanding follow-up
+
+Recent Laboratory Results
+Displays:
+Test Name
+Status
+Critical Indicator
+Result Date
+
+Recent Radiology Reports
+Displays:
+Imaging Type
+Impression
+Reporting Radiologist
+Status
+
+Quick Actions
+Open Patient Record
+Start Consultation
+Record Diagnosis
+Create Prescription
+Request Laboratory Test
+Request Radiology
+Admit Patient
+Schedule Follow-Up
+
+Doctor Workflow
+Login
+   │
+   ▼
+Doctor Dashboard
+   │
+ ┌──────┬──────────────┬───────────────┬─────────────┐
+ ▼      ▼              ▼               ▼
+Patient EMR     Diagnosis      Prescription     Follow-Up
+
+9.5.16 Doctor Dashboard Clinical Summary Panel
+Displays patient information during consultation.
+Patient Summary
+Medical Record Number
+Patient Name
+Age
+Gender
+Blood Group
+Allergies
+Current Medications
+Chronic Diseases
+Last Visit
+Outstanding Balance
+
+Clinical Timeline
+Displays chronological events:
+Previous visits
+Admissions
+Diagnoses
+Laboratory reports
+Radiology reports
+Prescriptions
+Procedures
+Surgeries
+
+9.5.17 Nurse Dashboard
+Purpose
+The Nurse Dashboard supports inpatient and outpatient nursing workflows, including vital signs recording, medication administration, patient monitoring, and task management.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Nurse Dashboard                                                                      |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Assigned Patients             | Medication Schedule                                  |
++--------------------------------------------------------------------------------------+
+| Vital Signs Due               | Nursing Tasks                                        |
++--------------------------------------------------------------------------------------+
+| Bed Occupancy                 | Alerts                                               |
++--------------------------------------------------------------------------------------+
+| Quick Actions                 | Shift Summary                                        |
++--------------------------------------------------------------------------------------+
+
+KPI Cards
+KPI
+Description
+Assigned Patients
+Current patient assignment
+Pending Vital Signs
+Vital assessments due
+Medication Due
+Scheduled medications
+Completed Tasks
+Completed nursing tasks
+Admissions
+Today's admissions
+Discharges
+Today's discharges
+
+Assigned Patient List
+Displays:
+Bed Number
+Patient Name
+Diagnosis
+Attending Doctor
+Patient Status
+
+Medication Administration Schedule
+Displays:
+Medication
+Dose
+Route
+Time
+Status
+
+Nursing Tasks
+Examples:
+Record vital signs
+Medication administration
+Wound dressing
+Patient assessment
+IV fluid monitoring
+Blood sample collection
+
+Alerts
+Examples:
+Medication overdue
+Critical patient
+Abnormal vital signs
+Isolation patient
+Fall risk
+High pain score
+
+Quick Actions
+Record Vital Signs
+Administer Medication
+Update Nursing Notes
+Transfer Patient
+Discharge Checklist
+Request Doctor Review
+
+Nurse Workflow
+Login
+   │
+   ▼
+Nurse Dashboard
+   │
+ ┌───────────┬───────────────┬──────────────┐
+ ▼           ▼               ▼              ▼
+Patient List Vital Signs Medication Nursing Notes
+
+9.5.18 Shared Dashboard Components
+The Receptionist, Doctor, and Nurse dashboards shall use standardized components from the CuraSphere Design System.
+Component
+Usage
+KPI Card
+Operational metrics
+Data Table
+Patient lists and queues
+Calendar
+Appointments and schedules
+Timeline
+Clinical history
+Alert Banner
+Critical notifications
+Badge
+Patient and task status
+Drawer
+Mobile navigation
+Modal
+Data entry and confirmations
+Toast
+Success and error notifications
+Search Bar
+Quick record lookup
+
+9.5.19 Responsive Behavior
+Device
+Dashboard Behavior
+Desktop
+Multi-column layout with full widgets
+Laptop
+Three-column adaptive grid
+Tablet
+Two-column stacked layout
+Mobile
+Single-column layout with collapsible sections and bottom navigation where appropriate
+
+9.5.20 Performance Requirements
+Dashboard widgets should meet the following target response times:
+Widget
+Target
+Patient Queue
+≤ 2 seconds
+Appointment Calendar
+≤ 2 seconds
+Clinical Summary
+≤ 3 seconds
+Laboratory Results
+≤ 3 seconds
+Medication Schedule
+≤ 2 seconds
+Notifications
+Real-time where supported
+Critical notifications, patient queue updates, and newly available laboratory results should be pushed to users using WebSockets or Server-Sent Events (SSE) when available.
+
+9.5.21 Accessibility Requirements
+These dashboards shall:
+Support keyboard-only navigation.
+Provide accessible labels for charts, tables, and controls.
+Include screen-reader compatible notifications.
+Maintain WCAG 2.1 Level AA color contrast.
+Ensure interactive controls meet recommended touch target sizes.
+
+9.5.22 Acceptance Criteria
+The Receptionist, Doctor, and Nurse dashboards shall be accepted when:
+Role-specific KPI cards display accurate operational metrics.
+Patient queues and appointment schedules update promptly.
+Clinical summary panels provide relevant patient information.
+Nursing workflows support medication administration and patient monitoring.
+Quick actions reduce navigation for common tasks.
+Dashboard layouts remain responsive across supported devices.
+Performance and accessibility requirements are met.
+9.5C Dashboard Design Specifications
+Laboratory, Radiology, Pharmacy, Cashier, Inventory, HR & Patient Portal Dashboards
+
+9.5.23 Introduction
+This section defines the dashboards for the remaining operational roles within CuraSphere. Each dashboard is designed around the user's daily responsibilities, ensuring that critical information, pending tasks, and frequently used functions are immediately available after login.
+
+9.5.24 Laboratory Technologist Dashboard
+Purpose
+The Laboratory Dashboard enables laboratory personnel to manage specimen collection, test processing, quality control, result verification, and report publication.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Laboratory Dashboard                                                                 |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Pending Orders              | Sample Collection Queue                               |
++--------------------------------------------------------------------------------------+
+| Test Processing             | Quality Control Status                                |
++--------------------------------------------------------------------------------------+
+| Recent Results              | Notifications                                         |
++--------------------------------------------------------------------------------------+
+| Quick Actions               | Equipment Status                                      |
++--------------------------------------------------------------------------------------+
+KPI Cards
+KPI
+Description
+Pending Laboratory Orders
+Awaiting processing
+Samples Collected
+Today's collections
+Tests Completed
+Completed today
+Critical Results
+Results requiring immediate attention
+Rejected Samples
+Invalid specimens
+Pending Verification
+Awaiting validation
+Quick Actions
+Register Sample
+Process Test
+Verify Result
+Print Laboratory Report
+View Pending Orders
+Equipment Calibration Log
+
+9.5.25 Radiologist Dashboard
+Purpose
+The Radiologist Dashboard manages imaging requests, examination schedules, image review, report generation, and urgent imaging alerts.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Radiology Dashboard                                                                  |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Imaging Requests          | Scheduled Examinations                                  |
++--------------------------------------------------------------------------------------+
+| Pending Reports           | Emergency Imaging                                       |
++--------------------------------------------------------------------------------------+
+| Recent Reports            | Equipment Status                                        |
++--------------------------------------------------------------------------------------+
+| Quick Actions             | Notifications                                           |
++--------------------------------------------------------------------------------------+
+KPI Cards
+KPI
+Description
+Imaging Requests
+Pending examinations
+Scheduled Scans
+Today's schedule
+Completed Reports
+Completed interpretations
+Emergency Cases
+High-priority imaging
+Pending Reviews
+Awaiting report completion
+Equipment Availability
+Operational equipment
+Quick Actions
+Open Imaging Study
+Create Report
+Review Images
+Print Report
+Emergency Imaging Queue
+
+9.5.26 Pharmacist Dashboard
+Purpose
+Supports medication dispensing, prescription verification, inventory monitoring, and drug safety.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Pharmacy Dashboard                                                                   |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Pending Prescriptions      | Low Stock Medicines                                    |
++--------------------------------------------------------------------------------------+
+| Dispensing Queue           | Expiring Medicines                                     |
++--------------------------------------------------------------------------------------+
+| Inventory Alerts           | Notifications                                           |
++--------------------------------------------------------------------------------------+
+| Quick Actions              | Purchase Requests                                      |
++--------------------------------------------------------------------------------------+
+KPI Cards
+KPI
+Description
+Pending Prescriptions
+Awaiting dispensing
+Dispensed Today
+Medicines issued
+Low Stock Items
+Below reorder level
+Expiring Medicines
+Near expiry
+Controlled Drugs
+Special monitoring
+Purchase Requests
+Pending procurement
+Quick Actions
+Dispense Medicine
+Verify Prescription
+Search Medicine
+Inventory Adjustment
+Generate Purchase Request
+
+9.5.27 Cashier Dashboard
+Purpose
+The Cashier Dashboard supports billing, payments, refunds, insurance verification, and financial transactions.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Cashier Dashboard                                                                    |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Pending Invoices          | Today's Collections                                     |
++--------------------------------------------------------------------------------------+
+| Payment History           | Insurance Claims                                        |
++--------------------------------------------------------------------------------------+
+| Refund Requests           | Notifications                                           |
++--------------------------------------------------------------------------------------+
+| Quick Actions             | Cash Summary                                            |
++--------------------------------------------------------------------------------------+
+KPI Cards
+KPI
+Description
+Pending Payments
+Outstanding invoices
+Payments Received
+Daily collections
+Refund Requests
+Pending refunds
+Insurance Claims
+Awaiting reimbursement
+Daily Revenue
+Revenue collected
+Cash Balance
+Current cash position
+Quick Actions
+Generate Invoice
+Receive Payment
+Print Receipt
+Process Refund
+Insurance Claim Status
+
+9.5.28 Inventory Officer Dashboard
+Purpose
+The Inventory Dashboard manages procurement, warehouse operations, stock levels, suppliers, and inventory movements.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Inventory Dashboard                                                                  |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Low Stock Items          | Purchase Orders                                           |
++--------------------------------------------------------------------------------------+
+| Stock Movement           | Supplier Performance                                      |
++--------------------------------------------------------------------------------------+
+| Expired Inventory        | Notifications                                             |
++--------------------------------------------------------------------------------------+
+| Quick Actions            | Warehouse Summary                                         |
++--------------------------------------------------------------------------------------+
+KPI Cards
+KPI
+Description
+Total Inventory Items
+Active inventory
+Low Stock
+Items below reorder level
+Expired Stock
+Expired inventory
+Purchase Orders
+Pending orders
+Stock Transfers
+Internal transfers
+Warehouse Capacity
+Storage utilization
+Quick Actions
+Add Inventory
+Update Stock
+Create Purchase Order
+Stock Transfer
+Inventory Audit
+
+9.5.29 HR Officer Dashboard
+Purpose
+Supports employee administration, attendance, leave management, recruitment, and workforce analytics.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| HR Dashboard                                                                         |
++--------------------------------------------------------------------------------------+
+| KPI Cards                                                                            |
++--------------------------------------------------------------------------------------+
+| Employee Statistics      | Attendance Summary                                       |
++--------------------------------------------------------------------------------------+
+| Leave Requests           | Recruitment Status                                       |
++--------------------------------------------------------------------------------------+
+| Performance Metrics      | Notifications                                             |
++--------------------------------------------------------------------------------------+
+| Quick Actions            | Upcoming Events                                           |
++--------------------------------------------------------------------------------------+
+KPI Cards
+KPI
+Description
+Total Employees
+Active workforce
+Present Today
+Attendance
+Leave Requests
+Pending approvals
+New Hires
+Recent recruitment
+Contract Expiry
+Upcoming renewals
+Vacant Positions
+Open vacancies
+Quick Actions
+Add Employee
+Approve Leave
+View Attendance
+Generate HR Report
+Recruitment Portal
+
+9.5.30 Patient Portal Dashboard
+Purpose
+The Patient Portal Dashboard enables patients to access their personal healthcare information and interact digitally with hospital services.
+
+Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Patient Portal                                                                       |
++--------------------------------------------------------------------------------------+
+| Welcome Banner                                                                       |
++--------------------------------------------------------------------------------------+
+| Upcoming Appointments     | Health Summary                                           |
++--------------------------------------------------------------------------------------+
+| Laboratory Results        | Prescriptions                                            |
++--------------------------------------------------------------------------------------+
+| Outstanding Bills         | Messages                                                 |
++--------------------------------------------------------------------------------------+
+| Quick Actions             | Notifications                                            |
++--------------------------------------------------------------------------------------+
+Patient Widgets
+Widget
+Description
+Upcoming Appointments
+Scheduled consultations
+Medical History
+Previous encounters
+Laboratory Results
+Published results
+Radiology Reports
+Imaging reports
+Active Prescriptions
+Current medications
+Billing Summary
+Outstanding payments
+Messages
+Secure communication
+Notifications
+Appointment reminders
+Quick Actions
+Book Appointment
+Download Laboratory Report
+Download Radiology Report
+View Prescription
+Pay Invoice
+Update Profile
+Send Message
+
+9.5.31 Shared Dashboard Features
+All dashboards shall support:
+Global search
+Notification center
+User profile menu
+Theme switching (Light/Dark/System)
+Language selector
+Help & support
+Keyboard shortcuts
+Responsive layout
+Breadcrumb navigation
+Favorites
+Recently accessed records
+
+9.5.32 Dashboard Refresh Strategy
+Component
+Refresh Interval
+Notifications
+Real-time
+Queues
+Every 30 seconds
+KPI Cards
+Every 1 minute
+Inventory Levels
+Every 5 minutes
+Financial Metrics
+Every 5 minutes
+Reports
+On demand
+Patient Portal Data
+Every 2 minutes
+Real-time updates should use WebSockets or Server-Sent Events (SSE) where available.
+
+9.5.33 Dashboard Security
+Each dashboard shall:
+Display only authorized information.
+Hide restricted widgets.
+Respect Role-Based Access Control (RBAC).
+Mask sensitive patient information where appropriate.
+Log access to confidential records.
+Require confirmation before sensitive operations.
+
+9.5.34 Responsive Behavior
+Device
+Layout
+Desktop
+4-column dashboard
+Laptop
+3-column dashboard
+Tablet
+2-column dashboard
+Mobile
+Single-column stacked widgets with collapsible panels
+
+9.5.35 Accessibility Requirements
+All dashboards shall:
+Support keyboard-only navigation.
+Provide screen-reader compatible widgets.
+Meet WCAG 2.1 Level AA contrast targets.
+Include descriptive labels for charts and controls.
+Maintain logical tab order.
+Support text scaling without loss of functionality.
+
+9.5.36 Acceptance Criteria
+The Laboratory, Radiology, Pharmacist, Cashier, Inventory Officer, HR Officer, and Patient Portal dashboards shall be accepted when:
+Each dashboard displays role-specific KPI cards and operational widgets.
+Quick actions support the most common user workflows.
+Notifications and alerts are prioritized appropriately.
+Responsive layouts function across supported devices.
+Security and role-based access restrictions are enforced.
+Accessibility and performance requirements are satisfied.
+Shared dashboard components follow the CuraSphere Design System.
+
+Part 9.6A — Detailed Screen Specifications (Authentication, Login & User Management)
+
+9.6 Detailed Screen Specifications
+
+9.6.1 Introduction
+This section defines the detailed User Interface (UI) specifications for every screen within the CuraSphere Hospital Management System.
+Each screen specification provides a standardized description including:
+Purpose
+Target Users
+Navigation Path
+Layout Structure
+UI Components
+Input Fields
+Validation Rules
+Business Rules
+User Actions
+System Responses
+Error Handling
+Security Requirements
+Accessibility
+Responsive Design
+Acceptance Criteria
+These specifications serve as the implementation blueprint for frontend development using React.js, Tailwind CSS, shadcn/ui, TanStack Query, and Zustand, while integrating with the backend services developed in ASP.NET Core (C#) and Java-based services.
+
+9.6.2 Authentication Module Overview
+The Authentication Module provides secure access to the CuraSphere Hospital Management System.
+It shall support:
+Username/Email Login
+Password Authentication
+Multi-Factor Authentication (MFA)
+Password Recovery
+Session Management
+Remember Me
+Account Lockout
+Password Expiration
+Role-Based Redirection
+Secure Logout
+
+9.6.3 Authentication Navigation Flow
+Unauthenticated User
+        │
+        ▼
+Login Screen
+        │
+        ├─────────────► Forgot Password
+        │                      │
+        │                      ▼
+        │              Password Reset
+        │
+        ▼
+MFA Verification
+        │
+        ▼
+Role Verification
+        │
+        ▼
+Role Dashboard
+        │
+        ▼
+Logout
+        │
+        ▼
+Login Screen
+
+9.6.4 Login Screen
+
+Screen ID
+AUTH-LOGIN-001
+
+Screen Name
+Login
+
+Purpose
+The Login screen authenticates authorized users and provides secure access to CuraSphere.
+Only authenticated users shall be allowed to access protected resources.
+
+Authorized Users
+Super Administrator
+Hospital Administrator
+Receptionist
+Doctor
+Nurse
+Laboratory Staff
+Radiologist
+Pharmacist
+Cashier
+HR Officer
+Inventory Officer
+Patient
+
+Navigation
+Accessible From
+Application Entry Point
+Navigate To
+Forgot Password
+MFA Verification
+User Dashboard
+
+9.6.5 Login Screen Layout
++-----------------------------------------------------------------------+
+|                           CuraSphere Logo                             |
+|                 Hospital Management System                            |
++-----------------------------------------------------------------------+
+
+                 Welcome Back
+
+Email / Username
++----------------------------------------------------+
+
+Password
++----------------------------------------------------+
+
+☐ Remember Me
+
+Forgot Password?
+
+[ Login ]
+
+-------------------------------------------------------
+
+Language
+
+Help
+
+Privacy Policy
+
+Version
+
+9.6.6 UI Components
+Component
+Type
+Hospital Logo
+Image
+Welcome Message
+Heading
+Username Field
+Textbox
+Password Field
+Password
+Password Visibility Toggle
+Icon Button
+Remember Me
+Checkbox
+Forgot Password
+Link
+Login Button
+Primary Button
+Language Selector
+Dropdown
+Footer
+Static Information
+
+9.6.7 Login Input Fields
+Username / Email
+Property
+Value
+Required
+Yes
+Type
+Email or Username
+Minimum Length
+3
+Maximum Length
+100
+Auto Complete
+Username
+Validation Rules
+Cannot be empty
+Trim whitespace
+Email must follow valid format when applicable
+Reject invalid characters based on security policy
+
+Password
+Property
+Value
+Required
+Yes
+Type
+Password
+Minimum Length
+8
+Maximum Length
+128
+Auto Complete
+Current Password
+Validation Rules
+Required
+Masked by default
+Support visibility toggle
+No leading/trailing whitespace after trimming (if policy permits)
+
+Remember Me
+Stores a secure refresh token (or equivalent mechanism) to reduce repeated logins, according to organizational security policies.
+
+9.6.8 Button Specifications
+Login Button
+Primary Action
+Behavior
+When clicked:
+Validate fields.
+Submit credentials securely.
+Display loading indicator.
+Disable repeated submissions.
+Authenticate user.
+Redirect on success.
+
+Forgot Password
+Navigates to:
+AUTH-FORGOT-001
+
+9.6.9 Login Validation Rules
+Validation
+Action
+Username empty
+Show inline error
+Password empty
+Show inline error
+Invalid email
+Display validation message
+Invalid credentials
+Authentication failed message
+Locked account
+Inform user and provide guidance
+Expired password
+Redirect to password update
+MFA enabled
+Redirect to MFA verification
+
+9.6.10 Authentication Business Rules
+The system shall:
+Authenticate using encrypted communication (HTTPS/TLS).
+Never store plaintext passwords.
+Hash passwords using an approved strong hashing algorithm (e.g., Argon2, bcrypt, or PBKDF2, according to organizational standards).
+Limit failed login attempts.
+Lock accounts after repeated failed attempts as configured by security policy.
+Log all authentication attempts.
+Support Single Sign-On (SSO) integration where configured.
+Enforce Role-Based Access Control (RBAC).
+
+9.6.11 Login Error Messages
+Scenario
+Message
+Invalid Username
+User account not found.
+Incorrect Password
+Invalid username or password.
+Account Locked
+Your account has been temporarily locked. Please contact the system administrator or try again later.
+Inactive Account
+Your account is currently inactive.
+Network Failure
+Unable to connect to the server. Please try again.
+Server Error
+An unexpected error occurred. Please try again later.
+Error messages shall avoid revealing whether a username exists unless organizational security policies explicitly permit such disclosure.
+
+9.6.12 Success Response
+After successful authentication:
+The system shall:
+Generate a secure authenticated session.
+Record login time.
+Record IP/device information where permitted by policy.
+Load user permissions.
+Load user preferences.
+Redirect to the appropriate dashboard based on role.
+
+9.6.13 Loading State
+During authentication:
+Display:
+Spinner
+Disabled Login Button
+Progress Indicator
+Example
+[ Authenticating... ]
+
+Loading...
+
+Please wait...
+
+9.6.14 Empty State
+When no data has been entered:
+Display placeholder text.
+Example
+Email Address
+
+Enter your email
+
+Password
+
+Enter your password
+
+9.6.15 Keyboard Shortcuts
+Key
+Action
+Tab
+Next Field
+Shift + Tab
+Previous Field
+Enter
+Submit Login
+Esc
+Close Dialog (if applicable)
+
+9.6.16 Accessibility Requirements
+The Login screen shall:
+Support screen readers.
+Include ARIA labels for all controls.
+Maintain visible keyboard focus indicators.
+Meet WCAG 2.1 Level AA contrast requirements.
+Provide descriptive validation messages.
+Ensure touch targets are at least 44 × 44 pixels where applicable.
+
+9.6.17 Security Requirements
+The Login screen shall:
+Use CSRF protection where applicable.
+Prevent clickjacking using appropriate response headers.
+Prevent brute-force attacks through rate limiting and account lockout policies.
+Prevent SQL Injection through parameterized queries.
+Prevent Cross-Site Scripting (XSS).
+Never expose password values in logs or client-side storage.
+Automatically clear sensitive fields after failed authentication.
+
+9.6.18 Responsive Layout
+Device
+Layout
+Desktop
+Centered authentication card with supporting branding panel
+Laptop
+Compact centered card
+Tablet
+Full-width responsive card with optimized spacing
+Mobile
+Single-column layout with full-width controls
+
+9.6.19 React Component Structure
+src/
+│
+├── pages/
+│   └── auth/
+│       ├── LoginPage.tsx
+│       ├── ForgotPasswordPage.tsx
+│       ├── ResetPasswordPage.tsx
+│       └── MFAPage.tsx
+│
+├── components/
+│   └── auth/
+│       ├── LoginForm.tsx
+│       ├── PasswordField.tsx
+│       ├── RememberMe.tsx
+│       ├── AuthCard.tsx
+│       ├── AuthHeader.tsx
+│       ├── AuthFooter.tsx
+│       ├── LanguageSelector.tsx
+│       └── LoginIllustration.tsx
+
+9.6.20 Acceptance Criteria
+The Login Screen shall be accepted when:
+All mandatory fields are validated.
+Authentication succeeds with valid credentials.
+Invalid login attempts display appropriate error messages.
+Users are redirected according to their assigned roles.
+Passwords remain masked unless intentionally revealed.
+Loading indicators appear during authentication.
+The screen is fully responsive across supported devices.
+Accessibility and security requirements are satisfied.
+9.6B Authentication Recovery & Session Management
+
+9.6.21 Introduction
+Authentication recovery mechanisms ensure that authorized users can securely regain access to the CuraSphere Hospital Management System while protecting patient information and preventing unauthorized access.
+This section defines the UI, business rules, workflows, validations, and security requirements for:
+Forgot Password
+Password Reset
+One-Time Password (OTP) Verification
+Multi-Factor Authentication (MFA)
+Session Timeout
+Secure Logout
+Account Lockout
+Password Expiration
+
+9.6.22 Forgot Password Screen
+
+Screen ID
+AUTH-FORGOT-001
+
+Purpose
+The Forgot Password screen enables users to initiate a secure password recovery process using their registered email address or username.
+
+Authorized Users
+All authenticated user roles.
+
+Navigation
+Accessible From
+Login Screen
+Navigate To
+OTP Verification
+Login Screen
+
+9.6.23 Forgot Password Layout
++--------------------------------------------------------------+
+|                      CuraSphere Logo                         |
++--------------------------------------------------------------+
+
+Forgot Password
+
+Enter your registered email address
+
+Email Address
+
++--------------------------------------------------------------+
+
+[ Send Verification Code ]
+
+---------------------------------------------------------------
+
+Back to Login
+
+9.6.24 Components
+Component
+Type
+Title
+Heading
+Instruction Text
+Paragraph
+Email Field
+Textbox
+Send Button
+Primary Button
+Back to Login
+Link
+
+9.6.25 Validation Rules
+Rule
+Action
+Empty Email
+Show validation
+Invalid Email
+Reject
+Unknown Email
+Display generic response
+Inactive Account
+Display appropriate message
+For security reasons, the system should avoid confirming whether an email address exists in the system.
+
+9.6.26 Business Rules
+The system shall:
+Generate a secure password reset request.
+Send a time-limited verification code or secure reset link.
+Record the request in audit logs.
+Limit repeated password reset requests.
+Expire reset requests after the configured time period.
+Invalidate previous unused reset requests when a new one is issued.
+
+9.6.27 OTP Verification Screen
+
+Screen ID
+AUTH-OTP-001
+
+Purpose
+Verifies the user's identity before allowing password reset or authentication.
+
+Screen Layout
++-------------------------------------------------------------+
+
+Verify Your Identity
+
+A verification code has been sent.
+
+Code
+
+[ ] [ ] [ ] [ ] [ ] [ ]
+
+Resend Code
+
+[ Verify ]
+
+Back
+
+Components
+Component
+Type
+OTP Input
+Six-digit field
+Verify Button
+Primary Button
+Resend Link
+Link
+Countdown Timer
+Label
+
+Validation
+Six digits required.
+Numeric characters only.
+Auto-focus next input.
+Auto-submit optional after completion.
+Reject expired codes.
+
+Business Rules
+OTP validity shall follow organizational security policy (for example, 5–10 minutes).
+Maximum retry attempts shall be configurable.
+Resend frequency shall be rate-limited.
+Previous OTPs become invalid after a new OTP is generated.
+
+9.6.28 Reset Password Screen
+
+Screen ID
+AUTH-RESET-001
+
+Purpose
+Allows users to create a new password after successful identity verification.
+
+Layout
+New Password
+
++------------------------------------------------------+
+
+Confirm Password
+
++------------------------------------------------------+
+
+Password Strength
+
+██████░░░░
+
+[ Reset Password ]
+
+Fields
+Field
+Required
+New Password
+Yes
+Confirm Password
+Yes
+
+Password Policy
+The password should:
+Meet the organization's minimum length requirement.
+Include uppercase letters.
+Include lowercase letters.
+Include numbers.
+Include special characters (if required by policy).
+Not match recently used passwords, if password history is enforced.
+Not contain obvious personal information where policy prohibits it.
+
+Validation
+Validation
+Action
+Password mismatch
+Reject
+Weak password
+Reject with guidance
+Empty fields
+Validation message
+Reused password
+Reject if history policy applies
+
+Success Response
+Upon successful password reset:
+Display success confirmation.
+Invalidate all previous reset tokens.
+Optionally invalidate existing sessions based on organizational policy.
+Redirect user to Login.
+
+9.6.29 Multi-Factor Authentication (MFA)
+
+Screen ID
+AUTH-MFA-001
+
+Purpose
+Provides an additional verification step after successful password authentication.
+
+Supported Methods
+Email OTP
+SMS OTP
+Authenticator Application (TOTP)
+Hardware Security Key (where supported)
+
+Layout
+Multi-Factor Authentication
+
+Authentication Code
+
++--------------------------------+
+
+Remember this device
+
+☐
+
+[ Verify ]
+
+Components
+Component
+Type
+MFA Code
+Textbox
+Remember Device
+Checkbox
+Verify
+Button
+Resend
+Link
+
+Business Rules
+The system shall:
+Challenge users with MFA when enabled.
+Support trusted devices according to organizational policy.
+Require MFA again after password changes or other high-risk events, if configured.
+Log all MFA attempts.
+
+9.6.30 Session Timeout Screen
+
+Screen ID
+AUTH-SESSION-001
+
+Purpose
+Warn users before automatic logout due to inactivity.
+
+Layout
+Session Expiring
+
+Your session will expire in
+
+02:00
+
+[ Continue Session ]
+
+[ Logout ]
+
+Behavior
+The warning should appear before session expiration according to the configured inactivity timeout.
+
+Business Rules
+Reset inactivity timer after valid user activity.
+Warn users before automatic logout.
+Save recoverable draft data where appropriate.
+Redirect to Login after timeout.
+
+9.6.31 Logout Confirmation
+
+Screen ID
+AUTH-LOGOUT-001
+
+Layout
+Are you sure you want to logout?
+
+[ Logout ]
+
+[ Cancel ]
+
+Business Rules
+The system shall:
+Destroy the authenticated session.
+Remove authentication tokens securely.
+Redirect users to Login.
+Record logout time in audit logs.
+
+9.6.32 Account Lockout Screen
+
+Screen ID
+AUTH-LOCK-001
+
+Purpose
+Displayed after repeated unsuccessful authentication attempts in accordance with security policy.
+
+Message
+Your account has been temporarily locked.
+
+Please contact your system administrator
+or try again later.
+
+Business Rules
+The system shall:
+Prevent additional login attempts while locked.
+Automatically unlock accounts if policy allows.
+Allow administrative unlock.
+Record all lockout events.
+
+9.6.33 Password Expiration Screen
+
+Screen ID
+AUTH-PASSWORD-EXP-001
+
+Purpose
+For organizations enforcing password aging, users shall be prompted to change expired passwords before accessing the system.
+
+Layout
+Your password has expired.
+
+Current Password
+
+New Password
+
+Confirm Password
+
+[ Update Password ]
+
+Business Rules
+Expired passwords shall prevent access to protected resources until changed.
+New passwords shall comply with password policy.
+Password history restrictions shall apply where configured.
+
+9.6.34 Session Security Rules
+The session management system shall:
+Use secure, encrypted session identifiers.
+Prevent session fixation.
+Rotate session identifiers after successful authentication.
+Support configurable inactivity timeouts.
+Support absolute session lifetime limits.
+Invalidate sessions after password changes if configured.
+Support secure logout from all devices where available.
+
+9.6.35 Error Messages
+Scenario
+Message
+Invalid OTP
+The verification code is incorrect.
+Expired OTP
+The verification code has expired.
+Password Too Weak
+Your password does not meet security requirements.
+Session Expired
+Your session has expired. Please sign in again.
+Too Many Requests
+Please wait before requesting another verification code.
+MFA Failed
+Multi-factor authentication failed. Please try again.
+
+9.6.36 Accessibility Requirements
+Authentication recovery screens shall:
+Support keyboard-only navigation.
+Provide ARIA labels for all form elements.
+Announce validation messages to screen readers.
+Maintain WCAG 2.1 Level AA compliance.
+Preserve logical focus order.
+Ensure interactive controls meet minimum touch target sizes.
+
+9.6.37 Security Requirements
+The Authentication Recovery Module shall:
+Never reveal sensitive account information.
+Encrypt all communication using HTTPS/TLS.
+Protect against brute-force attacks.
+Rate-limit OTP and reset requests.
+Log all authentication recovery activities.
+Prevent replay attacks.
+Prevent reuse of expired or consumed reset tokens and OTPs.
+
+9.6.38 Acceptance Criteria
+The Authentication Recovery & Session Management module shall be accepted when:
+Users can securely initiate password recovery.
+OTP verification validates user identity.
+Password reset enforces the configured password policy.
+MFA functions correctly for supported authentication methods.
+Session timeout warnings appear before automatic logout.
+Logout securely terminates authenticated sessions.
+Account lockout prevents unauthorized repeated login attempts.
+Password expiration workflows operate according to organizational policy.
+Security, accessibility, and auditing requirements are fully satisfied.
+
+
+9.6C Patient Management Module (PAT) – Screen Specifications
+
+9.6.39 Introduction
+The Patient Management Module (PAT) is the foundation of the CuraSphere Hospital Management System. Every clinical, administrative, financial, laboratory, radiology, pharmacy, and reporting process is associated with a patient record maintained within this module.
+The module shall support the complete patient lifecycle, including:
+Patient Registration
+Patient Search
+Patient Profile
+Medical History
+Demographics
+Emergency Contacts
+Insurance Information
+Allergies
+Consent Forms
+Uploaded Documents
+Duplicate Patient Management
+Deceased Patient Records
+Patient Status Tracking
+
+9.6.40 Patient Module Navigation
+Dashboard
+     │
+     ▼
+Patient Management
+     │
+ ┌───┼────────────┬──────────────┬───────────────┐
+ ▼   ▼            ▼              ▼               ▼
+Register Search Patient Profile Documents Insurance
+     │
+     ▼
+Medical History
+     │
+     ▼
+Appointments
+
+9.6.41 Patient Registration Screen
+
+Screen ID
+PAT-REG-001
+
+Purpose
+Allows authorized staff to register new patients and create a unique Medical Record Number (MRN).
+
+Authorized Users
+Receptionist
+Hospital Administrator
+Super Administrator
+
+Navigation
+Accessible From
+Dashboard
+Patient Module
+Navigate To
+Patient Profile
+Appointment Booking
+Billing
+Patient Search
+
+9.6.42 Screen Layout
++--------------------------------------------------------------------------------------+
+| Patient Registration                                                                 |
++--------------------------------------------------------------------------------------+
+
+Personal Information
+
+Identification Information
+
+Contact Information
+
+Address Information
+
+Emergency Contact
+
+Insurance Details
+
+Consent
+
+Documents
+
+------------------------------------------------------
+
+[ Save ]
+
+[ Save & Book Appointment ]
+
+[ Cancel ]
+
+9.6.43 Registration Sections
+The registration form shall be divided into logical sections.
+Section
+Purpose
+Personal Information
+Patient identity
+Identification
+National ID / Passport
+Contact
+Phone and Email
+Address
+Residential Information
+Emergency Contact
+Guardian Details
+Insurance
+Insurance Provider
+Consent
+Legal Consent
+Documents
+Uploaded Files
+
+9.6.44 Personal Information Fields
+Field
+Required
+Validation
+Medical Record Number (MRN)
+Auto
+Unique
+First Name
+Yes
+Alphabetic
+Middle Name
+Optional
+Alphabetic
+Last Name
+Yes
+Alphabetic
+Date of Birth
+Yes
+Cannot be future date
+Gender
+Yes
+Dropdown
+Marital Status
+Optional
+Dropdown
+Blood Group
+Optional
+Dropdown
+Nationality
+Yes
+Dropdown
+Occupation
+Optional
+Text
+Photograph
+Optional
+JPG/PNG
+
+9.6.45 Identification Information
+Field
+Required
+CNIC / National ID
+Optional (Configurable)
+Passport Number
+Optional
+Driving License
+Optional
+National Health Number
+Optional
+Validation
+Duplicate IDs shall not be permitted.
+Format shall comply with country-specific configuration.
+Uploaded identity documents shall be virus-scanned before storage.
+
+9.6.46 Contact Information
+Field
+Required
+Mobile Number
+Yes
+Secondary Phone
+Optional
+Email Address
+Optional
+Preferred Contact Method
+Yes
+Validation
+Mobile number shall follow country format.
+Email shall follow RFC-compliant format.
+Duplicate contact information shall trigger review where configured.
+
+9.6.47 Address Information
+Fields
+House Number
+Street
+Area
+City
+Province/State
+Postal Code
+Country
+Options
+Permanent Address
+Current Address
+Checkbox
+☐ Same as Permanent Address
+
+9.6.48 Emergency Contact
+Fields
+Field
+Required
+Contact Name
+Yes
+Relationship
+Yes
+Phone Number
+Yes
+Alternate Number
+Optional
+Address
+Optional
+
+9.6.49 Insurance Information
+Fields
+Field
+Required
+Insurance Provider
+Optional
+Policy Number
+Optional
+Membership ID
+Optional
+Coverage Type
+Optional
+Expiration Date
+Optional
+The system shall validate policy expiration before billing, where integration with the insurer or local policy allows.
+
+9.6.50 Consent Section
+The system shall record patient consent for:
+Treatment
+Data Processing
+Information Sharing
+Research Participation (Optional)
+Telemedicine (Optional)
+Electronic Communication
+Each consent record shall include:
+Date
+Time
+User
+Digital Signature (where applicable)
+Version of consent document accepted
+
+9.6.51 Document Upload
+Supported Documents
+CNIC
+Passport
+Insurance Card
+Referral Letter
+Previous Medical Records
+Consent Forms
+Photographs
+Other Attachments
+Supported Formats
+PDF
+JPG
+PNG
+DOCX
+Maximum file size shall be configurable by system administrators.
+
+9.6.52 Patient Registration Validation Rules
+Validation
+Action
+Required field missing
+Display inline validation
+Duplicate MRN
+Reject
+Duplicate National ID
+Reject or flag according to policy
+Future Date of Birth
+Reject
+Invalid Email
+Reject
+Invalid Phone
+Reject
+Duplicate Patient Detected
+Prompt user for review before creating a new record
+
+9.6.53 Duplicate Patient Detection
+Before saving a new patient, the system shall compare:
+First Name
+Last Name
+Date of Birth
+National ID
+Mobile Number
+Email Address
+Potential duplicate records shall be presented to the user for review.
+
+Example Duplicate Warning
+Potential Duplicate Patient Found
+
+Existing MRN:
+MRN-2026-00452
+
+Name:
+Muhammad Ali
+
+Date of Birth:
+14-Aug-1992
+
+[ View Existing Record ]
+
+[ Continue Registration ]
+
+9.6.54 Save Process
+When the user selects Save, the system shall:
+Validate all mandatory fields.
+Check for duplicate records.
+Validate uploaded documents.
+Generate a unique Medical Record Number (MRN).
+Store patient information.
+Record audit information.
+Display a success notification.
+Redirect to the Patient Profile.
+
+9.6.55 Success Message
+Patient Registered Successfully
+
+Medical Record Number
+
+MRN-2026-00481
+
+[ View Profile ]
+
+[ Book Appointment ]
+
+[ Print Registration Slip ]
+
+9.6.56 Error Handling
+Scenario
+Message
+Duplicate Patient
+Potential duplicate detected.
+Invalid Date
+Enter a valid date.
+Invalid Phone
+Invalid phone number.
+Upload Failed
+Unable to upload document.
+Server Error
+Registration could not be completed. Please try again.
+Network Failure
+Connection lost. Retry after reconnecting.
+
+9.6.57 Accessibility Requirements
+The Patient Registration screen shall:
+Support keyboard-only navigation.
+Group related fields using semantic fieldsets.
+Provide accessible labels for all controls.
+Announce validation errors to assistive technologies.
+Maintain WCAG 2.1 Level AA compliance.
+Ensure sufficient color contrast and visible focus indicators.
+
+9.6.58 Security Requirements
+The Patient Registration module shall:
+Enforce Role-Based Access Control (RBAC).
+Encrypt patient data during transmission using HTTPS/TLS.
+Protect sensitive data at rest according to organizational encryption policies.
+Validate uploaded files and scan for malware.
+Record all create, update, and delete actions in the audit log.
+Restrict access to patient records based on assigned permissions.
+
+9.6.59 Responsive Design
+Device
+Layout
+Desktop
+Multi-section form with two-column layout
+Laptop
+Two-column adaptive layout
+Tablet
+Single-column sections with collapsible panels
+Mobile
+Fully stacked form with full-width controls
+
+9.6.60 React Component Structure
+src/
+│
+├── pages/
+│   └── patients/
+│       ├── PatientRegistrationPage.tsx
+│       ├── PatientSearchPage.tsx
+│       ├── PatientProfilePage.tsx
+│       └── PatientDocumentsPage.tsx
+│
+├── components/
+│   └── patients/
+│       ├── PatientForm.tsx
+│       ├── PersonalInformationForm.tsx
+│       ├── ContactInformationForm.tsx
+│       ├── AddressForm.tsx
+│       ├── EmergencyContactForm.tsx
+│       ├── InsuranceForm.tsx
+│       ├── ConsentSection.tsx
+│       ├── DocumentUploader.tsx
+│       ├── DuplicatePatientDialog.tsx
+│       └── RegistrationSummary.tsx
+
+9.6.61 Acceptance Criteria
+The Patient Registration screen shall be accepted when:
+All mandatory patient information is validated before submission.
+A unique Medical Record Number (MRN) is generated for every new patient.
+Duplicate patient detection functions according to the configured matching rules.
+Uploaded documents are validated and stored securely.
+Consent records are captured with appropriate metadata.
+Audit logs record all registration activities.
+The screen is fully responsive across supported devices.
+Accessibility, security, and data integrity requirements are satisfied.
+9.6D Patient Search, Patient List & Patient Profile Screen Specifications
+
+9.6.62 Introduction
+The Patient Search, Patient List, and Patient Profile screens provide healthcare professionals with rapid access to patient information throughout the hospital.
+These screens shall support efficient patient identification while ensuring privacy, security, usability, and compliance with healthcare regulations.
+The module shall enable users to:
+Search patients quickly
+View patient summaries
+Access complete patient profiles
+Review historical encounters
+Navigate to related clinical modules
+View alerts and allergies
+Access insurance information
+Review uploaded documents
+
+9.6.63 Patient Search Navigation Flow
+Dashboard
+      │
+      ▼
+Patient Search
+      │
+ ┌────┼────────────┐
+ ▼    ▼            ▼
+Results Filters Advanced Search
+      │
+      ▼
+Patient Profile
+      │
+ ┌────┼────────────┬──────────────┬─────────────┐
+ ▼    ▼            ▼              ▼             ▼
+EMR Appointments Laboratory Billing Documents
+
+9.6.64 Patient Search Screen
+
+Screen ID
+PAT-SEARCH-001
+
+Purpose
+Allows users to locate patients using multiple identifiers and advanced search filters.
+
+Authorized Users
+Receptionist
+Doctor
+Nurse
+Laboratory Staff
+Radiologist
+Pharmacist
+Billing Officer
+Hospital Administrator
+Super Administrator
+Access shall be restricted according to Role-Based Access Control (RBAC).
+
+9.6.65 Screen Layout
++--------------------------------------------------------------------------------------+
+| Patient Search                                                                       |
++--------------------------------------------------------------------------------------+
+
+Quick Search
+
++-------------------------------------------------------------+
+
+Advanced Filters
+
+---------------------------------------------------------------
+
+Results Table
+
+---------------------------------------------------------------
+
+Pagination
+
+9.6.66 Search Criteria
+Users shall be able to search using one or more of the following:
+Search Field
+Supported
+Medical Record Number (MRN)
+✔
+Patient Name
+✔
+CNIC / National ID
+✔
+Passport Number
+✔
+Mobile Number
+✔
+Email Address
+✔
+Date of Birth
+✔
+Gender
+✔
+Blood Group
+✔
+City
+✔
+Insurance Policy Number
+✔
+Appointment Number
+✔
+Admission Number
+✔
+
+9.6.67 Advanced Search Filters
+The system shall provide optional filters including:
+Registration Date
+Patient Status
+Department
+Assigned Doctor
+Visit Type
+Admission Status
+Insurance Provider
+Age Range
+Nationality
+Chronic Disease
+Deceased Status
+Archived Records
+
+9.6.68 Search Results Table
+Columns
+Column
+Description
+MRN
+Medical Record Number
+Patient Name
+Full Name
+Age
+Current Age
+Gender
+Gender
+Mobile
+Contact Number
+Department
+Latest Department
+Last Visit
+Most Recent Visit
+Patient Status
+Active/Inactive
+Action
+View Profile
+
+9.6.69 Search Features
+The Patient Search module shall support:
+Instant search
+Debounced typing
+Auto-complete suggestions
+Partial name matching
+Fuzzy search
+Exact identifier search
+Search history
+Saved searches
+Export search results
+Column sorting
+Multi-column filtering
+
+9.6.70 Empty Search State
+No Patients Found
+
+Try changing your search criteria.
+
+[ Register New Patient ]
+
+9.6.71 Patient List Screen
+
+Screen ID
+PAT-LIST-001
+
+Purpose
+Displays all accessible patient records in a searchable, sortable, and filterable table.
+
+9.6.72 Screen Layout
++--------------------------------------------------------------------------------------+
+| Patient List                                                                         |
++--------------------------------------------------------------------------------------+
+
+Search
+
+Filters
+
+Export
+
+Refresh
+
+---------------------------------------------------------------
+
+Patient Table
+
+---------------------------------------------------------------
+
+Pagination
+
+9.6.73 Patient Table Specification
+Column
+Description
+MRN
+Unique Record Number
+Name
+Patient Name
+DOB
+Date of Birth
+Gender
+Gender
+Blood Group
+Blood Type
+Mobile
+Contact Number
+Doctor
+Primary Physician
+Last Visit
+Date
+Status
+Badge
+Actions
+View/Edit
+
+9.6.74 Table Features
+The patient list shall support:
+Pagination
+Infinite scrolling (configurable)
+Sticky table headers
+Sticky action column
+Adjustable page size
+Column resizing
+Column hiding
+Multi-column sorting
+Bulk selection
+Export to PDF
+Export to Excel
+CSV export
+Print
+
+9.6.75 Bulk Actions
+Authorized users may perform:
+Print Patient Labels
+Export Selected Records
+Archive Patients
+Merge Duplicate Records
+Assign Doctor
+Assign Department
+Bulk operations shall respect user permissions and require confirmation where applicable.
+
+9.6.76 Patient Profile Screen
+
+Screen ID
+PAT-PROFILE-001
+
+Purpose
+The Patient Profile serves as the centralized electronic patient record, providing access to demographic, administrative, clinical, and financial information.
+
+9.6.77 Patient Profile Layout
++--------------------------------------------------------------------------------------+
+| Patient Banner                                                                       |
++--------------------------------------------------------------------------------------+
+
+Patient Summary Cards
+
+---------------------------------------------------------------
+
+Tabs
+
+Demographics
+
+Medical History
+
+Appointments
+
+Laboratory
+
+Radiology
+
+Prescriptions
+
+Billing
+
+Insurance
+
+Documents
+
+Timeline
+
+---------------------------------------------------------------
+
+Selected Tab Content
+
+9.6.78 Patient Header
+The patient header shall display:
+Information
+Display
+Photograph
+Yes
+Patient Name
+Yes
+MRN
+Yes
+Gender
+Yes
+Age
+Yes
+Blood Group
+Yes
+Current Status
+Badge
+Assigned Doctor
+Yes
+Department
+Yes
+
+9.6.79 Patient Status Indicators
+Badges shall visually indicate patient status.
+Badge
+Meaning
+Green
+Active
+Blue
+Admitted
+Orange
+Observation
+Purple
+Surgery
+Red
+Critical
+Gray
+Discharged
+Black
+Deceased
+Status indicators shall include text labels and not rely solely on color.
+
+9.6.80 Patient Summary Cards
+Example cards:
+Active Allergies
+Chronic Diseases
+Current Medications
+Outstanding Bills
+Upcoming Appointment
+Active Admission
+Insurance Status
+Recent Laboratory Result
+
+9.6.81 Patient Profile Tabs
+The profile shall contain the following tabs:
+Tab
+Purpose
+Demographics
+Personal Information
+Medical History
+Previous diagnoses
+Appointments
+Visit schedule
+Admissions
+IPD History
+EMR
+Clinical Notes
+Laboratory
+Test Results
+Radiology
+Imaging Reports
+Pharmacy
+Medication History
+Billing
+Financial Information
+Insurance
+Insurance Details
+Documents
+Uploaded Files
+Timeline
+Chronological Events
+Audit History*
+Administrative Access (Authorized Users Only)
+
+9.6.82 Patient Timeline
+The timeline shall present events in chronological order.
+Example:
+2026
+
+▼
+
+Registration
+
+↓
+
+Appointment
+
+↓
+
+Consultation
+
+↓
+
+Laboratory Test
+
+↓
+
+Prescription
+
+↓
+
+Payment
+
+↓
+
+Discharge
+Each event shall link to the corresponding detailed record, subject to user permissions.
+
+9.6.83 Quick Actions
+Available actions may include:
+Book Appointment
+Admit Patient
+Start Consultation
+Add Clinical Note
+Request Laboratory Test
+Request Radiology Examination
+Create Prescription
+Generate Invoice
+Print Patient Card
+Print Wristband
+Upload Document
+Displayed actions shall depend on the authenticated user's role and permissions.
+
+9.6.84 Navigation Integration
+From the Patient Profile, users shall be able to navigate directly to:
+Electronic Medical Record (EMR)
+Appointment Management
+OPD
+IPD
+Emergency
+Laboratory
+Radiology
+Pharmacy
+Billing
+Insurance
+Document Management
+The current patient context shall be preserved during navigation to reduce repetitive searching.
+
+9.6.85 Audit & Access Tracking
+Every access to a patient profile shall be logged with:
+User ID
+User Role
+Timestamp
+IP Address (where permitted)
+Device Information
+Action Performed
+Record Accessed
+Audit information shall be protected from unauthorized modification.
+
+9.6.86 Accessibility Requirements
+The Patient Search, Patient List, and Patient Profile screens shall:
+Support keyboard-only navigation.
+Provide semantic table structures for assistive technologies.
+Include ARIA labels for filters, controls, and tabs.
+Announce dynamic search results to screen readers.
+Meet WCAG 2.1 Level AA accessibility standards.
+Ensure responsive layouts remain usable at increased zoom levels.
+
+9.6.87 Security Requirements
+The Patient Management screens shall:
+Enforce Role-Based Access Control (RBAC).
+Restrict access to sensitive patient data based on permissions.
+Mask confidential fields where required.
+Log all searches and profile access.
+Prevent unauthorized record exports.
+Require additional authorization for restricted patient categories where organizational policy requires.
+
+9.6.88 Acceptance Criteria
+The Patient Search, Patient List, and Patient Profile screens shall be accepted when:
+Users can search patients using multiple identifiers.
+Advanced filters return accurate results.
+Patient lists support sorting, filtering, pagination, and export.
+Patient profiles consolidate administrative, clinical, and financial information.
+Quick actions navigate users efficiently to related workflows.
+Patient timelines accurately display chronological events.
+Accessibility, security, auditing, and responsive design requirements are fully implemented.
+9.6E Patient Clinical Information Screen Specifications
+
+9.6.89 Introduction
+The Patient Clinical Information screens provide healthcare professionals with a comprehensive and longitudinal view of a patient's medical condition. These screens consolidate demographic, clinical, family, social, immunization, allergy, and consent information into a structured interface that supports informed clinical decision-making.
+These screens shall integrate seamlessly with:
+Electronic Medical Records (EMR)
+OPD Module
+IPD Module
+Emergency Department
+Laboratory Information System (LIS)
+Radiology Information System (RIS)
+Pharmacy Management
+Billing & Insurance
+Clinical Decision Support System (CDSS)
+
+9.6.90 Clinical Information Navigation
+Patient Profile
+       │
+       ▼
+Clinical Information
+       │
+ ┌─────┼─────────────┬─────────────┬─────────────┐
+ ▼     ▼             ▼             ▼             ▼
+Medical Allergies Family Social Immunization
+History History History Records
+       │
+       ▼
+Vitals
+       │
+       ▼
+Documents
+       │
+       ▼
+Consent Management
+
+9.6.91 Demographics Screen
+
+Screen ID
+PAT-DEMO-001
+
+Purpose
+Displays and manages the patient's demographic information throughout their lifetime within the healthcare organization.
+
+Layout
++--------------------------------------------------------------------+
+| Patient Demographics                                                |
++--------------------------------------------------------------------+
+
+Personal Information
+
+Contact Information
+
+Address Information
+
+Identification
+
+Emergency Contact
+
+Insurance Summary
+
+--------------------------------------------------
+
+[ Edit ]
+
+[ Save ]
+
+[ Cancel ]
+
+Information Displayed
+Category
+Information
+Identity
+Name, MRN, DOB, Gender
+Contact
+Phone, Email
+Address
+Permanent & Current Address
+Nationality
+Country
+Marital Status
+Current Status
+Blood Group
+ABO/Rh
+Occupation
+Employment
+Preferred Language
+Communication
+Religion (Optional)
+Configurable
+Preferred Communication Method
+SMS, Email, Phone
+
+Business Rules
+MRN cannot be modified.
+Historical demographic changes shall be audited.
+Only authorized users may edit demographic information.
+Previous demographic versions shall be retained for audit purposes where required.
+
+9.6.92 Medical History Screen
+
+Screen ID
+PAT-HISTORY-001
+
+Purpose
+Provides a longitudinal record of the patient's previous medical conditions and treatments.
+
+Layout
+Medical History
+
+-----------------------------------------------------
+
+Active Problems
+
+Past Medical Conditions
+
+Surgeries
+
+Hospital Admissions
+
+Previous Diagnoses
+
+Current Medications
+
+-----------------------------------------------------
+
+Timeline
+
+Sections
+Active Medical Conditions
+Examples:
+Diabetes Mellitus
+Hypertension
+Asthma
+Chronic Kidney Disease
+
+Previous Illnesses
+Displays
+Diagnosis
+Date
+Treating Physician
+Status
+
+Surgical History
+Displays
+Procedure
+Hospital
+Date
+Surgeon
+Outcome
+
+Hospital Admissions
+Displays
+Admission Date
+Discharge Date
+Department
+Diagnosis
+Length of Stay
+
+9.6.93 Allergies & Clinical Alerts
+
+Screen ID
+PAT-ALLERGY-001
+
+Purpose
+Displays patient allergies and high-priority clinical alerts.
+
+Layout
++------------------------------------------------+
+
+Allergies
+
+Clinical Alerts
+
+Adverse Drug Reactions
+
+--------------------------------------------------
+
+Severity
+
+Reaction
+
+Status
+
+Allergy Categories
+Drug Allergy
+Food Allergy
+Environmental Allergy
+Latex Allergy
+Contrast Media Allergy
+Other
+
+Severity Levels
+Severity
+Description
+Mild
+Minor reaction
+Moderate
+Requires intervention
+Severe
+Medical emergency
+Life-Threatening
+Immediate treatment required
+
+Clinical Alert Examples
+Fall Risk
+Isolation Required
+DNR (Do Not Resuscitate)
+Pregnancy
+Organ Donor
+Infectious Disease Precautions
+Critical Medication Alert
+Clinical alerts shall remain prominently visible across all patient-related screens.
+
+9.6.94 Problem List Screen
+
+Screen ID
+PAT-PROBLEM-001
+
+Purpose
+Maintains an active list of clinical problems affecting the patient.
+
+Display Information
+Field
+Description
+Problem
+Clinical diagnosis
+ICD Code
+Standard coding
+Status
+Active/Resolved
+Onset Date
+First identified
+Resolution Date
+When resolved
+Managing Physician
+Responsible clinician
+
+9.6.95 Family History Screen
+
+Screen ID
+PAT-FAMILY-001
+
+Purpose
+Documents hereditary and familial medical conditions.
+
+Data Fields
+Family Member
+Relationship
+Medical Condition
+Age at Diagnosis
+Living Status
+Additional Notes
+
+Common Conditions
+Diabetes
+Hypertension
+Cancer
+Stroke
+Heart Disease
+Genetic Disorders
+Mental Illness
+
+9.6.96 Social History Screen
+
+Screen ID
+PAT-SOCIAL-001
+
+Purpose
+Records lifestyle and environmental information relevant to clinical care.
+
+Data Fields
+Field
+Description
+Smoking Status
+Current/Former/Never
+Alcohol Use
+Frequency
+Recreational Drug Use
+Yes/No
+Occupation
+Employment
+Exercise
+Frequency
+Diet
+Nutritional habits
+Living Situation
+Home environment
+Marital Status
+Current status
+
+9.6.97 Immunization Records
+
+Screen ID
+PAT-IMM-001
+
+Purpose
+Maintains the patient's vaccination history.
+
+Vaccine Record
+Field
+Description
+Vaccine Name
+Administered vaccine
+Manufacturer
+Vaccine manufacturer
+Dose Number
+Dose sequence
+Administration Date
+Date
+Batch Number
+Vaccine batch
+Administrator
+Healthcare provider
+Next Due Date
+Booster schedule
+
+Features
+Vaccination timeline
+Overdue reminders
+Booster notifications
+Printable immunization certificate
+
+9.6.98 Vital Signs History
+
+Screen ID
+PAT-VITAL-001
+
+Purpose
+Displays historical vital signs measurements.
+
+Vital Signs
+Measurement
+Unit
+Blood Pressure
+mmHg
+Heart Rate
+bpm
+Respiratory Rate
+breaths/min
+Temperature
+°C / °F
+Oxygen Saturation
+%
+Height
+cm
+Weight
+kg
+BMI
+kg/m²
+
+Features
+Historical trend charts
+Date filtering
+Abnormal value highlighting
+Printable reports
+
+9.6.99 Patient Documents Screen
+
+Screen ID
+PAT-DOC-001
+
+Purpose
+Stores and organizes patient-related electronic documents.
+
+Supported Document Types
+National ID
+Passport
+Insurance Card
+Referral Letter
+Laboratory Reports
+Radiology Reports
+Discharge Summary
+Consent Forms
+Clinical Images
+External Medical Records
+
+Actions
+Upload
+Preview
+Download
+Print
+Version History
+Archive
+
+9.6.100 Consent Management Screen
+
+Screen ID
+PAT-CONSENT-001
+
+Purpose
+Records and manages patient consent for clinical, legal, and administrative activities.
+
+Consent Types
+Consent
+Required
+General Treatment
+Yes
+Surgery
+Conditional
+Blood Transfusion
+Conditional
+Anesthesia
+Conditional
+Telemedicine
+Optional
+Data Sharing
+Configurable
+Clinical Research
+Optional
+Photography
+Optional
+
+Consent Record
+Each consent shall include:
+Consent Type
+Patient/Guardian Name
+Date & Time
+Staff Witness
+Digital Signature
+Expiration Date (if applicable)
+Consent Status
+
+9.6.101 Merge Duplicate Patients
+
+Screen ID
+PAT-MERGE-001
+
+Purpose
+Allows authorized administrators to merge duplicate patient records while preserving historical data.
+
+Business Rules
+Merge operations require elevated permissions.
+Source and destination records shall be reviewed before merging.
+All linked clinical, financial, and administrative records shall be reassigned.
+Merge operations shall be fully audited.
+Original record identifiers shall be retained for traceability.
+
+9.6.102 Archive & Deceased Patient Management
+
+Screen ID
+PAT-ARCHIVE-001
+
+Purpose
+Manages archived and deceased patient records while preserving legal and clinical history.
+
+Features
+Archive inactive records
+Restore archived records
+Mark patient as deceased
+Record date and cause of death (where appropriate)
+Restrict modifications after deceased status
+Retain records according to applicable legal retention policies
+
+9.6.103 Accessibility Requirements
+The Patient Clinical Information screens shall:
+Support keyboard-only navigation.
+Use semantic headings and landmarks.
+Provide accessible labels for charts, tables, and forms.
+Maintain logical focus order.
+Meet WCAG 2.1 Level AA standards.
+Support text zoom up to 200% without functional loss.
+
+9.6.104 Security Requirements
+The Clinical Information module shall:
+Enforce Role-Based Access Control (RBAC).
+Protect sensitive patient information during storage and transmission.
+Record all view, create, update, merge, archive, and restore actions in the audit log.
+Restrict access to highly sensitive records based on organizational policy.
+Mask confidential data where applicable.
+Prevent unauthorized deletion of clinical history.
+
+9.6.105 Acceptance Criteria
+The Patient Clinical Information module shall be accepted when:
+Demographic information is displayed accurately and securely.
+Medical history provides a complete longitudinal view of patient care.
+Allergies and clinical alerts are prominently displayed across all relevant screens.
+Family, social, immunization, and vital sign histories are maintained correctly.
+Patient documents and consent records are securely managed.
+Duplicate record merging preserves data integrity and traceability.
+Archive and deceased patient workflows comply with organizational and legal requirements.
+Accessibility, security, auditability, and responsive design requirements are fully satisfied.
+Part 9.7A — Appointment Management (APT) Module Screen Specifications (Appointment Dashboard, Calendar & Schedule Appointment)
+
+9.7 Appointment Management (APT) Module
+
+9.7.1 Introduction
+The Appointment Management Module (APT) manages the complete lifecycle of patient appointments across all hospital departments. It enables efficient scheduling, resource allocation, patient flow management, appointment tracking, and integration with clinical and financial workflows.
+The Appointment Management Module shall support:
+Appointment Scheduling
+Appointment Calendar
+Walk-in Registration
+Queue Management
+Doctor Availability
+Appointment Rescheduling
+Appointment Cancellation
+Waiting List Management
+Token Generation
+Patient Check-In
+Patient Check-Out
+Online Appointment Booking
+Telemedicine Scheduling
+Automated Appointment Reminders
+
+9.7.2 Module Objectives
+The Appointment Management Module shall:
+Reduce patient waiting time.
+Prevent scheduling conflicts.
+Optimize doctor availability.
+Support multi-department scheduling.
+Enable real-time appointment tracking.
+Improve patient experience.
+Integrate with EMR, Billing, Laboratory, Radiology, Pharmacy, and Patient Portal.
+
+9.7.3 Appointment Navigation Flow
+Dashboard
+      │
+      ▼
+Appointment Dashboard
+      │
+ ┌────┼─────────────┬─────────────┬────────────┐
+ ▼    ▼             ▼             ▼            ▼
+Calendar Schedule Queue Doctor Availability Waiting List
+      │
+      ▼
+Appointment Details
+      │
+ ┌────┼─────────────┬─────────────┬─────────────┐
+ ▼    ▼             ▼             ▼             ▼
+Check-In EMR Billing Laboratory Radiology
+
+9.7.4 Appointment Dashboard
+
+Screen ID
+APT-DASH-001
+
+Purpose
+Provides receptionists, administrators, and healthcare providers with a real-time overview of appointment activities, patient flow, and scheduling performance.
+
+Authorized Users
+Receptionist
+Hospital Administrator
+Doctor
+Department Coordinator
+Super Administrator
+
+9.7.5 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Appointment Dashboard                                                                |
++--------------------------------------------------------------------------------------+
+
+KPI Cards
+
+------------------------------------------------------------
+
+Today's Calendar            Waiting Queue
+
+------------------------------------------------------------
+
+Doctor Availability         Appointment Statistics
+
+------------------------------------------------------------
+
+Quick Actions               Notifications
+
+------------------------------------------------------------
+
+Upcoming Appointments
+
+9.7.6 Dashboard KPI Cards
+KPI
+Description
+Today's Appointments
+Total scheduled appointments
+Checked-In Patients
+Patients currently waiting
+Completed Visits
+Completed consultations
+Cancelled Appointments
+Cancelled today
+No-Show Patients
+Missed appointments
+Average Waiting Time
+Average queue time
+
+9.7.7 Quick Actions
+Users shall be able to perform the following actions directly from the dashboard:
+Schedule Appointment
+Register Walk-in Patient
+Search Appointment
+Generate Queue Token
+Check-In Patient
+Reschedule Appointment
+Cancel Appointment
+View Doctor Schedule
+
+9.7.8 Appointment Calendar Screen
+
+Screen ID
+APT-CALENDAR-001
+
+Purpose
+Displays appointments in multiple calendar views to facilitate scheduling and resource management.
+
+9.7.9 Calendar Layout
++--------------------------------------------------------------------------------------+
+| Appointment Calendar                                                                 |
++--------------------------------------------------------------------------------------+
+
+Filters
+
+Date Navigator
+
+View Selector
+
+------------------------------------------------------------
+
+Monthly / Weekly / Daily Calendar
+
+------------------------------------------------------------
+
+Appointment Details Panel
+
+9.7.10 Supported Calendar Views
+View
+Purpose
+Daily
+Individual daily schedule
+Weekly
+Weekly planning
+Monthly
+Long-term overview
+Doctor Schedule
+Doctor-specific calendar
+Department Schedule
+Department calendar
+Room Schedule
+Consultation room allocation
+
+9.7.11 Calendar Features
+The calendar shall support:
+Drag-and-drop rescheduling
+Color-coded appointment statuses
+Zoomable timeline (day view)
+Multi-provider view
+Department filters
+Resource filters
+Holiday display
+Non-working hours
+Appointment conflict highlighting
+Real-time updates
+
+9.7.12 Appointment Status Colors
+Status
+Badge
+Meaning
+Scheduled
+Blue
+Appointment confirmed
+Checked-In
+Green
+Patient arrived
+Waiting
+Orange
+Awaiting consultation
+In Progress
+Purple
+Consultation underway
+Completed
+Dark Green
+Visit completed
+Cancelled
+Red
+Appointment cancelled
+No Show
+Gray
+Patient absent
+Rescheduled
+Cyan
+Appointment moved
+Status shall always include both a text label and a visual indicator.
+
+9.7.13 Schedule Appointment Screen
+
+Screen ID
+APT-SCHEDULE-001
+
+Purpose
+Allows authorized users to schedule appointments for new or existing patients while validating provider availability and avoiding scheduling conflicts.
+
+9.7.14 Screen Layout
++--------------------------------------------------------------------------------------+
+| Schedule Appointment                                                                 |
++--------------------------------------------------------------------------------------+
+
+Patient Information
+
+Appointment Information
+
+Doctor Selection
+
+Department
+
+Date & Time
+
+Appointment Type
+
+Priority
+
+Additional Notes
+
+-----------------------------------------------------
+
+[ Schedule Appointment ]
+
+[ Save Draft ]
+
+[ Cancel ]
+
+9.7.15 Appointment Information Fields
+Patient Information
+Field
+Required
+MRN
+Yes
+Patient Name
+Auto
+Mobile Number
+Auto
+Age
+Auto
+Gender
+Auto
+
+Appointment Information
+Field
+Required
+Appointment Number
+Auto
+Department
+Yes
+Doctor
+Yes
+Consultation Room
+Configurable
+Appointment Date
+Yes
+Appointment Time
+Yes
+Appointment Duration
+Yes
+Visit Type
+Yes
+Appointment Priority
+Yes
+Referral Source
+Optional
+Clinical Notes
+Optional
+
+9.7.16 Visit Types
+Supported visit types:
+New Consultation
+Follow-Up
+Emergency
+Walk-In
+Telemedicine
+Specialist Referral
+Procedure Visit
+Vaccination
+Diagnostic Review
+
+9.7.17 Appointment Priority
+Priority
+Description
+Routine
+Standard appointment
+Urgent
+Requires prompt consultation
+Emergency
+Immediate medical attention
+Priority levels shall influence queue placement and scheduling where organizational policy permits.
+
+9.7.18 Validation Rules
+Validation
+Action
+Patient not selected
+Reject submission
+Doctor unavailable
+Suggest alternative slot
+Appointment in the past
+Reject
+Time slot occupied
+Display conflict warning
+Duplicate appointment
+Prompt user for confirmation or prevent duplication according to policy
+Outside working hours
+Reject unless override permission is granted
+
+9.7.19 Doctor Availability Validation
+Before confirming an appointment, the system shall verify:
+Doctor working hours
+Approved leave
+Public holidays
+Existing appointments
+Maximum appointments per session
+Department assignment
+Consultation room availability (if applicable)
+
+9.7.20 Appointment Conflict Detection
+The system shall automatically detect:
+Double-booked appointments
+Overlapping consultation times
+Room conflicts
+Provider schedule conflicts
+Patient overlapping appointments
+Blocked scheduling periods
+Detected conflicts shall be presented to the user before confirmation, along with available alternatives where possible.
+
+9.7.21 Appointment Confirmation
+Upon successful scheduling, the system shall:
+Generate a unique Appointment Number.
+Reserve the selected time slot.
+Notify the assigned healthcare provider.
+Update the appointment calendar.
+Create an audit record.
+Trigger appointment reminder workflows if configured.
+Display a confirmation message.
+
+9.7.22 Confirmation Message
+Appointment Scheduled Successfully
+
+Appointment Number
+
+APT-2026-01845
+
+Doctor
+
+Dr. Ahmed Khan
+
+Date
+
+21 July 2026
+
+Time
+
+10:30 AM
+
+[ Print Appointment Slip ]
+
+[ Send SMS Reminder ]
+
+[ View Appointment ]
+
+9.7.23 Accessibility Requirements
+The Appointment Dashboard, Calendar, and Schedule Appointment screens shall:
+Support keyboard navigation.
+Provide accessible calendar controls.
+Include ARIA labels for scheduling controls.
+Announce scheduling conflicts to assistive technologies.
+Meet WCAG 2.1 Level AA accessibility standards.
+Support responsive interaction on touch devices.
+
+9.7.24 Security Requirements
+The Appointment Management module shall:
+Enforce Role-Based Access Control (RBAC).
+Prevent unauthorized appointment creation or modification.
+Record all scheduling activities in the audit log.
+Restrict access to confidential patient information.
+Protect appointment data during transmission using HTTPS/TLS.
+Validate all user input on both client and server sides.
+
+9.7.25 Acceptance Criteria
+The Appointment Dashboard, Calendar, and Schedule Appointment screens shall be accepted when:
+Appointment dashboards display real-time scheduling information.
+Calendar views support daily, weekly, and monthly scheduling.
+Appointment scheduling validates provider and resource availability.
+Conflicts are detected before appointment confirmation.
+Appointment numbers are generated uniquely.
+Notifications and reminders are triggered according to configuration.
+Accessibility, responsiveness, security, and auditing requirements are fully implemented.
+9.7B Walk-In Registration, Queue Management, Check-In/Check-Out & Token Management
+
+9.7.26 Introduction
+The Walk-In Registration and Queue Management subsystem enables hospitals to efficiently manage patients who arrive without prior appointments while optimizing patient flow throughout outpatient departments (OPD), specialty clinics, diagnostic centers, and emergency services.
+This subsystem provides real-time queue monitoring, token generation, patient prioritization, check-in/check-out workflows, and waiting list management to reduce waiting times and improve operational efficiency.
+The subsystem shall integrate with:
+Patient Management (PAT)
+Electronic Medical Record (EMR)
+OPD
+IPD
+Billing
+Laboratory
+Radiology
+Pharmacy
+Notification System
+
+9.7.27 Walk-In Registration Screen
+
+Screen ID
+APT-WALKIN-001
+
+Purpose
+Allows reception staff to register patients arriving without prior appointments and immediately place them into the appropriate consultation queue.
+
+Authorized Users
+Receptionist
+Front Desk Officer
+Hospital Administrator
+Super Administrator
+
+9.7.28 Screen Layout
++--------------------------------------------------------------------------------------+
+| Walk-In Patient Registration                                                         |
++--------------------------------------------------------------------------------------+
+
+Patient Search
+
+----------------------------------------------------
+
+If Existing Patient
+
+Patient Summary
+
+----------------------------------------------------
+
+If New Patient
+
+Quick Registration Form
+
+----------------------------------------------------
+
+Department
+
+Doctor
+
+Priority
+
+Reason for Visit
+
+----------------------------------------------------
+
+[ Generate Token ]
+
+[ Save ]
+
+[ Cancel ]
+
+9.7.29 Quick Registration Fields
+Field
+Required
+Existing Patient Search
+Yes
+Patient Name
+Yes (New Patient)
+Mobile Number
+Yes
+Gender
+Yes
+Age / DOB
+Yes
+Department
+Yes
+Doctor
+Optional (Depending on Workflow)
+Visit Reason
+Yes
+Priority
+Yes
+
+9.7.30 Walk-In Workflow
+Patient Arrives
+       │
+       ▼
+Search Existing Patient
+       │
+ ┌─────┴───────────┐
+ │                 │
+ ▼                 ▼
+Found          Not Found
+ │                 │
+ ▼                 ▼
+Select Record  Register Patient
+       │
+       ▼
+Assign Department
+       │
+       ▼
+Generate Queue Token
+       │
+       ▼
+Patient Waiting Queue
+
+9.7.31 Queue Management Dashboard
+
+Screen ID
+APT-QUEUE-001
+
+Purpose
+Provides real-time monitoring and management of patient queues across departments.
+
+9.7.32 Dashboard Layout
++--------------------------------------------------------------------------------------+
+| Queue Management Dashboard                                                           |
++--------------------------------------------------------------------------------------+
+
+Department Selector
+
+Doctor Selector
+
+Queue Status
+
+--------------------------------------------------------
+
+Waiting Patients
+
+Current Consultation
+
+Completed Patients
+
+--------------------------------------------------------
+
+Queue Table
+
+--------------------------------------------------------
+
+Quick Actions
+
+9.7.33 Queue Summary Cards
+Card
+Description
+Waiting Patients
+Current queue size
+Being Consulted
+Active consultation
+Completed Today
+Completed visits
+Average Waiting Time
+Queue performance
+Longest Waiting Patient
+Operational indicator
+High Priority Patients
+Urgent queue count
+
+9.7.34 Queue Table
+Column
+Description
+Token Number
+Queue Identifier
+Patient Name
+Patient
+MRN
+Medical Record Number
+Appointment Type
+Walk-In / Scheduled
+Priority
+Routine / Urgent / Emergency
+Arrival Time
+Check-In Time
+Waiting Time
+Live Duration
+Assigned Doctor
+Healthcare Provider
+Status
+Queue Status
+Actions
+Call / Hold / Transfer
+
+9.7.35 Queue Status
+Supported statuses:
+Waiting
+Called
+In Consultation
+Completed
+Hold
+Cancelled
+No Show
+Transferred
+Each status shall be represented by standardized badges and icons.
+
+9.7.36 Token Generation
+
+Screen ID
+APT-TOKEN-001
+
+Purpose
+Automatically generates queue numbers based on department and appointment type.
+
+Token Format Examples
+OPD-001
+
+PED-018
+
+CARD-024
+
+LAB-005
+
+RAD-011
+Token prefixes shall be configurable by administrators.
+
+Token Information
+Each generated token shall include:
+Token Number
+Department
+Queue Position
+Estimated Waiting Time
+Assigned Doctor
+Date
+Time
+
+9.7.37 Queue Display Screen
+
+Screen ID
+APT-DISPLAY-001
+
+Purpose
+Displays live queue information on waiting room monitors.
+
+Display Layout
++--------------------------------------------------------------+
+
+NOW SERVING
+
+OPD-021
+
+Dr. Sarah Khan
+
+Room 03
+
+--------------------------------------------------------------
+
+NEXT TOKENS
+
+OPD-022
+
+OPD-023
+
+OPD-024
+
+--------------------------------------------------------------
+
+Announcements
+
+Features
+Full-screen display mode
+Automatic refresh
+Voice announcement integration
+Multiple language support
+Department-specific display
+Large accessible typography
+
+9.7.38 Patient Check-In Screen
+
+Screen ID
+APT-CHECKIN-001
+
+Purpose
+Records patient arrival and activates the consultation workflow.
+
+Available Actions
+Verify Appointment
+Verify Patient Identity
+Update Contact Information
+Generate Token
+Print Queue Slip
+Notify Doctor
+Mark Patient as Arrived
+
+Validation Rules
+Appointment must exist (except walk-ins).
+Patient identity should be verified according to organizational policy.
+Duplicate check-ins shall not be permitted.
+Expired appointments require staff confirmation before check-in.
+
+9.7.39 Patient Check-Out Screen
+
+Screen ID
+APT-CHECKOUT-001
+
+Purpose
+Completes the patient's appointment workflow after consultation.
+
+Check-Out Actions
+Complete Visit
+Generate Invoice
+Print Visit Summary
+Schedule Follow-Up
+Generate Prescription
+Request Laboratory Tests
+Request Radiology
+Refer to Specialist
+Discharge from OPD
+
+9.7.40 Waiting List Management
+
+Screen ID
+APT-WAITLIST-001
+
+Purpose
+Maintains patients waiting for earlier appointment slots due to cancellations or provider availability.
+
+Waiting List Fields
+Field
+Description
+Patient
+Name
+MRN
+Record Number
+Preferred Doctor
+Requested physician
+Preferred Date
+Requested date
+Priority
+Queue priority
+Request Date
+Original request
+Status
+Active / Offered / Completed
+
+Features
+Automatic slot allocation
+Manual promotion
+Priority override
+Notification on availability
+Waiting list history
+
+9.7.41 Queue Prioritization
+The system shall prioritize patients based on configurable organizational policies.
+Supported priorities include:
+Priority
+Example
+Emergency
+Critical patient
+Urgent
+High-risk patient
+Senior Citizen
+Configurable
+Child
+Pediatric priority
+Pregnant Patient
+Obstetric priority
+Disabled Patient
+Accessibility priority
+Routine
+Standard consultation
+Priority adjustments shall be recorded in the audit log.
+
+9.7.42 No-Show Management
+The system shall automatically identify appointments where patients fail to check in within the configured grace period.
+Available actions:
+Mark No Show
+Contact Patient
+Reschedule Appointment
+Cancel Appointment
+Add to Waiting List
+Generate Administrative Report
+
+9.7.43 Queue Transfer
+Authorized staff shall be able to transfer patients between:
+Doctors
+Departments
+Consultation Rooms
+Clinics
+Transfer records shall include:
+Previous Assignment
+New Assignment
+Reason
+User
+Timestamp
+
+9.7.44 Queue Analytics
+The dashboard shall provide operational analytics including:
+Metric
+Description
+Average Waiting Time
+Department performance
+Consultation Duration
+Provider efficiency
+Queue Length
+Current workload
+Daily Patient Volume
+Operational statistics
+Peak Hours
+Capacity planning
+No-Show Rate
+Attendance metric
+Walk-In Percentage
+Patient behavior
+Doctor Utilization
+Resource utilization
+
+9.7.45 Notifications
+The module shall support automated notifications for:
+Token generated
+Patient called
+Queue transferred
+Appointment delayed
+Estimated waiting time updated
+Appointment completed
+Follow-up scheduled
+Notification channels may include:
+SMS
+Email
+Mobile Application
+Patient Portal
+Waiting Room Display
+
+9.7.46 Accessibility Requirements
+The Walk-In Registration and Queue Management subsystem shall:
+Support keyboard-only operation.
+Provide screen reader support for queue controls.
+Use high-contrast queue status indicators.
+Include text labels alongside icons and colors.
+Support multilingual queue displays.
+Ensure waiting room displays are readable from typical viewing distances.
+Comply with WCAG 2.1 Level AA accessibility standards.
+
+9.7.47 Security Requirements
+The subsystem shall:
+Enforce Role-Based Access Control (RBAC).
+Record all queue modifications in audit logs.
+Prevent unauthorized token manipulation.
+Restrict queue overrides to authorized personnel.
+Encrypt all patient and appointment information during transmission.
+Protect queue displays from exposing unnecessary patient information in public areas.
+
+9.7.48 Acceptance Criteria
+The Walk-In Registration, Queue Management, Check-In/Check-Out, and Token Management subsystem shall be accepted when:
+Walk-in patients can be registered efficiently.
+Queue tokens are generated uniquely and sequentially according to department rules.
+Queue dashboards display real-time patient flow information.
+Check-in and check-out workflows update patient status accurately.
+Waiting lists automatically manage available appointment slots.
+Queue prioritization follows configured organizational policies.
+No-show handling and queue transfers operate correctly.
+Accessibility, security, auditing, responsiveness, and notification requirements are fully implemented.
+9.7C Appointment Rescheduling, Cancellation, Doctor Availability, Online Booking & Telemedicine
+
+9.7.49 Introduction
+This section defines the user interface specifications for advanced appointment management capabilities, enabling healthcare organizations to efficiently manage provider schedules, appointment modifications, patient self-service booking, and virtual consultations.
+These features improve operational flexibility, reduce missed appointments, increase patient satisfaction, and optimize healthcare resource utilization.
+
+9.7.50 Doctor Availability Management
+
+Screen ID
+APT-DOCTOR-001
+
+Purpose
+Allows administrators and authorized staff to configure and monitor doctor availability for appointments and consultations.
+
+Authorized Users
+Hospital Administrator
+Department Manager
+Receptionist (View Only)
+Doctor (Own Schedule)
+Super Administrator
+
+9.7.51 Screen Layout
++--------------------------------------------------------------------------------------+
+| Doctor Availability                                                                   |
++--------------------------------------------------------------------------------------+
+
+Doctor Selector
+
+Department
+
+Date Range
+
+Availability Status
+
+------------------------------------------------------
+
+Working Hours
+
+Break Time
+
+Leave Schedule
+
+Blocked Time Slots
+
+Recurring Schedule
+
+------------------------------------------------------
+
+[ Save Schedule ]
+
+[ Publish ]
+
+[ Cancel ]
+
+9.7.52 Availability Information
+Each doctor's schedule shall include:
+Field
+Description
+Doctor Name
+Healthcare Provider
+Department
+Assigned Department
+Consultation Room
+Assigned Room
+Working Days
+Monday–Sunday
+Start Time
+Consultation Start
+End Time
+Consultation End
+Break Periods
+Lunch/Break
+Maximum Appointments
+Per Session
+Appointment Duration
+Minutes
+Telemedicine Availability
+Yes/No
+
+9.7.53 Schedule Exceptions
+The system shall support schedule exceptions for:
+Annual Leave
+Sick Leave
+Public Holidays
+Emergency Closure
+Medical Conference
+Training Session
+Administrative Meetings
+Personal Leave
+Exceptions shall automatically prevent appointment booking during unavailable periods.
+
+9.7.54 Appointment Rescheduling
+
+Screen ID
+APT-RESCHEDULE-001
+
+Purpose
+Allows authorized users to modify an existing appointment while preserving appointment history.
+
+Screen Layout
++--------------------------------------------------------------+
+
+Current Appointment
+
+↓
+
+Select New Date
+
+↓
+
+Available Time Slots
+
+↓
+
+Reason for Reschedule
+
+↓
+
+Notify Patient
+
+--------------------------------------------------------------
+
+[ Confirm Reschedule ]
+
+[ Cancel ]
+
+Rescheduling Workflow
+Appointment Selected
+        │
+        ▼
+Availability Check
+        │
+        ▼
+Conflict Detection
+        │
+        ▼
+Alternative Slots
+        │
+        ▼
+Confirmation
+        │
+        ▼
+Notification
+
+Business Rules
+The system shall:
+Retain original appointment history.
+Log rescheduling reason.
+Notify patient automatically.
+Notify assigned provider.
+Update calendars immediately.
+Recalculate queue position if required.
+
+9.7.55 Appointment Cancellation
+
+Screen ID
+APT-CANCEL-001
+
+Purpose
+Allows authorized users to cancel appointments while recording the reason and triggering appropriate downstream workflows.
+
+Cancellation Reasons
+Patient Request
+Doctor Unavailable
+Emergency Closure
+Duplicate Appointment
+Incorrect Booking
+Medical Emergency
+Weather Conditions
+Administrative Decision
+Other
+
+Screen Layout
+Current Appointment
+
+↓
+
+Reason
+
+↓
+
+Additional Notes
+
+↓
+
+Notify Patient
+
+↓
+
+Release Time Slot
+
+---------------------------------------------
+
+[ Confirm Cancellation ]
+
+Cancellation Actions
+Following cancellation, the system shall:
+Free the appointment slot.
+Update provider schedule.
+Notify patient.
+Notify provider.
+Update waiting list.
+Record audit information.
+Update analytics.
+
+9.7.56 Doctor Schedule Calendar
+
+Screen ID
+APT-SCHEDULE-002
+
+Calendar Views
+The system shall support:
+View
+Description
+Day
+Individual doctor schedule
+Week
+Weekly planning
+Month
+Long-term planning
+Department
+Multi-doctor schedule
+Room
+Consultation room utilization
+
+Calendar Features
+Drag-and-drop appointment movement
+Color-coded appointment categories
+Leave visualization
+Public holiday indicators
+Blocked time slots
+Telemedicine indicators
+Conflict alerts
+Search by patient or appointment number
+
+9.7.57 Online Patient Self-Booking
+
+Screen ID
+APT-ONLINE-001
+
+Purpose
+Allows patients to book appointments independently through the Patient Portal.
+
+Booking Workflow
+Login
+
+↓
+
+Select Department
+
+↓
+
+Select Doctor
+
+↓
+
+View Available Slots
+
+↓
+
+Choose Date & Time
+
+↓
+
+Review Details
+
+↓
+
+Confirmation
+
+Booking Information
+Patients shall be able to:
+Select specialty.
+Choose preferred doctor.
+View available appointment slots.
+Select consultation type.
+Add visit reason.
+Confirm booking.
+Receive confirmation.
+
+Validation
+The system shall:
+Prevent duplicate bookings.
+Prevent booking outside provider availability.
+Restrict booking according to hospital policies.
+Validate patient eligibility for selected services where applicable.
+
+9.7.58 Telemedicine Appointment Scheduling
+
+Screen ID
+APT-TELE-001
+
+Purpose
+Schedules virtual consultations between patients and healthcare providers.
+
+Supported Consultation Types
+Video Consultation
+Audio Consultation
+Secure Messaging Follow-Up
+
+Telemedicine Fields
+Field
+Required
+Patient
+Yes
+Doctor
+Yes
+Date
+Yes
+Time
+Yes
+Meeting Type
+Yes
+Platform
+Configurable
+Notes
+Optional
+
+Virtual Consultation Workflow
+Schedule Appointment
+
+↓
+
+Generate Secure Meeting Link
+
+↓
+
+Notify Participants
+
+↓
+
+Reminder Sent
+
+↓
+
+Patient Joins
+
+↓
+
+Doctor Joins
+
+↓
+
+Consultation
+
+↓
+
+Clinical Documentation
+
+↓
+
+Complete Visit
+
+9.7.59 Virtual Waiting Room
+
+Screen ID
+APT-VIRTUAL-001
+
+Features
+The virtual waiting room shall display:
+Appointment Status
+Scheduled Time
+Estimated Waiting Time
+Doctor Name
+Technical Requirements
+Join Meeting Button
+Support Contact
+
+Available Actions
+Test Camera
+Test Microphone
+Check Internet Connection
+Upload Pre-Visit Documents
+Complete Digital Check-In
+Update Contact Information
+
+9.7.60 Appointment Reminder Configuration
+
+Reminder Channels
+The system shall support:
+SMS
+Email
+Mobile Push Notification
+Patient Portal Notification
+Voice Call Integration (Optional)
+
+Reminder Schedule
+Time
+Example
+7 Days Before
+Optional
+3 Days Before
+Optional
+24 Hours Before
+Recommended
+2 Hours Before
+Recommended
+30 Minutes Before
+Optional
+Reminder schedules shall be configurable by administrators.
+
+9.7.61 Calendar Synchronization
+The system may synchronize appointment schedules with external calendar platforms where enabled.
+Supported synchronization targets may include:
+Microsoft Outlook
+Google Calendar
+Apple Calendar
+Synchronization settings shall respect organizational security policies and user permissions.
+
+9.7.62 Notifications
+Automatic notifications shall be generated for:
+New Appointment
+Appointment Confirmation
+Rescheduled Appointment
+Cancelled Appointment
+Reminder Sent
+Telemedicine Link Generated
+Provider Schedule Change
+Meeting Started
+Missed Appointment
+
+9.7.63 Accessibility Requirements
+The Appointment Management screens shall:
+Support keyboard navigation.
+Provide accessible calendar controls.
+Include screen reader support for scheduling workflows.
+Ensure telemedicine controls are fully accessible.
+Meet WCAG 2.1 Level AA requirements.
+Support responsive interaction across desktop, tablet, and mobile devices.
+
+9.7.64 Security Requirements
+The Appointment Management module shall:
+Enforce Role-Based Access Control (RBAC).
+Encrypt appointment and telemedicine data in transit.
+Protect meeting links from unauthorized access.
+Log all scheduling, rescheduling, and cancellation activities.
+Validate all appointment requests on both client and server.
+Expire telemedicine meeting links according to configurable organizational policies.
+
+9.7.65 Acceptance Criteria
+The Appointment Management module shall be accepted when:
+Doctor availability is configurable and accurately enforced.
+Appointment rescheduling preserves appointment history and notifies affected parties.
+Appointment cancellation releases resources and updates related workflows.
+Online self-booking validates availability and prevents scheduling conflicts.
+Telemedicine appointments generate secure meeting sessions and support virtual waiting rooms.
+Reminder notifications are delivered according to configured schedules.
+Calendar synchronization functions correctly where enabled.
+Accessibility, security, auditing, and responsiveness requirements are fully implemented.
+
+
+

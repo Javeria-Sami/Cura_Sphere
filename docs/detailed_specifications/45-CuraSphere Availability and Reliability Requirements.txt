@@ -1,0 +1,329 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.14 - Availability and Reliability Requirements (NFR-03 & NFR-04)
+
+6.14 Availability and Reliability Requirements
+6.14.1 Introduction
+The Availability and Reliability Requirements define how the CuraSphere Hospital Management System shall remain operational, dependable, and resilient during normal operations, peak workloads, hardware failures, software failures, network disruptions, and planned maintenance.
+Hospitals operate continuously, providing patient care 24 hours a day, 7 days a week. Therefore, CuraSphere shall minimize service interruptions and recover quickly from failures to support uninterrupted clinical and administrative operations.
+Availability focuses on keeping the system accessible, while reliability focuses on ensuring the system performs correctly and consistently.
+
+6.14.2 Objectives
+The Availability and Reliability Requirements shall ensure that the system:
+Remains operational with minimal downtime.
+Continues functioning during component failures where possible.
+Protects patient care from service interruptions.
+Recovers quickly after failures.
+Prevents data loss.
+Supports continuous monitoring.
+Provides dependable service for hospital operations.
+Meets defined recovery objectives.
+
+6.14.3 High-Level Availability Architecture
+                    Users
+                      │
+                      ▼
+                Load Balancer
+                      │
+        ┌─────────────┼─────────────┐
+        ▼             ▼             ▼
+ Application 1   Application 2   Application N
+        │             │             │
+        └─────────────┼─────────────┘
+                      ▼
+             Database Cluster
+              │             │
+              ▼             ▼
+       Primary Node   Standby Node
+              │
+              ▼
+        Backup Repository
+
+6.14.4 System Availability Requirements
+The CuraSphere Hospital Management System shall maintain high operational availability.
+
+Availability Targets
+Service
+Target Availability
+Core Application
+≥ 99.9%
+Authentication Services
+≥ 99.9%
+Patient Registration
+≥ 99.9%
+Billing Services
+≥ 99.9%
+Laboratory Services
+≥ 99.9%
+Pharmacy Services
+≥ 99.9%
+Reporting Services
+≥ 99.5%
+Notification Services
+≥ 99.5%
+API Gateway
+≥ 99.9%
+Planned maintenance windows are excluded from availability calculations.
+
+6.14.5 High Availability (HA)
+The system shall support High Availability (HA) deployment to reduce downtime caused by hardware or software failures.
+
+High Availability Components
+Multiple Application Servers
+Database Replication
+Load Balancer
+Redundant Network Connections
+Redundant Storage
+Backup Power (UPS/Generator)
+Health Monitoring
+
+HA Workflow
+User Request
+      │
+      ▼
+Load Balancer
+      │
+ ┌────┼────────┐
+ ▼    ▼        ▼
+App1 App2    App3
+ │     │       │
+ └─────┼───────┘
+       ▼
+ Database Cluster
+
+Business Rules
+NFR-AVL-001
+The failure of a single application server shall not make the entire system unavailable.
+NFR-AVL-002
+Health checks shall automatically identify unavailable services.
+
+6.14.6 Fault Tolerance
+The system shall tolerate failures of individual components without causing complete service interruption where redundancy is implemented.
+
+Fault Tolerance Features
+Redundant Servers
+Database Replication
+Automatic Retry
+Queue Persistence
+Transaction Recovery
+Graceful Error Handling
+
+Fault Handling Workflow
+Service Failure
+      │
+      ▼
+Failure Detection
+      │
+      ▼
+Automatic Recovery
+      │
+      ▼
+Alternative Resource
+      │
+      ▼
+Continue Processing
+
+6.14.7 Failover Management
+The system shall automatically switch to standby resources when primary resources become unavailable.
+
+Failover Architecture
+Primary Server
+      │
+Healthy?
+ │        │
+Yes      No
+ │        │
+Continue  ▼
+       Standby Server
+            │
+            ▼
+      Service Restored
+
+Business Rules
+NFR-AVL-003
+Automatic failover shall occur according to configured infrastructure policies.
+NFR-AVL-004
+Failover events shall be recorded in the audit logs.
+
+6.14.8 Reliability Requirements
+The system shall consistently perform its intended functions without unexpected failures.
+
+Reliability Goals
+Accurate processing
+Consistent calculations
+Reliable transactions
+Data consistency
+Stable APIs
+Predictable behavior
+Controlled exception handling
+
+Reliability Workflow
+User Request
+      │
+      ▼
+Validation
+      │
+      ▼
+Business Logic
+      │
+      ▼
+Database Transaction
+      │
+      ▼
+Successful Completion
+
+6.14.9 Business Continuity
+The system shall support continued operation during planned or unplanned disruptions.
+
+Business Continuity Measures
+Backup Servers
+Backup Database
+Network Redundancy
+Backup Power
+Off-site Backups
+Disaster Recovery Site
+Emergency Operating Procedures
+
+Business Continuity Architecture
+Primary Data Center
+         │
+         ▼
+Replication
+         │
+         ▼
+Secondary Site
+         │
+         ▼
+Business Continues
+
+6.14.10 Recovery Objectives
+The system shall define recovery targets to support disaster recovery planning.
+Objective
+Target
+Recovery Time Objective (RTO)
+≤ 4 hours
+Recovery Point Objective (RPO)
+≤ 15 minutes
+Critical Service Restoration
+Highest Priority
+Full System Restoration
+According to disaster recovery plan
+These targets may be adjusted based on hospital policies, infrastructure, and service-level agreements.
+
+6.14.11 Disaster Recovery
+The system shall support disaster recovery procedures to restore operations following major incidents.
+
+Disaster Recovery Workflow
+Disaster Detected
+        │
+        ▼
+Incident Assessment
+        │
+        ▼
+Activate Recovery Plan
+        │
+        ▼
+Restore Services
+        │
+        ▼
+Verify System Integrity
+        │
+        ▼
+Resume Operations
+
+Recovery Activities
+Database Restoration
+Application Restoration
+Configuration Recovery
+Backup Verification
+Service Validation
+User Access Restoration
+
+6.14.12 Service Monitoring
+The system shall continuously monitor service health.
+
+Monitored Services
+Application Status
+Database Status
+Network Connectivity
+Disk Usage
+CPU Usage
+Memory Usage
+API Availability
+Queue Health
+Background Jobs
+Security Events
+
+Monitoring Workflow
+Infrastructure
+       │
+       ▼
+Monitoring Agent
+       │
+       ▼
+Health Dashboard
+       │
+       ▼
+Administrator Alerts
+
+6.14.13 Availability and Reliability Testing
+Testing shall include:
+Failover Testing
+Recovery Testing
+Backup Restoration Testing
+High Availability Testing
+Stress Testing
+Network Failure Simulation
+Database Failure Simulation
+Disaster Recovery Drills
+
+Testing Workflow
+Failure Simulation
+        │
+        ▼
+Recovery Process
+        │
+        ▼
+Performance Verification
+        │
+        ▼
+Recovery Validation
+
+6.14.14 Acceptance Criteria
+The system shall be accepted when:
+Target availability levels are achieved during operational testing.
+Recovery procedures restore services within defined RTO objectives.
+Data loss remains within defined RPO objectives.
+Failover mechanisms operate successfully in supported deployment environments.
+Monitoring identifies failures promptly.
+Critical hospital services remain available during supported failure scenarios.
+
+6.14.15 Availability and Reliability Requirement Traceability Matrix
+Requirement ID
+Functional Area
+NFR-AVL-001
+System Availability
+NFR-AVL-002
+High Availability
+NFR-AVL-003
+Fault Tolerance
+NFR-AVL-004
+Failover
+NFR-AVL-005
+Reliability
+NFR-AVL-006
+Business Continuity
+NFR-AVL-007
+Recovery Objectives
+NFR-AVL-008
+Disaster Recovery
+NFR-AVL-009
+Service Monitoring
+NFR-AVL-010
+Availability Testing
+NFR-AVL-011
+Acceptance Criteria
+
+
+

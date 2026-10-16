@@ -1,0 +1,173 @@
+﻿CuraSphere Hospital Management System, 
+Category
+Technology / Tool
+Purpose
+Frontend
+React.js
+Build the user interface
+Build Tool
+Vite
+Fast development and optimized builds
+Language
+TypeScript
+Type-safe JavaScript for better maintainability
+Styling
+Tailwind CSS
+Utility-first CSS framework
+UI Components
+shadcn/ui
+Reusable, accessible UI components
+Icons
+Lucide React
+Modern icon library
+State Management
+Zustand
+Lightweight global state management
+Server State
+TanStack Query
+API fetching, caching, and synchronization
+Routing
+React Router DOM
+Client-side routing
+Forms
+React Hook Form
+Efficient form handling
+Validation
+Zod
+Schema-based form validation
+Charts
+Recharts
+Dashboards and analytics charts
+Notifications
+Sonner or React Hot Toast
+Toast notifications
+Backend
+ASP.NET Core Web API
+RESTful backend services
+Language
+C#
+Backend programming language
+ORM
+Entity Framework Core
+Database access and migrations
+Authentication
+JWT (JSON Web Token)
+Secure user authentication
+Password Security
+ASP.NET Identity + BCrypt
+Password hashing and identity management
+Authorization
+Role-Based Access Control (RBAC)
+Manage Admin, Doctor, Nurse, etc. permissions
+Database
+PostgreSQL
+Relational database
+Database Tool
+pgAdmin 4
+PostgreSQL administration
+API Testing
+Postman
+Test REST APIs
+API Documentation
+Swagger (OpenAPI)
+Interactive API documentation
+File Storage
+Local Storage / Azure Blob Storage (optional)
+Store reports and uploaded documents
+Version Control
+Git
+Source code management
+Repository Hosting
+GitHub
+Collaboration and version history
+IDE
+Visual Studio 2022
+Backend development
+Code Editor
+Visual Studio Code
+Frontend development
+UI Design
+Figma
+UI/UX design and prototyping
+Package Manager
+npm
+Manage frontend packages
+Containerization
+Docker
+Containerized deployment
+Reverse Proxy
+Nginx
+Production web server and reverse proxy
+CI/CD
+GitHub Actions
+Automated build and deployment
+Logging
+Serilog
+Application logging
+Monitoring
+Prometheus + Grafana (optional)
+Performance and system monitoring
+Testing (Frontend)
+Vitest + React Testing Library
+Unit and component testing
+Testing (Backend)
+xUnit
+Backend unit testing
+End-to-End Testing
+Playwright
+Browser automation and end-to-end testing
+Documentation
+Markdown
+Project documentation
+Development Workflow
+Figma
+      ↓
+React + TypeScript + Tailwind CSS
+      ↓
+shadcn/ui + Zustand + TanStack Query
+      ↓
+React Router + React Hook Form + Zod
+      ↓
+ASP.NET Core Web API
+      ↓
+Entity Framework Core
+      ↓
+PostgreSQL
+      ↓
+JWT Authentication
+      ↓
+GitHub
+      ↓
+Docker
+      ↓
+Production Deployment
+User Roles
+Super Admin
+Hospital Administrator
+Doctor
+Nurse
+Receptionist
+Laboratory Technician
+Pharmacist
+Accountant
+Patient
+Development Tools
+Figma
+Visual Studio Code
+Visual Studio 2022
+Git
+GitHub
+Postman
+pgAdmin 4
+Docker Desktop
+Google Chrome (Developer Tools)
+Why this stack?
+This combination is:
+Modern and widely used in industry.
+Scalable for small clinics or large hospitals.
+Strongly typed with TypeScript and C#.
+Secure with JWT and ASP.NET Identity.
+Maintainable through reusable UI components and clean architecture.
+Well suited for dashboards, reporting, and data-heavy healthcare applications.
+
+

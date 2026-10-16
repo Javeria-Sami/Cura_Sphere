@@ -1,0 +1,5869 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 14 - Database Design Specification
+Part 14.1 - Database Design Overview
+
+14.1 Database Design Overview
+
+14.1.1 Introduction
+The Database Design Specification defines the logical and physical database structure for the CuraSphere Hospital Management System (HMS). It provides the blueprint for implementing the PostgreSQL database that supports all clinical, administrative, financial, operational, and analytical functions of the system.
+The database has been designed to ensure:
+High data integrity
+Enterprise scalability
+Regulatory compliance
+High performance
+Security
+Maintainability
+Data consistency
+Future extensibility
+The database serves as the single source of truth for all healthcare information managed within CuraSphere.
+
+14.1.2 Purpose
+The purpose of the database design is to:
+Store hospital information securely.
+Support all hospital business processes.
+Maintain relationships among healthcare entities.
+Prevent data redundancy.
+Improve query performance.
+Support auditing and compliance.
+Facilitate reporting and analytics.
+Enable disaster recovery.
+Support integration with external healthcare systems.
+Ensure long-term maintainability.
+
+14.1.3 Database Design Objectives
+The database architecture shall achieve the following objectives:
+Objective
+Description
+Integrity
+Maintain accurate and consistent data
+Availability
+Ensure continuous access to healthcare information
+Security
+Protect confidential medical information
+Scalability
+Support increasing patient and transaction volumes
+Reliability
+Ensure dependable storage and retrieval
+Performance
+Optimize read/write operations
+Maintainability
+Simplify updates and enhancements
+Auditability
+Record critical system activities
+Compliance
+Support healthcare regulations
+Interoperability
+Enable standardized healthcare integrations
+
+14.1.4 Database Management System
+CuraSphere shall utilize PostgreSQL as its primary Relational Database Management System (RDBMS).
+Selected Platform
+Component
+Technology
+Database Engine
+PostgreSQL
+Administration Tool
+pgAdmin
+ORM
+Entity Framework Core
+Query Language
+SQL
+Backup Utility
+pg_dump / pg_restore
+Migration Framework
+Entity Framework Migrations
+The selected database platform provides enterprise-grade reliability, ACID compliance, advanced indexing capabilities, JSON support, partitioning, replication, and extensibility.
+
+14.1.5 Database Design Principles
+The database shall adhere to the following design principles.
+A. Data Integrity
+Every stored record shall remain complete, valid, and internally consistent.
+
+B. Normalization
+Tables shall be normalized to reduce redundancy while maintaining acceptable performance.
+
+C. Security by Design
+Sensitive healthcare information shall be protected through multiple security mechanisms.
+
+D. Scalability
+The database shall support future organizational growth without requiring significant redesign.
+
+E. Modularity
+Business domains shall be logically separated to simplify maintenance and future expansion.
+
+F. Performance Optimization
+Indexes, query optimization, partitioning, and caching shall be considered during implementation.
+
+G. Auditability
+Critical operations shall generate immutable audit records.
+
+14.1.6 Logical Database Architecture
+
+                CURASPHERE DATABASE
+
+                 PostgreSQL Server
+                        │
+ ┌──────────────────────┼──────────────────────┐
+ ▼                      ▼                      ▼
+Clinical Data      Administrative Data    Financial Data
+ │                      │                      │
+ ▼                      ▼                      ▼
+Patient            Employees             Billing
+Appointments       Users                 Payments
+EMR                Roles                 Insurance
+Laboratory         Departments           Revenue
+Radiology          Audit Logs            Financial Reports
+
+The database shall logically separate functional domains while maintaining referential integrity.
+
+14.1.7 Database Domain Classification
+The database shall be organized into major healthcare domains.
+Domain
+Description
+Patient Management
+Patient demographics and registration
+Clinical Services
+Medical records and treatment
+Appointment Management
+Scheduling
+Pharmacy
+Medication management
+Laboratory
+Laboratory workflows
+Radiology
+Imaging workflows
+Billing
+Financial transactions
+Inventory
+Medical inventory
+Human Resources
+Employee management
+Administration
+Users and security
+Reporting
+Analytics
+Audit
+Compliance records
+Each domain shall maintain clearly defined ownership and responsibilities.
+
+14.1.8 Database Layers
+The database architecture shall consist of multiple logical layers.
+
+Application Layer
+        │
+        ▼
+Repository Layer
+        │
+        ▼
+Entity Framework Core
+        │
+        ▼
+Database Objects
+        │
+ ┌──────┼────────┐
+ ▼      ▼        ▼
+Tables Views Procedures
+        │
+        ▼
+PostgreSQL Storage Engine
+
+Application code shall not directly manipulate database objects without using the Repository Layer.
+
+14.1.9 Database Object Types
+The CuraSphere database shall include the following object types.
+Object
+Purpose
+Tables
+Store business data
+Views
+Simplify reporting
+Materialized Views
+Improve reporting performance
+Indexes
+Query optimization
+Sequences
+Generate identifiers
+Constraints
+Maintain integrity
+Triggers
+Automate operations
+Functions
+Reusable business logic
+Stored Procedures
+Complex processing
+Schemas
+Domain separation
+
+14.1.10 Data Classification
+Information shall be classified according to sensitivity.
+Classification
+Examples
+Public
+Hospital contact information
+Internal
+Employee schedules
+Confidential
+Financial information
+Highly Confidential
+Medical records
+Restricted
+Authentication credentials, encryption keys
+Access controls shall correspond to the sensitivity classification of each data category.
+
+14.1.11 Primary Database Characteristics
+The CuraSphere database shall exhibit the following characteristics.
+ACID-compliant transactions.
+Relational database model.
+Strong referential integrity.
+Enterprise security.
+High availability support.
+Backup and recovery capabilities.
+Horizontal and vertical scalability.
+Comprehensive auditing.
+Multi-user concurrency control.
+Standards-based SQL implementation.
+
+14.1.12 Database Life Cycle
+
+Requirements
+      │
+      ▼
+Database Design
+      │
+      ▼
+Implementation
+      │
+      ▼
+Testing
+      │
+      ▼
+Deployment
+      │
+      ▼
+Monitoring
+      │
+      ▼
+Optimization
+      │
+      ▼
+Maintenance
+
+Each phase shall follow formal change management procedures.
+
+14.1.13 Database Documentation Standards
+All database objects shall be documented.
+Documentation shall include:
+Object name.
+Description.
+Purpose.
+Relationships.
+Constraints.
+Owner.
+Security classification.
+Change history.
+Documentation shall remain synchronized with production deployments.
+
+14.1.14 Database Governance
+Database governance shall define ownership, accountability, and management responsibilities.
+Governance responsibilities include:
+Data ownership.
+Schema management.
+Access management.
+Backup management.
+Change approval.
+Security compliance.
+Performance monitoring.
+Capacity planning.
+Disaster recovery coordination.
+Database governance policies shall be reviewed periodically.
+
+14.1.15 Database Design Assumptions
+The database design assumes that:
+PostgreSQL remains the primary database platform.
+Hospital departments share a centralized database.
+Authorized users access data according to assigned roles.
+External systems integrate through approved APIs.
+All critical transactions require audit logging.
+Healthcare regulations remain applicable throughout the system lifecycle.
+Backup and disaster recovery mechanisms are operational.
+Changes to these assumptions shall be evaluated through formal architecture review processes.
+
+14.1.16 Database Design Overview Acceptance Criteria
+The Database Design Overview shall be considered complete when:
+The purpose, scope, objectives, and principles of the database are clearly defined.
+The logical database architecture supports all hospital business domains.
+Database object types, lifecycle, governance, and documentation standards are established.
+Data classification and security principles are integrated into the design.
+The database provides a scalable, secure, maintainable, and standards-based foundation for implementing the CuraSphere Hospital Management System.
+
+14.2 Database Standards & Naming Conventions
+
+14.2.1 Introduction
+The Database Standards & Naming Conventions establish a consistent set of rules for designing, implementing, maintaining, and documenting all database objects within the CuraSphere Hospital Management System (HMS).
+Consistent naming conventions improve:
+Database readability.
+Maintainability.
+Developer productivity.
+Collaboration.
+Query consistency.
+Documentation quality.
+Migration management.
+System scalability.
+These standards shall be applied uniformly across all development, testing, staging, and production environments.
+
+14.2.2 Objectives
+The Database Standards shall:
+Standardize database development.
+Improve readability.
+Simplify maintenance.
+Reduce ambiguity.
+Support automation.
+Enable easier troubleshooting.
+Improve documentation quality.
+Support future scalability.
+Promote consistency across modules.
+Facilitate database governance.
+
+14.2.3 General Naming Principles
+All database object names shall follow these principles:
+Use descriptive names.
+Use singular nouns for entities.
+Use English language only.
+Avoid abbreviations unless industry standard.
+Use lowercase characters.
+Separate words using underscores (snake_case).
+Avoid spaces and special characters.
+Avoid reserved SQL keywords.
+Keep names concise while maintaining clarity.
+Maintain consistency throughout the database.
+Examples
+Correct
+Incorrect
+patient
+Patients
+appointment
+Appointments
+medical_record
+MR
+laboratory_order
+LabData
+inventory_item
+InvItem
+
+14.2.4 Database Naming Standards
+Object
+Standard
+Database Name
+curasphere_db
+Development Database
+curasphere_dev
+Testing Database
+curasphere_test
+Staging Database
+curasphere_stage
+Production Database
+curasphere_prod
+Database names shall clearly indicate the environment.
+
+14.2.5 Schema Naming Convention
+Schemas shall represent logical business domains.
+Examples:
+
+patient
+
+clinical
+
+appointment
+
+laboratory
+
+radiology
+
+pharmacy
+
+billing
+
+inventory
+
+hr
+
+administration
+
+audit
+
+reporting
+
+Schema names shall remain singular and lowercase.
+
+14.2.6 Table Naming Convention
+Table names shall represent a single business entity.
+Examples:
+Table
+Description
+patient
+Patient information
+doctor
+Doctor details
+appointment
+Appointment records
+medical_record
+EMR
+prescription
+Medication information
+laboratory_order
+Laboratory requests
+laboratory_result
+Laboratory reports
+invoice
+Billing records
+payment
+Payment information
+Plural table names shall not be used.
+
+14.2.7 Column Naming Convention
+Column names shall describe stored attributes.
+General rules:
+Lowercase.
+Snake case.
+No prefixes.
+No spaces.
+Descriptive names.
+Examples:
+Correct
+Incorrect
+first_name
+FirstName
+last_name
+LastName
+date_of_birth
+DOB
+phone_number
+Phone
+created_at
+CreatedDate
+
+14.2.8 Primary Key Naming
+Every table shall contain a single primary key.
+Standard:
+
+patient_id
+
+doctor_id
+
+appointment_id
+
+invoice_id
+
+payment_id
+
+Primary keys shall:
+Be unique.
+Be immutable.
+Use integer or UUID data types based on implementation requirements.
+Be indexed automatically.
+
+14.2.9 Foreign Key Naming
+Foreign keys shall reference the primary key of related tables.
+Examples:
+Table
+Foreign Key
+appointment
+patient_id
+appointment
+doctor_id
+invoice
+patient_id
+payment
+invoice_id
+prescription
+medical_record_id
+Foreign key names shall exactly match the referenced primary key.
+
+14.2.10 Constraint Naming Convention
+Constraints shall follow standardized prefixes.
+Constraint
+Prefix
+Primary Key
+pk_
+Foreign Key
+fk_
+Unique
+uq_
+Check
+chk_
+Default
+df_
+Examples:
+
+pk_patient
+
+fk_appointment_patient
+
+uq_patient_cnic
+
+chk_patient_gender
+
+df_created_at
+
+Constraint names shall uniquely identify their purpose.
+
+14.2.11 Index Naming Convention
+Indexes shall use the following prefixes.
+Index Type
+Prefix
+Standard Index
+idx_
+Unique Index
+uidx_
+Composite Index
+cidx_
+Full Text Index
+ftx_
+Examples:
+
+idx_patient_name
+
+idx_patient_phone
+
+uidx_patient_cnic
+
+cidx_appointment_date
+
+Indexes shall be named according to the primary searchable columns.
+
+14.2.12 View Naming Convention
+Views shall begin with the prefix:
+
+vw_
+
+Examples:
+
+vw_patient_summary
+
+vw_monthly_revenue
+
+vw_daily_appointments
+
+vw_inventory_status
+
+Views shall represent reusable business queries.
+
+14.2.13 Materialized View Naming
+Materialized views shall begin with:
+
+mv_
+
+Examples:
+
+mv_hospital_statistics
+
+mv_patient_dashboard
+
+mv_financial_summary
+
+Materialized views shall be refreshed according to organizational schedules.
+
+14.2.14 Stored Procedure Naming
+Stored procedures shall begin with:
+
+sp_
+
+Examples:
+
+sp_register_patient
+
+sp_generate_invoice
+
+sp_close_appointment
+
+sp_update_inventory
+
+Stored procedures shall perform reusable business operations.
+
+14.2.15 Function Naming
+Functions shall begin with:
+
+fn_
+
+Examples:
+
+fn_calculate_age
+
+fn_generate_invoice_number
+
+fn_available_stock
+
+fn_patient_balance
+
+Functions shall return deterministic results whenever applicable.
+
+14.2.16 Trigger Naming
+Triggers shall begin with:
+
+trg_
+
+Examples:
+
+trg_patient_audit
+
+trg_invoice_update
+
+trg_payment_log
+
+trg_inventory_update
+
+Trigger names shall clearly indicate the associated event or action.
+
+14.2.17 Sequence Naming
+Database sequences shall begin with:
+
+seq_
+
+Examples:
+
+seq_patient
+
+seq_invoice
+
+seq_payment
+
+seq_employee
+
+Sequences shall be uniquely associated with their corresponding tables where used.
+
+14.2.18 Data Type Standards
+Standard data types shall be used consistently.
+Data Type
+Usage
+UUID
+Globally unique identifiers
+SERIAL / BIGSERIAL
+Auto-generated numeric identifiers
+VARCHAR
+Variable-length text
+TEXT
+Large text
+DATE
+Calendar dates
+TIMESTAMP
+Date and time
+BOOLEAN
+True/False values
+INTEGER
+Numeric values
+NUMERIC
+Currency and precision values
+JSONB
+Structured JSON data
+Appropriate data types shall be selected based on storage efficiency and business requirements.
+
+14.2.19 Audit Field Standards
+Every business table shall include standardized audit columns.
+Column
+Purpose
+created_at
+Record creation timestamp
+created_by
+User creating record
+updated_at
+Last update timestamp
+updated_by
+User modifying record
+deleted_at
+Soft delete timestamp
+deleted_by
+User performing deletion
+is_active
+Active status
+version_number
+Optimistic concurrency control
+These fields support traceability and lifecycle management.
+
+14.2.20 Documentation Standards
+Every database object shall include documentation describing:
+Purpose.
+Owner.
+Business rules.
+Relationships.
+Constraints.
+Dependencies.
+Security classification.
+Revision history.
+Documentation shall be maintained alongside schema changes.
+
+14.2.21 Database Standards Compliance
+Database reviews shall verify compliance with established standards.
+Compliance reviews shall examine:
+Naming consistency.
+Constraint implementation.
+Documentation completeness.
+Security practices.
+Index usage.
+Query optimization.
+Normalization compliance.
+Version management.
+Non-compliant objects shall be corrected before production deployment.
+
+14.2.22 Database Standards & Naming Conventions Acceptance Criteria
+The Database Standards & Naming Conventions shall be considered complete when:
+All database objects follow standardized naming conventions.
+Tables, columns, constraints, indexes, views, functions, procedures, triggers, and sequences are named consistently.
+Standardized data types and audit fields are applied across all business tables.
+Documentation and governance standards are established and enforced.
+Database reviews confirm compliance with enterprise development standards.
+
+14.3 Complete Entity-Relationship Diagram (ERD)
+
+14.3.1 Introduction
+The Entity-Relationship Diagram (ERD) defines the logical data model of the CuraSphere Hospital Management System (HMS). It illustrates the entities, attributes, relationships, and cardinality rules required to support all hospital operations.
+The ERD serves as the foundation for database implementation and ensures that data is organized, normalized, and interconnected according to business requirements.
+The conceptual model presented in this section shall be used as the basis for detailed physical database design in subsequent sections.
+
+14.3.2 Objectives
+The ERD shall:
+Model all healthcare business entities.
+Define relationships among entities.
+Minimize data redundancy.
+Ensure referential integrity.
+Support normalization.
+Simplify database implementation.
+Facilitate reporting.
+Support scalability.
+Enable interoperability.
+Improve maintainability.
+
+14.3.3 ERD Design Principles
+The ERD shall comply with the following principles:
+Every entity shall represent a unique business concept.
+Every entity shall possess a primary key.
+Relationships shall enforce referential integrity.
+Business rules shall determine relationship cardinality.
+Normalization shall eliminate unnecessary redundancy.
+Nullable attributes shall be minimized.
+Surrogate keys shall be used where appropriate.
+Audit fields shall be included in business entities.
+Naming conventions defined in Section 14.2 shall be followed.
+
+14.3.4 Enterprise Entity Classification
+The CuraSphere database is organized into major business domains.
+
+                     CURASPHERE DATABASE
+
+ ┌──────────────────────────────────────────────────────────┐
+ │                  Patient Management                      │
+ └──────────────────────────────────────────────────────────┘
+                      │
+                      ▼
+ ┌──────────────────────────────────────────────────────────┐
+ │                 Clinical Management                      │
+ └──────────────────────────────────────────────────────────┘
+                      │
+                      ▼
+ ┌──────────────────────────────────────────────────────────┐
+ │ Laboratory │ Pharmacy │ Radiology │ Billing │ Inventory │
+ └──────────────────────────────────────────────────────────┘
+                      │
+                      ▼
+ ┌──────────────────────────────────────────────────────────┐
+ │ Human Resources │ Administration │ Reporting │ Audit     │
+ └──────────────────────────────────────────────────────────┘
+
+Each domain represents an independent functional area while maintaining logical relationships with other domains.
+
+14.3.5 Core Business Entities
+The following entities constitute the core of the CuraSphere database.
+Entity
+Purpose
+Patient
+Patient demographic information
+Doctor
+Healthcare provider information
+Department
+Hospital organizational unit
+Appointment
+Patient scheduling
+Medical_Record
+Electronic medical records
+Diagnosis
+Clinical diagnosis
+Prescription
+Medication prescriptions
+Medication
+Drug catalog
+Laboratory_Order
+Laboratory requests
+Laboratory_Result
+Laboratory findings
+Radiology_Order
+Imaging requests
+Radiology_Report
+Imaging reports
+Invoice
+Patient billing
+Payment
+Financial transactions
+Inventory_Item
+Medical inventory
+Supplier
+Supplier information
+Purchase_Order
+Procurement
+Employee
+Hospital staff
+User
+System accounts
+Role
+Security roles
+Permission
+Access permissions
+Audit_Log
+Audit records
+
+14.3.6 Enterprise ERD Overview
+
+Patient
+   │1
+   │
+   │N
+Appointment
+   │
+   │1
+   ▼
+Doctor
+   │
+   ▼
+Department
+
+Patient
+   │
+   ▼
+Medical_Record
+   │
+   ├───────────────┐
+   ▼               ▼
+Diagnosis     Prescription
+                    │
+                    ▼
+               Medication
+
+Medical_Record
+       │
+       ├──────────────┐
+       ▼              ▼
+Laboratory_Order  Radiology_Order
+       │              │
+       ▼              ▼
+Laboratory_Result Radiology_Report
+
+Patient
+      │
+      ▼
+Invoice
+      │
+      ▼
+Payment
+
+Inventory_Item
+      │
+      ▼
+Purchase_Order
+      │
+      ▼
+Supplier
+
+Employee
+      │
+      ▼
+User
+      │
+      ▼
+Role
+      │
+      ▼
+Permission
+
+This conceptual diagram represents the primary relationships among the enterprise entities.
+
+14.3.7 Patient Management Relationships
+The Patient Management domain establishes the central relationships within the system.
+Parent Entity
+Child Entity
+Relationship
+Patient
+Appointment
+One-to-Many
+Patient
+Medical_Record
+One-to-Many
+Patient
+Invoice
+One-to-Many
+Patient
+Payment
+One-to-Many
+Patient
+Laboratory_Order
+One-to-Many
+Patient
+Radiology_Order
+One-to-Many
+Patient
+Prescription
+One-to-Many
+Each patient may have multiple clinical and financial records throughout their lifecycle.
+
+14.3.8 Clinical Management Relationships
+Clinical entities maintain patient care documentation.
+
+Patient
+    │
+    ▼
+Medical_Record
+    │
+ ┌──┼─────────────┐
+ ▼  ▼             ▼
+Diagnosis Prescription Laboratory_Order
+                    │
+                    ▼
+              Medication
+
+Medical records provide the primary clinical context for diagnoses, prescriptions, laboratory orders, and treatment plans.
+
+14.3.9 Laboratory & Radiology Relationships
+Diagnostic services maintain specialized workflows.
+
+Patient
+   │
+   ▼
+Laboratory_Order
+   │
+   ▼
+Laboratory_Result
+
+Patient
+   │
+   ▼
+Radiology_Order
+   │
+   ▼
+Radiology_Report
+
+Diagnostic reports shall remain permanently associated with the originating patient record.
+
+14.3.10 Billing Relationships
+The financial subsystem shall maintain the following relationships.
+
+Patient
+   │
+   ▼
+Invoice
+   │
+   ▼
+Payment
+   │
+   ▼
+Insurance Claim (Optional)
+
+Invoices may consist of multiple billable services and may be settled through one or more payments.
+
+14.3.11 Inventory Relationships
+Inventory management supports procurement and stock control.
+
+Supplier
+    │
+    ▼
+Purchase_Order
+    │
+    ▼
+Inventory_Item
+    │
+    ▼
+Inventory_Transaction
+
+Inventory transactions shall maintain complete traceability for all stock movements.
+
+14.3.12 Human Resource Relationships
+Employee information shall support operational management.
+
+Department
+      │
+      ▼
+Employee
+      │
+      ▼
+Attendance
+
+Employee
+      │
+      ▼
+Payroll
+
+Employees shall belong to one department while departments may contain multiple employees.
+
+14.3.13 Security Relationships
+The security subsystem manages user identities and permissions.
+
+User
+  │
+  ▼
+Role
+  │
+  ▼
+Role_Permission
+  │
+  ▼
+Permission
+
+User
+  │
+  ▼
+Audit_Log
+
+Authorization shall be implemented using Role-Based Access Control (RBAC) with permission mappings.
+
+14.3.14 Cardinality Rules
+Relationship cardinality shall follow established business rules.
+Relationship
+Cardinality
+Patient → Appointment
+1 : N
+Doctor → Appointment
+1 : N
+Patient → Medical_Record
+1 : N
+Medical_Record → Diagnosis
+1 : N
+Medical_Record → Prescription
+1 : N
+Prescription → Medication
+N : M
+Patient → Invoice
+1 : N
+Invoice → Payment
+1 : N
+Supplier → Purchase_Order
+1 : N
+Role → Permission
+N : M
+User → Role
+N : M
+Associative tables shall be introduced to implement many-to-many relationships.
+
+14.3.15 Relationship Dependency Matrix
+Entity
+Depends On
+Appointment
+Patient, Doctor
+Medical_Record
+Patient
+Diagnosis
+Medical_Record
+Prescription
+Medical_Record
+Laboratory_Order
+Patient, Doctor
+Laboratory_Result
+Laboratory_Order
+Radiology_Order
+Patient, Doctor
+Radiology_Report
+Radiology_Order
+Invoice
+Patient
+Payment
+Invoice
+Purchase_Order
+Supplier
+User
+Employee
+Role_Permission
+Role, Permission
+Dependency rules shall be enforced through foreign key constraints.
+
+14.3.16 Normalization Compliance
+The ERD has been designed to satisfy the following normalization levels.
+Normal Form
+Compliance
+First Normal Form (1NF)
+✓
+Second Normal Form (2NF)
+✓
+Third Normal Form (3NF)
+✓
+Boyce-Codd Normal Form (BCNF)
+Applied where appropriate
+Denormalization may be introduced selectively for performance-critical reporting.
+
+14.3.17 Future Entity Expansion
+The database design supports future expansion through additional entities such as:
+Telemedicine Sessions.
+Mobile Application Devices.
+AI Decision Support.
+Clinical Alerts.
+IoT Medical Devices.
+Bed Management.
+Ambulance Services.
+Organ Donation Registry.
+Vaccination Programs.
+Clinical Research Studies.
+These entities may be incorporated without significant restructuring of the existing data model.
+
+14.3.18 ERD Validation & Governance
+The ERD shall undergo formal validation before implementation.
+Validation activities include:
+Entity verification.
+Relationship validation.
+Cardinality verification.
+Normalization review.
+Performance assessment.
+Security review.
+Clinical workflow validation.
+Stakeholder approval.
+Approved ERDs shall be maintained under version control.
+
+14.3.19 Complete Entity-Relationship Diagram (ERD) Acceptance Criteria
+The Complete ERD shall be considered complete when:
+All major business domains are represented by well-defined entities.
+Relationships, dependencies, and cardinality rules accurately reflect healthcare business processes.
+Referential integrity and normalization principles are enforced.
+Security, governance, and future extensibility are incorporated into the conceptual model.
+The ERD provides a comprehensive and implementation-ready foundation for the detailed database schema and table specifications.
+
+14.4 Database Schema Design
+
+14.4.1 Introduction
+The Database Schema Design defines the logical organization of the CuraSphere Hospital Management System (HMS) database into independent schemas. Each schema represents a major business domain and contains related database objects such as tables, views, indexes, functions, stored procedures, and triggers.
+Schema separation improves:
+Data organization.
+Security.
+Maintainability.
+Scalability.
+Performance.
+Administrative control.
+Backup management.
+Future extensibility.
+The database shall follow a domain-driven schema architecture, where each functional module is isolated within its own schema while maintaining secure and controlled relationships with other schemas.
+
+14.4.2 Objectives
+The Database Schema Design shall:
+Organize data into logical business domains.
+Improve maintainability.
+Enhance database security.
+Reduce object naming conflicts.
+Support modular development.
+Simplify administration.
+Enable schema-level access control.
+Improve scalability.
+Facilitate deployment.
+Support future module expansion.
+
+14.4.3 Enterprise Schema Architecture
+
+                 CURASPHERE DATABASE
+
+                       public
+                          │
+ ─────────────────────────┼─────────────────────────
+ │          │         │         │         │
+ ▼          ▼         ▼         ▼         ▼
+patient  clinical appointment laboratory pharmacy
+ │          │         │         │         │
+ ▼          ▼         ▼         ▼         ▼
+radiology billing inventory hr administration
+ │
+ ▼
+audit
+ │
+ ▼
+reporting
+
+Each schema shall encapsulate its own business entities while interacting with other schemas through controlled foreign key relationships and service-layer operations.
+
+14.4.4 Schema Inventory
+The CuraSphere database shall consist of the following schemas.
+Schema
+Purpose
+public
+Shared database objects and extensions
+patient
+Patient registration and demographics
+clinical
+Electronic Medical Records (EMR)
+appointment
+Scheduling and consultations
+laboratory
+Laboratory workflows
+radiology
+Imaging workflows
+pharmacy
+Medication management
+billing
+Financial operations
+inventory
+Inventory and procurement
+hr
+Human Resource Management
+administration
+User and security management
+audit
+Audit logging
+reporting
+Reporting and analytics
+Each schema shall be independently managed while remaining part of the unified database.
+
+14.4.5 Patient Schema
+The patient schema stores demographic and administrative patient information.
+Primary tables include:
+patient
+patient_contact
+patient_address
+patient_emergency_contact
+patient_insurance
+patient_document
+patient_allergy
+patient_visit_history
+Responsibilities:
+Patient registration.
+Identity management.
+Contact information.
+Emergency contacts.
+Insurance records.
+Demographic information.
+
+14.4.6 Clinical Schema
+The clinical schema manages patient medical information.
+Major tables:
+medical_record
+diagnosis
+treatment_plan
+clinical_note
+vital_sign
+procedure
+consultation
+allergy_history
+Responsibilities:
+Electronic Medical Records.
+Diagnoses.
+Clinical notes.
+Vital signs.
+Treatment documentation.
+Clinical history.
+
+14.4.7 Appointment Schema
+The appointment schema manages scheduling operations.
+Major tables:
+appointment
+appointment_schedule
+appointment_status
+appointment_type
+consultation_room
+doctor_schedule
+queue_management
+Responsibilities:
+Appointment booking.
+Schedule management.
+Queue handling.
+Calendar integration.
+Consultation tracking.
+
+14.4.8 Laboratory Schema
+The laboratory schema manages diagnostic laboratory workflows.
+Primary tables:
+laboratory_order
+laboratory_sample
+laboratory_test
+laboratory_result
+laboratory_equipment
+laboratory_report
+Responsibilities:
+Test requests.
+Sample management.
+Laboratory processing.
+Result reporting.
+Equipment tracking.
+
+14.4.9 Radiology Schema
+The radiology schema supports imaging services.
+Primary tables:
+radiology_order
+imaging_study
+imaging_report
+imaging_equipment
+dicom_reference
+Responsibilities:
+Imaging requests.
+Radiology reports.
+Image metadata.
+Equipment management.
+DICOM integration.
+
+14.4.10 Pharmacy Schema
+The pharmacy schema manages medication operations.
+Major tables:
+prescription
+medication
+medication_category
+dispensing_record
+medication_stock
+prescription_refill
+Responsibilities:
+Prescription management.
+Drug catalog.
+Medication dispensing.
+Stock monitoring.
+Refill management.
+
+14.4.11 Billing Schema
+The billing schema manages financial transactions.
+Primary tables:
+invoice
+invoice_item
+payment
+insurance_claim
+refund
+financial_transaction
+billing_adjustment
+Responsibilities:
+Invoice generation.
+Payment processing.
+Insurance claims.
+Refund processing.
+Financial reconciliation.
+
+14.4.12 Inventory Schema
+The inventory schema supports stock and procurement.
+Primary tables:
+inventory_item
+inventory_category
+inventory_transaction
+purchase_order
+purchase_order_item
+supplier
+warehouse
+Responsibilities:
+Stock management.
+Procurement.
+Supplier management.
+Warehouse tracking.
+Inventory movement.
+
+14.4.13 Human Resources Schema
+The hr schema stores employee information.
+Major tables:
+employee
+department
+designation
+attendance
+leave_request
+payroll
+performance_review
+shift_schedule
+Responsibilities:
+Employee management.
+Attendance.
+Payroll.
+Leave management.
+Department administration.
+
+14.4.14 Administration Schema
+The administration schema manages system security and configuration.
+Primary tables:
+user
+role
+permission
+role_permission
+user_role
+system_configuration
+notification_template
+Responsibilities:
+User management.
+Role management.
+Permission assignment.
+System configuration.
+Security administration.
+
+14.4.15 Audit Schema
+The audit schema stores immutable audit information.
+Major tables:
+audit_log
+login_history
+security_event
+data_change_log
+access_log
+Responsibilities:
+Audit trails.
+Security monitoring.
+Compliance reporting.
+Activity history.
+Data modification tracking.
+Audit records shall not be modified after creation.
+
+14.4.16 Reporting Schema
+The reporting schema supports analytics and business intelligence.
+Objects include:
+Materialized Views.
+Reporting Views.
+Aggregated Tables.
+Dashboard Data.
+KPI Summaries.
+Statistical Reports.
+Responsibilities:
+Executive dashboards.
+Clinical analytics.
+Financial reporting.
+Operational reporting.
+Regulatory reporting.
+Reporting objects shall minimize the performance impact on transactional workloads.
+
+14.4.17 Cross-Schema Relationships
+The schemas shall interact through controlled relationships.
+
+patient
+    │
+    ▼
+clinical
+    │
+ ┌──┼──────────────┐
+ ▼  ▼              ▼
+appointment   laboratory   radiology
+      │             │
+      └──────┬──────┘
+             ▼
+         pharmacy
+             │
+             ▼
+          billing
+             │
+             ▼
+         reporting
+
+administration
+      │
+      ▼
+audit
+
+Relationships shall preserve referential integrity while maintaining logical separation between business domains.
+
+14.4.18 Schema Security Model
+Each schema shall implement role-based access controls.
+Schema
+Primary Access
+patient
+Registration Staff, Doctors
+clinical
+Doctors, Nurses
+laboratory
+Laboratory Personnel
+radiology
+Radiologists
+pharmacy
+Pharmacists
+billing
+Finance Department
+inventory
+Store Managers
+hr
+HR Department
+administration
+System Administrators
+audit
+Security Officers, Auditors
+reporting
+Management and Authorized Staff
+Permissions shall follow the Principle of Least Privilege.
+
+14.4.19 Schema Versioning & Migration
+Schema evolution shall be managed through controlled database migrations.
+Migration principles include:
+Version-controlled scripts.
+Automated deployment.
+Rollback capability.
+Migration validation.
+Compatibility testing.
+Schema documentation updates.
+Audit of structural changes.
+All schema changes shall be reviewed and approved before deployment.
+
+14.4.20 Schema Governance
+Database schema governance shall include:
+Ownership assignment.
+Change approval process.
+Version management.
+Security review.
+Performance assessment.
+Documentation updates.
+Periodic audits.
+Compliance verification.
+Governance ensures long-term consistency and maintainability of the database architecture.
+
+14.4.21 Database Schema Design Acceptance Criteria
+The Database Schema Design shall be considered complete when:
+Business domains are separated into well-defined schemas.
+Each schema contains clearly identified responsibilities and database objects.
+Cross-schema relationships preserve referential integrity without compromising modularity.
+Schema-level security, versioning, and governance mechanisms are established.
+The schema architecture provides a scalable, secure, and maintainable foundation for implementing the CuraSphere PostgreSQL database.
+
+14.5 Detailed Table Specifications
+
+14.5.1 Introduction
+The Detailed Table Specifications define the structure of every database table used within the CuraSphere Hospital Management System (HMS). Each table specification includes its purpose, attributes, data types, keys, constraints, relationships, indexing strategy, and business rules.
+This section serves as the implementation blueprint for the PostgreSQL database and shall be used by database architects, backend developers, and quality assurance teams during development and maintenance.
+Due to the size of the system, the table specifications are organized by business domain.
+The domains include:
+Patient Management
+Clinical Management
+Appointment Management
+Laboratory Management
+Radiology Management
+Pharmacy Management
+Billing & Finance
+Inventory Management
+Human Resources
+Administration & Security
+Audit & Compliance
+Reporting
+
+14.5.2 Table Specification Template
+Every table in CuraSphere shall be documented using the following standardized template.
+Field
+Description
+Table Name
+Official database table name
+Schema
+Database schema
+Description
+Business purpose
+Primary Key
+Primary key column
+Foreign Keys
+Referenced tables
+Indexes
+Performance indexes
+Constraints
+Business constraints
+Relationships
+Related entities
+Audit Fields
+Standard audit columns
+Each table shall also include a detailed column specification.
+
+14.5.3 Patient Domain Overview
+The Patient domain is the foundation of the CuraSphere database. Most clinical, operational, and financial records originate from or reference the patient entity.
+The patient domain is responsible for:
+Patient registration.
+Demographic information.
+Contact information.
+Emergency contacts.
+Insurance details.
+Identity verification.
+Visit history.
+The following core tables are included:
+Table
+patient
+patient_contact
+patient_address
+patient_emergency_contact
+patient_insurance
+patient_document
+patient_allergy
+patient_visit_history
+
+14.5.4 Table Specification — patient
+Table Information
+Property
+Value
+Table Name
+patient
+Schema
+patient
+Description
+Stores the master demographic record for each patient.
+Primary Key
+patient_id
+Estimated Growth
+High
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column Name
+Data Type
+Constraints
+Description
+patient_id
+UUID
+PK, NOT NULL
+Unique patient identifier
+medical_record_number
+VARCHAR(20)
+UNIQUE, NOT NULL
+Hospital MRN
+national_id
+VARCHAR(25)
+UNIQUE
+CNIC/Passport number
+first_name
+VARCHAR(100)
+NOT NULL
+Patient first name
+middle_name
+VARCHAR(100)
+NULL
+Middle name
+last_name
+VARCHAR(100)
+NOT NULL
+Last name
+gender
+VARCHAR(20)
+NOT NULL
+Gender
+date_of_birth
+DATE
+NOT NULL
+Date of birth
+blood_group
+VARCHAR(5)
+NULL
+Blood group
+marital_status
+VARCHAR(30)
+NULL
+Marital status
+nationality
+VARCHAR(80)
+NULL
+Nationality
+email
+VARCHAR(150)
+UNIQUE
+Email address
+phone_number
+VARCHAR(20)
+NOT NULL
+Mobile number
+registration_date
+TIMESTAMP
+NOT NULL
+Registration timestamp
+patient_status
+VARCHAR(30)
+DEFAULT 'Active'
+Current status
+deceased_flag
+BOOLEAN
+DEFAULT FALSE
+Indicates deceased patient
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+created_by
+UUID
+FK
+User creating record
+updated_at
+TIMESTAMP
+NULL
+Last modification timestamp
+updated_by
+UUID
+FK
+User updating record
+deleted_at
+TIMESTAMP
+NULL
+Soft delete timestamp
+deleted_by
+UUID
+FK
+User deleting record
+is_active
+BOOLEAN
+DEFAULT TRUE
+Record status
+version_number
+INTEGER
+DEFAULT 1
+Optimistic locking
+
+Foreign Keys
+Column
+References
+created_by
+administration.user
+updated_by
+administration.user
+deleted_by
+administration.user
+
+Recommended Indexes
+Index Name
+Columns
+idx_patient_mrn
+medical_record_number
+idx_patient_name
+first_name, last_name
+idx_patient_phone
+phone_number
+idx_patient_national_id
+national_id
+idx_patient_dob
+date_of_birth
+
+Business Rules
+Medical Record Number (MRN) shall be unique.
+A patient cannot be physically deleted if referenced by clinical records.
+Soft deletion shall be used for inactive records.
+Age shall be derived from date_of_birth.
+Every patient must have a registration date.
+National ID shall be unique when provided.
+
+Relationships
+Patient (1)
+   │
+   ├────────────── Appointment (N)
+   ├────────────── Medical_Record (N)
+   ├────────────── Invoice (N)
+   ├────────────── Prescription (N)
+   ├────────────── Laboratory_Order (N)
+   ├────────────── Radiology_Order (N)
+   └────────────── Visit_History (N)
+
+
+14.5.5 Table Specification — patient_contact
+Table Information
+Property
+Value
+Schema
+patient
+Table Name
+patient_contact
+Description
+Stores patient contact numbers and communication methods.
+
+Column Specifications
+Column
+Data Type
+Constraints
+contact_id
+UUID
+PK
+patient_id
+UUID
+FK, NOT NULL
+contact_type
+VARCHAR(30)
+NOT NULL
+contact_value
+VARCHAR(150)
+NOT NULL
+is_primary
+BOOLEAN
+DEFAULT FALSE
+created_at
+TIMESTAMP
+NOT NULL
+updated_at
+TIMESTAMP
+NULL
+
+Relationship
+Patient (1)
+      │
+      ▼
+Patient_Contact (N)
+
+
+Business Rules
+Each patient shall have at least one primary contact.
+Duplicate primary contacts are not permitted.
+Contact values shall be validated based on type (phone, email, etc.).
+
+14.5.6 Table Specification — patient_address
+Table Information
+Property
+Value
+Schema
+patient
+Table Name
+patient_address
+Description
+Stores current and historical patient addresses.
+
+Column Specifications
+Column
+Type
+Constraints
+address_id
+UUID
+PK
+patient_id
+UUID
+FK
+address_type
+VARCHAR(30)
+NOT NULL
+address_line_1
+VARCHAR(200)
+NOT NULL
+address_line_2
+VARCHAR(200)
+NULL
+city
+VARCHAR(100)
+NOT NULL
+province
+VARCHAR(100)
+NOT NULL
+postal_code
+VARCHAR(20)
+NULL
+country
+VARCHAR(100)
+NOT NULL
+is_current
+BOOLEAN
+DEFAULT TRUE
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Only one address of a given type (e.g., permanent or temporary) may be marked as current at a time.
+Historical addresses shall be retained for audit purposes.
+
+14.5.7 Table Specification — patient_emergency_contact
+Table Information
+Property
+Value
+Schema
+patient
+Table Name
+patient_emergency_contact
+Description
+Stores emergency contact information for patients.
+
+Column Specifications
+Column
+Data Type
+Constraints
+emergency_contact_id
+UUID
+PK
+patient_id
+UUID
+FK
+full_name
+VARCHAR(150)
+NOT NULL
+relationship
+VARCHAR(50)
+NOT NULL
+phone_number
+VARCHAR(20)
+NOT NULL
+alternate_phone
+VARCHAR(20)
+NULL
+address
+TEXT
+NULL
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Every patient should have at least one emergency contact.
+Multiple emergency contacts may be recorded.
+
+14.5.8 Table Specification — patient_insurance
+Table Information
+Property
+Value
+Schema
+patient
+Table Name
+patient_insurance
+Description
+Stores patient insurance coverage details.
+
+Column Specifications
+Column
+Data Type
+Constraints
+insurance_id
+UUID
+PK
+patient_id
+UUID
+FK
+provider_name
+VARCHAR(150)
+NOT NULL
+policy_number
+VARCHAR(100)
+UNIQUE
+coverage_type
+VARCHAR(100)
+NOT NULL
+effective_date
+DATE
+NOT NULL
+expiry_date
+DATE
+NULL
+status
+VARCHAR(30)
+DEFAULT 'Active'
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Policy numbers shall be unique.
+Expired insurance records shall be retained for historical reference.
+Multiple insurance policies may exist, but only one may be designated as primary.
+
+14.5.9 Patient Domain Relationship Summary
+
+                Patient
+                   │
+      ┌────────────┼────────────┐
+      ▼            ▼            ▼
+Patient_Contact Patient_Address Patient_Insurance
+      │
+      ▼
+Emergency_Contact
+      │
+      ▼
+Visit_History
+
+This structure centralizes all patient-related information while maintaining normalization and reducing data redundancy.
+
+14.5.10 Patient Domain Acceptance Criteria
+The Patient Domain shall be considered complete when:
+All patient-related entities are fully defined with columns, data types, keys, and constraints.
+Relationships between patient records and associated contact, address, emergency, and insurance information are enforced through foreign keys.
+Business rules ensure data integrity, uniqueness, and historical traceability.
+Standard audit fields and indexing strategies are applied consistently.
+The patient domain provides a secure, scalable, and normalized foundation for all downstream clinical, administrative, and financial modules.
+
+14.5.11 Clinical Management Domain Overview
+The Clinical Management domain is the core of the CuraSphere Hospital Management System. It stores and manages all patient healthcare information generated during consultations, examinations, treatments, and follow-up visits.
+This domain integrates with nearly every other module, including:
+Patient Management
+Appointment Management
+Laboratory
+Radiology
+Pharmacy
+Billing
+Reporting
+Audit
+The primary objective of this domain is to maintain a complete, secure, and longitudinal Electronic Medical Record (EMR) for every patient.
+
+14.5.12 Clinical Domain Tables
+The Clinical Management domain consists of the following primary tables:
+Table
+Description
+medical_record
+Master electronic medical record
+consultation
+Consultation details
+diagnosis
+Patient diagnoses
+clinical_note
+Clinical observations and notes
+vital_sign
+Patient vital signs
+treatment_plan
+Treatment plans
+procedure
+Medical procedures
+allergy_history
+Clinical allergy history
+
+14.5.13 Table Specification — medical_record
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+medical_record
+Description
+Stores the primary electronic medical record (EMR) for each patient encounter.
+Primary Key
+medical_record_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+medical_record_id
+UUID
+PK, NOT NULL
+Medical record identifier
+patient_id
+UUID
+FK, NOT NULL
+Patient reference
+appointment_id
+UUID
+FK
+Related appointment
+attending_doctor_id
+UUID
+FK
+Doctor responsible
+chief_complaint
+TEXT
+NOT NULL
+Patient's primary complaint
+history_of_present_illness
+TEXT
+NULL
+Current illness history
+past_medical_history
+TEXT
+NULL
+Previous illnesses
+family_history
+TEXT
+NULL
+Family medical history
+social_history
+TEXT
+NULL
+Lifestyle information
+clinical_summary
+TEXT
+NULL
+Overall consultation summary
+visit_date
+TIMESTAMP
+NOT NULL
+Consultation date
+visit_type
+VARCHAR(50)
+NOT NULL
+OPD, IPD, Emergency
+status
+VARCHAR(30)
+DEFAULT 'Open'
+Record status
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+created_by
+UUID
+FK
+User creator
+updated_at
+TIMESTAMP
+NULL
+Last update
+updated_by
+UUID
+FK
+Updated by
+is_active
+BOOLEAN
+DEFAULT TRUE
+Active status
+
+Foreign Keys
+Column
+References
+patient_id
+patient.patient
+appointment_id
+appointment.appointment
+attending_doctor_id
+hr.employee
+created_by
+administration.user
+updated_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_medical_record_patient
+patient_id
+idx_medical_record_visit
+visit_date
+idx_medical_record_doctor
+attending_doctor_id
+idx_medical_record_status
+status
+
+Business Rules
+Every medical record shall belong to one patient.
+A medical record may be associated with one appointment.
+Only authorized clinicians may modify medical records.
+Medical records shall never be permanently deleted.
+Each visit shall generate a unique medical record.
+
+Relationships
+Patient (1)
+      │
+      ▼
+Medical_Record (N)
+      │
+ ┌────┼───────────┬─────────────┐
+ ▼    ▼           ▼             ▼
+Diagnosis Clinical_Note Vital_Sign Treatment_Plan
+
+
+14.5.14 Table Specification — consultation
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+consultation
+Description
+Stores consultation details between a patient and healthcare provider.
+
+Column Specifications
+Column
+Type
+Constraints
+consultation_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+doctor_id
+UUID
+FK
+consultation_start
+TIMESTAMP
+NOT NULL
+consultation_end
+TIMESTAMP
+NULL
+consultation_type
+VARCHAR(50)
+NOT NULL
+consultation_status
+VARCHAR(30)
+DEFAULT 'Completed'
+remarks
+TEXT
+NULL
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Every consultation must reference one medical record.
+Consultation duration shall be calculated automatically.
+Consultation status shall reflect workflow completion.
+
+14.5.15 Table Specification — diagnosis
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+diagnosis
+Description
+Stores diagnoses associated with patient encounters.
+
+Column Specifications
+Column
+Type
+Constraints
+diagnosis_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+icd10_code
+VARCHAR(20)
+NOT NULL
+diagnosis_name
+VARCHAR(255)
+NOT NULL
+diagnosis_type
+VARCHAR(50)
+NOT NULL
+severity
+VARCHAR(30)
+NULL
+diagnosis_date
+DATE
+NOT NULL
+notes
+TEXT
+NULL
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Multiple diagnoses may exist for a single medical record.
+ICD-10 codes shall follow internationally recognized standards.
+Primary diagnosis shall be identified when multiple diagnoses exist.
+
+Relationship
+Medical_Record (1)
+        │
+        ▼
+Diagnosis (N)
+
+
+14.5.16 Table Specification — clinical_note
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+clinical_note
+Description
+Stores clinician observations and progress notes.
+
+Column Specifications
+Column
+Data Type
+Constraints
+note_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+note_type
+VARCHAR(50)
+NOT NULL
+note_content
+TEXT
+NOT NULL
+entered_by
+UUID
+FK
+note_date
+TIMESTAMP
+NOT NULL
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Clinical notes are append-only.
+Existing notes shall not be overwritten.
+Every note shall record the author.
+
+14.5.17 Table Specification — vital_sign
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+vital_sign
+Description
+Stores physiological measurements recorded during patient visits.
+
+Column Specifications
+Column
+Type
+Constraints
+vital_sign_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+temperature
+NUMERIC(4,1)
+NULL
+systolic_bp
+INTEGER
+NULL
+diastolic_bp
+INTEGER
+NULL
+pulse_rate
+INTEGER
+NULL
+respiratory_rate
+INTEGER
+NULL
+oxygen_saturation
+NUMERIC(5,2)
+NULL
+height_cm
+NUMERIC(5,2)
+NULL
+weight_kg
+NUMERIC(6,2)
+NULL
+bmi
+NUMERIC(5,2)
+GENERATED
+measurement_time
+TIMESTAMP
+NOT NULL
+
+Business Rules
+BMI shall be calculated automatically.
+Vital sign measurements shall be timestamped.
+Historical values shall never be overwritten.
+
+14.5.18 Table Specification — treatment_plan
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+treatment_plan
+Description
+Stores physician-approved treatment plans.
+
+Column Specifications
+Column
+Type
+Constraints
+treatment_plan_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+treatment_goal
+TEXT
+NOT NULL
+treatment_description
+TEXT
+NOT NULL
+start_date
+DATE
+NOT NULL
+expected_end_date
+DATE
+NULL
+status
+VARCHAR(30)
+DEFAULT 'Active'
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Multiple treatment plans may exist.
+Only attending physicians may approve treatment plans.
+Completed plans shall remain archived.
+
+14.5.19 Table Specification — procedure
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+procedure
+Description
+Stores medical procedures performed during treatment.
+
+Column Specifications
+Column
+Type
+Constraints
+procedure_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+procedure_code
+VARCHAR(30)
+NOT NULL
+procedure_name
+VARCHAR(255)
+NOT NULL
+procedure_date
+TIMESTAMP
+NOT NULL
+performed_by
+UUID
+FK
+outcome
+TEXT
+NULL
+notes
+TEXT
+NULL
+
+Business Rules
+Procedure codes shall comply with organizational coding standards.
+Procedures shall be linked to the relevant medical record.
+The performer shall be an authorized healthcare professional.
+
+14.5.20 Table Specification — allergy_history
+Table Information
+Property
+Value
+Schema
+clinical
+Table Name
+allergy_history
+Description
+Stores clinically confirmed allergies and reactions.
+
+Column Specifications
+Column
+Type
+Constraints
+allergy_history_id
+UUID
+PK
+medical_record_id
+UUID
+FK
+allergen
+VARCHAR(255)
+NOT NULL
+allergy_type
+VARCHAR(100)
+NOT NULL
+severity
+VARCHAR(30)
+NOT NULL
+reaction
+TEXT
+NULL
+recorded_date
+DATE
+NOT NULL
+verified_by
+UUID
+FK
+
+Business Rules
+Allergy information shall never be deleted.
+Allergy alerts shall be available to prescribing clinicians.
+Verified allergies shall require clinical confirmation.
+
+14.5.21 Clinical Domain Relationship Summary
+                    Patient
+                       │
+                       ▼
+                Medical_Record
+                       │
+      ┌────────┬────────┼─────────┬──────────┐
+      ▼        ▼        ▼         ▼          ▼
+Consultation Diagnosis Clinical_Note Vital_Sign Treatment_Plan
+                                                │
+                                                ▼
+                                           Procedure
+                       │
+                       ▼
+                Allergy_History
+
+The Clinical domain provides a comprehensive, longitudinal view of patient care, ensuring that all clinical activities remain linked to the patient's electronic medical record.
+
+14.5.22 Clinical Domain Acceptance Criteria
+The Clinical Management Domain shall be considered complete when:
+All clinical entities are fully specified with columns, data types, keys, and constraints.
+Medical records serve as the central entity linking consultations, diagnoses, notes, vital signs, treatment plans, procedures, and allergy history.
+Referential integrity is enforced across all clinical tables.
+Clinical information is protected through audit trails and role-based access control.
+The schema supports accurate, secure, and longitudinal electronic medical records compliant with healthcare best practices.
+
+14.5.23 Appointment Management Domain Overview
+The Appointment Management domain is responsible for scheduling, coordinating, monitoring, and tracking all patient appointments throughout the healthcare delivery process. It enables efficient allocation of healthcare resources while reducing waiting times and improving patient satisfaction.
+This domain integrates closely with:
+Patient Management
+Clinical Management
+Human Resources
+Billing
+Notification System
+Reporting
+Audit
+The Appointment Management module supports outpatient (OPD), inpatient (IPD), emergency consultations, telemedicine sessions, follow-up visits, and specialty clinic appointments.
+
+14.5.24 Appointment Domain Tables
+The Appointment Management domain consists of the following primary tables.
+Table
+Description
+appointment
+Master appointment record
+appointment_schedule
+Daily scheduling information
+doctor_schedule
+Doctor availability
+consultation_room
+Consultation room information
+queue_management
+Patient queue management
+appointment_status
+Appointment status lookup
+appointment_type
+Appointment type lookup
+
+14.5.25 Table Specification — appointment
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+appointment
+Description
+Stores appointment information between patients and healthcare providers.
+Primary Key
+appointment_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+appointment_id
+UUID
+PK, NOT NULL
+Unique appointment identifier
+patient_id
+UUID
+FK, NOT NULL
+Patient reference
+doctor_id
+UUID
+FK, NOT NULL
+Assigned doctor
+appointment_type_id
+UUID
+FK
+Appointment type
+appointment_status_id
+UUID
+FK
+Current appointment status
+consultation_room_id
+UUID
+FK
+Assigned consultation room
+appointment_date
+DATE
+NOT NULL
+Appointment date
+appointment_start_time
+TIME
+NOT NULL
+Scheduled start time
+appointment_end_time
+TIME
+NOT NULL
+Scheduled end time
+token_number
+INTEGER
+NULL
+Queue token
+priority_level
+VARCHAR(20)
+DEFAULT 'Normal'
+Appointment priority
+referral_source
+VARCHAR(150)
+NULL
+Referral information
+reason_for_visit
+TEXT
+NOT NULL
+Visit purpose
+notes
+TEXT
+NULL
+Additional notes
+reminder_sent
+BOOLEAN
+DEFAULT FALSE
+Reminder status
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+created_by
+UUID
+FK
+User creator
+updated_at
+TIMESTAMP
+NULL
+Last modification
+updated_by
+UUID
+FK
+User updater
+is_active
+BOOLEAN
+DEFAULT TRUE
+Active record
+
+Foreign Keys
+Column
+References
+patient_id
+patient.patient
+doctor_id
+hr.employee
+appointment_type_id
+appointment.appointment_type
+appointment_status_id
+appointment.appointment_status
+consultation_room_id
+appointment.consultation_room
+created_by
+administration.user
+updated_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_appointment_patient
+patient_id
+idx_appointment_doctor
+doctor_id
+idx_appointment_date
+appointment_date
+idx_appointment_status
+appointment_status_id
+idx_appointment_priority
+priority_level
+
+Business Rules
+Every appointment shall reference one patient and one doctor.
+Appointment time slots shall not overlap for the same doctor.
+Appointment status shall follow the approved workflow.
+Emergency appointments may bypass normal scheduling rules.
+Appointment reminders shall be generated automatically.
+
+Relationships
+Patient (1)
+      │
+      ▼
+Appointment (N)
+      │
+ ┌────┼──────────────┬─────────────┐
+ ▼    ▼              ▼             ▼
+Doctor Status Appointment_Type Consultation_Room
+
+14.5.26 Table Specification — appointment_schedule
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+appointment_schedule
+Description
+Stores predefined appointment schedules and time slots.
+
+Column Specifications
+Column
+Type
+Constraints
+schedule_id
+UUID
+PK
+doctor_id
+UUID
+FK
+day_of_week
+VARCHAR(15)
+NOT NULL
+start_time
+TIME
+NOT NULL
+end_time
+TIME
+NOT NULL
+slot_duration_minutes
+INTEGER
+NOT NULL
+maximum_patients
+INTEGER
+NOT NULL
+is_active
+BOOLEAN
+DEFAULT TRUE
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Schedule end time must be later than the start time.
+Slot duration shall be greater than zero.
+Doctors may have different schedules for different weekdays.
+
+14.5.27 Table Specification — doctor_schedule
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+doctor_schedule
+Description
+Stores doctor availability, leave periods, and working hours.
+
+Column Specifications
+Column
+Type
+Constraints
+doctor_schedule_id
+UUID
+PK
+doctor_id
+UUID
+FK
+available_from
+TIMESTAMP
+NOT NULL
+available_until
+TIMESTAMP
+NOT NULL
+availability_status
+VARCHAR(30)
+NOT NULL
+leave_reason
+TEXT
+NULL
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Appointments shall only be booked during available periods.
+Leave periods shall block appointment creation automatically.
+
+14.5.28 Table Specification — consultation_room
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+consultation_room
+Description
+Stores consultation room information.
+
+Column Specifications
+Column
+Type
+Constraints
+consultation_room_id
+UUID
+PK
+room_number
+VARCHAR(20)
+UNIQUE
+department_id
+UUID
+FK
+room_name
+VARCHAR(100)
+NOT NULL
+floor_number
+INTEGER
+NULL
+capacity
+INTEGER
+DEFAULT 1
+room_status
+VARCHAR(30)
+DEFAULT 'Available'
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Room numbers shall be unique.
+Rooms marked as unavailable shall not be assigned to appointments.
+
+14.5.29 Table Specification — queue_management
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+queue_management
+Description
+Tracks patient queue positions and waiting status.
+
+Column Specifications
+Column
+Type
+Constraints
+queue_id
+UUID
+PK
+appointment_id
+UUID
+FK
+queue_number
+INTEGER
+NOT NULL
+queue_status
+VARCHAR(30)
+NOT NULL
+check_in_time
+TIMESTAMP
+NULL
+called_time
+TIMESTAMP
+NULL
+consultation_start
+TIMESTAMP
+NULL
+consultation_end
+TIMESTAMP
+NULL
+
+Business Rules
+Queue numbers shall be unique for each doctor on a given day.
+Queue positions shall update automatically after patient check-in.
+Completed consultations shall be removed from the active queue.
+
+14.5.30 Table Specification — appointment_status
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+appointment_status
+Description
+Lookup table defining appointment workflow states.
+
+Column Specifications
+Column
+Type
+Constraints
+appointment_status_id
+UUID
+PK
+status_name
+VARCHAR(50)
+UNIQUE
+description
+TEXT
+NULL
+display_order
+INTEGER
+NOT NULL
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Standard Status Values
+Status
+Scheduled
+Confirmed
+Checked-In
+In Progress
+Completed
+Cancelled
+No Show
+Rescheduled
+
+14.5.31 Table Specification — appointment_type
+Table Information
+Property
+Value
+Schema
+appointment
+Table Name
+appointment_type
+Description
+Lookup table defining appointment categories.
+
+Column Specifications
+Column
+Type
+Constraints
+appointment_type_id
+UUID
+PK
+type_name
+VARCHAR(100)
+UNIQUE
+estimated_duration
+INTEGER
+NOT NULL
+requires_referral
+BOOLEAN
+DEFAULT FALSE
+requires_payment
+BOOLEAN
+DEFAULT TRUE
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Standard Appointment Types
+Type
+General OPD
+Specialist Consultation
+Follow-up Visit
+Emergency
+Telemedicine
+Vaccination
+Diagnostic Consultation
+Surgical Consultation
+
+14.5.32 Appointment Workflow
+Patient Registration
+        │
+        ▼
+Appointment Booking
+        │
+        ▼
+Doctor Availability Check
+        │
+        ▼
+Room Allocation
+        │
+        ▼
+Queue Generation
+        │
+        ▼
+Patient Check-In
+        │
+        ▼
+Consultation
+        │
+        ▼
+Medical Record Creation
+        │
+        ▼
+Billing & Follow-Up
+The workflow ensures appointments progress through a standardized lifecycle while integrating with clinical and financial modules.
+
+14.5.33 Appointment Domain Relationship Summary
+Patient
+   │
+   ▼
+Appointment
+   ├──────────────► Doctor
+   ├──────────────► Appointment_Type
+   ├──────────────► Appointment_Status
+   ├──────────────► Consultation_Room
+   │
+   ▼
+Queue_Management
+
+Doctor
+   │
+   ▼
+Doctor_Schedule
+       │
+       ▼
+Appointment_Schedule
+
+14.5.34 Appointment Domain Acceptance Criteria
+The Appointment Management Domain shall be considered complete when:
+All appointment-related tables are fully defined with columns, keys, constraints, and relationships.
+Scheduling rules prevent conflicts in doctor availability and consultation room assignments.
+Queue management accurately tracks patient flow throughout the consultation process.
+Appointment types and status values support standardized workflow management.
+The domain integrates seamlessly with patient, clinical, billing, HR, and notification modules while maintaining data integrity and auditability.
+
+14.5.35 Laboratory Management Domain Overview
+The Laboratory Management domain manages the complete lifecycle of laboratory investigations, from test ordering and specimen collection to analysis, result validation, and report generation. It ensures that laboratory processes are standardized, traceable, and integrated with the patient's Electronic Medical Record (EMR).
+This domain integrates with:
+Patient Management
+Clinical Management
+Appointment Management
+Billing
+Inventory
+Audit
+Reporting
+The Laboratory Management module supports routine, emergency, inpatient, outpatient, and specialized laboratory services.
+
+14.5.36 Laboratory Domain Tables
+The Laboratory Management domain consists of the following primary tables.
+Table
+Description
+laboratory_order
+Laboratory test requests
+laboratory_sample
+Sample collection details
+laboratory_test
+Laboratory test catalog
+laboratory_result
+Test results
+laboratory_report
+Final laboratory reports
+laboratory_equipment
+Laboratory equipment inventory
+
+14.5.37 Table Specification — laboratory_order
+Table Information
+Property
+Value
+Schema
+laboratory
+Table Name
+laboratory_order
+Description
+Stores laboratory test requests created by authorized healthcare providers.
+Primary Key
+laboratory_order_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+laboratory_order_id
+UUID
+PK, NOT NULL
+Unique laboratory order identifier
+medical_record_id
+UUID
+FK, NOT NULL
+Associated medical record
+patient_id
+UUID
+FK, NOT NULL
+Patient reference
+doctor_id
+UUID
+FK, NOT NULL
+Ordering physician
+priority
+VARCHAR(20)
+DEFAULT 'Routine'
+Test priority
+order_status
+VARCHAR(30)
+DEFAULT 'Pending'
+Current status
+clinical_notes
+TEXT
+NULL
+Clinical instructions
+ordered_at
+TIMESTAMP
+NOT NULL
+Order creation time
+expected_completion
+TIMESTAMP
+NULL
+Expected completion time
+created_by
+UUID
+FK
+User creator
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+
+Foreign Keys
+Column
+References
+medical_record_id
+clinical.medical_record
+patient_id
+patient.patient
+doctor_id
+hr.employee
+created_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_lab_order_patient
+patient_id
+idx_lab_order_status
+order_status
+idx_lab_order_priority
+priority
+idx_lab_order_doctor
+doctor_id
+idx_lab_order_date
+ordered_at
+
+Business Rules
+Every laboratory order shall belong to one patient and one medical record.
+Emergency orders shall receive processing priority.
+Orders cannot be deleted after sample collection.
+Status changes shall be recorded in the audit log.
+
+Relationships
+
+Medical_Record (1)
+        │
+        ▼
+Laboratory_Order (N)
+        │
+ ┌──────┼──────────────┐
+ ▼      ▼              ▼
+Sample  Result     Laboratory_Report
+
+
+14.5.38 Table Specification — laboratory_sample
+Table Information
+Property
+Value
+Schema
+laboratory
+Table Name
+laboratory_sample
+Description
+Stores specimen collection details for laboratory orders.
+
+Column Specifications
+Column
+Type
+Constraints
+sample_id
+UUID
+PK
+laboratory_order_id
+UUID
+FK
+sample_type
+VARCHAR(100)
+NOT NULL
+specimen_identifier
+VARCHAR(50)
+UNIQUE
+collection_date
+TIMESTAMP
+NOT NULL
+collected_by
+UUID
+FK
+sample_status
+VARCHAR(30)
+DEFAULT 'Collected'
+storage_location
+VARCHAR(100)
+NULL
+remarks
+TEXT
+NULL
+
+Business Rules
+Every collected specimen shall have a unique identifier.
+Samples shall be traceable throughout their lifecycle.
+Sample status shall follow the laboratory workflow.
+
+14.5.39 Table Specification — laboratory_test
+Table Information
+Property
+Value
+Schema
+laboratory
+Table Name
+laboratory_test
+Description
+Stores the master catalog of laboratory tests offered by the hospital.
+
+Column Specifications
+Column
+Type
+Constraints
+laboratory_test_id
+UUID
+PK
+test_code
+VARCHAR(30)
+UNIQUE
+test_name
+VARCHAR(255)
+NOT NULL
+department
+VARCHAR(100)
+NOT NULL
+specimen_type
+VARCHAR(100)
+NOT NULL
+reference_range
+VARCHAR(255)
+NULL
+unit_of_measure
+VARCHAR(50)
+NULL
+estimated_turnaround_hours
+INTEGER
+NOT NULL
+price
+NUMERIC(10,2)
+NOT NULL
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Business Rules
+Test codes shall be unique.
+Inactive tests shall not be available for new orders.
+Pricing changes shall preserve historical billing records.
+
+14.5.40 Table Specification — laboratory_result
+Table Information
+Property
+Value
+Schema
+laboratory
+Table Name
+laboratory_result
+Description
+Stores analytical results for laboratory tests.
+
+Column Specifications
+Column
+Type
+Constraints
+laboratory_result_id
+UUID
+PK
+laboratory_order_id
+UUID
+FK
+laboratory_test_id
+UUID
+FK
+result_value
+VARCHAR(255)
+NOT NULL
+unit
+VARCHAR(50)
+NULL
+reference_range
+VARCHAR(255)
+NULL
+interpretation
+VARCHAR(50)
+NULL
+abnormal_flag
+BOOLEAN
+DEFAULT FALSE
+verified_by
+UUID
+FK
+verification_date
+TIMESTAMP
+NULL
+result_status
+VARCHAR(30)
+DEFAULT 'Pending'
+
+Business Rules
+Results shall be verified before publication.
+Critical values shall trigger immediate clinical alerts.
+Historical results shall remain immutable after verification.
+
+14.5.41 Table Specification — laboratory_report
+Table Information
+Property
+Value
+Schema
+laboratory
+Table Name
+laboratory_report
+Description
+Stores finalized laboratory reports issued to clinicians and patients.
+
+Column Specifications
+Column
+Type
+Constraints
+laboratory_report_id
+UUID
+PK
+laboratory_order_id
+UUID
+FK
+report_number
+VARCHAR(50)
+UNIQUE
+report_status
+VARCHAR(30)
+DEFAULT 'Draft'
+report_summary
+TEXT
+NULL
+approved_by
+UUID
+FK
+approval_date
+TIMESTAMP
+NULL
+generated_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Reports shall only be generated after all ordered tests are finalized.
+Approved reports shall become read-only.
+Each report shall have a unique report number.
+
+14.5.42 Table Specification — laboratory_equipment
+Table Information
+Property
+Value
+Schema
+laboratory
+Table Name
+laboratory_equipment
+Description
+Stores laboratory equipment inventory and maintenance information.
+
+Column Specifications
+Column
+Type
+Constraints
+equipment_id
+UUID
+PK
+equipment_name
+VARCHAR(150)
+NOT NULL
+manufacturer
+VARCHAR(100)
+NULL
+model_number
+VARCHAR(100)
+NULL
+serial_number
+VARCHAR(100)
+UNIQUE
+installation_date
+DATE
+NULL
+calibration_due_date
+DATE
+NULL
+maintenance_status
+VARCHAR(30)
+DEFAULT 'Operational'
+location
+VARCHAR(100)
+NULL
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Business Rules
+Equipment serial numbers shall be unique.
+Calibration dates shall be monitored automatically.
+Equipment marked "Out of Service" shall not be assigned to testing workflows.
+
+14.5.43 Laboratory Workflow
+
+Doctor Orders Test
+        │
+        ▼
+Laboratory Order Created
+        │
+        ▼
+Sample Collection
+        │
+        ▼
+Sample Registration
+        │
+        ▼
+Laboratory Analysis
+        │
+        ▼
+Result Entry
+        │
+        ▼
+Result Verification
+        │
+        ▼
+Report Generation
+        │
+        ▼
+Doctor Reviews Report
+        │
+        ▼
+Medical Record Updated
+
+This workflow ensures complete traceability from test ordering to clinical review.
+
+14.5.44 Laboratory Domain Relationship Summary
+
+Patient
+    │
+    ▼
+Medical_Record
+    │
+    ▼
+Laboratory_Order
+    │
+ ┌──┼─────────────┐
+ ▼  ▼             ▼
+Sample Result Laboratory_Report
+       │
+       ▼
+Laboratory_Test
+
+Laboratory_Equipment
+        │
+        ▼
+Laboratory_Test
+
+
+14.5.45 Laboratory Domain Acceptance Criteria
+The Laboratory Management Domain shall be considered complete when:
+All laboratory-related tables are fully specified with columns, keys, constraints, and relationships.
+Laboratory orders, samples, tests, results, and reports are linked through enforced referential integrity.
+Business rules support specimen traceability, result verification, and standardized laboratory workflows.
+Equipment records support maintenance and calibration management.
+The domain integrates seamlessly with patient, clinical, billing, inventory, and reporting modules while ensuring secure, auditable, and compliant laboratory operations.
+
+14.5.46 Radiology Management Domain Overview
+The Radiology Management domain manages the complete imaging workflow within the CuraSphere Hospital Management System. It supports the ordering, scheduling, acquisition, interpretation, reporting, and archival of diagnostic imaging studies.
+The module ensures seamless integration with Electronic Medical Records (EMR), Picture Archiving and Communication Systems (PACS), and DICOM-compliant imaging devices.
+This domain integrates with:
+Patient Management
+Clinical Management
+Appointment Management
+Billing
+Inventory
+Reporting
+Audit
+External PACS/RIS Systems
+The module supports imaging modalities such as:
+X-Ray
+CT Scan
+MRI
+Ultrasound
+Mammography
+Fluoroscopy
+Echocardiography
+Nuclear Medicine
+
+14.5.47 Radiology Domain Tables
+The Radiology Management domain consists of the following primary tables.
+Table
+Description
+radiology_order
+Imaging requests
+imaging_study
+Imaging examination details
+radiology_report
+Radiologist reports
+imaging_equipment
+Imaging equipment inventory
+dicom_reference
+DICOM image references
+
+14.5.48 Table Specification — radiology_order
+Table Information
+Property
+Value
+Schema
+radiology
+Table Name
+radiology_order
+Description
+Stores imaging requests initiated by authorized healthcare providers.
+Primary Key
+radiology_order_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+radiology_order_id
+UUID
+PK, NOT NULL
+Unique imaging order identifier
+medical_record_id
+UUID
+FK, NOT NULL
+Related medical record
+patient_id
+UUID
+FK, NOT NULL
+Patient reference
+requesting_doctor_id
+UUID
+FK, NOT NULL
+Ordering physician
+imaging_type
+VARCHAR(100)
+NOT NULL
+Requested imaging modality
+body_part
+VARCHAR(100)
+NOT NULL
+Area to be examined
+priority
+VARCHAR(20)
+DEFAULT 'Routine'
+Order priority
+order_status
+VARCHAR(30)
+DEFAULT 'Pending'
+Workflow status
+clinical_indication
+TEXT
+NOT NULL
+Clinical reason for imaging
+ordered_at
+TIMESTAMP
+NOT NULL
+Order timestamp
+scheduled_date
+TIMESTAMP
+NULL
+Planned examination date
+created_by
+UUID
+FK
+User creator
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+
+Foreign Keys
+Column
+References
+medical_record_id
+clinical.medical_record
+patient_id
+patient.patient
+requesting_doctor_id
+hr.employee
+created_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_radiology_patient
+patient_id
+idx_radiology_status
+order_status
+idx_radiology_priority
+priority
+idx_radiology_date
+ordered_at
+idx_radiology_type
+imaging_type
+
+Business Rules
+Every radiology order shall reference one patient and one medical record.
+Emergency imaging requests shall receive processing priority.
+Orders cannot be cancelled once image acquisition has started.
+Clinical indication shall be mandatory.
+
+Relationships
+Medical_Record (1)
+        │
+        ▼
+Radiology_Order (N)
+        │
+ ┌──────┼───────────────┐
+ ▼      ▼               ▼
+Imaging_Study  Radiology_Report  DICOM_Reference
+
+14.5.49 Table Specification — imaging_study
+Table Information
+Property
+Value
+Schema
+radiology
+Table Name
+imaging_study
+Description
+Stores information about imaging examinations performed for radiology orders.
+
+Column Specifications
+Column
+Type
+Constraints
+imaging_study_id
+UUID
+PK
+radiology_order_id
+UUID
+FK
+study_instance_uid
+VARCHAR(128)
+UNIQUE
+modality
+VARCHAR(50)
+NOT NULL
+examination_date
+TIMESTAMP
+NOT NULL
+technician_id
+UUID
+FK
+equipment_id
+UUID
+FK
+study_status
+VARCHAR(30)
+DEFAULT 'Completed'
+image_count
+INTEGER
+DEFAULT 0
+radiation_dose
+NUMERIC(8,2)
+NULL
+
+Business Rules
+Each imaging study shall have a globally unique Study Instance UID.
+Image count shall reflect all acquired images.
+Radiation dose shall be recorded for applicable modalities.
+
+14.5.50 Table Specification — radiology_report
+Table Information
+Property
+Value
+Schema
+radiology
+Table Name
+radiology_report
+Description
+Stores diagnostic interpretations prepared by radiologists.
+
+Column Specifications
+Column
+Type
+Constraints
+radiology_report_id
+UUID
+PK
+imaging_study_id
+UUID
+FK
+radiologist_id
+UUID
+FK
+findings
+TEXT
+NOT NULL
+impression
+TEXT
+NOT NULL
+recommendations
+TEXT
+NULL
+report_status
+VARCHAR(30)
+DEFAULT 'Draft'
+approved_at
+TIMESTAMP
+NULL
+approved_by
+UUID
+FK
+
+Business Rules
+Reports shall remain editable until approval.
+Approved reports shall become read-only.
+Final reports shall automatically be linked to the patient's EMR.
+
+14.5.51 Table Specification — imaging_equipment
+Table Information
+Property
+Value
+Schema
+radiology
+Table Name
+imaging_equipment
+Description
+Stores diagnostic imaging equipment information.
+
+Column Specifications
+Column
+Type
+Constraints
+equipment_id
+UUID
+PK
+equipment_name
+VARCHAR(150)
+NOT NULL
+modality
+VARCHAR(50)
+NOT NULL
+manufacturer
+VARCHAR(100)
+NULL
+model_number
+VARCHAR(100)
+NULL
+serial_number
+VARCHAR(100)
+UNIQUE
+installation_date
+DATE
+NULL
+maintenance_due_date
+DATE
+NULL
+operational_status
+VARCHAR(30)
+DEFAULT 'Operational'
+location
+VARCHAR(100)
+NULL
+
+Business Rules
+Serial numbers shall be unique.
+Equipment scheduled for maintenance shall not accept new examinations.
+Maintenance history shall be retained.
+
+14.5.52 Table Specification — dicom_reference
+Table Information
+Property
+Value
+Schema
+radiology
+Table Name
+dicom_reference
+Description
+Stores references to DICOM objects managed by the PACS.
+
+Column Specifications
+Column
+Type
+Constraints
+dicom_reference_id
+UUID
+PK
+imaging_study_id
+UUID
+FK
+study_instance_uid
+VARCHAR(128)
+NOT NULL
+series_instance_uid
+VARCHAR(128)
+NOT NULL
+sop_instance_uid
+VARCHAR(128)
+NOT NULL
+pacs_location
+VARCHAR(500)
+NOT NULL
+checksum
+VARCHAR(128)
+NULL
+archived_at
+TIMESTAMP
+NULL
+
+Business Rules
+DICOM UIDs shall comply with the DICOM standard.
+Image files shall remain stored within the PACS, while the HMS stores only references and metadata.
+PACS references shall be validated before report publication.
+
+14.5.53 Radiology Workflow
+Doctor Requests Imaging
+          │
+          ▼
+Radiology Order Created
+          │
+          ▼
+Scheduling
+          │
+          ▼
+Patient Examination
+          │
+          ▼
+Image Acquisition
+          │
+          ▼
+Images Stored in PACS
+          │
+          ▼
+Radiologist Interpretation
+          │
+          ▼
+Report Approval
+          │
+          ▼
+Medical Record Updated
+          │
+          ▼
+Billing Generated
+This workflow provides complete traceability from imaging request to final report and billing.
+
+14.5.54 Radiology Domain Relationship Summary
+Patient
+   │
+   ▼
+Medical_Record
+   │
+   ▼
+Radiology_Order
+   │
+   ├────────────► Imaging_Study
+   │                  │
+   │                  ▼
+   │          DICOM_Reference
+   │                  │
+   ▼                  ▼
+Radiology_Report ◄────┘
+        │
+        ▼
+Radiologist
+
+Imaging_Equipment
+        │
+        ▼
+Imaging_Study
+
+14.5.55 Radiology Business Rules
+The Radiology Management module shall comply with the following operational rules:
+Every imaging request shall originate from an authorized healthcare provider.
+Imaging studies shall be associated with a valid patient and medical record.
+Radiology reports shall require approval by a licensed radiologist before publication.
+DICOM metadata shall remain synchronized with the PACS.
+All imaging activities shall be recorded in the audit log.
+Critical findings may trigger immediate clinician notifications.
+Historical imaging studies and reports shall be retained according to hospital retention policies.
+
+14.5.56 Radiology Domain Acceptance Criteria
+The Radiology Management Domain shall be considered complete when:
+All radiology-related tables are fully specified with columns, data types, primary keys, foreign keys, and constraints.
+Imaging orders, studies, reports, equipment, and DICOM references maintain referential integrity.
+Imaging workflows support standardized scheduling, acquisition, interpretation, approval, and archival.
+Integration with PACS and DICOM standards is accommodated through metadata references.
+The domain integrates securely with patient, clinical, billing, reporting, and audit modules while supporting accurate, compliant, and traceable diagnostic imaging operations.
+
+14.5.57 Pharmacy Management Domain Overview
+The Pharmacy Management domain manages the complete medication lifecycle within the CuraSphere Hospital Management System. It supports prescription creation, medication dispensing, inventory monitoring, refill management, drug interaction tracking, and pharmaceutical reporting.
+The module ensures that medication management is safe, accurate, auditable, and compliant with healthcare regulations.
+This domain integrates with:
+Patient Management
+Clinical Management
+Billing
+Inventory
+Human Resources
+Audit
+Reporting
+The Pharmacy module supports:
+Outpatient Pharmacy
+Inpatient Pharmacy
+Emergency Pharmacy
+Controlled Drug Management
+Medication Refills
+Drug Interaction Checking
+Medication Inventory
+
+14.5.58 Pharmacy Domain Tables
+The Pharmacy Management domain consists of the following primary tables.
+Table
+Description
+prescription
+Master prescription
+prescription_item
+Individual prescribed medications
+medication
+Medication master catalog
+medication_category
+Drug categories
+dispensing_record
+Medication dispensing history
+medication_stock
+Pharmacy inventory
+prescription_refill
+Prescription refill records
+
+14.5.59 Table Specification — prescription
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+prescription
+Description
+Stores prescriptions issued during patient treatment.
+Primary Key
+prescription_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+prescription_id
+UUID
+PK, NOT NULL
+Unique prescription identifier
+medical_record_id
+UUID
+FK, NOT NULL
+Associated medical record
+patient_id
+UUID
+FK, NOT NULL
+Patient reference
+doctor_id
+UUID
+FK, NOT NULL
+Prescribing physician
+prescription_date
+TIMESTAMP
+NOT NULL
+Date of issue
+prescription_status
+VARCHAR(30)
+DEFAULT 'Active'
+Current prescription status
+diagnosis_summary
+TEXT
+NULL
+Related diagnosis
+notes
+TEXT
+NULL
+Additional prescribing notes
+created_by
+UUID
+FK
+User creator
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+
+Foreign Keys
+Column
+References
+medical_record_id
+clinical.medical_record
+patient_id
+patient.patient
+doctor_id
+hr.employee
+created_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_prescription_patient
+patient_id
+idx_prescription_doctor
+doctor_id
+idx_prescription_date
+prescription_date
+idx_prescription_status
+prescription_status
+
+Business Rules
+Every prescription shall belong to one patient and one medical record.
+Only licensed physicians may create prescriptions.
+Cancelled prescriptions shall remain archived.
+Prescription modifications shall be recorded in the audit log.
+
+Relationships
+
+Medical_Record (1)
+        │
+        ▼
+Prescription (N)
+        │
+ ┌──────┼───────────────┐
+ ▼      ▼               ▼
+Prescription_Item  Dispensing_Record  Prescription_Refill
+
+
+14.5.60 Table Specification — prescription_item
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+prescription_item
+Description
+Stores individual medications prescribed within a prescription.
+
+Column Specifications
+Column
+Type
+Constraints
+prescription_item_id
+UUID
+PK
+prescription_id
+UUID
+FK
+medication_id
+UUID
+FK
+dosage
+VARCHAR(100)
+NOT NULL
+frequency
+VARCHAR(100)
+NOT NULL
+route
+VARCHAR(50)
+NOT NULL
+duration_days
+INTEGER
+NOT NULL
+quantity
+INTEGER
+NOT NULL
+instructions
+TEXT
+NULL
+
+Business Rules
+A prescription may contain multiple medication items.
+Quantity shall be greater than zero.
+Dosage and administration route shall follow approved medical standards.
+
+14.5.61 Table Specification — medication
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+medication
+Description
+Stores the master medication catalog.
+
+Column Specifications
+Column
+Type
+Constraints
+medication_id
+UUID
+PK
+medication_code
+VARCHAR(50)
+UNIQUE
+generic_name
+VARCHAR(255)
+NOT NULL
+brand_name
+VARCHAR(255)
+NULL
+category_id
+UUID
+FK
+dosage_form
+VARCHAR(100)
+NOT NULL
+strength
+VARCHAR(100)
+NOT NULL
+manufacturer
+VARCHAR(150)
+NULL
+unit_price
+NUMERIC(10,2)
+NOT NULL
+controlled_substance
+BOOLEAN
+DEFAULT FALSE
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Business Rules
+Medication codes shall be unique.
+Controlled substances shall require enhanced authorization.
+Inactive medications shall not be prescribed.
+
+14.5.62 Table Specification — medication_category
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+medication_category
+Description
+Stores standardized medication categories.
+
+Column Specifications
+Column
+Type
+Constraints
+category_id
+UUID
+PK
+category_name
+VARCHAR(100)
+UNIQUE
+description
+TEXT
+NULL
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Standard Categories
+Category
+Antibiotics
+Analgesics
+Antipyretics
+Antihypertensives
+Antidiabetics
+Vaccines
+Controlled Drugs
+Emergency Medicines
+
+14.5.63 Table Specification — dispensing_record
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+dispensing_record
+Description
+Stores medication dispensing activities performed by pharmacists.
+
+Column Specifications
+Column
+Type
+Constraints
+dispensing_id
+UUID
+PK
+prescription_item_id
+UUID
+FK
+pharmacist_id
+UUID
+FK
+dispensed_quantity
+INTEGER
+NOT NULL
+dispensing_date
+TIMESTAMP
+NOT NULL
+batch_number
+VARCHAR(100)
+NULL
+expiry_date
+DATE
+NULL
+dispensing_status
+VARCHAR(30)
+DEFAULT 'Dispensed'
+
+Business Rules
+Dispensed quantity shall not exceed prescribed quantity.
+Expired medication shall never be dispensed.
+Every dispensing event shall identify the responsible pharmacist.
+
+14.5.64 Table Specification — medication_stock
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+medication_stock
+Description
+Stores pharmacy inventory quantities and stock information.
+
+Column Specifications
+Column
+Type
+Constraints
+stock_id
+UUID
+PK
+medication_id
+UUID
+FK
+batch_number
+VARCHAR(100)
+NOT NULL
+quantity_available
+INTEGER
+NOT NULL
+reorder_level
+INTEGER
+NOT NULL
+expiry_date
+DATE
+NOT NULL
+storage_location
+VARCHAR(100)
+NULL
+stock_status
+VARCHAR(30)
+DEFAULT 'Available'
+
+Business Rules
+Stock shall never become negative.
+Expiring medications shall generate automatic alerts.
+Reorder alerts shall trigger when quantity reaches the reorder level.
+
+14.5.65 Table Specification — prescription_refill
+Table Information
+Property
+Value
+Schema
+pharmacy
+Table Name
+prescription_refill
+Description
+Stores prescription refill requests and approvals.
+
+Column Specifications
+Column
+Type
+Constraints
+refill_id
+UUID
+PK
+prescription_id
+UUID
+FK
+refill_number
+INTEGER
+NOT NULL
+requested_date
+TIMESTAMP
+NOT NULL
+approved_by
+UUID
+FK
+approval_date
+TIMESTAMP
+NULL
+refill_status
+VARCHAR(30)
+DEFAULT 'Pending'
+remarks
+TEXT
+NULL
+
+Business Rules
+Refill requests shall comply with prescription validity.
+Controlled substances may require physician reauthorization.
+Refill history shall remain permanently available.
+
+14.5.66 Medication Dispensing Workflow
+
+Doctor Creates Prescription
+          │
+          ▼
+Prescription Validation
+          │
+          ▼
+Drug Interaction Check
+          │
+          ▼
+Stock Availability Check
+          │
+          ▼
+Pharmacist Verification
+          │
+          ▼
+Medication Dispensed
+          │
+          ▼
+Inventory Updated
+          │
+          ▼
+Billing Updated
+          │
+          ▼
+Medical Record Updated
+
+This workflow ensures safe medication dispensing while maintaining synchronized inventory, billing, and clinical records.
+
+14.5.67 Pharmacy Domain Relationship Summary
+
+Medical_Record
+      │
+      ▼
+Prescription
+      │
+      ▼
+Prescription_Item
+      │
+      ├────────────► Medication
+      │                 │
+      │                 ▼
+      │        Medication_Category
+      │
+      ├────────────► Dispensing_Record
+      │
+      └────────────► Prescription_Refill
+
+Medication
+      │
+      ▼
+Medication_Stock
+
+14.5.68 Pharmacy Business Rules
+The Pharmacy Management module shall comply with the following operational rules:
+Every prescription shall be linked to a valid medical record.
+Medication dispensing shall only occur after pharmacist verification.
+Drug interaction checks shall be performed before dispensing where interaction data is available.
+Controlled medications shall require additional authorization and enhanced audit logging.
+Inventory quantities shall update automatically after every dispensing transaction.
+Expired or recalled medications shall not be available for dispensing.
+Low-stock and near-expiry alerts shall be generated automatically.
+
+14.5.69 Pharmacy Domain Acceptance Criteria
+The Pharmacy Management Domain shall be considered complete when:
+All pharmacy-related tables are fully specified with columns, keys, constraints, and relationships.
+Prescriptions, medication items, dispensing records, stock, and refill information maintain referential integrity.
+Medication dispensing workflows support prescription validation, stock control, and inventory synchronization.
+Business rules enforce medication safety, controlled substance management, and auditability.
+The domain integrates seamlessly with clinical, patient, billing, inventory, reporting, and audit modules while supporting secure, efficient, and compliant pharmaceutical operations.
+
+14.5.70 Billing & Financial Management Domain Overview
+The Billing & Financial Management domain manages all financial transactions associated with healthcare services provided through the CuraSphere Hospital Management System. It supports invoice generation, payment processing, insurance claims, refunds, financial adjustments, revenue tracking, and financial reporting.
+The module ensures that all financial activities are transparent, traceable, secure, and compliant with healthcare financial regulations.
+This domain integrates with:
+Patient Management
+Appointment Management
+Clinical Management
+Laboratory
+Radiology
+Pharmacy
+Inventory
+Reporting
+Audit
+The Billing & Financial Management module supports:
+OPD Billing
+IPD Billing
+Emergency Billing
+Pharmacy Billing
+Laboratory Billing
+Radiology Billing
+Insurance Billing
+Cash & Electronic Payments
+Refund Processing
+Revenue Management
+
+14.5.71 Billing Domain Tables
+The Billing & Financial Management domain consists of the following primary tables.
+Table
+Description
+invoice
+Master invoice
+invoice_item
+Individual billable services
+payment
+Payment records
+insurance_claim
+Insurance claim processing
+refund
+Refund transactions
+financial_transaction
+Financial ledger
+billing_adjustment
+Discounts and adjustments
+
+14.5.72 Table Specification — invoice
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+invoice
+Description
+Stores billing invoices generated for patient services.
+Primary Key
+invoice_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+invoice_id
+UUID
+PK, NOT NULL
+Unique invoice identifier
+invoice_number
+VARCHAR(50)
+UNIQUE, NOT NULL
+Invoice number
+patient_id
+UUID
+FK, NOT NULL
+Patient reference
+appointment_id
+UUID
+FK
+Related appointment
+invoice_date
+TIMESTAMP
+NOT NULL
+Invoice generation date
+due_date
+DATE
+NULL
+Payment due date
+subtotal
+NUMERIC(12,2)
+NOT NULL
+Total before taxes/discounts
+discount_amount
+NUMERIC(12,2)
+DEFAULT 0
+Discount amount
+tax_amount
+NUMERIC(12,2)
+DEFAULT 0
+Tax amount
+total_amount
+NUMERIC(12,2)
+NOT NULL
+Final payable amount
+paid_amount
+NUMERIC(12,2)
+DEFAULT 0
+Amount received
+outstanding_amount
+NUMERIC(12,2)
+NOT NULL
+Remaining balance
+invoice_status
+VARCHAR(30)
+DEFAULT 'Pending'
+Current invoice status
+created_by
+UUID
+FK
+User creator
+created_at
+TIMESTAMP
+NOT NULL
+Creation timestamp
+
+Foreign Keys
+Column
+References
+patient_id
+patient.patient
+appointment_id
+appointment.appointment
+created_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_invoice_patient
+patient_id
+idx_invoice_number
+invoice_number
+idx_invoice_status
+invoice_status
+idx_invoice_date
+invoice_date
+idx_invoice_due
+due_date
+
+Business Rules
+Invoice numbers shall be unique.
+Outstanding amount shall be automatically calculated.
+Cancelled invoices shall remain archived.
+Fully paid invoices shall automatically update their status to Paid.
+
+Relationships
+
+Patient (1)
+      │
+      ▼
+Invoice (N)
+      │
+ ┌────┼────────────┬──────────────┐
+ ▼    ▼            ▼              ▼
+Invoice_Item Payment Insurance_Claim Billing_Adjustment
+
+
+14.5.73 Table Specification — invoice_item
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+invoice_item
+Description
+Stores individual billable services included in an invoice.
+
+Column Specifications
+Column
+Type
+Constraints
+invoice_item_id
+UUID
+PK
+invoice_id
+UUID
+FK
+service_type
+VARCHAR(100)
+NOT NULL
+service_reference_id
+UUID
+NULL
+description
+VARCHAR(255)
+NOT NULL
+quantity
+INTEGER
+NOT NULL
+unit_price
+NUMERIC(10,2)
+NOT NULL
+line_discount
+NUMERIC(10,2)
+DEFAULT 0
+line_total
+NUMERIC(12,2)
+NOT NULL
+
+Business Rules
+Every invoice shall contain at least one invoice item.
+Line totals shall be calculated automatically.
+Invoice items shall reference originating clinical services where applicable.
+
+14.5.74 Table Specification — payment
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+payment
+Description
+Stores payments received for invoices.
+
+Column Specifications
+Column
+Type
+Constraints
+payment_id
+UUID
+PK
+invoice_id
+UUID
+FK
+payment_reference
+VARCHAR(100)
+UNIQUE
+payment_method
+VARCHAR(50)
+NOT NULL
+payment_amount
+NUMERIC(12,2)
+NOT NULL
+payment_date
+TIMESTAMP
+NOT NULL
+payment_status
+VARCHAR(30)
+DEFAULT 'Completed'
+received_by
+UUID
+FK
+transaction_reference
+VARCHAR(255)
+NULL
+
+Standard Payment Methods
+Method
+Cash
+Credit Card
+Debit Card
+Mobile Wallet
+Online Banking
+Bank Transfer
+Insurance
+Cheque
+
+Business Rules
+Payment amounts shall be greater than zero.
+Multiple payments may be applied to a single invoice.
+Payments shall update the invoice balance automatically.
+
+14.5.75 Table Specification — insurance_claim
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+insurance_claim
+Description
+Stores insurance reimbursement claims.
+
+Column Specifications
+Column
+Type
+Constraints
+claim_id
+UUID
+PK
+invoice_id
+UUID
+FK
+insurance_provider
+VARCHAR(150)
+NOT NULL
+policy_number
+VARCHAR(100)
+NOT NULL
+claim_amount
+NUMERIC(12,2)
+NOT NULL
+approved_amount
+NUMERIC(12,2)
+DEFAULT 0
+claim_status
+VARCHAR(30)
+DEFAULT 'Submitted'
+submission_date
+TIMESTAMP
+NOT NULL
+settlement_date
+TIMESTAMP
+NULL
+
+Business Rules
+Claims shall reference valid invoices.
+Approved amounts shall not exceed claim amounts.
+Claim status changes shall be audited.
+
+14.5.76 Table Specification — refund
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+refund
+Description
+Stores refund transactions issued to patients or insurers.
+
+Column Specifications
+Column
+Type
+Constraints
+refund_id
+UUID
+PK
+payment_id
+UUID
+FK
+refund_amount
+NUMERIC(12,2)
+NOT NULL
+refund_reason
+TEXT
+NOT NULL
+approved_by
+UUID
+FK
+refund_date
+TIMESTAMP
+NOT NULL
+refund_status
+VARCHAR(30)
+DEFAULT 'Approved'
+
+Business Rules
+Refunds shall not exceed the original payment amount.
+Refund approval shall require authorized personnel.
+Refund transactions shall update financial ledgers automatically.
+
+14.5.77 Table Specification — financial_transaction
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+financial_transaction
+Description
+Stores financial ledger entries for all billing-related transactions.
+
+Column Specifications
+Column
+Type
+Constraints
+transaction_id
+UUID
+PK
+invoice_id
+UUID
+FK
+transaction_type
+VARCHAR(50)
+NOT NULL
+debit_amount
+NUMERIC(12,2)
+DEFAULT 0
+credit_amount
+NUMERIC(12,2)
+DEFAULT 0
+transaction_date
+TIMESTAMP
+NOT NULL
+narration
+TEXT
+NULL
+created_by
+UUID
+FK
+
+Business Rules
+Every financial transaction shall be traceable to a business event.
+Debit and credit values shall follow organizational accounting policies.
+Ledger records shall be immutable after posting.
+
+14.5.78 Table Specification — billing_adjustment
+Table Information
+Property
+Value
+Schema
+billing
+Table Name
+billing_adjustment
+Description
+Stores discounts, waivers, and billing corrections.
+
+Column Specifications
+Column
+Type
+Constraints
+adjustment_id
+UUID
+PK
+invoice_id
+UUID
+FK
+adjustment_type
+VARCHAR(50)
+NOT NULL
+adjustment_amount
+NUMERIC(12,2)
+NOT NULL
+reason
+TEXT
+NOT NULL
+approved_by
+UUID
+FK
+adjustment_date
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Billing adjustments shall require authorization.
+Adjustment amounts shall be reflected in invoice totals.
+All adjustments shall be permanently recorded.
+
+14.5.79 Billing Workflow
+
+Healthcare Service Delivered
+            │
+            ▼
+Invoice Generated
+            │
+            ▼
+Invoice Items Added
+            │
+            ▼
+Insurance Eligibility Check
+            │
+            ▼
+Patient Payment
+            │
+            ▼
+Insurance Claim (if applicable)
+            │
+            ▼
+Payment Reconciliation
+            │
+            ▼
+Financial Ledger Updated
+            │
+            ▼
+Invoice Closed
+
+This workflow ensures accurate billing, payment tracking, insurance processing, and financial reconciliation.
+
+14.5.80 Billing Domain Relationship Summary
+
+Patient
+    │
+    ▼
+Invoice
+    │
+ ┌──┼─────────────┬─────────────┐
+ ▼  ▼             ▼             ▼
+Invoice_Item  Payment  Insurance_Claim
+                  │
+                  ▼
+               Refund
+                  │
+                  ▼
+Financial_Transaction
+
+Invoice
+    │
+    ▼
+Billing_Adjustment
+
+14.5.81 Billing Business Rules
+The Billing & Financial Management module shall comply with the following operational rules:
+Every billable healthcare service shall generate an invoice item.
+Invoice totals shall be calculated automatically from line items, taxes, discounts, and adjustments.
+Partial and multiple payments shall be supported.
+Insurance claims shall be linked to valid invoices and policies.
+Refunds shall require approval and shall not exceed the original payment amount.
+Financial transactions shall maintain an immutable audit trail.
+Revenue reports shall be generated from posted financial transactions only.
+
+14.5.82 Billing Domain Acceptance Criteria
+The Billing & Financial Management Domain shall be considered complete when:
+All billing-related tables are fully specified with columns, primary keys, foreign keys, constraints, and relationships.
+Invoice generation, payment processing, insurance claims, refunds, and financial adjustments maintain referential integrity.
+Business rules support accurate financial calculations, reconciliation, and auditability.
+Financial workflows provide traceability from healthcare service delivery through revenue recognition.
+The domain integrates seamlessly with patient, clinical, laboratory, radiology, pharmacy, reporting, and audit modules while supporting secure, compliant, and transparent financial management.
+
+14.5.83 Inventory Management Domain Overview
+The Inventory Management domain manages the procurement, storage, distribution, and monitoring of all hospital inventory items. It ensures that medical supplies, pharmaceuticals, laboratory consumables, surgical instruments, office supplies, and other hospital assets are available when needed while minimizing waste and preventing stock shortages.
+The module supports complete inventory lifecycle management from supplier procurement to stock consumption and disposal.
+This domain integrates with:
+Pharmacy Management
+Laboratory Management
+Radiology Management
+Billing
+Human Resources
+Finance
+Audit
+Reporting
+The Inventory Management module supports:
+Medical Supply Management
+Pharmacy Inventory
+Laboratory Inventory
+Surgical Inventory
+Warehouse Management
+Purchase Management
+Supplier Management
+Stock Transfers
+Batch & Expiry Tracking
+Automatic Reordering
+
+14.5.84 Inventory Domain Tables
+The Inventory Management domain consists of the following primary tables.
+Table
+Description
+inventory_item
+Master inventory items
+inventory_category
+Inventory categories
+inventory_transaction
+Stock movement history
+purchase_order
+Purchase orders
+purchase_order_item
+Purchase order line items
+supplier
+Supplier information
+warehouse
+Warehouse and storage locations
+
+14.5.85 Table Specification — inventory_item
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+inventory_item
+Description
+Stores all inventory items used throughout the hospital.
+Primary Key
+inventory_item_id
+Criticality
+Critical
+Audit Enabled
+Yes
+
+Column Specifications
+Column
+Data Type
+Constraints
+Description
+inventory_item_id
+UUID
+PK, NOT NULL
+Unique inventory item identifier
+item_code
+VARCHAR(50)
+UNIQUE, NOT NULL
+Inventory code
+item_name
+VARCHAR(255)
+NOT NULL
+Inventory item name
+category_id
+UUID
+FK
+Item category
+unit_of_measure
+VARCHAR(50)
+NOT NULL
+Measurement unit
+reorder_level
+INTEGER
+NOT NULL
+Minimum stock threshold
+current_stock
+INTEGER
+DEFAULT 0
+Current available quantity
+maximum_stock
+INTEGER
+NULL
+Maximum storage quantity
+batch_tracking
+BOOLEAN
+DEFAULT TRUE
+Batch tracking enabled
+expiry_tracking
+BOOLEAN
+DEFAULT TRUE
+Expiry tracking enabled
+item_status
+VARCHAR(30)
+DEFAULT 'Active'
+Item availability
+created_at
+TIMESTAMP
+NOT NULL
+Record creation timestamp
+created_by
+UUID
+FK
+User creator
+
+Foreign Keys
+Column
+References
+category_id
+inventory.inventory_category
+created_by
+administration.user
+
+Recommended Indexes
+Index
+Columns
+idx_inventory_code
+item_code
+idx_inventory_name
+item_name
+idx_inventory_category
+category_id
+idx_inventory_stock
+current_stock
+idx_inventory_status
+item_status
+
+Business Rules
+Every inventory item shall have a unique item code.
+Current stock shall never become negative.
+Batch tracking shall be mandatory for medicines and laboratory reagents.
+Expired items shall not be issued for use.
+
+Relationships
+
+Inventory_Category (1)
+          │
+          ▼
+Inventory_Item (N)
+          │
+  ┌───────┼──────────────┐
+  ▼       ▼              ▼
+Transaction Purchase_Order_Item Warehouse
+
+
+14.5.86 Table Specification — inventory_category
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+inventory_category
+Description
+Stores inventory classification categories.
+
+Column Specifications
+Column
+Type
+Constraints
+category_id
+UUID
+PK
+category_name
+VARCHAR(100)
+UNIQUE
+description
+TEXT
+NULL
+parent_category_id
+UUID
+FK, NULL
+is_active
+BOOLEAN
+DEFAULT TRUE
+
+Standard Categories
+Category
+Medicines
+Surgical Supplies
+Laboratory Reagents
+Radiology Supplies
+Medical Equipment
+Office Supplies
+Cleaning Materials
+Personal Protective Equipment (PPE)
+
+Business Rules
+Category names shall be unique.
+Parent-child hierarchy shall be supported.
+Inactive categories shall not accept new items.
+
+14.5.87 Table Specification — inventory_transaction
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+inventory_transaction
+Description
+Stores every inventory movement within the hospital.
+
+Column Specifications
+Column
+Type
+Constraints
+transaction_id
+UUID
+PK
+inventory_item_id
+UUID
+FK
+warehouse_id
+UUID
+FK
+transaction_type
+VARCHAR(30)
+NOT NULL
+quantity
+INTEGER
+NOT NULL
+batch_number
+VARCHAR(100)
+NULL
+expiry_date
+DATE
+NULL
+transaction_date
+TIMESTAMP
+NOT NULL
+performed_by
+UUID
+FK
+remarks
+TEXT
+NULL
+
+Standard Transaction Types
+Transaction
+Purchase
+Issue
+Return
+Adjustment
+Transfer
+Disposal
+Stock Count
+
+Business Rules
+Every stock movement shall create a transaction record.
+Transactions shall update inventory quantities automatically.
+Disposal transactions shall require approval.
+
+14.5.88 Table Specification — purchase_order
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+purchase_order
+Description
+Stores purchase orders issued to suppliers.
+
+Column Specifications
+Column
+Type
+Constraints
+purchase_order_id
+UUID
+PK
+purchase_order_number
+VARCHAR(50)
+UNIQUE
+supplier_id
+UUID
+FK
+order_date
+DATE
+NOT NULL
+expected_delivery
+DATE
+NULL
+purchase_status
+VARCHAR(30)
+DEFAULT 'Pending'
+total_amount
+NUMERIC(12,2)
+NOT NULL
+approved_by
+UUID
+FK
+created_at
+TIMESTAMP
+NOT NULL
+
+Business Rules
+Purchase order numbers shall be unique.
+Orders shall require approval before supplier dispatch.
+Cancelled purchase orders shall remain archived.
+
+14.5.89 Table Specification — purchase_order_item
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+purchase_order_item
+Description
+Stores individual items included in purchase orders.
+
+Column Specifications
+Column
+Type
+Constraints
+purchase_order_item_id
+UUID
+PK
+purchase_order_id
+UUID
+FK
+inventory_item_id
+UUID
+FK
+ordered_quantity
+INTEGER
+NOT NULL
+received_quantity
+INTEGER
+DEFAULT 0
+unit_price
+NUMERIC(10,2)
+NOT NULL
+line_total
+NUMERIC(12,2)
+NOT NULL
+
+Business Rules
+Received quantity shall not exceed ordered quantity.
+Line totals shall be calculated automatically.
+Partial deliveries shall be supported.
+
+14.5.90 Table Specification — supplier
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+supplier
+Description
+Stores supplier and vendor information.
+
+Column Specifications
+Column
+Type
+Constraints
+supplier_id
+UUID
+PK
+supplier_name
+VARCHAR(255)
+NOT NULL
+supplier_code
+VARCHAR(50)
+UNIQUE
+contact_person
+VARCHAR(150)
+NULL
+phone_number
+VARCHAR(30)
+NULL
+email
+VARCHAR(150)
+NULL
+address
+TEXT
+NULL
+tax_registration_number
+VARCHAR(100)
+NULL
+supplier_status
+VARCHAR(30)
+DEFAULT 'Active'
+
+Business Rules
+Supplier codes shall be unique.
+Only active suppliers may receive purchase orders.
+Supplier performance metrics shall be retained.
+
+14.5.91 Table Specification — warehouse
+Table Information
+Property
+Value
+Schema
+inventory
+Table Name
+warehouse
+Description
+Stores warehouse and inventory storage locations.
+
+Column Specifications
+Column
+Type
+Constraints
+warehouse_id
+UUID
+PK
+warehouse_name
+VARCHAR(150)
+NOT NULL
+warehouse_code
+VARCHAR(50)
+UNIQUE
+location
+VARCHAR(255)
+NOT NULL
+warehouse_manager
+UUID
+FK
+storage_type
+VARCHAR(100)
+NULL
+temperature_controlled
+BOOLEAN
+DEFAULT FALSE
+warehouse_status
+VARCHAR(30)
+DEFAULT 'Operational'
+
+Business Rules
+Warehouse codes shall be unique.
+Temperature-controlled warehouses shall monitor environmental conditions.
+Closed warehouses shall not receive inventory.
+
+14.5.92 Inventory Workflow
+
+Stock Requirement Identified
+            │
+            ▼
+Purchase Order Created
+            │
+            ▼
+Approval Process
+            │
+            ▼
+Supplier Delivery
+            │
+            ▼
+Goods Receipt Inspection
+            │
+            ▼
+Inventory Updated
+            │
+            ▼
+Warehouse Storage
+            │
+            ▼
+Department Requests Stock
+            │
+            ▼
+Stock Issued
+            │
+            ▼
+Inventory Balance Updated
+This workflow ensures complete traceability from procurement through inventory utilization.
+
+14.5.93 Inventory Domain Relationship Summary
+
+Inventory_Category
+          │
+          ▼
+Inventory_Item
+     ┌────┼───────────────┐
+     ▼    ▼               ▼
+Inventory_Transaction  Purchase_Order_Item
+                             │
+                             ▼
+                     Purchase_Order
+                             │
+                             ▼
+                         Supplier
+
+Warehouse
+     │
+     ▼
+Inventory_Transaction
+
+14.5.94 Inventory Business Rules
+The Inventory Management module shall comply with the following operational rules:
+Every inventory item shall belong to a valid inventory category.
+All inventory movements shall generate transaction records.
+Automatic reorder notifications shall be generated when stock falls below the reorder level.
+Batch-controlled items shall maintain complete batch traceability.
+Expired inventory items shall be blocked from issuance.
+Purchase orders shall support partial deliveries and multiple receipts.
+Inventory adjustments shall require authorized approval.
+Warehouse transfers shall maintain complete movement history.
+
+14.5.95 Inventory Domain Acceptance Criteria
+The Inventory Management Domain shall be considered complete when:
+All inventory-related tables are fully specified with columns, primary keys, foreign keys, constraints, and relationships.
+Procurement, warehouse management, stock movement, and supplier records maintain referential integrity.
+Inventory workflows support purchasing, receiving, storage, issuance, transfer, and disposal processes.
+Business rules enforce stock accuracy, batch traceability, expiry management, and controlled inventory adjustments.
+The domain integrates seamlessly with pharmacy, laboratory, radiology, billing, reporting, and audit modules while supporting secure, efficient, and transparent inventory management.
+
+14.5.96 Administration, Security & Audit Domain Overview
+The Administration, Security & Audit domain provides the foundation for system governance, authentication, authorization, user administration, security monitoring, configuration management, and regulatory compliance.
+This domain ensures that every authenticated user, system activity, configuration change, and security event is properly managed and audited.
+The module implements Role-Based Access Control (RBAC) and provides complete auditability for all business operations performed within the CuraSphere Hospital Management System.
+This domain integrates with every subsystem including:
+Patient Management
+Clinical Management
+Appointment Management
+Laboratory
+Radiology
+Pharmacy
+Billing
+Inventory
+Reporting
+Notification System
+
+14.5.97 Administration Domain Tables
+Table
+Description
+user
+System users
+role
+User roles
+permission
+System permissions
+user_role
+User-role assignments
+role_permission
+Role-permission mapping
+department
+Hospital departments
+employee
+Hospital employees
+notification
+System notifications
+audit_log
+Complete audit trail
+system_configuration
+Global system settings
+login_history
+Authentication history
+
+14.5.98 Table Specification — user
+Table Information
+Property
+Value
+Schema
+administration
+Table Name
+user
+Primary Key
+user_id
+Description
+Stores authenticated system users.
+Audit Enabled
+Yes
+Column Specifications
+Column
+Type
+Constraints
+user_id
+UUID
+PK
+employee_id
+UUID
+FK
+username
+VARCHAR(100)
+UNIQUE
+password_hash
+VARCHAR(255)
+NOT NULL
+email
+VARCHAR(255)
+UNIQUE
+phone_number
+VARCHAR(30)
+NULL
+account_status
+VARCHAR(30)
+DEFAULT 'Active'
+last_login
+TIMESTAMP
+NULL
+password_changed_at
+TIMESTAMP
+NULL
+multi_factor_enabled
+BOOLEAN
+DEFAULT FALSE
+created_at
+TIMESTAMP
+NOT NULL
+Business Rules
+Usernames shall be unique.
+Passwords shall never be stored in plain text.
+Password hashes shall use approved cryptographic algorithms.
+Disabled accounts shall not authenticate.
+
+14.5.99 Table Specification — role
+Table Information
+Property
+Value
+Schema
+administration
+Table Name
+role
+Column Specifications
+Column
+Type
+role_id
+UUID
+role_name
+VARCHAR(100)
+description
+TEXT
+is_system_role
+BOOLEAN
+created_at
+TIMESTAMP
+Standard Roles
+System Administrator
+Hospital Administrator
+Doctor
+Nurse
+Pharmacist
+Laboratory Technologist
+Radiologist
+Receptionist
+Cashier
+Inventory Officer
+HR Officer
+Patient
+
+14.5.100 Table Specification — permission
+Table Information
+Property
+Value
+Schema
+administration
+Table Name
+permission
+Column Specifications
+Column
+Type
+permission_id
+UUID
+module_name
+VARCHAR(100)
+permission_name
+VARCHAR(150)
+permission_code
+VARCHAR(100)
+description
+TEXT
+Example Permissions
+Module
+Permission
+Patient
+View Patient
+Patient
+Create Patient
+Patient
+Update Patient
+Patient
+Delete Patient
+Billing
+Create Invoice
+Pharmacy
+Dispense Medication
+Laboratory
+Verify Result
+Administration
+Manage Users
+
+14.5.101 Table Specification — user_role
+Column
+Type
+user_role_id
+UUID
+user_id
+UUID FK
+role_id
+UUID FK
+assigned_date
+TIMESTAMP
+assigned_by
+UUID FK
+is_active
+BOOLEAN
+Business Rules
+One user may have multiple roles.
+One role may belong to multiple users.
+
+14.5.102 Table Specification — role_permission
+Column
+Type
+role_permission_id
+UUID
+role_id
+UUID FK
+permission_id
+UUID FK
+granted_by
+UUID FK
+granted_at
+TIMESTAMP
+Business Rules
+Permissions shall only be granted through roles.
+Permission inheritance shall follow RBAC principles.
+
+14.5.103 Table Specification — department
+Column
+Type
+department_id
+UUID
+department_name
+VARCHAR(150)
+department_code
+VARCHAR(30)
+department_head
+UUID FK
+location
+VARCHAR(255)
+status
+VARCHAR(30)
+Standard Departments
+Administration
+Emergency
+OPD
+IPD
+Pharmacy
+Laboratory
+Radiology
+ICU
+Surgery
+Pediatrics
+Cardiology
+Orthopedics
+Finance
+Human Resources
+
+14.5.104 Table Specification — employee
+Column
+Type
+employee_id
+UUID
+employee_number
+VARCHAR(50)
+first_name
+VARCHAR(100)
+last_name
+VARCHAR(100)
+department_id
+UUID FK
+designation
+VARCHAR(150)
+employment_type
+VARCHAR(50)
+hire_date
+DATE
+employment_status
+VARCHAR(30)
+email
+VARCHAR(255)
+phone
+VARCHAR(30)
+Business Rules
+Employee numbers shall be unique.
+Every employee shall belong to one department.
+Employee status shall determine system access eligibility.
+
+14.5.105 Table Specification — notification
+Description
+Stores notifications generated by the system.
+Column Specifications
+Column
+Type
+notification_id
+UUID
+recipient_user_id
+UUID FK
+notification_type
+VARCHAR(50)
+title
+VARCHAR(255)
+message
+TEXT
+priority
+VARCHAR(30)
+delivery_channel
+VARCHAR(50)
+is_read
+BOOLEAN
+created_at
+TIMESTAMP
+Notification Types
+Appointment Reminder
+Laboratory Result
+Radiology Report
+Payment Reminder
+Prescription Ready
+Low Stock Alert
+System Alert
+Security Alert
+
+14.5.106 Table Specification — audit_log
+Description
+Maintains a permanent audit trail for all significant system activities.
+Column Specifications
+Column
+Type
+audit_id
+UUID
+user_id
+UUID FK
+module
+VARCHAR(100)
+entity_name
+VARCHAR(100)
+entity_id
+UUID
+action
+VARCHAR(50)
+old_value
+JSONB
+new_value
+JSONB
+ip_address
+VARCHAR(50)
+user_agent
+TEXT
+event_time
+TIMESTAMP
+Business Rules
+Audit records shall never be deleted.
+All updates to patient clinical data shall generate audit events.
+Audit records shall include timestamp, actor, and action details.
+
+14.5.107 Table Specification — system_configuration
+Column Specifications
+Column
+Type
+configuration_id
+UUID
+configuration_key
+VARCHAR(150)
+configuration_value
+TEXT
+description
+TEXT
+updated_by
+UUID FK
+updated_at
+TIMESTAMP
+Example Configurations
+Hospital Name
+Time Zone
+Currency
+SMTP Server
+SMS Gateway
+Backup Schedule
+Session Timeout
+Password Policy
+Logo Path
+Theme
+
+14.5.108 Table Specification — login_history
+Column Specifications
+Column
+Type
+login_history_id
+UUID
+user_id
+UUID FK
+login_time
+TIMESTAMP
+logout_time
+TIMESTAMP
+ip_address
+VARCHAR(50)
+device_information
+TEXT
+browser
+VARCHAR(100)
+login_status
+VARCHAR(30)
+failure_reason
+TEXT
+Business Rules
+Every login attempt shall be recorded.
+Failed authentication attempts shall be logged.
+Login history shall support security investigations.
+
+14.5.109 RBAC Relationship Model
+                     User
+                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+     User_Role               Login_History
+          │
+          ▼
+         Role
+          │
+          ▼
+   Role_Permission
+          │
+          ▼
+     Permission
+
+14.5.110 Administration Workflow
+Administrator Login
+         │
+         ▼
+User Management
+         │
+         ▼
+Role Assignment
+         │
+         ▼
+Permission Assignment
+         │
+         ▼
+Department Management
+         │
+         ▼
+Employee Registration
+         │
+         ▼
+Notification Management
+         │
+         ▼
+Audit Logging
+         │
+         ▼
+Security Monitoring
+
+14.5.111 Security Business Rules
+The Administration and Security module shall comply with the following rules:
+Every authenticated user shall have at least one assigned role.
+Authorization decisions shall be based on Role-Based Access Control (RBAC).
+Passwords shall be stored using secure hashing algorithms (e.g., Argon2 or bcrypt).
+Multi-factor authentication shall be configurable for privileged accounts.
+Every successful and failed login attempt shall be recorded.
+Sensitive actions, including patient record updates, financial transactions, and configuration changes, shall generate audit log entries.
+Audit records shall be immutable and retained according to organizational data retention policies.
+Session timeouts and password policies shall be configurable through system settings.
+Notifications shall support in-app, email, and SMS delivery channels.
+Administrative actions shall require appropriate authorization and be fully traceable.
+
+14.5.112 Administration Domain Acceptance Criteria
+The Administration, Security & Audit Domain shall be considered complete when:
+All administration-related tables are fully defined with columns, primary keys, foreign keys, constraints, and relationships.
+RBAC enforces secure authentication and authorization across all system modules.
+Audit logging provides complete traceability for critical business and security events.
+Login history, notifications, employee records, and system configurations maintain referential integrity.
+Security controls support password policies, multi-factor authentication, session management, and immutable audit trails.
+The domain integrates seamlessly with every module of the CuraSphere Hospital Management System while ensuring confidentiality, integrity, availability, and regulatory compliance.
+
+
+

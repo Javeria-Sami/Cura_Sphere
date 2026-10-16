@@ -1,0 +1,539 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.16 - External Systems Integration & API Gateway (INT)
+
+5.16.1 Introduction
+The External Systems Integration & API Gateway (INT) module enables secure, standardized, and reliable communication between the CuraSphere Hospital Management System and external healthcare systems, government agencies, insurance providers, laboratories, payment services, medical devices, and third-party applications.
+Modern hospitals depend on interoperability. This module ensures that CuraSphere can exchange healthcare information using industry standards while maintaining security, performance, reliability, and data integrity.
+The Integration module acts as the Enterprise Integration Layer (EIL) and API Gateway for the entire system.
+
+Integration Module Scope
+The Integration System shall support:
+REST APIs
+API Gateway
+HL7 v2.x Messaging
+HL7 FHIR APIs
+DICOM Integration
+PACS Integration
+Laboratory Analyzer Integration
+Medical Device Integration
+Payment Gateway Integration
+Insurance System Integration
+Government Health System Integration
+SMS Gateway
+Email Gateway
+Third-Party Authentication
+OAuth Authentication
+Webhooks
+Message Queue Integration
+Event Bus
+API Monitoring
+Integration Audit
+Error Handling
+Retry Management
+
+High-Level Integration Architecture
+                 External Systems
+                        │
+ ┌───────────┬──────────┼───────────┬───────────┐
+ ▼           ▼          ▼           ▼           ▼
+Insurance   PACS     Payment     SMS/Email   Government
+                        │
+                        ▼
+                 API Gateway Layer
+                        │
+                        ▼
+             Integration Service Bus
+                        │
+      ┌─────────────────┼──────────────────┐
+      ▼                 ▼                  ▼
+   HL7 Engine      FHIR Services     Webhook Engine
+                        │
+                        ▼
+                 CuraSphere Modules
+                        │
+                        ▼
+                 PostgreSQL Database
+
+5.16.2 Objectives
+The Integration System shall:
+Enable healthcare interoperability.
+Support international healthcare standards.
+Integrate external healthcare systems.
+Secure API communication.
+Support third-party applications.
+Integrate payment services.
+Integrate insurance providers.
+Integrate medical devices.
+Support event-driven architecture.
+Reduce manual data entry.
+Improve data consistency.
+Enable future system expansion.
+Support real-time communication.
+Maintain integration audit logs.
+Ensure reliable message delivery.
+
+5.16.3 Actors
+Actor
+Description
+External Application
+Third-party software
+Insurance Provider
+Insurance verification
+Payment Gateway
+Online payment
+Government Health System
+Regulatory reporting
+Laboratory Analyzer
+Laboratory equipment
+PACS Server
+Medical imaging
+Medical Device
+Healthcare devices
+API Consumer
+External API client
+Integration Administrator
+Integration management
+CuraSphere Integration Engine
+Automated integration
+
+5.16.4 High-Level Integration Architecture
+             External Systems
+                    │
+                    ▼
+              API Gateway
+                    │
+     ┌──────────────┼──────────────┐
+     ▼              ▼              ▼
+ REST APIs      HL7 Engine      FHIR API
+     │              │              │
+     └──────────────┼──────────────┘
+                    ▼
+         Integration Service Bus
+                    │
+                    ▼
+          CuraSphere Core Modules
+                    │
+                    ▼
+             Audit & Monitoring
+
+5.16.5 Functional Requirement INT-FR-001
+REST API Management
+
+Requirement ID
+INT-FR-001
+Requirement Name
+REST API Services
+
+Description
+The system shall expose RESTful APIs for authorized external systems.
+
+Supported API Operations
+Create
+Read
+Update
+Delete
+Search
+Authentication
+Reporting
+
+Workflow
+External Client
+       │
+       ▼
+API Request
+       │
+       ▼
+Authentication
+       │
+       ▼
+Authorization
+       │
+       ▼
+Business Logic
+       │
+       ▼
+Response
+
+Business Rules
+APIs shall require authentication unless explicitly configured otherwise.
+API versioning shall be supported.
+
+Acceptance Criteria
+REST APIs respond correctly.
+
+5.16.6 Functional Requirement INT-FR-002
+API Gateway Management
+
+Requirement ID
+INT-FR-002
+
+Description
+The API Gateway shall provide centralized routing, authentication, authorization, rate limiting, logging, monitoring, and API management.
+
+Gateway Features
+Authentication
+Authorization
+Routing
+Rate Limiting
+Request Validation
+Response Transformation
+Logging
+Monitoring
+API Versioning
+
+Architecture
+Client
+ │
+ ▼
+API Gateway
+ │
+ ├── Authentication
+ ├── Authorization
+ ├── Rate Limiting
+ ├── Logging
+ └── Routing
+      │
+      ▼
+Backend Services
+
+Acceptance Criteria
+Gateway controls all external API traffic.
+
+5.16.7 Functional Requirement INT-FR-003
+HL7 Integration
+
+Requirement ID
+INT-FR-003
+
+Description
+The system shall support HL7 v2.x messaging for healthcare interoperability.
+
+Supported Messages
+ADT
+ORM
+ORU
+SIU
+DFT
+MDM
+
+Workflow
+Hospital System
+      │
+      ▼
+HL7 Message
+      │
+      ▼
+HL7 Engine
+      │
+      ▼
+Message Validation
+      │
+      ▼
+Destination System
+
+Acceptance Criteria
+HL7 messages exchanged successfully.
+
+5.16.8 Functional Requirement INT-FR-004
+HL7 FHIR Integration
+
+Requirement ID
+INT-FR-004
+
+Description
+The system shall expose FHIR-compliant REST APIs.
+
+Supported Resources
+Patient
+Practitioner
+Appointment
+Observation
+Encounter
+Medication
+Procedure
+Organization
+DiagnosticReport
+
+Acceptance Criteria
+FHIR resources accessible securely.
+
+5.16.9 Functional Requirement INT-FR-005
+DICOM and PACS Integration
+
+Requirement ID
+INT-FR-005
+
+Description
+The system shall integrate with DICOM-compliant PACS servers.
+
+Supported Imaging
+CT
+MRI
+X-Ray
+Ultrasound
+Mammography
+PET Scan
+
+Workflow
+Radiology Equipment
+        │
+        ▼
+DICOM Server
+        │
+        ▼
+PACS
+        │
+        ▼
+CuraSphere
+
+Acceptance Criteria
+Images accessible from patient records.
+
+5.16.10 Functional Requirement INT-FR-006
+Medical Device Integration
+
+Requirement ID
+INT-FR-006
+
+Description
+The system shall integrate with supported medical devices.
+
+Examples
+ECG Monitor
+Blood Pressure Monitor
+Glucose Monitor
+Pulse Oximeter
+Ventilator
+Patient Monitor
+
+Business Rules
+Device readings shall be linked to the correct patient encounter.
+
+Acceptance Criteria
+Device data imported automatically.
+
+5.16.11 Functional Requirement INT-FR-007
+Insurance Integration
+
+Requirement ID
+INT-FR-007
+
+Description
+The system shall integrate with insurance providers.
+
+Features
+Eligibility Verification
+Claim Submission
+Claim Status
+Claim Approval
+Claim Rejection
+Payment Confirmation
+
+Acceptance Criteria
+Insurance transactions synchronized.
+
+5.16.12 Functional Requirement INT-FR-008
+Payment Gateway Integration
+
+Requirement ID
+INT-FR-008
+
+Description
+The system shall integrate with secure online payment gateways.
+
+Supported Payments
+Credit Card
+Debit Card
+Mobile Wallet
+Online Banking
+QR Payments
+
+Workflow
+Invoice
+   │
+   ▼
+Payment Gateway
+   │
+   ▼
+Payment Status
+   │
+   ▼
+Billing Module
+
+Acceptance Criteria
+Payments processed securely.
+
+5.16.13 Functional Requirement INT-FR-009
+SMS and Email Gateway Integration
+
+Requirement ID
+INT-FR-009
+
+Description
+The system shall integrate with external SMS and email providers.
+
+Supported Messages
+Appointment Reminder
+OTP
+Invoice
+Laboratory Result
+Password Reset
+
+Acceptance Criteria
+Messages delivered successfully.
+
+5.16.14 Functional Requirement INT-FR-010
+Webhook and Event Management
+
+Requirement ID
+INT-FR-010
+
+Description
+The system shall publish and consume webhooks for event-driven integrations.
+
+Sample Events
+Patient Registered
+Appointment Created
+Invoice Paid
+Laboratory Report Ready
+Prescription Issued
+
+Workflow
+System Event
+      │
+      ▼
+Webhook Engine
+      │
+      ▼
+Subscriber
+
+5.16.15 Functional Requirement INT-FR-011
+Integration Monitoring and Retry Management
+
+Requirement ID
+INT-FR-011
+
+Description
+The system shall monitor all integrations and retry failed transactions.
+
+Monitoring Features
+Queue Status
+Failed Messages
+Retry Count
+Response Time
+API Availability
+
+Workflow
+Integration Request
+       │
+       ▼
+Success?
+  │          │
+Yes         No
+ │           │
+Done      Retry Queue
+             │
+             ▼
+Administrator Alert
+
+5.16.16 Functional Requirement INT-FR-012
+Integration Security
+
+Requirement ID
+INT-FR-012
+
+Description
+All integrations shall be secured using industry-standard security mechanisms.
+
+Security Controls
+OAuth 2.0
+JWT
+TLS Encryption
+API Keys
+Mutual TLS (where required)
+IP Whitelisting
+Digital Certificates
+
+5.16.17 Functional Requirement INT-FR-013
+Integration Non-Functional Requirements
+Performance
+API responses should typically complete within 2 seconds under normal operating conditions for standard requests.
+Integration queues shall process messages according to configured service-level objectives.
+Availability
+Target availability: 99.99%, excluding planned maintenance.
+Scalability
+Support thousands of API requests per minute, subject to infrastructure capacity and configured rate limits.
+Reliability
+Failed integrations shall be retried according to configurable retry policies.
+Security
+All external communication shall use secure transport protocols supported by the deployment environment.
+
+5.16.18 Functional Requirement INT-FR-014
+Requirement Traceability Matrix
+Requirement ID
+Functional Area
+INT-FR-001
+REST APIs
+INT-FR-002
+API Gateway
+INT-FR-003
+HL7
+INT-FR-004
+HL7 FHIR
+INT-FR-005
+DICOM/PACS
+INT-FR-006
+Medical Devices
+INT-FR-007
+Insurance
+INT-FR-008
+Payment Gateway
+INT-FR-009
+SMS & Email
+INT-FR-010
+Webhooks
+INT-FR-011
+Monitoring
+INT-FR-012
+Security
+INT-FR-013
+Non-Functional Requirements
+INT-FR-014
+Traceability
+
+5.16.19 Integration Module Architecture Summary
+                  External Systems
+                         │
+     ┌───────────┬──────────────┬─────────────┐
+     ▼           ▼              ▼             ▼
+ Insurance     PACS         Payment      Government
+     │           │              │             │
+     └───────────┼──────────────┼─────────────┘
+                 ▼
+            API Gateway
+                 │
+      ┌──────────┼──────────┐
+      ▼          ▼          ▼
+  REST APIs   HL7 Engine   FHIR APIs
+      │          │          │
+      └──────────┼──────────┘
+                 ▼
+      Integration Service Bus
+                 │
+      ┌──────────┼──────────┐
+      ▼          ▼          ▼
+ Message Queue Webhooks Monitoring
+                 │
+                 ▼
+          CuraSphere Modules
+                 │
+                 ▼
+          PostgreSQL Database
+                 │
+                 ▼
+         Audit & Logging System
+
+
+

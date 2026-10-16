@@ -1,0 +1,4782 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 13 - System Architecture & Technical Design
+Part 13.1 - Architecture Overview
+
+13.1 Architecture Overview
+
+13.1.1 Introduction
+The System Architecture defines the overall technical structure of the CuraSphere Hospital Management System (HMS). It describes how software components, hardware resources, databases, communication interfaces, external systems, and users interact to provide a secure, scalable, maintainable, and high-performance healthcare platform.
+The architecture serves as the blueprint for software developers, solution architects, database administrators, DevOps engineers, QA teams, security specialists, and infrastructure administrators throughout the software development lifecycle.
+CuraSphere adopts a modern enterprise architecture based on modular design principles, service-oriented communication, layered architecture, RESTful APIs, secure authentication mechanisms, and cloud-ready deployment. The architecture is designed to support hospitals ranging from small clinics to multi-campus healthcare organizations.
+
+13.1.2 Architecture Goals
+The primary goals of the CuraSphere architecture are to:
+Provide a highly scalable healthcare platform.
+Support modular system development.
+Ensure high availability and reliability.
+Enable secure communication.
+Simplify maintenance and upgrades.
+Support enterprise integrations.
+Facilitate cloud and on-premises deployments.
+Maintain regulatory compliance.
+Improve development productivity.
+Support future expansion without major redesign.
+
+13.1.3 Architectural Vision
+The architectural vision of CuraSphere is to build a healthcare ecosystem that is:
+Secure by Design
+Patient-Centered
+Service-Oriented
+API-Driven
+Cloud-Ready
+Scalable
+Modular
+Interoperable
+Highly Available
+Easy to Maintain
+Every architectural decision shall support these guiding principles.
+
+13.1.4 Enterprise Architecture Overview
+CuraSphere follows a multi-tier enterprise architecture that separates responsibilities into independent layers.
+
+                 Users
+                    │
+     ┌──────────────┼──────────────┐
+     ▼              ▼              ▼
+ Patients      Medical Staff   Administrators
+                    │
+                    ▼
+        React.js Web Frontend
+                    │
+            HTTPS / REST APIs
+                    │
+                    ▼
+        API Gateway / Load Balancer
+                    │
+      ┌─────────────┼─────────────┐
+      ▼             ▼             ▼
+ Authentication   Business      Integration
+    Services       Services      Services
+                    │
+                    ▼
+          PostgreSQL Database
+                    │
+      ┌─────────────┼─────────────┐
+      ▼             ▼             ▼
+ Backup        Reporting      Analytics
+ Systems         Engine         Engine
+
+This layered approach isolates presentation, business logic, persistence, and infrastructure responsibilities, thereby improving maintainability, scalability, and fault isolation.
+
+13.1.5 High-Level Architectural Components
+The CuraSphere architecture consists of the following major components:
+Layer
+Primary Responsibility
+Presentation Layer
+User Interface
+API Layer
+Request Routing & Validation
+Business Layer
+Business Logic
+Security Layer
+Authentication & Authorization
+Integration Layer
+External Communication
+Data Access Layer
+Database Communication
+Database Layer
+Persistent Storage
+Infrastructure Layer
+Deployment Environment
+Monitoring Layer
+Logging & Observability
+Each layer shall communicate only through well-defined interfaces.
+
+13.1.6 Architectural Characteristics
+The architecture shall exhibit the following quality characteristics:
+Characteristic
+Description
+Scalability
+Supports increasing workload
+Reliability
+Stable continuous operation
+Availability
+Minimal downtime
+Security
+Protection against threats
+Maintainability
+Easy updates and enhancements
+Performance
+Fast response times
+Interoperability
+Standards-based integration
+Portability
+Deployable across environments
+Extensibility
+Easy addition of new modules
+Observability
+Comprehensive monitoring and diagnostics
+These characteristics shall guide all implementation decisions.
+
+13.1.7 Major Architectural Domains
+The architecture is divided into several technical domains:
+Clinical Domain
+Responsible for:
+Electronic Medical Records (EMR)
+Clinical Documentation
+Prescriptions
+Care Plans
+Clinical Decision Support
+
+Administrative Domain
+Responsible for:
+Patient Registration
+Appointment Scheduling
+Department Management
+Human Resources
+User Administration
+
+Financial Domain
+Responsible for:
+Billing
+Insurance
+Payments
+Invoicing
+Financial Reporting
+
+Diagnostic Domain
+Responsible for:
+Laboratory
+Radiology
+Imaging
+Diagnostic Reports
+
+Operational Domain
+Responsible for:
+Inventory
+Procurement
+Asset Management
+Pharmacy
+Supply Chain
+
+Enterprise Domain
+Responsible for:
+Reporting
+Business Intelligence
+Notifications
+Audit Logs
+Analytics
+
+13.1.8 Architectural Stakeholders
+The following stakeholders depend upon the architecture.
+Stakeholder
+Architectural Concern
+Hospital Administration
+Reliability & Business Continuity
+Doctors
+Clinical Performance
+Nurses
+Ease of Use
+Laboratory Staff
+Workflow Efficiency
+Pharmacists
+Medication Accuracy
+Finance Department
+Billing Accuracy
+IT Administrators
+Maintainability
+DevOps Engineers
+Deployment
+Security Team
+Information Protection
+Regulatory Authorities
+Compliance
+Each stakeholder has unique architectural requirements that shall be considered during system design.
+
+13.1.9 Architecture Design Constraints
+The architecture shall consider the following constraints:
+Technical Constraints
+Enterprise-grade security.
+PostgreSQL database.
+React.js frontend.
+RESTful APIs.
+Support for modern web browsers.
+Operational Constraints
+24×7 availability.
+High system reliability.
+Disaster recovery support.
+Continuous backup.
+Business Constraints
+Regulatory compliance.
+Cost-effective maintenance.
+Future scalability.
+Multi-department support.
+Organizational Constraints
+Standard development practices.
+Controlled change management.
+Secure deployment.
+Documentation standards.
+
+13.1.10 Architectural Assumptions
+The architecture assumes that:
+Hospitals maintain stable network connectivity.
+Users access the system using supported browsers.
+Database infrastructure is properly maintained.
+Secure authentication mechanisms are implemented.
+Backup infrastructure is operational.
+Monitoring systems are continuously available.
+Regulatory policies are periodically reviewed.
+Changes to these assumptions may require architectural review.
+
+13.1.11 Architecture Lifecycle
+The architecture shall evolve throughout the project lifecycle.
+
+Requirements
+      │
+      ▼
+Architecture Design
+      │
+      ▼
+Detailed Design
+      │
+      ▼
+Implementation
+      │
+      ▼
+Testing
+      │
+      ▼
+Deployment
+      │
+      ▼
+Maintenance
+      │
+      ▼
+Continuous Improvement
+
+Each phase shall produce documented deliverables and undergo formal review.
+
+13.1.12 Architecture Governance
+Architecture governance shall ensure consistency and quality throughout development.
+Governance activities include:
+Architecture reviews.
+Design approvals.
+Coding standards enforcement.
+Technology evaluations.
+Risk assessments.
+Security reviews.
+Performance evaluations.
+Documentation management.
+Change control.
+Architecture compliance verification.
+Governance shall be led by designated technical authorities within the project.
+
+13.1.13 Architecture Documentation
+The architecture documentation shall include:
+Architecture diagrams.
+Component descriptions.
+Data flow diagrams.
+Deployment diagrams.
+Technology stack documentation.
+API specifications.
+Security architecture.
+Database architecture.
+Infrastructure architecture.
+Architecture Decision Records (ADRs).
+All documentation shall be maintained under version control.
+
+13.1.14 Architecture Success Metrics
+The architecture shall be considered successful if it:
+Supports all defined functional requirements.
+Meets all non-functional requirements.
+Demonstrates scalability under expected workloads.
+Maintains secure communication and data protection.
+Supports required integrations.
+Enables efficient deployment and maintenance.
+Achieves high availability and reliability targets.
+Simplifies future expansion.
+Passes architecture review and validation.
+
+13.1.15 Architecture Overview Acceptance Criteria
+The Architecture Overview shall be considered complete when:
+The overall system architecture is clearly defined and documented.
+Major architectural layers and components are identified with their responsibilities.
+Architectural goals, principles, constraints, and assumptions are documented.
+Governance processes and lifecycle activities are established.
+Stakeholders approve the architectural direction as the foundation for detailed technical design.
+
+13.2 Architectural Principles
+
+13.2.1 Introduction
+The Architectural Principles define the fundamental design philosophies and engineering standards that guide the development, deployment, maintenance, and evolution of the CuraSphere Hospital Management System.
+These principles establish a common architectural foundation for software developers, solution architects, DevOps engineers, database administrators, quality assurance teams, cybersecurity specialists, and system administrators. Adherence to these principles ensures consistency, maintainability, scalability, security, and long-term sustainability throughout the system lifecycle.
+The architectural principles shall govern all technical decisions made during implementation, integration, testing, deployment, and future enhancements.
+
+13.2.2 Objectives
+The Architectural Principles shall ensure that CuraSphere:
+Maintains a consistent architectural approach.
+Encourages modular software development.
+Reduces system complexity.
+Improves maintainability.
+Supports enterprise scalability.
+Enhances security.
+Simplifies testing.
+Promotes code reuse.
+Enables future extensibility.
+Ensures compliance with software engineering best practices.
+
+13.2.3 Enterprise Architecture Principles
+The overall architecture shall adhere to the following enterprise principles:
+Principle
+Description
+Business Alignment
+Architecture shall support healthcare business objectives.
+Standardization
+Standard technologies and practices shall be used.
+Interoperability
+Systems shall communicate using open standards.
+Scalability
+Architecture shall support organizational growth.
+Security
+Security shall be integrated into every architectural layer.
+Reliability
+Critical healthcare services shall remain continuously available.
+Reusability
+Components shall be reusable wherever practical.
+Maintainability
+Solutions shall simplify future maintenance.
+Extensibility
+New functionality shall be added with minimal disruption.
+Compliance
+Architecture shall support healthcare regulations and standards.
+
+13.2.4 Layered Architecture Principle
+CuraSphere shall implement a Layered (N-Tier) Architecture to separate concerns and improve maintainability.
+
+Presentation Layer
+        │
+        ▼
+API Layer
+        │
+        ▼
+Business Logic Layer
+        │
+        ▼
+Data Access Layer
+        │
+        ▼
+Database Layer
+
+Each layer shall communicate only with adjacent layers through well-defined interfaces.
+Benefits include:
+Improved maintainability.
+Better scalability.
+Easier testing.
+Reduced coupling.
+Clear separation of responsibilities.
+
+13.2.5 Separation of Concerns (SoC)
+The architecture shall separate independent responsibilities into distinct components.
+Examples include:
+Concern
+Responsible Component
+User Interface
+React Frontend
+Authentication
+Authentication Service
+Business Rules
+Business Services
+Database Access
+Repository Layer
+Notifications
+Notification Service
+Logging
+Logging Service
+Reporting
+Reporting Module
+No single component shall perform unrelated responsibilities.
+
+13.2.6 SOLID Principles
+The application architecture shall follow the SOLID object-oriented design principles.
+Single Responsibility Principle (SRP)
+Each class or component shall have only one reason to change.
+Example:
+PatientService handles patient operations.
+BillingService handles billing operations.
+AppointmentService handles appointments.
+
+Open/Closed Principle (OCP)
+Software entities shall be open for extension but closed for modification.
+New functionality shall preferably be implemented through extension rather than altering existing, stable components.
+
+Liskov Substitution Principle (LSP)
+Derived classes shall be replaceable for their base classes without affecting system behavior.
+This principle promotes reliable inheritance and polymorphism.
+
+Interface Segregation Principle (ISP)
+Large interfaces shall be divided into smaller, specialized interfaces.
+Example:
+Instead of:
+IHospitalService
+Use:
+IPatientService
+IDoctorService
+IPharmacyService
+
+Dependency Inversion Principle (DIP)
+High-level modules shall depend on abstractions rather than concrete implementations.
+Example:
+PatientService
+      │
+      ▼
+IPatientRepository
+      │
+      ▼
+PostgreSQLRepository
+
+13.2.7 Loose Coupling
+Components shall minimize dependencies on one another.
+Advantages include:
+Easier maintenance.
+Independent testing.
+Independent deployment where applicable.
+Simplified upgrades.
+Reduced regression risks.
+Modules shall communicate through interfaces, APIs, or service contracts rather than direct implementation dependencies.
+
+13.2.8 High Cohesion
+Each module shall perform a well-defined business responsibility.
+Examples:
+Laboratory Module handles laboratory workflows only.
+Pharmacy Module manages medication workflows only.
+Billing Module processes financial operations only.
+HR Module manages employee information only.
+High cohesion improves readability, maintainability, and testing.
+
+13.2.9 Modular Architecture
+The system shall be organized into independent business modules.
+
+Patient Module
+Appointment Module
+EMR Module
+Laboratory Module
+Radiology Module
+Pharmacy Module
+Billing Module
+Inventory Module
+HR Module
+Reporting Module
+Administration Module
+
+Modules shall communicate using standardized interfaces and shared business rules.
+
+13.2.10 API-First Design Principle
+All major business capabilities shall be exposed through standardized APIs.
+API-first design shall provide:
+Internal integration.
+External integration.
+Mobile application support.
+Third-party integrations.
+Future extensibility.
+Consistent business logic.
+APIs shall follow REST architectural principles unless otherwise specified.
+
+13.2.11 Secure-by-Design Principle
+Security shall be incorporated throughout the architecture rather than added after implementation.
+Security principles include:
+Least privilege.
+Defense in depth.
+Secure defaults.
+Input validation.
+Output encoding.
+Strong authentication.
+Authorization enforcement.
+Encryption.
+Secure logging.
+Continuous monitoring.
+Every architectural component shall undergo security review during development.
+
+13.2.12 Domain-Driven Design (DDD) Considerations
+Business domains shall be modeled around healthcare processes.
+Primary domains include:
+Domain
+Examples
+Patient Management
+Registration, demographics
+Clinical Care
+EMR, diagnosis, treatment
+Diagnostics
+Laboratory, radiology
+Pharmacy
+Prescriptions, dispensing
+Finance
+Billing, insurance
+Inventory
+Medical supplies
+Administration
+Users, departments
+Reporting
+Analytics, dashboards
+Domain boundaries shall minimize overlap and clearly define ownership of business logic.
+
+13.2.13 Configuration over Hardcoding
+Application behavior shall be configurable wherever feasible.
+Configurable items include:
+Database connections.
+Email servers.
+Notification templates.
+Security policies.
+Time zones.
+Language settings.
+Tax rates.
+Workflow rules.
+System parameters.
+Configuration values shall be externalized from application source code.
+
+13.2.14 Reusability Principle
+Reusable components shall be developed whenever practical.
+Reusable assets include:
+UI components.
+Validation libraries.
+Authentication services.
+Notification services.
+Utility functions.
+Database repositories.
+Common business rules.
+Error handling mechanisms.
+Reuse shall reduce duplication and improve consistency.
+
+13.2.15 Extensibility Principle
+The architecture shall support future expansion with minimal impact on existing functionality.
+Examples include:
+Adding new hospital departments.
+Supporting additional payment gateways.
+Integrating new laboratory devices.
+Introducing AI-assisted clinical decision support.
+Adding telemedicine services.
+Supporting additional languages.
+Integrating national healthcare platforms.
+Extensions should not require major redesign of stable architectural components.
+
+13.2.16 Testability Principle
+The architecture shall facilitate comprehensive testing.
+Testing support includes:
+Unit testing.
+Integration testing.
+API testing.
+User acceptance testing.
+Performance testing.
+Security testing.
+Regression testing.
+Automated testing.
+Architectural components shall be designed to allow isolated testing where practical.
+
+13.2.17 Observability Principle
+The system shall provide sufficient observability for operations and troubleshooting.
+Observability shall include:
+Structured logging.
+Performance metrics.
+Distributed tracing where applicable.
+Health checks.
+Alerting.
+Dashboard monitoring.
+Audit logging.
+Operational data shall support rapid diagnosis and continuous improvement.
+
+13.2.18 Technology Neutrality
+Where practical, architectural decisions shall minimize dependence on proprietary technologies.
+Benefits include:
+Easier migration.
+Reduced vendor lock-in.
+Long-term sustainability.
+Improved interoperability.
+Deployment flexibility.
+Technology choices shall balance business needs, technical requirements, and total cost of ownership.
+
+13.2.19 Architecture Governance Principles
+Architecture governance shall ensure compliance with approved standards.
+Governance activities include:
+Architecture reviews.
+Code reviews.
+Design validation.
+Security assessments.
+Performance evaluations.
+Documentation reviews.
+Technology approval.
+Technical debt management.
+Governance decisions shall be documented and reviewed periodically.
+
+13.2.20 Architectural Principles Acceptance Criteria
+The Architectural Principles shall be considered satisfied when:
+All system components adhere to approved architectural standards and design principles.
+Layered architecture, modularity, loose coupling, and high cohesion are consistently applied.
+Security, scalability, maintainability, and extensibility are incorporated into architectural decisions.
+APIs, configuration management, and reusable components support long-term sustainability.
+Architecture governance processes ensure ongoing compliance throughout the software development lifecycle.
+
+13.3 High-Level System Architecture
+
+13.3.1 Introduction
+The High-Level System Architecture defines the logical organization of the CuraSphere Hospital Management System, illustrating how users, software components, infrastructure services, databases, external systems, and security mechanisms interact to deliver healthcare services.
+This architecture serves as the master blueprint for developers, architects, infrastructure engineers, cybersecurity teams, database administrators, DevOps engineers, and system integrators. It establishes the major building blocks of the system without exposing low-level implementation details.
+The architecture is designed to support enterprise hospitals, healthcare networks, and multi-campus medical organizations while ensuring scalability, security, reliability, interoperability, and maintainability.
+
+13.3.2 Objectives
+The High-Level System Architecture shall:
+Define the overall system structure.
+Identify major architectural components.
+Illustrate communication pathways.
+Support secure information exchange.
+Enable modular development.
+Support enterprise scalability.
+Simplify infrastructure deployment.
+Facilitate third-party integrations.
+Improve system maintainability.
+Serve as the foundation for detailed architecture.
+
+13.3.3 Enterprise Architecture Overview
+The CuraSphere architecture is organized into multiple logical layers that separate presentation, business logic, integration, persistence, and infrastructure services.
+
+                     CURASPHERE HMS
+
+┌────────────────────────────────────────────────────┐
+│                 End Users                          │
+│ Patients │ Doctors │ Nurses │ Admin │ Lab │ Finance│
+└────────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌────────────────────────────────────────────────────┐
+│             Presentation Layer                     │
+│ React.js Web Application │ Responsive UI           │
+└────────────────────────────────────────────────────┘
+                      │
+                 HTTPS / TLS
+                      │
+                      ▼
+┌────────────────────────────────────────────────────┐
+│             API Gateway Layer                      │
+│ Routing │ Validation │ Authentication │ Rate Limit │
+└────────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌────────────────────────────────────────────────────┐
+│          Business Services Layer                   │
+│ Patient │ EMR │ Billing │ Pharmacy │ Lab │ HR      │
+└────────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌────────────────────────────────────────────────────┐
+│           Data Access Layer                        │
+│ Repository │ ORM │ Transactions │ Caching          │
+└────────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌────────────────────────────────────────────────────┐
+│          PostgreSQL Database                       │
+└────────────────────────────────────────────────────┘
+
+Each architectural layer has clearly defined responsibilities and communicates through controlled interfaces.
+
+13.3.4 System Context Diagram
+The following diagram illustrates CuraSphere's interaction with external actors and systems.
+
+                Government Systems
+                       │
+                       │
+Insurance ──────── CuraSphere ─────── Laboratory Systems
+Providers             HMS
+                       │
+                       │
+ Payment Gateway ──────┼────── PACS / Radiology
+                       │
+                       │
+              SMS / Email Services
+                       │
+                       │
+              Patients & Hospital Staff
+
+The system acts as the central healthcare platform coordinating communication among all authorized stakeholders and external services.
+
+13.3.5 Logical Architecture
+The logical architecture separates system functionality into independent business domains.
+Domain
+Primary Responsibility
+Patient Management
+Registration & Patient Records
+Clinical Services
+EMR & Clinical Documentation
+Appointment Management
+Scheduling
+Laboratory Services
+Test Management
+Radiology Services
+Imaging Management
+Pharmacy
+Medication Management
+Billing & Finance
+Financial Operations
+Inventory
+Medical Supplies
+Human Resources
+Employee Management
+Reporting & Analytics
+Business Intelligence
+Administration
+Configuration & Governance
+Each domain encapsulates its own business logic while sharing common enterprise services.
+
+13.3.6 Physical Architecture Overview
+The physical deployment consists of multiple infrastructure components.
+
+Client Devices
+      │
+      ▼
+Internet / Hospital Network
+      │
+      ▼
+Load Balancer
+      │
+      ▼
+Application Servers
+      │
+      ▼
+Database Server Cluster
+      │
+      ▼
+Backup Storage
+
+The architecture supports deployment within:
+Hospital Data Centers.
+Private Cloud.
+Public Cloud.
+Hybrid Cloud.
+
+13.3.7 Presentation Layer
+The Presentation Layer provides the graphical user interface.
+Responsibilities include:
+User authentication.
+Dashboard rendering.
+Data visualization.
+Form management.
+Navigation.
+User interaction.
+Client-side validation.
+Responsive design.
+Technology:
+React.js
+HTML5
+CSS3
+Tailwind CSS
+JavaScript/TypeScript
+
+13.3.8 API Gateway Layer
+The API Gateway acts as the central entry point for client requests.
+Primary responsibilities include:
+Request routing.
+Authentication.
+Authorization.
+Rate limiting.
+API versioning.
+Request validation.
+Response aggregation.
+Logging.
+The gateway shall prevent unauthorized access and simplify service management.
+
+13.3.9 Business Services Layer
+The Business Services Layer contains the core healthcare functionality.
+Major services include:
+Patient Service.
+Appointment Service.
+EMR Service.
+Laboratory Service.
+Radiology Service.
+Pharmacy Service.
+Billing Service.
+Inventory Service.
+HR Service.
+Notification Service.
+Reporting Service.
+Business rules shall be implemented exclusively within this layer.
+
+13.3.10 Data Access Layer
+The Data Access Layer provides controlled interaction with persistent storage.
+Responsibilities include:
+Database communication.
+Query execution.
+Transaction management.
+Data validation.
+Repository implementation.
+Connection management.
+ORM support.
+Error handling.
+Direct database access from presentation components shall not be permitted.
+
+13.3.11 Database Layer
+The Database Layer stores persistent enterprise information.
+Primary data categories include:
+Patient records.
+Clinical documentation.
+Laboratory data.
+Radiology reports.
+Pharmacy information.
+Billing records.
+Inventory.
+HR data.
+Audit logs.
+Configuration.
+The database shall support ACID-compliant transactions and enterprise backup strategies.
+
+13.3.12 External Integration Layer
+CuraSphere shall integrate with external healthcare systems through standardized interfaces.
+Supported integrations include:
+Laboratory Information Systems.
+PACS/Radiology Systems.
+Insurance Providers.
+Payment Gateways.
+SMS Providers.
+Email Servers.
+Government Health Systems.
+Identity Providers.
+Healthcare APIs.
+Integration shall utilize secure communication protocols.
+
+13.3.13 Security Architecture Overview
+Security shall span every architectural layer.
+
+User
+ │
+ ▼
+Authentication
+ │
+ ▼
+Authorization
+ │
+ ▼
+Business Services
+ │
+ ▼
+Database Encryption
+ │
+ ▼
+Audit Logging
+
+Security controls include:
+TLS encryption.
+Role-Based Access Control (RBAC).
+Multi-Factor Authentication (MFA).
+Audit logging.
+Secure API authentication.
+Database encryption where required.
+
+13.3.14 Communication Architecture
+System communication shall utilize standardized protocols.
+Communication
+Protocol
+Web Client
+HTTPS
+API Calls
+REST
+Authentication
+OAuth 2.0 / JWT
+Database
+Secure Database Connection
+Notifications
+SMTP / SMS APIs
+External Systems
+REST / HL7 / FHIR
+All communication channels shall be encrypted where appropriate.
+
+13.3.15 Trust Boundaries
+The architecture shall define security boundaries between trusted and untrusted environments.
+
+Internet
+     │
+----- TRUST BOUNDARY -----
+     │
+API Gateway
+     │
+Business Services
+     │
+Database
+     │
+Internal Hospital Network
+
+Crossing a trust boundary shall require authentication, authorization, validation, and logging.
+
+13.3.16 High-Level Data Flow
+The following workflow illustrates a typical request.
+
+User
+ │
+ ▼
+React Frontend
+ │
+ ▼
+API Gateway
+ │
+ ▼
+Business Service
+ │
+ ▼
+Repository
+ │
+ ▼
+PostgreSQL
+ │
+ ▲
+Repository
+ │
+ ▲
+Business Service
+ │
+ ▲
+Frontend
+ │
+ ▲
+User
+
+All requests shall follow this controlled communication path.
+
+13.3.17 Architectural Benefits
+The high-level architecture provides:
+Clear separation of responsibilities.
+Enterprise scalability.
+High maintainability.
+Improved security.
+Standardized integrations.
+Easier testing.
+Independent module development.
+Better fault isolation.
+Cloud readiness.
+Long-term extensibility.
+
+13.3.18 High-Level System Architecture Acceptance Criteria
+The High-Level System Architecture shall be considered complete when:
+The major architectural layers and components are clearly defined and documented.
+Logical, physical, communication, and security architectures are established.
+System context and trust boundaries are identified.
+Data flow between architectural components is documented.
+The architecture supports the functional and non-functional requirements defined in previous sections and is approved as the basis for detailed system design.
+
+13.4 Layered Architecture
+
+13.4.1 Introduction
+The Layered Architecture defines how CuraSphere separates responsibilities into distinct architectural layers. Each layer has a clearly defined purpose and communicates only with adjacent layers through well-defined interfaces. This separation improves maintainability, scalability, security, testing, and future extensibility.
+CuraSphere adopts a five-layer enterprise architecture with additional cross-cutting services that provide logging, security, caching, monitoring, and configuration management.
+
+13.4.2 Objectives
+The Layered Architecture shall:
+Separate presentation from business logic.
+Isolate database access.
+Reduce coupling between components.
+Improve maintainability.
+Enable independent testing.
+Improve scalability.
+Simplify future enhancements.
+Improve security.
+Standardize communication.
+Support enterprise deployment.
+
+13.4.3 Enterprise Layer Model
+                    CURASPHERE LAYERED ARCHITECTURE
+
+┌───────────────────────────────────────────────────────────────┐
+│                  Presentation Layer                           │
+│ React.js │ Dashboards │ Forms │ Reports │ UI Components       │
+└───────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌───────────────────────────────────────────────────────────────┐
+│                     API Layer                                 │
+│ REST Controllers │ Authentication │ Validation │ Routing      │
+└───────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌───────────────────────────────────────────────────────────────┐
+│                 Business Service Layer                        │
+│ Patient │ EMR │ Billing │ Pharmacy │ Lab │ HR │ Inventory     │
+└───────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌───────────────────────────────────────────────────────────────┐
+│                Repository / Data Access Layer                 │
+│ Repositories │ ORM │ Transactions │ Query Management          │
+└───────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌───────────────────────────────────────────────────────────────┐
+│                    PostgreSQL Database                        │
+└───────────────────────────────────────────────────────────────┘
+
+13.4.4 Layer Responsibilities
+Layer
+Primary Responsibility
+Presentation Layer
+User interaction and rendering
+API Layer
+Request handling and routing
+Business Layer
+Healthcare business rules
+Repository Layer
+Data persistence
+Database Layer
+Permanent data storage
+Each layer shall expose only the services required by the adjacent layer.
+
+13.4.5 Presentation Layer
+The Presentation Layer provides the graphical interface for all users.
+Responsibilities
+User authentication screens.
+Dashboards.
+Patient registration forms.
+Appointment scheduling.
+EMR viewing.
+Billing screens.
+Reports.
+Administrative interfaces.
+Responsive layouts.
+Client-side validation.
+Technologies
+React.js
+TypeScript
+Tailwind CSS
+TanStack Query
+Zustand
+React Router
+The Presentation Layer shall not contain business rules or direct database access.
+
+13.4.6 API Layer
+The API Layer acts as the communication gateway between the frontend and backend.
+Responsibilities include:
+Routing requests.
+Request validation.
+Authentication.
+Authorization.
+API versioning.
+Response formatting.
+Rate limiting.
+Error handling.
+Logging.
+All client requests shall pass through this layer.
+
+13.4.7 Business Service Layer
+The Business Service Layer contains all healthcare business logic.
+Examples of services include:
+PatientService
+AppointmentService
+DoctorService
+EMRService
+BillingService
+LaboratoryService
+PharmacyService
+InventoryService
+HRService
+NotificationService
+Business rules shall not be implemented in controllers or repositories.
+
+13.4.8 Repository Layer
+The Repository Layer abstracts database operations.
+Responsibilities include:
+CRUD operations.
+Transaction management.
+Query optimization.
+ORM mapping.
+Data validation.
+Connection management.
+Error translation.
+Repositories shall communicate only with the database layer.
+
+13.4.9 Database Layer
+The Database Layer provides persistent storage using PostgreSQL.
+It stores:
+Patient information.
+Medical records.
+Laboratory data.
+Radiology reports.
+Billing data.
+Pharmacy data.
+Inventory.
+Employee information.
+Audit logs.
+Configuration.
+The database shall enforce referential integrity and ACID-compliant transactions.
+
+13.4.10 Cross-Cutting Services
+Some services operate across all layers.
+These include:
+Authentication.
+Authorization.
+Logging.
+Monitoring.
+Caching.
+Exception handling.
+Configuration management.
+Audit logging.
+Notification services.
+File storage.
+These services shall be implemented independently of business modules to promote reuse.
+
+13.4.11 Layer Communication Rules
+The following communication rules shall be enforced:
+Presentation
+      │
+      ▼
+API
+      │
+      ▼
+Business
+      │
+      ▼
+Repository
+      │
+      ▼
+Database
+Direct communication that bypasses intermediate layers shall not be permitted unless explicitly justified and approved.
+
+13.4.12 Dependency Rules
+Dependencies shall flow in one direction:
+Presentation → API
+API → Business
+Business → Repository
+Repository → Database
+Lower layers shall not depend on higher layers, ensuring a clean and maintainable architecture.
+
+13.4.13 Benefits of the Layered Architecture
+The layered architecture provides:
+Separation of concerns.
+Improved code readability.
+Easier testing.
+Simplified maintenance.
+Better scalability.
+Stronger security boundaries.
+Reduced coupling.
+Increased reusability.
+Independent development of modules.
+Easier technology upgrades.
+
+13.4.14 Layered Architecture Acceptance Criteria
+The Layered Architecture shall be considered complete when:
+Responsibilities for each architectural layer are clearly defined.
+Communication between layers follows approved dependency rules.
+Business logic is isolated from presentation and data access layers.
+Cross-cutting concerns are centralized and reusable.
+The architecture supports maintainability, scalability, security, and future enhancements.
+
+13.5 Client–Server Architecture
+
+13.5.1 Introduction
+The Client–Server Architecture defines how client applications communicate with the backend services of the CuraSphere Hospital Management System (HMS). This architectural model separates the user interface from business processing and data management, allowing multiple client applications to securely access centralized healthcare services.
+CuraSphere adopts a three-tier client–server architecture, where presentation, application logic, and data storage operate as distinct layers. This design promotes scalability, maintainability, centralized security, and efficient resource utilization while supporting concurrent access by multiple healthcare professionals and patients.
+
+13.5.2 Objectives
+The Client–Server Architecture shall:
+Separate client and server responsibilities.
+Centralize business logic.
+Centralize data management.
+Support multiple client devices.
+Enable secure communication.
+Improve scalability.
+Simplify maintenance.
+Reduce client-side complexity.
+Support future mobile and web applications.
+Ensure high availability.
+
+13.5.3 Client–Server Model Overview
+CuraSphere follows a centralized architecture where all business processing occurs on secure application servers while clients focus primarily on user interaction.
+
+                   CURASPHERE CLIENT-SERVER MODEL
+
+        ┌─────────────────────────────────────────────┐
+        │                 CLIENTS                     │
+        │                                             │
+        │  Doctors  Nurses  Patients  Admin  Finance  │
+        │                                             │
+        │ React.js Web Application (Browser)          │
+        └─────────────────────────────────────────────┘
+                           │
+                    HTTPS (TLS 1.3)
+                           │
+                           ▼
+        ┌─────────────────────────────────────────────┐
+        │             APPLICATION SERVER              │
+        │                                             │
+        │ Authentication                              │
+        │ Business Logic                              │
+        │ REST APIs                                   │
+        │ Notifications                               │
+        │ Validation                                  │
+        └─────────────────────────────────────────────┘
+                           │
+                    Secure Connection
+                           │
+                           ▼
+        ┌─────────────────────────────────────────────┐
+        │           PostgreSQL Database               │
+        └─────────────────────────────────────────────┘
+
+All client requests shall be processed through authenticated and encrypted communication channels.
+
+13.5.4 Client Layer
+The Client Layer provides the graphical user interface for all authorized users.
+Supported client types include:
+Client Type
+Purpose
+Web Browser
+Primary user interface
+Tablet
+Clinical bedside access
+Hospital Workstation
+Administrative and clinical operations
+Mobile Browser
+Limited operational access
+Future Mobile Application
+Native Android/iOS support (planned)
+Client Responsibilities
+Display user interfaces.
+Collect user input.
+Perform client-side validation.
+Render dashboards.
+Display reports.
+Manage user sessions.
+Consume REST APIs.
+Handle user notifications.
+The client shall not contain critical business rules or directly access the database.
+
+13.5.5 Application Server Layer
+The Application Server is the central processing component of CuraSphere.
+Responsibilities include:
+Authentication.
+Authorization.
+Business logic execution.
+Request validation.
+Workflow processing.
+Notification management.
+Report generation.
+Audit logging.
+Integration management.
+Transaction coordination.
+The server shall process all healthcare operations before interacting with the database.
+
+13.5.6 Database Server Layer
+The Database Server stores all persistent organizational information.
+Major data categories include:
+Patient demographics.
+Electronic Medical Records (EMRs).
+Appointments.
+Laboratory results.
+Radiology reports.
+Pharmacy records.
+Billing information.
+Inventory records.
+Human resources.
+Audit logs.
+Configuration settings.
+The database shall support concurrent access while preserving data integrity through ACID-compliant transactions.
+
+13.5.7 Client Request Workflow
+The following workflow illustrates the processing of a typical client request.
+
+User
+ │
+ ▼
+React.js Client
+ │
+ ▼
+HTTPS Request
+ │
+ ▼
+Authentication
+ │
+ ▼
+API Controller
+ │
+ ▼
+Business Service
+ │
+ ▼
+Repository
+ │
+ ▼
+PostgreSQL
+ │
+ ▲
+Repository
+ │
+ ▲
+Business Service
+ │
+ ▲
+API Response
+ │
+ ▲
+Client Interface
+ │
+ ▲
+User
+
+Each request shall be validated, authenticated, authorized, processed, and logged before a response is returned.
+
+13.5.8 Session Management
+The architecture shall maintain secure user sessions.
+Session management shall support:
+Secure login.
+Session timeout.
+Token renewal.
+Concurrent session control.
+Secure logout.
+Session invalidation.
+Device tracking where applicable.
+Activity monitoring.
+Session information shall never expose sensitive credentials to the client.
+
+13.5.9 Communication Protocols
+Communication between clients and servers shall use standardized protocols.
+Communication
+Protocol
+Client → Server
+HTTPS
+API Communication
+REST
+Authentication
+OAuth 2.0 / JWT
+Database Access
+Secure PostgreSQL Connection
+Email Notifications
+SMTP
+SMS Notifications
+SMS Gateway APIs
+All external communication shall use encrypted channels where appropriate.
+
+13.5.10 Security in Client–Server Communication
+Security mechanisms shall include:
+TLS 1.3 encryption.
+JWT-based authentication.
+Role-Based Access Control (RBAC).
+Multi-Factor Authentication (MFA) support.
+Request validation.
+Input sanitization.
+Output encoding.
+CSRF protection where applicable.
+Secure cookie handling.
+API rate limiting.
+These controls shall protect the confidentiality, integrity, and availability of healthcare information.
+
+13.5.11 Scalability Considerations
+The client–server architecture shall support horizontal and vertical scaling.
+Scalability features include:
+Stateless application servers.
+Load balancing.
+Database connection pooling.
+Distributed caching (where implemented).
+Modular services.
+Resource monitoring.
+Capacity planning.
+These capabilities enable CuraSphere to accommodate increasing numbers of users and transactions.
+
+13.5.12 Fault Tolerance
+To improve system resilience, the architecture shall support:
+Graceful error handling.
+Retry mechanisms for transient failures.
+Server health checks.
+Database failover strategies.
+Backup and recovery integration.
+Centralized logging.
+Alerting and monitoring.
+Fault-tolerant mechanisms shall minimize disruption to hospital operations.
+
+13.5.13 Advantages of the Client–Server Architecture
+The adopted architecture provides the following benefits:
+Centralized data management.
+Simplified software updates.
+Improved security.
+Better maintainability.
+Efficient resource utilization.
+Support for multiple user roles.
+Easier integration with external systems.
+Consistent business rule enforcement.
+Improved scalability.
+Simplified backup and disaster recovery.
+
+13.5.14 Architectural Constraints
+The client–server implementation shall comply with the following constraints:
+All business logic shall reside on the server.
+Clients shall communicate only through approved APIs.
+Direct database access from client applications is prohibited.
+Authentication shall be required before accessing protected resources.
+Sensitive data shall not be permanently stored on client devices unless explicitly approved and encrypted.
+
+13.5.15 Client–Server Architecture Acceptance Criteria
+The Client–Server Architecture shall be considered complete when:
+Client, application server, and database responsibilities are clearly separated.
+All communication occurs through secure, authenticated APIs.
+Session management and access control mechanisms are implemented.
+Scalability, fault tolerance, and security requirements are incorporated into the architecture.
+The architecture supports reliable multi-user access while protecting healthcare data and maintaining system performance.
+
+13.6 Modular Monolith vs. Microservices Architecture
+
+13.6.1 Introduction
+Selecting an appropriate architectural style is one of the most important technical decisions in the development of the CuraSphere Hospital Management System (HMS). The architecture directly influences system scalability, maintainability, performance, deployment complexity, security, and long-term evolution.
+This section evaluates two widely adopted enterprise architectural styles:
+Modular Monolith
+Microservices Architecture
+Based on the project's objectives, technical stack, expected deployment environment, and future expansion requirements, this section recommends the most suitable architecture for CuraSphere.
+
+13.6.2 Objectives
+The architectural style shall:
+Support enterprise healthcare workflows.
+Simplify development and maintenance.
+Ensure system reliability.
+Enable future scalability.
+Reduce operational complexity.
+Support secure communication.
+Facilitate modular development.
+Improve deployment efficiency.
+Support future migration strategies.
+Minimize technical debt.
+
+13.6.3 Architectural Styles Overview
+Modular Monolith
+A Modular Monolith is a single deployable application internally divided into well-defined business modules. Each module encapsulates its own business logic, interfaces, and data access while remaining part of the same application.
+
+               Modular Monolith
+
+        ┌─────────────────────────────┐
+        │      CuraSphere HMS         │
+        │                             │
+        │ Patient Module              │
+        │ Appointment Module          │
+        │ EMR Module                  │
+        │ Laboratory Module           │
+        │ Pharmacy Module             │
+        │ Billing Module              │
+        │ Inventory Module            │
+        │ HR Module                   │
+        │ Reporting Module            │
+        └─────────────────────────────┘
+                    │
+                    ▼
+             PostgreSQL Database
+
+All modules are deployed together but remain logically independent.
+
+Microservices Architecture
+A Microservices Architecture divides the application into multiple independently deployable services.
+
+ Client
+    │
+    ▼
+API Gateway
+    │
+ ┌──┼──────────────────────────┐
+ ▼  ▼      ▼      ▼      ▼
+Patient  Billing EMR Pharmacy Lab
+Service  Service Service Service Service
+ │        │       │       │       │
+ ▼        ▼       ▼       ▼       ▼
+Individual Databases / Shared Services
+
+Each service operates independently and communicates over the network.
+
+13.6.4 Comparative Analysis
+Feature
+Modular Monolith
+Microservices
+Deployment
+Single deployment
+Multiple deployments
+Complexity
+Low to Moderate
+High
+Development
+Easier
+More complex
+Debugging
+Simpler
+More difficult
+Infrastructure
+Less demanding
+Requires orchestration
+Communication
+In-process
+Network-based
+Performance
+Higher (local calls)
+Lower (network latency)
+Scalability
+Whole application
+Individual services
+Maintenance
+Moderate
+High (distributed)
+Initial Cost
+Lower
+Higher
+
+13.6.5 Suitability Analysis for CuraSphere
+The expected characteristics of CuraSphere include:
+Multiple hospital departments.
+Moderate to high concurrent users.
+Shared clinical workflows.
+Centralized patient records.
+Strong consistency requirements.
+Limited operational complexity during initial deployment.
+Future scalability.
+Considering these characteristics, a Modular Monolith is the preferred architecture for the initial production release.
+
+13.6.6 Rationale for Selecting a Modular Monolith
+The following factors influenced the architectural decision:
+Simpler Development
+Development teams can work within a unified codebase while maintaining clear module boundaries.
+Easier Testing
+End-to-end testing and integration testing are more straightforward because all modules execute within a single application.
+Reduced Infrastructure Complexity
+The architecture avoids the need for:
+Service discovery.
+Distributed configuration.
+Container orchestration.
+Inter-service network management.
+Complex deployment pipelines.
+Strong Transaction Support
+Hospital workflows often require transactions spanning multiple domains (e.g., patient registration, appointment creation, billing initialization). A modular monolith simplifies these transactional operations.
+Better Performance
+Internal method calls are significantly faster than remote service communication, reducing latency for frequently interacting modules.
+
+13.6.7 Modular Design Principles
+Although deployed as one application, each module shall remain independently organized.
+
+CuraSphere
+│
+├── Patient Module
+├── Appointment Module
+├── EMR Module
+├── Laboratory Module
+├── Radiology Module
+├── Pharmacy Module
+├── Billing Module
+├── Inventory Module
+├── HR Module
+├── Reporting Module
+└── Administration Module
+
+Each module shall contain:
+Controllers.
+Services.
+Domain models.
+Repositories.
+Validation logic.
+Business rules.
+DTOs.
+Configuration files (where applicable).
+
+13.6.8 Module Communication
+Modules shall communicate through well-defined interfaces and service contracts.
+
+Appointment Module
+        │
+        ▼
+Patient Service Interface
+        │
+        ▼
+Patient Module
+
+Direct database access between modules shall not be permitted. Modules shall access their own repositories and expose functionality through internal service interfaces.
+
+13.6.9 Data Ownership
+Each module shall own its business entities.
+Module
+Primary Data Ownership
+Patient
+Patient profiles
+Appointment
+Appointment schedules
+EMR
+Clinical records
+Laboratory
+Test requests and results
+Radiology
+Imaging records
+Pharmacy
+Medication inventory and dispensing
+Billing
+Invoices and payments
+Inventory
+Medical supplies
+HR
+Employee records
+Reporting
+Analytical datasets
+This ownership model reduces coupling and improves maintainability.
+
+13.6.10 Future Migration Strategy
+The modular design shall facilitate future migration to a microservices architecture if organizational needs evolve.
+Potential migration sequence:
+
+Phase 1
+Modular Monolith
+        │
+        ▼
+Phase 2
+Separate Reporting Service
+        │
+        ▼
+Phase 3
+Extract Notification Service
+        │
+        ▼
+Phase 4
+Extract Billing Service
+        │
+        ▼
+Phase 5
+Gradual Domain-Based Microservices
+
+This evolutionary approach minimizes disruption while preserving business continuity.
+
+13.6.11 Benefits of the Selected Architecture
+The selected Modular Monolith architecture provides:
+Faster development.
+Lower infrastructure costs.
+Simpler deployment.
+Easier debugging.
+Better transactional consistency.
+Strong performance.
+Clear module boundaries.
+Reduced operational overhead.
+Easier onboarding for developers.
+A foundation for future evolution.
+
+13.6.12 Risks and Mitigation
+Risk
+Mitigation Strategy
+Large codebase over time
+Enforce strict module boundaries and code reviews
+Tight coupling between modules
+Use interfaces and dependency injection
+Slower deployments as the application grows
+Optimize CI/CD pipelines and automate testing
+Reduced independent scalability
+Design modules for future extraction into services
+Increased maintenance effort
+Maintain clear documentation and coding standards
+Regular architectural reviews shall ensure these risks remain controlled.
+
+13.6.13 Decision Summary
+After evaluating both architectural styles, the project adopts the following decision:
+Decision Area
+Selected Approach
+Primary Architecture
+Modular Monolith
+Deployment Model
+Single deployable application
+Module Design
+Domain-based modules
+Communication
+Internal service interfaces
+Data Management
+Centralized PostgreSQL database
+Future Evolution
+Gradual migration path to Microservices if required
+This decision balances simplicity, maintainability, performance, and future flexibility.
+
+13.6.14 Modular Monolith vs. Microservices Acceptance Criteria
+The architectural style shall be considered successfully adopted when:
+The application is organized into independent business modules with clearly defined responsibilities.
+Modules communicate only through approved interfaces and service contracts.
+Cross-module dependencies are minimized and managed through dependency injection.
+The architecture supports future extraction of modules into independent microservices without significant redesign.
+The selected approach delivers the required performance, maintainability, scalability, and reliability for the planned deployment environment.
+
+13.7 Component Architecture
+
+13.7.1 Introduction
+The Component Architecture defines the internal software components that make up the CuraSphere Hospital Management System (HMS) and describes their responsibilities, interactions, dependencies, and lifecycle.
+Each component represents a self-contained unit of functionality responsible for a specific business capability. Components collaborate through well-defined interfaces, enabling modular development, maintainability, scalability, and ease of testing.
+The component architecture provides the blueprint for developers, architects, testers, and DevOps engineers to implement the system consistently while minimizing coupling between modules.
+
+13.7.2 Objectives
+The Component Architecture shall:
+Organize the system into reusable software components.
+Define clear component responsibilities.
+Promote modular software development.
+Minimize dependencies.
+Support scalability.
+Improve maintainability.
+Enable independent testing.
+Facilitate future enhancements.
+Improve code reuse.
+Ensure consistent communication between modules.
+
+13.7.3 Component Architecture Overview
+The CuraSphere system is composed of several major architectural components organized into functional layers.
+                    CURASPHERE COMPONENT ARCHITECTURE
+
+                    Presentation Components
+                              │
+                              ▼
+                     API / Controller Components
+                              │
+                              ▼
+                    Business Service Components
+                              │
+                              ▼
+                    Repository Components
+                              │
+                              ▼
+                      PostgreSQL Database
+
+            Cross-Cutting Components (Shared Across All Layers)
+        Authentication • Authorization • Logging • Notifications
+        Configuration • Audit • Monitoring • File Management
+Each component performs a specific role while interacting through defined interfaces.
+
+13.7.4 Component Classification
+CuraSphere components are classified into the following categories:
+Component Category
+Purpose
+Presentation Components
+User interface and interaction
+API Components
+Request routing and validation
+Business Components
+Business logic implementation
+Repository Components
+Data access and persistence
+Integration Components
+External system communication
+Security Components
+Authentication and authorization
+Reporting Components
+Report generation and analytics
+Notification Components
+Email, SMS, and system notifications
+Infrastructure Components
+Logging, monitoring, caching, configuration
+
+13.7.5 Presentation Components
+The Presentation Layer contains reusable UI components responsible for rendering data and interacting with users.
+Major Presentation Components
+Component
+Responsibility
+Login Component
+User authentication
+Dashboard Component
+Role-based dashboards
+Patient Registration Component
+Patient registration
+Appointment Component
+Appointment scheduling
+EMR Component
+Medical records
+Billing Component
+Billing and invoices
+Pharmacy Component
+Medication management
+Laboratory Component
+Test requests and results
+Inventory Component
+Stock management
+Reporting Component
+Reports and analytics
+Presentation components shall communicate exclusively with backend APIs.
+
+13.7.6 API Components
+API components expose business functionality through REST endpoints.
+Responsibilities
+Route client requests.
+Validate input.
+Authenticate users.
+Authorize access.
+Invoke business services.
+Format responses.
+Handle exceptions.
+Record request logs.
+Example controllers include:
+PatientController
+AppointmentController
+DoctorController
+EMRController
+BillingController
+PharmacyController
+LaboratoryController
+InventoryController
+HRController
+ReportController
+Controllers shall remain lightweight and shall not contain business rules.
+
+13.7.7 Business Service Components
+Business services implement the healthcare workflows and operational rules.
+PatientService
+AppointmentService
+DoctorService
+EMRService
+LaboratoryService
+RadiologyService
+PharmacyService
+BillingService
+InventoryService
+HRService
+NotificationService
+ReportService
+AuditService
+Responsibilities
+Execute business logic.
+Validate workflows.
+Coordinate transactions.
+Interact with repositories.
+Enforce business policies.
+Trigger notifications.
+Maintain audit trails.
+Business services represent the core of the CuraSphere application.
+
+13.7.8 Repository Components
+Repositories abstract database operations and isolate persistence logic.
+Repository Responsibilities
+CRUD operations.
+Query execution.
+Transaction management.
+ORM mapping.
+Database abstraction.
+Connection management.
+Query optimization.
+Examples include:
+PatientRepository
+AppointmentRepository
+EMRRepository
+BillingRepository
+InventoryRepository
+PharmacyRepository
+LaboratoryRepository
+UserRepository
+Repositories shall not implement business logic.
+
+13.7.9 Security Components
+Security is implemented through dedicated architectural components.
+Authentication Component
+Responsibilities:
+User login.
+Token generation.
+Password verification.
+Multi-Factor Authentication (MFA).
+Session management.
+
+Authorization Component
+Responsibilities:
+Role verification.
+Permission evaluation.
+Access control.
+Resource authorization.
+Policy enforcement.
+
+Audit Component
+Responsibilities:
+Record user activities.
+Record security events.
+Record data changes.
+Maintain immutable audit logs.
+
+13.7.10 Integration Components
+Integration components enable communication with external systems.
+Supported integrations include:
+Integration
+Purpose
+Payment Gateway
+Online payments
+SMS Gateway
+Notifications
+Email Server
+Email communication
+Insurance Systems
+Claims processing
+Laboratory Instruments
+Test automation
+PACS
+Medical imaging
+Government Health Systems
+Regulatory reporting
+Identity Providers
+Single Sign-On (SSO)
+Integration components shall isolate external communication from internal business logic.
+
+13.7.11 Reporting Components
+Reporting components generate operational and analytical reports.
+Responsibilities include:
+Operational reports.
+Financial reports.
+Clinical reports.
+Laboratory reports.
+Inventory reports.
+KPI dashboards.
+Statistical analysis.
+Export to PDF, Excel, and CSV.
+Report generation shall use optimized queries to minimize system impact.
+
+13.7.12 Notification Components
+Notification components manage all outbound communications.
+Supported notification channels include:
+Email.
+SMS.
+In-application notifications.
+System alerts.
+Appointment reminders.
+Billing reminders.
+Laboratory result notifications.
+Notification delivery shall support retries and error handling.
+
+13.7.13 Shared Utility Components
+Utility components provide reusable functionality across the application.
+Examples include:
+Date and time utilities.
+Validation helpers.
+File upload service.
+Encryption utilities.
+Configuration manager.
+Logging framework.
+Exception handler.
+Localization service.
+Cache manager.
+These components reduce duplication and improve consistency.
+
+13.7.14 Component Interaction Workflow
+The following workflow illustrates how components collaborate to process a typical request.
+User
+ │
+ ▼
+React Component
+ │
+ ▼
+API Controller
+ │
+ ▼
+Business Service
+ │
+ ▼
+Repository
+ │
+ ▼
+PostgreSQL Database
+ │
+ ▲
+Repository
+ │
+ ▲
+Business Service
+ │
+ ▲
+Notification Service
+ │
+ ▲
+Audit Service
+ │
+ ▲
+API Controller
+ │
+ ▲
+React Component
+ │
+ ▲
+User
+This workflow ensures that business logic, persistence, notifications, and auditing remain modular and coordinated.
+
+13.7.15 Component Dependencies
+The dependency rules shall be:
+Component
+Depends On
+Presentation
+API Components
+API Components
+Business Services
+Business Services
+Repositories
+Repositories
+Database
+Notification Service
+Messaging Providers
+Reporting Service
+Business Services & Database
+Security Components
+User Repository
+Integration Components
+External APIs
+Circular dependencies between components shall not be permitted.
+
+13.7.16 Component Lifecycle
+Each component shall follow a standardized lifecycle.
+Design
+   │
+   ▼
+Development
+   │
+   ▼
+Unit Testing
+   │
+   ▼
+Integration Testing
+   │
+   ▼
+Deployment
+   │
+   ▼
+Monitoring
+   │
+   ▼
+Maintenance
+   │
+   ▼
+Enhancement
+Every component shall be version-controlled and documented throughout its lifecycle.
+
+13.7.17 Design Guidelines
+All software components shall adhere to the following design guidelines:
+Single Responsibility Principle (SRP).
+Dependency Injection (DI).
+Loose Coupling.
+High Cohesion.
+Interface-Based Programming.
+Reusable Components.
+Exception Handling Standards.
+Secure Coding Practices.
+Standardized Logging.
+Comprehensive Documentation.
+
+13.7.18 Component Architecture Acceptance Criteria
+The Component Architecture shall be considered complete when:
+All major software components are identified and documented.
+Responsibilities and dependencies are clearly defined.
+Components communicate through approved interfaces.
+Business logic, data access, presentation, and infrastructure concerns are properly separated.
+Cross-cutting services such as security, logging, notifications, and auditing are centralized and reusable.
+The architecture supports modular development, scalability, maintainability, and future system expansion.
+
+13.8 Backend Architecture
+
+13.8.1 Introduction
+The Backend Architecture defines the server-side design of the CuraSphere Hospital Management System (HMS). It is responsible for implementing business rules, processing client requests, managing data persistence, enforcing security, integrating with external systems, and supporting reliable healthcare operations.
+The backend follows a Layered Modular Monolith Architecture, built using ASP.NET Core (C#) as the primary backend framework. The architecture is designed according to enterprise software engineering principles, ensuring high maintainability, scalability, testability, and security.
+The backend exposes RESTful APIs that are consumed by the React.js frontend and external healthcare systems.
+
+13.8.2 Objectives
+The Backend Architecture shall:
+Implement healthcare business logic.
+Process client requests securely.
+Manage persistent data.
+Expose standardized REST APIs.
+Support enterprise scalability.
+Ensure secure authentication and authorization.
+Enable integration with external systems.
+Support background processing.
+Maintain high availability.
+Simplify maintenance and future enhancements.
+
+13.8.3 Backend Technology Stack
+The backend shall utilize the following technologies:
+Technology
+Purpose
+ASP.NET Core (.NET 8 or later)
+Backend framework
+C#
+Primary programming language
+Entity Framework Core
+Object-Relational Mapper (ORM)
+PostgreSQL
+Relational database
+JWT
+Authentication tokens
+OAuth 2.0
+Authorization framework
+Swagger / OpenAPI
+API documentation
+Hangfire / Quartz.NET
+Background job scheduling
+Serilog
+Structured logging
+FluentValidation
+Request validation
+AutoMapper
+DTO mapping
+Redis (Optional)
+Distributed caching
+The technology stack shall be reviewed periodically to ensure long-term support and compatibility.
+
+13.8.4 Backend Architecture Overview
+
+               React.js Frontend
+                       │
+                       ▼
+              REST API Controllers
+                       │
+                       ▼
+              Business Services
+                       │
+                       ▼
+              Domain Models
+                       │
+                       ▼
+              Repository Layer
+                       │
+                       ▼
+          Entity Framework Core
+                       │
+                       ▼
+                PostgreSQL Database
+
+Each layer performs a specialized role while communicating through defined interfaces.
+
+13.8.5 Backend Project Structure
+A modular project structure shall be adopted to improve maintainability and separation of concerns.
+
+CuraSphere.Backend
+│
+├── API
+│   ├── Controllers
+│   ├── Middleware
+│   ├── Filters
+│   └── Configuration
+│
+├── Application
+│   ├── Services
+│   ├── DTOs
+│   ├── Validators
+│   ├── Interfaces
+│   └── Mappers
+│
+├── Domain
+│   ├── Entities
+│   ├── Enums
+│   ├── Value Objects
+│   ├── Events
+│   └── Interfaces
+│
+├── Infrastructure
+│   ├── Repositories
+│   ├── Database
+│   ├── Authentication
+│   ├── Notifications
+│   ├── Logging
+│   └── Integrations
+│
+└── Tests
+    ├── Unit Tests
+    ├── Integration Tests
+    └── Performance Tests
+
+This structure promotes modularity and simplifies future expansion.
+
+13.8.6 API Layer
+The API Layer serves as the entry point for all client requests.
+Responsibilities
+Accept HTTP requests.
+Validate incoming data.
+Authenticate users.
+Authorize access.
+Invoke business services.
+Return standardized responses.
+Handle exceptions.
+Generate API documentation.
+Controllers shall remain thin and delegate business processing to the Application layer.
+
+13.8.7 Application Layer
+The Application Layer contains use cases and orchestrates business workflows.
+Responsibilities include:
+Executing application services.
+Coordinating domain operations.
+Managing transactions.
+Mapping DTOs to domain entities.
+Applying validation rules.
+Publishing domain events.
+Triggering notifications.
+The Application Layer shall not directly depend on infrastructure implementations.
+
+13.8.8 Domain Layer
+The Domain Layer represents the core business model of CuraSphere.
+Domain Components
+Patient
+Doctor
+Appointment
+MedicalRecord
+Prescription
+LaboratoryOrder
+RadiologyOrder
+Invoice
+Payment
+InventoryItem
+Employee
+Department
+Business rules, invariants, and domain behavior shall reside within this layer.
+
+13.8.9 Infrastructure Layer
+The Infrastructure Layer provides technical implementations required by the application.
+Services include:
+Repository implementations.
+Database access.
+Authentication providers.
+Email services.
+SMS gateways.
+File storage.
+External integrations.
+Logging.
+Caching.
+This layer isolates external dependencies from the core application.
+
+13.8.10 Dependency Injection (DI)
+CuraSphere shall use Dependency Injection to manage component dependencies.
+
+Controller
+      │
+      ▼
+IPatientService
+      │
+      ▼
+PatientService
+      │
+      ▼
+IPatientRepository
+      │
+      ▼
+PatientRepository
+
+Benefits include:
+Loose coupling.
+Improved testing.
+Easier maintenance.
+Better scalability.
+Configurable implementations.
+
+13.8.11 Repository Pattern
+The Repository Pattern abstracts data access logic.
+Responsibilities
+CRUD operations.
+Query execution.
+Transaction support.
+Entity tracking.
+Pagination.
+Filtering.
+Data retrieval.
+Repositories shall expose interfaces rather than concrete implementations.
+
+13.8.12 Data Transfer Objects (DTOs)
+DTOs shall be used to transfer data between the API and Application layers.
+Examples include:
+PatientCreateDto
+PatientResponseDto
+AppointmentCreateDto
+InvoiceDto
+PrescriptionDto
+LaboratoryResultDto
+DTOs shall prevent unnecessary exposure of internal domain entities.
+
+13.8.13 Validation Framework
+Input validation shall be performed before business processing.
+Validation rules include:
+Required fields.
+String length constraints.
+Date validation.
+Numeric ranges.
+Email format.
+Phone number format.
+Business rule validation.
+Cross-field validation.
+Validation errors shall return standardized error responses.
+
+13.8.14 Exception Handling
+A centralized exception handling mechanism shall manage application errors.
+Exception categories include:
+Exception Type
+Example
+ValidationException
+Invalid input
+AuthenticationException
+Login failure
+AuthorizationException
+Access denied
+BusinessRuleException
+Workflow violation
+ResourceNotFoundException
+Record not found
+DatabaseException
+Persistence error
+IntegrationException
+External service failure
+Sensitive system details shall not be exposed in API responses.
+
+13.8.15 Transaction Management
+Critical healthcare operations shall execute within database transactions.
+Examples include:
+Patient registration.
+Appointment booking.
+Invoice generation.
+Prescription processing.
+Inventory updates.
+Payment processing.
+Transactions shall ensure data consistency and rollback upon failure.
+
+13.8.16 Background Processing
+Long-running tasks shall be processed asynchronously.
+Examples include:
+Appointment reminders.
+Email notifications.
+SMS notifications.
+Scheduled reports.
+Backup initiation.
+Audit archival.
+Data synchronization.
+Background jobs shall be monitored and logged.
+
+13.8.17 Caching Strategy
+Caching shall improve application performance.
+Cacheable data includes:
+Master data.
+Departments.
+User permissions.
+Configuration settings.
+Frequently accessed reference tables.
+Where implemented, cache invalidation strategies shall ensure data consistency.
+
+13.8.18 Logging Framework
+The backend shall implement structured logging.
+Log categories include:
+Application logs.
+Security logs.
+Audit logs.
+Performance logs.
+API request logs.
+Exception logs.
+Background job logs.
+Logs shall include timestamps, correlation identifiers, and severity levels.
+
+13.8.19 Backend Security
+The backend shall implement comprehensive security controls.
+Security measures include:
+JWT authentication.
+OAuth 2.0 authorization.
+Role-Based Access Control (RBAC).
+Input validation.
+Output encoding.
+Rate limiting.
+HTTPS enforcement.
+Secure password hashing.
+Audit logging.
+Encryption of sensitive data where required.
+All backend endpoints shall require appropriate authorization unless explicitly designated as public.
+
+13.8.20 Backend Architecture Acceptance Criteria
+The Backend Architecture shall be considered complete when:
+The backend is organized into clearly defined layers with well-defined responsibilities.
+Dependency Injection, Repository Pattern, and DTOs are consistently implemented.
+Business logic is isolated from API controllers and infrastructure components.
+Validation, exception handling, transaction management, caching, logging, and security are centralized and reusable.
+The architecture supports secure, scalable, maintainable, and high-performance healthcare operations while enabling future system enhancements.
+
+13.9 Frontend Architecture
+
+13.9.1 Introduction
+The Frontend Architecture defines the client-side structure of the CuraSphere Hospital Management System (HMS). It is responsible for delivering a secure, responsive, accessible, and user-friendly interface that enables healthcare professionals, administrators, and patients to efficiently interact with the system.
+The frontend is implemented using React.js with a modern component-based architecture, supported by TypeScript, Tailwind CSS, shadcn/ui, Zustand, and TanStack Query. This architecture promotes modularity, maintainability, scalability, and a consistent user experience across all modules.
+
+13.9.2 Objectives
+The Frontend Architecture shall:
+Provide a responsive user interface.
+Deliver a consistent user experience.
+Support modular UI development.
+Ensure accessibility compliance.
+Enable efficient state management.
+Simplify maintenance.
+Improve application performance.
+Support secure authentication.
+Facilitate reusable UI components.
+Integrate seamlessly with backend APIs.
+
+13.9.3 Frontend Technology Stack
+Technology
+Purpose
+React.js
+UI Framework
+TypeScript
+Type-safe development
+Tailwind CSS
+Utility-first styling
+shadcn/ui
+Reusable UI component library
+React Router
+Client-side routing
+Zustand
+Global state management
+TanStack Query
+Server state management and caching
+Axios / Fetch API
+HTTP communication
+React Hook Form
+Form handling
+Zod
+Form and schema validation
+Vite
+Build tool and development server
+The selected technologies shall remain compatible with supported Long-Term Support (LTS) releases where applicable.
+
+13.9.4 Frontend Architecture Overview
+
+                 Browser
+                    │
+                    ▼
+            React Application
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+    Pages      Components    Layouts
+        │           │           │
+        └───────────┼───────────┘
+                    ▼
+             Zustand Store
+                    │
+                    ▼
+          TanStack Query Client
+                    │
+                    ▼
+              REST API Layer
+                    │
+                    ▼
+             Backend Services
+
+The architecture separates presentation, state management, routing, and API communication into independent layers.
+
+13.9.5 Frontend Project Structure
+The frontend shall adopt a scalable feature-oriented directory structure.
+
+src/
+│
+├── app/
+│
+├── assets/
+│
+├── components/
+│   ├── common/
+│   ├── forms/
+│   ├── layout/
+│   └── ui/
+│
+├── features/
+│   ├── authentication/
+│   ├── patients/
+│   ├── appointments/
+│   ├── doctors/
+│   ├── emr/
+│   ├── pharmacy/
+│   ├── laboratory/
+│   ├── billing/
+│   ├── inventory/
+│   ├── hr/
+│   └── reports/
+│
+├── hooks/
+│
+├── layouts/
+│
+├── lib/
+│
+├── routes/
+│
+├── services/
+│
+├── store/
+│
+├── types/
+│
+├── utils/
+│
+└── main.tsx
+
+This structure supports feature isolation, code reuse, and simplified maintenance.
+
+13.9.6 UI Component Architecture
+The user interface shall be built using reusable components.
+Component Categories
+Category
+Examples
+Layout Components
+Sidebar, Navbar, Footer
+Form Components
+Input, Select, Date Picker
+Data Display
+Tables, Cards, Charts
+Navigation
+Breadcrumbs, Tabs, Pagination
+Feedback
+Alerts, Toasts, Dialogs
+Dashboard Components
+KPI Cards, Graphs, Widgets
+Utility Components
+Loaders, Skeletons, Empty States
+Reusable components shall follow a consistent design system and styling guidelines.
+
+13.9.7 Routing Architecture
+Client-side navigation shall be managed using React Router.
+Route Categories
+Public Routes
+Login
+Forgot Password
+Reset Password
+Protected Routes
+Dashboard
+Patients
+Appointments
+EMR
+Laboratory
+Pharmacy
+Billing
+Inventory
+Reports
+Administration
+Routing Workflow
+
+User
+ │
+ ▼
+Route Request
+ │
+ ▼
+Authentication Check
+ │
+ ├───────────────┐
+ │Authenticated? │
+ └───────┬───────┘
+         │Yes
+         ▼
+ Protected Page
+         │
+         ▼
+ Render Component
+
+No
+ │
+ ▼
+Login Page
+
+Unauthorized users shall be redirected to the authentication page.
+
+13.9.8 Global State Management
+Global client-side state shall be managed using Zustand.
+Typical global state includes:
+Authenticated user.
+Selected hospital.
+Active department.
+Theme preferences.
+Notification settings.
+Sidebar state.
+Language preferences.
+Application settings.
+Business data retrieved from APIs shall not be stored permanently in the global store unless justified.
+
+13.9.9 Server State Management
+Server-side data shall be managed using TanStack Query.
+Responsibilities include:
+Data fetching.
+Background synchronization.
+Request deduplication.
+Query caching.
+Cache invalidation.
+Pagination support.
+Retry mechanisms.
+Optimistic updates where appropriate.
+This approach reduces unnecessary network requests and improves application responsiveness.
+
+13.9.10 Authentication Flow
+The frontend shall securely manage authenticated user sessions.
+
+User Login
+     │
+     ▼
+API Authentication
+     │
+     ▼
+Receive JWT Token
+     │
+     ▼
+Store Securely
+     │
+     ▼
+Protected Routes
+     │
+     ▼
+Authenticated Session
+
+Authentication state shall be synchronized with the backend and invalid sessions shall trigger automatic logout.
+
+13.9.11 Form Management & Validation
+All user input forms shall implement consistent validation.
+Validation requirements include:
+Required fields.
+Maximum and minimum lengths.
+Date validation.
+Numeric constraints.
+Email validation.
+Phone number validation.
+Password complexity.
+Business rule validation.
+Validation shall occur both client-side and server-side.
+
+13.9.12 API Integration Layer
+Frontend components shall communicate with backend services through a centralized API layer.
+Responsibilities include:
+HTTP request handling.
+Authorization header injection.
+Error handling.
+Response transformation.
+Token refresh.
+Retry policies.
+Timeout management.
+Components shall not perform direct HTTP requests independently.
+
+13.9.13 Error Handling
+The frontend shall implement centralized error handling.
+Error categories include:
+Error Type
+Example
+Validation Error
+Invalid form input
+Authentication Error
+Expired session
+Authorization Error
+Insufficient permissions
+Network Error
+Connection failure
+Server Error
+Internal server error
+Business Rule Error
+Appointment conflict
+Error messages shall be meaningful, user-friendly, and avoid exposing sensitive technical information.
+
+13.9.14 Performance Optimization
+The frontend shall employ performance optimization techniques including:
+Lazy loading of routes.
+Code splitting.
+Component memoization.
+Virtualized tables for large datasets.
+Image optimization.
+Efficient query caching.
+Bundle optimization.
+Debounced search inputs.
+Performance shall be monitored and optimized to ensure a responsive user experience.
+
+13.9.15 Accessibility & Responsive Design
+The frontend shall comply with recognized accessibility and responsive design practices.
+Requirements include:
+Keyboard navigation support.
+Semantic HTML.
+Appropriate color contrast.
+Screen reader compatibility.
+Responsive layouts for desktop, tablet, and mobile devices.
+Focus indicators.
+Accessible form labels and error messages.
+Accessibility shall be considered throughout the UI development lifecycle.
+
+13.9.16 Frontend Security Considerations
+The frontend shall implement security measures such as:
+Secure handling of authentication tokens.
+Protection against Cross-Site Scripting (XSS).
+Cross-Site Request Forgery (CSRF) mitigation where applicable.
+Secure API communication over HTTPS.
+Input sanitization.
+Route protection.
+Secure storage of non-sensitive client preferences.
+Prevention of unauthorized UI access based on roles and permissions.
+Sensitive healthcare data shall not be persistently stored in browser storage unless explicitly required and appropriately protected.
+
+13.9.17 Frontend Architecture Acceptance Criteria
+The Frontend Architecture shall be considered complete when:
+The React application is organized into modular, reusable features and components.
+Routing, state management, and API communication follow the defined architectural standards.
+Authentication, validation, accessibility, and responsive design requirements are implemented.
+Performance optimization and frontend security practices are incorporated.
+The architecture supports maintainable, scalable, and user-friendly interfaces suitable for enterprise healthcare environments.
+
+13.10 Database Architecture
+
+13.10.1 Introduction
+The Database Architecture defines the structure, organization, storage strategy, integrity mechanisms, and operational principles of the CuraSphere Hospital Management System (HMS) database.
+The database is the central repository for all clinical, administrative, financial, and operational information generated within the hospital. It must provide secure, reliable, scalable, and high-performance data management while ensuring consistency and compliance with healthcare regulations.
+CuraSphere utilizes PostgreSQL as its primary Relational Database Management System (RDBMS) due to its enterprise reliability, ACID compliance, advanced indexing capabilities, extensibility, and strong support for complex healthcare applications.
+
+13.10.2 Objectives
+The Database Architecture shall:
+Provide centralized enterprise data management.
+Ensure data integrity and consistency.
+Support high-performance transactions.
+Enable secure data storage.
+Maintain referential integrity.
+Support scalability and future growth.
+Facilitate reporting and analytics.
+Enable disaster recovery.
+Support regulatory compliance.
+Minimize data redundancy.
+
+13.10.3 Database Technology Stack
+Technology
+Purpose
+PostgreSQL
+Primary Relational Database
+Entity Framework Core
+ORM Framework
+SQL
+Database Query Language
+pgAdmin
+Database Administration
+Redis (Optional)
+Distributed Cache
+Backup Storage
+Disaster Recovery
+The database platform shall use supported Long-Term Support (LTS) versions where applicable.
+
+13.10.4 Database Architecture Overview
+
+               CURASPHERE DATABASE ARCHITECTURE
+
+React Frontend
+       │
+       ▼
+REST APIs
+       │
+       ▼
+Business Services
+       │
+       ▼
+Repository Layer
+       │
+       ▼
+Entity Framework Core
+       │
+       ▼
+PostgreSQL Database
+       │
+       ▼
+Backup & Recovery Storage
+
+All database access shall occur through the Repository Layer and Entity Framework Core. Direct client access to the database is prohibited.
+
+13.10.5 Database Organization
+The database shall be logically organized into functional schemas.
+Schema
+Purpose
+Patient
+Patient demographics and records
+Clinical
+EMR, diagnoses, treatments
+Appointment
+Scheduling and consultations
+Laboratory
+Test requests and results
+Radiology
+Imaging records
+Pharmacy
+Medication and dispensing
+Billing
+Invoices and payments
+Inventory
+Medical supplies and stock
+Human Resources
+Employee information
+Administration
+Users, roles, permissions
+Reporting
+Analytical views and summaries
+Audit
+Audit logs and history
+This organization improves maintainability, security, and administrative control.
+
+13.10.6 Core Database Entities
+The following entities form the foundation of the CuraSphere database.
+Entity
+Description
+Patient
+Patient demographic information
+Doctor
+Medical practitioner details
+Appointment
+Appointment scheduling
+MedicalRecord
+Electronic Medical Record (EMR)
+Prescription
+Medication orders
+LaboratoryOrder
+Laboratory requests
+LaboratoryResult
+Laboratory findings
+RadiologyOrder
+Imaging requests
+RadiologyReport
+Imaging reports
+Invoice
+Billing records
+Payment
+Payment transactions
+InventoryItem
+Medical inventory
+Supplier
+Supplier information
+Employee
+Hospital staff
+Department
+Organizational units
+User
+System user accounts
+Role
+Access control roles
+Permission
+System permissions
+AuditLog
+Activity history
+Each entity shall have a unique primary key and clearly defined relationships.
+
+13.10.7 Entity Relationship Overview
+
+Patient
+   │
+   ├──────────────┐
+   ▼              ▼
+Appointment   MedicalRecord
+      │              │
+      ▼              ▼
+Prescription   LaboratoryOrder
+      │              │
+      ▼              ▼
+ Pharmacy      LaboratoryResult
+      │
+      ▼
+Invoice
+      │
+      ▼
+Payment
+
+This simplified ER overview illustrates the primary relationships between core healthcare entities.
+
+13.10.8 Normalization Strategy
+The database shall follow normalization principles to reduce redundancy and improve consistency.
+Normal Form
+Purpose
+First Normal Form (1NF)
+Eliminate repeating groups
+Second Normal Form (2NF)
+Remove partial dependencies
+Third Normal Form (3NF)
+Remove transitive dependencies
+Boyce-Codd Normal Form (BCNF)
+Improve dependency management where applicable
+Selective denormalization may be applied for reporting and analytics after performance evaluation.
+
+13.10.9 Data Integrity Constraints
+The database shall enforce integrity through the following constraints:
+Primary Keys.
+Foreign Keys.
+Unique Constraints.
+Check Constraints.
+Default Values.
+Not Null Constraints.
+Cascading Rules where appropriate.
+These mechanisms ensure consistent and reliable data.
+
+13.10.10 Indexing Strategy
+Indexes shall be created to optimize frequently executed queries.
+Recommended indexing includes:
+Index Type
+Usage
+Primary Index
+Primary keys
+Foreign Key Index
+Relationship optimization
+Composite Index
+Multi-column searches
+Unique Index
+Unique values
+Full-Text Index
+Clinical notes and search
+Partial Index
+Frequently filtered data
+Indexes shall be reviewed periodically to maintain optimal performance.
+
+13.10.11 Transaction Management
+The database shall support ACID-compliant transactions.
+Transaction characteristics include:
+Atomicity.
+Consistency.
+Isolation.
+Durability.
+Examples of transactional operations:
+Patient registration.
+Appointment booking.
+Billing and payment processing.
+Prescription issuance.
+Inventory adjustments.
+Failed transactions shall be rolled back automatically to preserve data integrity.
+
+13.10.12 Database Security
+Database security shall include:
+Role-based database access.
+Least privilege principle.
+Encrypted connections.
+Secure credential management.
+Audit logging.
+Backup encryption.
+Sensitive field encryption where required.
+Database activity monitoring.
+Administrative access shall be restricted to authorized personnel.
+
+13.10.13 Performance Optimization
+The database shall implement optimization strategies including:
+Query optimization.
+Index maintenance.
+Connection pooling.
+Prepared statements.
+Pagination for large datasets.
+Efficient joins.
+Partitioning where justified.
+Materialized views for reporting.
+Performance metrics shall be monitored continuously.
+
+13.10.14 Backup and Recovery Integration
+The database shall integrate with enterprise backup and recovery processes.
+Backup strategy includes:
+Full backups.
+Incremental backups.
+Point-in-time recovery.
+Backup verification.
+Off-site storage.
+Disaster recovery testing.
+Recovery procedures shall comply with defined Recovery Time Objectives (RTO) and Recovery Point Objectives (RPO).
+
+13.10.15 Audit and Change Tracking
+All critical database operations shall be auditable.
+Audited events include:
+Record creation.
+Record modification.
+Record deletion.
+Login attempts.
+Permission changes.
+Administrative actions.
+Audit records shall be immutable and retained according to organizational retention policies.
+
+13.10.16 Database Scalability
+The database architecture shall support future organizational growth.
+Scalability mechanisms include:
+Vertical scaling (CPU, RAM, Storage).
+Read replicas where appropriate.
+Connection pooling.
+Partitioning large tables.
+Archiving historical records.
+Optimized indexing.
+Capacity planning shall be reviewed regularly to accommodate increasing workloads.
+
+13.10.17 Database Maintenance
+Routine maintenance activities shall include:
+Index rebuilding.
+Statistics updates.
+Backup verification.
+Database health monitoring.
+Performance tuning.
+Storage optimization.
+Integrity checks.
+Software updates.
+Maintenance activities shall be scheduled to minimize disruption to hospital operations.
+
+13.10.18 Database Architecture Acceptance Criteria
+The Database Architecture shall be considered complete when:
+The PostgreSQL database is organized into well-defined schemas and entities.
+Data integrity is enforced through keys, constraints, and ACID-compliant transactions.
+Security, backup, auditing, and recovery mechanisms are implemented.
+Performance optimization and scalability strategies support enterprise workloads.
+The architecture provides a secure, maintainable, and reliable foundation for all clinical, administrative, and financial operations within CuraSphere.
+
+13.11 API Architecture
+
+13.11.1 Introduction
+The API Architecture defines how the CuraSphere Hospital Management System (HMS) exposes its business capabilities to internal and external applications through standardized Application Programming Interfaces (APIs).
+The API layer serves as the primary communication channel between the React.js frontend, backend services, mobile applications, third-party healthcare systems, insurance providers, laboratory systems, payment gateways, and future integrations.
+CuraSphere adopts a RESTful API architecture using HTTPS, JSON, and OpenAPI standards to provide secure, scalable, maintainable, and interoperable communication.
+
+13.11.2 Objectives
+The API Architecture shall:
+Provide standardized communication.
+Support secure data exchange.
+Expose healthcare services consistently.
+Simplify frontend-backend communication.
+Support third-party integrations.
+Enable mobile application support.
+Maintain backward compatibility.
+Improve maintainability.
+Facilitate API documentation.
+Support future extensibility.
+
+13.11.3 API Architecture Overview
+
+                React.js Frontend
+                        │
+                HTTPS / REST
+                        │
+                        ▼
+                API Gateway Layer
+                        │
+     ┌──────────────────┼──────────────────┐
+     ▼                  ▼                  ▼
+Authentication     Business APIs     Integration APIs
+                        │
+                        ▼
+                Business Services
+                        │
+                        ▼
+                 PostgreSQL Database
+
+The API Gateway shall act as the single entry point for all client requests.
+
+13.11.4 RESTful API Design Principles
+All APIs shall follow REST architectural principles.
+Principle
+Description
+Resource-Oriented
+APIs expose resources instead of operations
+Stateless
+Each request contains all required information
+Uniform Interface
+Standardized endpoints and HTTP methods
+Client–Server Separation
+Client and server evolve independently
+Cacheability
+Responses may be cached where appropriate
+Layered System
+Clients interact only with exposed endpoints
+
+13.11.5 API Resource Organization
+Endpoints shall be organized by business domains.
+
+/api/v1/auth
+/api/v1/patients
+/api/v1/doctors
+/api/v1/appointments
+/api/v1/emr
+/api/v1/pharmacy
+/api/v1/laboratory
+/api/v1/radiology
+/api/v1/billing
+/api/v1/inventory
+/api/v1/hr
+/api/v1/reports
+/api/v1/admin
+
+Each resource shall have a dedicated controller and service.
+
+13.11.6 HTTP Methods
+The API shall use standard HTTP methods.
+Method
+Purpose
+GET
+Retrieve resources
+POST
+Create new resources
+PUT
+Replace existing resources
+PATCH
+Partially update resources
+DELETE
+Remove resources (where permitted)
+Example:
+GET    /api/v1/patients
+POST   /api/v1/patients
+PUT    /api/v1/patients/{id}
+PATCH  /api/v1/patients/{id}
+DELETE /api/v1/patients/{id}
+Deletion operations shall follow organizational data retention and audit policies.
+
+13.11.7 API Versioning Strategy
+API versioning ensures backward compatibility.
+Supported versioning strategy:
+
+https://api.curasphere.com/api/v1/
+
+Future:
+
+/api/v2/
+/api/v3/
+
+Version changes shall be documented, and deprecated versions shall follow a controlled retirement process.
+
+13.11.8 Request Structure
+Every API request shall include:
+Field
+Description
+HTTP Method
+GET, POST, PUT, PATCH, DELETE
+URI
+Resource endpoint
+Headers
+Authentication and metadata
+Body
+JSON payload (where applicable)
+Query Parameters
+Filtering, sorting, pagination
+Example request:
+POST /api/v1/patients
+Content-Type: application/json
+Authorization: Bearer <JWT>
+
+{
+  "firstName": "Uzair",
+  "lastName": "Ahmad",
+  "dateOfBirth": "2005-02-01",
+  "gender": "Male"
+}
+
+13.11.9 Response Structure
+Responses shall follow a standardized JSON format.
+Success Response
+{
+  "success": true,
+  "message": "Patient created successfully.",
+  "data": {
+    "patientId": 101,
+    "firstName": "Uzair",
+    "lastName": ""Ahmad
+  }
+}
+Error Response
+{
+  "success": false,
+  "errorCode": "PATIENT_NOT_FOUND",
+  "message": "The requested patient could not be found."
+}
+This consistent structure simplifies client-side error handling and integration.
+
+13.11.10 Authentication & Authorization
+All protected APIs shall require authentication and authorization.
+Authentication mechanisms:
+JWT Bearer Tokens.
+OAuth 2.0.
+Secure session validation.
+Authorization mechanisms:
+Role-Based Access Control (RBAC).
+Permission-based access.
+Policy-based authorization.
+Department-level restrictions.
+Unauthorized requests shall return appropriate HTTP status codes.
+
+13.11.11 HTTP Status Codes
+The API shall use standard HTTP status codes.
+Status Code
+Meaning
+200
+Success
+201
+Resource Created
+204
+No Content
+400
+Bad Request
+401
+Unauthorized
+403
+Forbidden
+404
+Resource Not Found
+409
+Conflict
+422
+Validation Error
+500
+Internal Server Error
+Responses shall include meaningful error messages without exposing internal implementation details.
+
+13.11.12 Pagination, Filtering & Sorting
+Large datasets shall support efficient retrieval.
+Supported features:
+Pagination.
+Sorting.
+Filtering.
+Searching.
+Example:
+GET /api/v1/patients?page=2&pageSize=20&sort=lastName&order=asc
+Default limits shall prevent excessive resource consumption.
+
+13.11.13 API Security
+The API shall implement comprehensive security controls.
+Security measures include:
+HTTPS enforcement.
+JWT authentication.
+OAuth 2.0 authorization.
+Input validation.
+Output encoding.
+API rate limiting.
+Request throttling.
+CORS configuration.
+Audit logging.
+Security headers.
+Sensitive information shall never be transmitted or stored in plain text.
+
+13.11.14 API Rate Limiting
+To protect system resources, the API shall implement rate limiting.
+Policies may include:
+Requests per minute.
+Requests per authenticated user.
+Requests per IP address.
+Burst limits.
+Temporary blocking for abusive activity.
+Rate-limiting policies shall be configurable.
+
+13.11.15 API Documentation
+The API shall be documented using OpenAPI Specification (Swagger).
+Documentation shall include:
+Endpoint descriptions.
+Parameters.
+Request examples.
+Response examples.
+Authentication requirements.
+Error codes.
+Data models.
+Version history.
+Documentation shall be updated alongside API changes.
+
+13.11.16 API Lifecycle Management
+The API lifecycle shall include:
+
+Design
+   │
+   ▼
+Development
+   │
+   ▼
+Testing
+   │
+   ▼
+Documentation
+   │
+   ▼
+Deployment
+   │
+   ▼
+Monitoring
+   │
+   ▼
+Versioning
+   │
+   ▼
+Deprecation
+   │
+   ▼
+Retirement
+
+Each stage shall be governed by change management and release procedures.
+
+13.11.17 External API Integration
+The API architecture shall support integration with:
+External System
+Purpose
+Laboratory Information Systems (LIS)
+Laboratory automation
+PACS/Radiology Systems
+Medical imaging
+Insurance Providers
+Claims processing
+Payment Gateways
+Online payments
+SMS Gateway
+Notifications
+Email Services
+Email communication
+Government Health Systems
+Regulatory reporting
+Identity Providers
+Single Sign-On (SSO)
+All external integrations shall use secure communication protocols and authenticated requests.
+
+13.11.18 API Monitoring & Logging
+API activity shall be continuously monitored.
+Monitoring shall include:
+Request volume.
+Response times.
+Error rates.
+Authentication failures.
+Rate-limit violations.
+Endpoint availability.
+Performance metrics.
+API logs shall include correlation IDs to support troubleshooting and auditability.
+
+13.11.19 API Architecture Acceptance Criteria
+The API Architecture shall be considered complete when:
+RESTful APIs follow standardized design principles and naming conventions.
+Versioning, authentication, authorization, and standardized request/response formats are implemented.
+Pagination, filtering, sorting, and rate limiting support efficient and secure API usage.
+OpenAPI/Swagger documentation is complete and maintained.
+Monitoring, logging, and lifecycle management ensure reliable, maintainable, and secure API operations for internal and external consumers.
+
+13.12 Authentication & Authorization Architecture
+
+13.12.1 Introduction
+The Authentication & Authorization Architecture defines the identity management, user verification, access control, and security mechanisms used by the CuraSphere Hospital Management System (HMS).
+Healthcare Information Systems contain highly sensitive clinical, financial, and personal information. Therefore, robust authentication and authorization mechanisms are essential to ensure that only verified users can access the system and that each user is granted only the permissions required to perform their responsibilities.
+CuraSphere implements a Defense-in-Depth Security Model using JWT, OAuth 2.0, Role-Based Access Control (RBAC), Permission-Based Authorization, Multi-Factor Authentication (MFA), and comprehensive audit logging.
+
+13.12.2 Objectives
+The Authentication & Authorization Architecture shall:
+Verify user identity securely.
+Protect sensitive healthcare information.
+Enforce least-privilege access.
+Support enterprise identity management.
+Prevent unauthorized access.
+Enable secure session management.
+Support regulatory compliance.
+Maintain complete audit trails.
+Support future identity federation.
+Minimize security risks.
+
+13.12.3 Identity & Access Management (IAM) Overview
+The Identity and Access Management (IAM) subsystem provides centralized control over user authentication and authorization.
+
+                 User
+                  │
+                  ▼
+          Login Interface
+                  │
+                  ▼
+       Authentication Service
+                  │
+        ┌─────────┴─────────┐
+        ▼                   ▼
+ Identity Verification   MFA Verification
+        │                   │
+        └─────────┬─────────┘
+                  ▼
+          JWT Token Issued
+                  │
+                  ▼
+        Authorization Service
+                  │
+                  ▼
+      Protected Business APIs
+
+All protected resources shall require successful authentication before authorization checks are performed.
+
+13.12.4 Authentication Process
+The authentication workflow shall include:
+User submits credentials.
+Credentials are validated.
+Account status is verified.
+Multi-Factor Authentication (if enabled) is performed.
+JWT access token is generated.
+Refresh token is issued.
+Secure session is established.
+Authentication event is recorded in the audit log.
+Only authenticated users shall receive access tokens.
+
+13.12.5 Supported Authentication Methods
+CuraSphere shall support multiple authentication mechanisms.
+Method
+Description
+Username & Password
+Standard authentication
+Multi-Factor Authentication (MFA)
+Additional verification factor
+OAuth 2.0
+Secure delegated authorization
+Single Sign-On (SSO)
+Enterprise identity integration
+API Tokens
+Secure system-to-system communication
+Service Accounts
+Automated background services
+Future authentication methods may be introduced without significant architectural changes.
+
+13.12.6 Password Policy
+Passwords shall comply with organizational security standards.
+Minimum requirements include:
+Minimum length of 12 characters.
+Combination of uppercase and lowercase letters.
+At least one numeric character.
+At least one special character.
+Password history enforcement.
+Prevention of commonly used passwords.
+Secure password hashing using modern algorithms (e.g., Argon2 or bcrypt).
+Configurable password expiration policies where required by organizational policy.
+Passwords shall never be stored or transmitted in plain text.
+
+13.12.7 Multi-Factor Authentication (MFA)
+MFA provides an additional layer of security.
+Supported verification methods include:
+Time-based One-Time Passwords (TOTP).
+Authenticator applications.
+Email verification codes.
+SMS verification codes (where organizational policy permits).
+Hardware security keys (future enhancement).
+MFA shall be configurable by system administrators based on organizational security requirements.
+
+13.12.8 JWT Authentication Architecture
+JWT shall be used for stateless authentication.
+
+User Login
+     │
+     ▼
+Authentication Service
+     │
+     ▼
+JWT Access Token
+     │
+     ▼
+Client Stores Token Securely
+     │
+     ▼
+API Request
+     │
+     ▼
+JWT Validation
+     │
+     ▼
+Authorized Request
+
+JWTs shall include:
+User identifier.
+Assigned roles.
+Granted permissions (or references to them).
+Token expiration time.
+Token issuer.
+Audience.
+Token identifier (JTI).
+Tokens shall be digitally signed to prevent tampering.
+
+13.12.9 Refresh Token Management
+To improve usability without compromising security:
+Short-lived access tokens shall be issued.
+Long-lived refresh tokens shall be securely managed.
+Refresh tokens shall be revocable.
+Token rotation shall be supported.
+Compromised refresh tokens shall invalidate active sessions.
+Refresh tokens shall be securely stored and protected against unauthorized access.
+
+13.12.10 Authorization Architecture
+Authorization determines what authenticated users are permitted to access.
+Authorization shall enforce:
+Role-Based Access Control (RBAC).
+Permission-based policies.
+Resource ownership checks.
+Department-level restrictions.
+Module-level permissions.
+Operation-level permissions (Create, Read, Update, Delete, Approve).
+Authorization decisions shall occur before executing protected business operations.
+
+13.12.11 Role-Based Access Control (RBAC)
+Each authenticated user shall be assigned one or more predefined roles.
+Example roles include:
+Role
+Primary Responsibilities
+System Administrator
+Full system administration
+Hospital Administrator
+Operational management
+Doctor
+Clinical care and EMR management
+Nurse
+Patient care documentation
+Pharmacist
+Medication management
+Laboratory Technician
+Laboratory workflows
+Radiologist
+Imaging workflows
+Cashier
+Billing and payment processing
+HR Officer
+Employee management
+Patient
+Self-service portal access
+Roles shall be centrally managed by authorized administrators.
+
+13.12.12 Permission-Based Authorization
+Permissions provide fine-grained control beyond user roles.
+Examples include:
+Patient.Create
+Patient.Read
+Patient.Update
+Patient.Delete
+Appointment.Schedule
+Appointment.Cancel
+Prescription.Approve
+Laboratory.Verify
+Billing.GenerateInvoice
+Report.Export
+Permissions shall be assigned to roles rather than individual users whenever practical.
+
+13.12.13 Session Management
+The authentication subsystem shall manage user sessions securely.
+Session features include:
+Secure login.
+Session timeout after inactivity.
+Configurable maximum session duration.
+Manual logout.
+Forced logout by administrators.
+Concurrent session management.
+Session invalidation after password changes.
+Automatic logout after repeated authentication failures where appropriate.
+All session activities shall be logged.
+
+13.12.14 Account Lockout & Recovery
+To reduce the risk of unauthorized access:
+Configurable failed login thresholds shall be enforced.
+Accounts may be temporarily locked after repeated failures.
+Administrative account unlocking shall be supported.
+Secure password reset workflows shall be provided.
+Identity verification shall be required before password recovery.
+Recovery mechanisms shall protect against account enumeration attacks.
+
+13.12.15 Single Sign-On (SSO)
+The architecture shall support enterprise Single Sign-On integration.
+Potential identity providers include:
+Microsoft Entra ID (Azure AD).
+Active Directory Federation Services (AD FS).
+LDAP-compatible directory services.
+OpenID Connect (OIDC) providers.
+SAML 2.0 identity providers.
+SSO integration shall simplify identity management while maintaining centralized access control.
+
+13.12.16 Security Auditing
+Authentication and authorization events shall be recorded for auditing.
+Audited events include:
+Login attempts.
+Successful logins.
+Failed logins.
+Logout events.
+Password changes.
+Role assignments.
+Permission modifications.
+MFA enrollment.
+Account lockouts.
+Administrative security actions.
+Audit records shall be protected from unauthorized modification.
+
+13.12.17 Authentication & Authorization Workflow
+
+User
+ │
+ ▼
+Enter Credentials
+ │
+ ▼
+Authentication
+ │
+ ▼
+MFA Verification
+ │
+ ▼
+JWT Issued
+ │
+ ▼
+Protected API Request
+ │
+ ▼
+Authorization Check
+ │
+ ▼
+Permission Validation
+ │
+ ▼
+Business Service
+ │
+ ▼
+Response
+
+This workflow ensures that every protected operation is authenticated, authorized, and auditable.
+
+13.12.18 Security Best Practices
+The authentication architecture shall implement the following best practices:
+Least Privilege Principle.
+Zero Trust security principles.
+Secure password hashing.
+HTTPS-only communication.
+Token expiration and rotation.
+Principle of Defense in Depth.
+Secure secret management.
+Periodic credential review.
+Continuous security monitoring.
+Regular penetration testing.
+These practices strengthen the overall security posture of the system.
+
+13.12.19 Authentication & Authorization Architecture Acceptance Criteria
+The Authentication & Authorization Architecture shall be considered complete when:
+User identities are securely authenticated using approved authentication mechanisms.
+RBAC and permission-based authorization enforce least-privilege access across all modules.
+JWT, refresh tokens, session management, and MFA are implemented according to security requirements.
+Authentication events, authorization decisions, and security actions are fully auditable.
+The architecture supports secure, scalable, and standards-based identity management suitable for enterprise healthcare environments.
+
+13.13 Integration Architecture
+
+13.13.1 Introduction
+The Integration Architecture defines how the CuraSphere Hospital Management System (HMS) communicates with internal modules, external healthcare systems, government platforms, financial institutions, diagnostic equipment, and third-party services.
+Modern hospitals operate numerous specialized systems that must exchange information securely and efficiently. The Integration Architecture ensures seamless interoperability while maintaining data integrity, security, reliability, and compliance with healthcare standards.
+CuraSphere adopts a Service-Oriented Integration Model using RESTful APIs, HL7, FHIR, event-driven messaging, and secure communication protocols to facilitate standardized data exchange.
+
+13.13.2 Objectives
+The Integration Architecture shall:
+Enable interoperability between healthcare systems.
+Support standardized data exchange.
+Ensure secure communication.
+Facilitate real-time information sharing.
+Support asynchronous processing.
+Minimize manual data entry.
+Improve operational efficiency.
+Enable future integrations.
+Ensure data consistency across systems.
+Support regulatory compliance.
+
+13.13.3 Integration Architecture Overview
+
+                   External Systems
+        ┌──────────────┬──────────────┬──────────────┐
+        ▼              ▼              ▼
+      Insurance       Payment       Government
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+                API Gateway
+                       │
+         ┌─────────────┴─────────────┐
+         ▼                           ▼
+   Integration Services        Event Bus
+         │                           │
+         └─────────────┬─────────────┘
+                       ▼
+          CuraSphere Business Services
+                       │
+                       ▼
+               PostgreSQL Database
+
+The Integration Layer acts as an intermediary between CuraSphere and all external systems.
+
+13.13.4 Internal System Integration
+All internal modules shall communicate through standardized service interfaces.
+Integrated modules include:
+Patient Management
+Appointment Scheduling
+Electronic Medical Records (EMR)
+Laboratory Management
+Radiology
+Pharmacy
+Billing & Invoicing
+Inventory Management
+Human Resources
+Reporting & Analytics
+Notification Services
+Internal integrations shall avoid direct database access between modules and instead utilize service interfaces or internal APIs.
+
+13.13.5 External Healthcare System Integration
+CuraSphere shall support interoperability with external healthcare platforms.
+Supported integrations include:
+External System
+Purpose
+Hospital Information Systems (HIS)
+Patient and operational data exchange
+Electronic Health Record (EHR) Systems
+Clinical data sharing
+Electronic Medical Record (EMR) Systems
+Medical record interoperability
+Laboratory Information Systems (LIS)
+Laboratory workflow integration
+Pharmacy Systems
+Medication information exchange
+National Health Registries
+Regulatory reporting
+Referral Systems
+Patient referrals
+Telemedicine Platforms
+Virtual consultations
+Integration shall follow recognized healthcare interoperability standards.
+
+13.13.6 HL7 Integration
+CuraSphere shall support Health Level Seven (HL7) messaging where required.
+Supported message categories include:
+Patient Admission (ADT)
+Laboratory Orders (ORM)
+Laboratory Results (ORU)
+Scheduling Information (SIU)
+Billing Information (DFT)
+Clinical Documents
+HL7 messages shall be validated before processing to ensure compliance with applicable standards.
+
+13.13.7 FHIR Integration
+CuraSphere shall support Fast Healthcare Interoperability Resources (FHIR) for modern healthcare interoperability.
+Supported FHIR resources include:
+Resource
+Purpose
+Patient
+Patient demographics
+Practitioner
+Healthcare providers
+Encounter
+Clinical encounters
+Observation
+Clinical observations
+Medication
+Medication records
+DiagnosticReport
+Diagnostic results
+Appointment
+Scheduling
+Condition
+Diagnoses
+Procedure
+Medical procedures
+Organization
+Hospital information
+FHIR APIs shall conform to the selected implementation guide and version adopted by the organization.
+
+13.13.8 Laboratory Information System (LIS) Integration
+The system shall integrate with Laboratory Information Systems to automate diagnostic workflows.
+Integration capabilities include:
+Electronic laboratory order submission.
+Specimen tracking.
+Test status synchronization.
+Result retrieval.
+Critical result notifications.
+Laboratory report attachment to EMRs.
+Communication shall be encrypted and authenticated.
+
+13.13.9 PACS & Radiology Integration
+The system shall integrate with Picture Archiving and Communication Systems (PACS).
+Supported capabilities include:
+Imaging order submission.
+Image availability notifications.
+Radiology report retrieval.
+Study status updates.
+Image viewer integration.
+DICOM metadata exchange.
+Integration shall support secure access to radiological information while preserving image integrity.
+
+13.13.10 Payment Gateway Integration
+CuraSphere shall support secure integration with payment gateways.
+Supported payment methods include:
+Credit cards.
+Debit cards.
+Online banking.
+Mobile wallets.
+Digital payment services.
+Integration requirements:
+Secure payment authorization.
+Payment confirmation.
+Transaction reconciliation.
+Refund processing.
+Payment status updates.
+Audit logging.
+Payment processing shall comply with applicable financial security standards.
+
+13.13.11 Insurance Provider Integration
+The Billing module shall integrate with insurance providers.
+Supported operations include:
+Eligibility verification.
+Pre-authorization requests.
+Claim submission.
+Claim status inquiries.
+Payment reconciliation.
+Reimbursement tracking.
+Insurance data exchange shall follow agreed-upon formats and secure communication protocols.
+
+13.13.12 SMS & Email Gateway Integration
+The Notification Service shall integrate with external messaging providers.
+Supported notifications include:
+Appointment reminders.
+Prescription notifications.
+Laboratory result availability.
+Billing alerts.
+Password reset messages.
+System announcements.
+Notification delivery status shall be tracked and logged.
+
+13.13.13 Government Health System Integration
+Where applicable, CuraSphere shall support integration with government health systems.
+Potential integrations include:
+National patient registries.
+Disease surveillance systems.
+Immunization registries.
+Public health reporting.
+Regulatory compliance submissions.
+National identity verification services.
+Data transmission shall comply with applicable legal and regulatory requirements.
+
+13.13.14 API Gateway
+The API Gateway shall provide centralized access management for all external integrations.
+Responsibilities include:
+Request routing.
+Authentication.
+Authorization.
+Rate limiting.
+Logging.
+Protocol translation.
+Request validation.
+Response transformation.
+The gateway shall serve as the single controlled entry point for external API traffic.
+
+13.13.15 Event-Driven Integration
+Certain operations shall utilize asynchronous event-driven communication.
+Examples include:
+Appointment creation.
+Patient registration.
+Laboratory result publication.
+Inventory stock updates.
+Payment confirmation.
+Notification dispatch.
+Audit event generation.
+
+Business Service
+        │
+        ▼
+ Publish Event
+        │
+        ▼
+ Message Queue
+        │
+        ▼
+Subscriber Services
+        │
+        ▼
+Event Processing
+
+This model improves scalability and reduces coupling between services.
+
+13.13.16 Integration Security
+All integrations shall implement comprehensive security controls.
+Security measures include:
+HTTPS/TLS encryption.
+Mutual authentication where required.
+OAuth 2.0.
+API keys for approved services.
+Digital signatures where applicable.
+Payload validation.
+Rate limiting.
+Audit logging.
+Secure secret management.
+Sensitive healthcare data shall remain protected throughout transmission.
+
+13.13.17 Integration Error Handling
+Integration failures shall be detected, logged, and managed.
+Error handling mechanisms include:
+Automatic retries.
+Configurable timeout policies.
+Circuit breaker patterns.
+Dead-letter queues for failed messages.
+Alert notifications.
+Manual recovery procedures.
+Transaction rollback where appropriate.
+Critical integration failures shall be escalated according to operational procedures.
+
+13.13.18 Monitoring & Observability
+Integration services shall be continuously monitored.
+Monitoring shall include:
+API response times.
+Integration availability.
+Message queue health.
+Failed transactions.
+Authentication failures.
+External dependency status.
+Throughput metrics.
+Error rates.
+Operational dashboards shall provide real-time visibility into integration health.
+
+13.13.19 Integration Architecture Acceptance Criteria
+The Integration Architecture shall be considered complete when:
+Internal and external systems communicate through secure, standardized interfaces.
+HL7, FHIR, and other supported interoperability standards are correctly implemented where applicable.
+Integrations with laboratories, radiology, insurance providers, payment gateways, notification services, and government systems are supported through secure APIs.
+Event-driven communication, monitoring, and error-handling mechanisms provide reliable and scalable data exchange.
+The architecture ensures interoperability, security, maintainability, and compliance with enterprise healthcare requirements.
+
+13.14 Deployment & Infrastructure Architecture
+
+13.14.1 Introduction
+The Deployment & Infrastructure Architecture defines how the CuraSphere Hospital Management System (HMS) is deployed, hosted, monitored, and maintained across development, testing, staging, and production environments.
+The infrastructure shall provide a secure, highly available, scalable, and fault-tolerant platform capable of supporting uninterrupted hospital operations. The architecture is designed to support both on-premises and cloud-based deployments, enabling healthcare organizations to select the deployment model that aligns with their operational, regulatory, and financial requirements.
+
+13.14.2 Objectives
+The Deployment & Infrastructure Architecture shall:
+Ensure high system availability.
+Support scalable infrastructure.
+Provide secure deployment environments.
+Enable continuous delivery.
+Support disaster recovery.
+Facilitate infrastructure monitoring.
+Simplify maintenance.
+Enable rapid deployments.
+Support hybrid infrastructure models.
+Ensure business continuity.
+
+13.14.3 Deployment Architecture Overview
+
+                 Users
+                   │
+          HTTPS / Secure Network
+                   │
+                   ▼
+             Load Balancer
+                   │
+        ┌──────────┴──────────┐
+        ▼                     ▼
+ Application Server 1   Application Server 2
+        │                     │
+        └──────────┬──────────┘
+                   ▼
+             PostgreSQL Server
+                   │
+                   ▼
+          Backup & Recovery Server
+                   │
+                   ▼
+          Monitoring & Logging
+
+The deployment architecture shall support redundancy to eliminate single points of failure where feasible.
+
+13.14.4 Deployment Environments
+CuraSphere shall maintain separate environments throughout the software development lifecycle.
+Environment
+Purpose
+Development
+Feature development
+Testing
+Functional and integration testing
+Quality Assurance (QA)
+Validation and acceptance testing
+Staging
+Pre-production verification
+Production
+Live hospital operations
+Each environment shall remain isolated to prevent unintended data or configuration sharing.
+
+13.14.5 Physical Infrastructure
+The infrastructure shall consist of enterprise-grade hardware or equivalent virtualized resources.
+Core infrastructure components include:
+Web/Application Servers.
+Database Server.
+File Storage Server.
+Backup Server.
+Monitoring Server.
+Authentication Server (if external).
+Network Infrastructure.
+Firewall Appliances.
+Infrastructure sizing shall be based on projected user load, transaction volume, and storage requirements.
+
+13.14.6 Network Architecture
+The system shall operate within a secure network architecture.
+
+Internet
+    │
+Firewall
+    │
+DMZ
+    │
+Reverse Proxy
+    │
+Load Balancer
+    │
+Application Servers
+    │
+Internal Network
+    │
+Database Server
+
+Critical infrastructure components shall not be directly exposed to public networks.
+
+13.14.7 Load Balancing
+To improve availability and scalability, the system shall support load balancing.
+Responsibilities include:
+Request distribution.
+Health monitoring.
+Session persistence where required.
+Automatic failover.
+Traffic optimization.
+High availability.
+Load balancing policies shall be configurable according to deployment requirements.
+
+13.14.8 Reverse Proxy Configuration
+A reverse proxy shall be deployed between external users and application servers.
+Functions include:
+SSL/TLS termination.
+Request forwarding.
+Compression.
+Static content delivery.
+Rate limiting.
+Security filtering.
+Header management.
+Request logging.
+The reverse proxy shall reduce exposure of internal application servers.
+
+13.14.9 Containerization Strategy
+The application shall support containerized deployment using Docker.
+Major containerized services include:
+Container
+Purpose
+Frontend
+React.js application
+Backend
+ASP.NET Core API
+Database
+PostgreSQL (optional for development/testing)
+Redis
+Caching service
+Background Worker
+Scheduled jobs
+Monitoring Agent
+Infrastructure monitoring
+Containerization improves deployment consistency across environments.
+
+13.14.10 Container Orchestration
+The architecture shall be designed for future orchestration using Kubernetes or equivalent platforms.
+Potential orchestration capabilities include:
+Automatic scaling.
+Self-healing.
+Rolling updates.
+Service discovery.
+Configuration management.
+Secret management.
+Pod health monitoring.
+Resource scheduling.
+While Kubernetes deployment is optional initially, the architecture shall remain compatible with future adoption.
+
+13.14.11 Cloud & On-Premises Deployment
+CuraSphere shall support multiple deployment models.
+On-Premises Deployment
+Suitable for:
+Government hospitals.
+Military hospitals.
+Organizations with strict data residency requirements.
+Cloud Deployment
+Suitable for:
+Private hospitals.
+Multi-branch healthcare organizations.
+Software-as-a-Service (SaaS) providers.
+Hybrid Deployment
+Suitable for organizations requiring a combination of local infrastructure and cloud services.
+Deployment models shall be selected based on organizational policies and regulatory requirements.
+
+13.14.12 Continuous Integration & Continuous Deployment (CI/CD)
+The deployment pipeline shall automate software delivery.
+
+Developer
+     │
+     ▼
+Source Repository
+     │
+     ▼
+Build
+     │
+     ▼
+Automated Tests
+     │
+     ▼
+Security Scanning
+     │
+     ▼
+Artifact Repository
+     │
+     ▼
+Deployment
+     │
+     ▼
+Production
+
+CI/CD pipelines shall include approval gates before production deployment.
+
+13.14.13 Configuration Management
+Application configuration shall be externalized.
+Configuration categories include:
+Database connections.
+API endpoints.
+Authentication settings.
+Email configuration.
+SMS configuration.
+Logging settings.
+Feature flags.
+Environment variables.
+Sensitive configuration values shall be securely stored and encrypted where appropriate.
+
+13.14.14 Backup Infrastructure
+Infrastructure backup shall include:
+Database backups.
+Configuration backups.
+Application binaries.
+Uploaded documents.
+Medical images (where applicable).
+Audit logs.
+Encryption keys.
+Backup verification shall be performed regularly to ensure recoverability.
+
+13.14.15 High Availability
+The infrastructure shall support high availability.
+Mechanisms include:
+Redundant application servers.
+Database replication where appropriate.
+Load balancing.
+Automatic failover.
+Health monitoring.
+Redundant storage.
+Redundant networking.
+High availability shall minimize service interruption during hardware or software failures.
+
+13.14.16 Disaster Recovery
+A disaster recovery strategy shall ensure continuity of hospital operations.
+Disaster recovery provisions include:
+Recovery Time Objective (RTO).
+Recovery Point Objective (RPO).
+Off-site backups.
+Recovery testing.
+Infrastructure restoration procedures.
+Database recovery.
+Service restoration priorities.
+Communication procedures.
+Disaster recovery plans shall be tested periodically.
+
+13.14.17 Infrastructure Monitoring
+Infrastructure components shall be continuously monitored.
+Monitoring shall include:
+CPU utilization.
+Memory usage.
+Disk capacity.
+Network traffic.
+API response times.
+Database performance.
+Application health.
+Background services.
+Security events.
+Alerts shall be generated for predefined threshold violations.
+
+13.14.18 Logging Infrastructure
+Centralized logging shall be implemented.
+Log sources include:
+Application servers.
+Database servers.
+Reverse proxy.
+Authentication services.
+Background workers.
+API gateway.
+Infrastructure devices.
+Operating systems.
+Logs shall be retained according to organizational retention policies and protected from unauthorized modification.
+
+13.14.19 Deployment Security
+Deployment infrastructure shall implement comprehensive security controls.
+Security measures include:
+Network segmentation.
+Firewalls.
+Intrusion detection/prevention systems.
+HTTPS/TLS encryption.
+Secure secret management.
+Operating system hardening.
+Regular security updates.
+Vulnerability assessments.
+Infrastructure access auditing.
+Principle of least privilege.
+Infrastructure security shall be reviewed periodically through security assessments and audits.
+
+13.14.20 Deployment & Infrastructure Architecture Acceptance Criteria
+The Deployment & Infrastructure Architecture shall be considered complete when:
+Separate development, testing, staging, and production environments are established and isolated.
+Infrastructure supports secure, scalable, and highly available deployment of CuraSphere.
+Containerization, CI/CD, monitoring, backup, disaster recovery, and security mechanisms are implemented according to architectural standards.
+The deployment model supports on-premises, cloud, and hybrid environments.
+Infrastructure is capable of supporting enterprise healthcare operations with minimal downtime and efficient maintenance.
+
+13.15 Monitoring, Logging & Observability Architecture
+
+13.15.1 Introduction
+The Monitoring, Logging & Observability Architecture defines the mechanisms used to monitor, measure, analyze, and troubleshoot the operational health of the CuraSphere Hospital Management System (HMS).
+Healthcare systems operate continuously and require real-time visibility into infrastructure, applications, databases, integrations, and user activities. Effective observability enables proactive issue detection, rapid incident response, performance optimization, and regulatory compliance.
+CuraSphere adopts a comprehensive observability strategy consisting of metrics, logs, traces, health checks, alerting, dashboards, and security monitoring.
+
+13.15.2 Objectives
+The Monitoring, Logging & Observability Architecture shall:
+Continuously monitor system health.
+Detect failures proactively.
+Simplify troubleshooting.
+Improve system reliability.
+Support performance optimization.
+Enable proactive maintenance.
+Maintain auditability.
+Reduce incident resolution time.
+Support capacity planning.
+Ensure operational visibility.
+
+13.15.3 Observability Architecture Overview
+
+               Users
+                 │
+                 ▼
+      React Frontend Monitoring
+                 │
+                 ▼
+      ASP.NET Core Backend APIs
+                 │
+                 ▼
+     Metrics │ Logs │ Traces
+         │       │       │
+         └───────┼───────┘
+                 ▼
+      Observability Platform
+                 │
+      ┌──────────┼──────────┐
+      ▼          ▼          ▼
+ Dashboards   Alerting   Analytics
+                 │
+                 ▼
+      Operations Team
+
+The observability platform shall consolidate operational data from all system components into a unified monitoring solution.
+
+13.15.4 Application Performance Monitoring (APM)
+Application Performance Monitoring (APM) shall provide continuous visibility into application behavior.
+Monitored metrics include:
+API response times.
+Request throughput.
+Error rates.
+Database query performance.
+Memory utilization.
+CPU utilization.
+Background job execution.
+External API latency.
+Performance trends shall be retained for historical analysis and optimization.
+
+13.15.5 Centralized Logging
+All system components shall generate structured logs and forward them to a centralized logging platform.
+Log sources include:
+Source
+Description
+Frontend
+Client-side errors and events
+Backend APIs
+Request processing logs
+Database
+Query and transaction logs
+Authentication Services
+Login and authorization events
+Background Services
+Scheduled task execution
+API Gateway
+Incoming and outgoing requests
+Integration Services
+External communication logs
+Infrastructure
+Operating system and network logs
+Centralized logging shall enable efficient searching, filtering, and correlation of events.
+
+13.15.6 Log Categories
+The system shall maintain separate log categories.
+Category
+Purpose
+Application Logs
+Application behavior
+Audit Logs
+User actions
+Security Logs
+Authentication and authorization events
+Performance Logs
+Response time analysis
+Database Logs
+SQL operations
+Integration Logs
+External system communication
+Infrastructure Logs
+Server and network events
+Error Logs
+Exceptions and failures
+Each log entry shall include timestamps, severity levels, correlation identifiers, and contextual metadata.
+
+13.15.7 Metrics Collection
+The system shall continuously collect operational metrics.
+Metrics include:
+CPU utilization.
+Memory consumption.
+Disk usage.
+Network bandwidth.
+Database connections.
+Active user sessions.
+API requests per second.
+Error percentages.
+Queue lengths.
+Cache hit ratios.
+Metrics shall support both real-time monitoring and historical reporting.
+
+13.15.8 Distributed Tracing
+Distributed tracing shall track requests across multiple system components.
+
+User Request
+      │
+      ▼
+Frontend
+      │
+      ▼
+API Gateway
+      │
+      ▼
+Backend Service
+      │
+      ▼
+Database
+      │
+      ▼
+External Service
+      │
+      ▼
+Response
+
+Each request shall be assigned a unique Correlation ID to enable end-to-end traceability.
+
+13.15.9 Health Checks
+Automated health checks shall continuously verify component availability.
+Health checks shall include:
+Frontend availability.
+Backend API availability.
+Database connectivity.
+Cache service status.
+Message queue status.
+Background worker health.
+Storage availability.
+External integration connectivity.
+Health check endpoints shall support automated monitoring tools.
+
+13.15.10 Alerting & Incident Management
+The monitoring platform shall generate alerts for critical operational events.
+Alert conditions include:
+Server unavailability.
+High CPU utilization.
+High memory consumption.
+Database failures.
+Authentication failures.
+Increased API latency.
+Service outages.
+Backup failures.
+Alerts shall be configurable based on severity levels.
+
+13.15.11 Dashboard & Visualization
+Operational dashboards shall provide real-time visibility into system performance.
+Dashboard categories include:
+Dashboard
+Purpose
+Infrastructure Dashboard
+Server health
+Application Dashboard
+API performance
+Database Dashboard
+Database activity
+Security Dashboard
+Security events
+Integration Dashboard
+External system status
+Audit Dashboard
+User activities
+Executive Dashboard
+High-level KPIs
+Dashboards shall support role-based access to operational information.
+
+13.15.12 Capacity Planning
+Monitoring data shall support infrastructure capacity planning.
+Capacity planning activities include:
+Growth forecasting.
+Resource utilization analysis.
+Storage expansion planning.
+Database scaling assessment.
+Network bandwidth analysis.
+User growth projections.
+Peak usage identification.
+Capacity reviews shall be conducted periodically.
+
+13.15.13 Security Monitoring
+Continuous security monitoring shall detect suspicious activities.
+Monitored events include:
+Failed login attempts.
+Privilege escalation attempts.
+Unauthorized API access.
+Suspicious database queries.
+Configuration changes.
+Malware detection.
+Network anomalies.
+Unauthorized administrative actions.
+Security events shall be correlated with audit logs for investigation.
+
+13.15.14 Audit & Compliance Monitoring
+Audit monitoring shall support healthcare compliance requirements.
+Auditable events include:
+Patient record access.
+Medical record modifications.
+Prescription approvals.
+Billing transactions.
+User account changes.
+Permission modifications.
+Administrative activities.
+Data exports.
+Audit records shall be retained according to organizational and regulatory retention policies.
+
+13.15.15 Monitoring Data Retention
+Monitoring and logging data shall follow defined retention policies.
+Data Type
+Recommended Retention
+Application Logs
+90 days
+Security Logs
+1 year
+Audit Logs
+7 years (or per regulatory requirement)
+Performance Metrics
+1 year
+Infrastructure Metrics
+6 months
+Trace Data
+30 days
+Retention periods may be adjusted based on organizational policies and applicable regulations.
+
+13.15.16 Monitoring Security
+Monitoring infrastructure shall implement strong security controls.
+Security measures include:
+Role-based dashboard access.
+Encrypted log transmission.
+Secure log storage.
+Audit protection.
+Log integrity verification.
+Access auditing.
+Secure API access.
+Backup of monitoring data.
+Only authorized personnel shall access monitoring and logging platforms.
+
+13.15.17 Business Continuity Monitoring
+Continuous monitoring shall support business continuity objectives.
+Monitored areas include:
+Disaster recovery readiness.
+Backup completion.
+Replication health.
+Infrastructure redundancy.
+Service availability.
+Recovery testing outcomes.
+Business continuity dashboards shall provide operational readiness status.
+
+13.15.18 Continuous Improvement
+Monitoring information shall support continuous improvement initiatives.
+Collected information shall be used to:
+Identify recurring incidents.
+Improve application performance.
+Optimize infrastructure utilization.
+Strengthen security controls.
+Improve operational procedures.
+Enhance user experience.
+Support root cause analysis.
+Reduce downtime.
+Monitoring shall be integrated into the organization's continual service improvement process.
+
+13.15.19 Monitoring, Logging & Observability Architecture Acceptance Criteria
+The Monitoring, Logging & Observability Architecture shall be considered complete when:
+Metrics, logs, traces, health checks, and alerts provide comprehensive visibility into all system components.
+Centralized logging and dashboards support efficient troubleshooting and operational monitoring.
+Security monitoring, audit logging, and compliance reporting meet healthcare regulatory requirements.
+Capacity planning and business continuity are supported through historical monitoring data.
+The observability platform enables proactive operations, rapid incident response, and continuous improvement of CuraSphere.
+
+13.16 Disaster Recovery & Business Continuity Architecture
+
+13.16.1 Introduction
+The Disaster Recovery & Business Continuity Architecture defines the strategies, policies, technologies, and operational procedures that ensure the CuraSphere Hospital Management System (HMS) continues to operate during disruptive events and can recover critical services within predefined recovery objectives.
+Since CuraSphere supports clinical care, emergency services, laboratory operations, pharmacy management, billing, and patient records, uninterrupted availability is essential. Any prolonged outage may negatively affect patient safety, clinical workflows, financial operations, and regulatory compliance.
+This architecture establishes a resilient framework to minimize downtime, protect healthcare data, maintain service continuity, and enable rapid recovery following planned or unplanned disruptions.
+
+13.16.2 Objectives
+The Disaster Recovery & Business Continuity Architecture shall:
+Ensure uninterrupted critical healthcare operations.
+Minimize service downtime.
+Protect patient information.
+Support rapid system recovery.
+Reduce operational risks.
+Preserve business continuity.
+Enable disaster preparedness.
+Maintain regulatory compliance.
+Support continuous healthcare delivery.
+Improve organizational resilience.
+
+13.16.3 Business Continuity Strategy
+CuraSphere shall implement a comprehensive Business Continuity Strategy that addresses technology, personnel, facilities, communication, and operational processes.
+The strategy shall include:
+Risk assessment.
+Business Impact Analysis (BIA).
+Critical service identification.
+Backup operations.
+Alternate operating procedures.
+Disaster recovery planning.
+Emergency response procedures.
+Periodic review and updates.
+Business continuity planning shall be integrated into organizational governance and risk management.
+
+13.16.4 Disaster Recovery Architecture Overview
+
+                 Users
+                   │
+                   ▼
+         Primary Data Center
+                   │
+          ┌────────┴────────┐
+          ▼                 ▼
+ Application Servers   PostgreSQL Database
+          │                 │
+          └────────┬────────┘
+                   ▼
+          Continuous Backup
+                   │
+                   ▼
+         Disaster Recovery Site
+                   │
+          ┌────────┴────────┐
+          ▼                 ▼
+ Recovery Application   Recovery Database
+          │
+          ▼
+      Hospital Operations
+
+The Disaster Recovery Site shall be capable of restoring critical services within predefined recovery objectives.
+
+13.16.5 Business Impact Analysis (BIA)
+Business Impact Analysis shall identify and prioritize critical business functions.
+Business Function
+Criticality
+Emergency Department
+Critical
+Patient Registration
+Critical
+Electronic Medical Records
+Critical
+Appointment Management
+High
+Pharmacy
+Critical
+Laboratory
+Critical
+Radiology
+High
+Billing
+High
+Inventory
+Medium
+Human Resources
+Medium
+Reporting
+Medium
+Critical services shall receive the highest recovery priority.
+
+13.16.6 Recovery Time Objective (RTO)
+The Recovery Time Objective (RTO) defines the maximum acceptable duration for restoring services after a disruption.
+System Component
+Target RTO
+Authentication Services
+30 minutes
+Electronic Medical Records
+30 minutes
+Patient Management
+30 minutes
+Appointment Module
+1 hour
+Laboratory Services
+1 hour
+Pharmacy Services
+1 hour
+Billing System
+2 hours
+Reporting Services
+4 hours
+RTO targets shall be reviewed periodically based on organizational requirements.
+
+13.16.7 Recovery Point Objective (RPO)
+The Recovery Point Objective (RPO) defines the maximum acceptable amount of data loss.
+System Component
+Target RPO
+EMR Database
+5 minutes
+Patient Records
+5 minutes
+Appointments
+15 minutes
+Billing
+15 minutes
+Inventory
+30 minutes
+Reports
+1 hour
+Backup strategies shall ensure compliance with these objectives.
+
+13.16.8 Backup Strategy
+The backup strategy shall protect all critical organizational data.
+Backup types include:
+Backup Type
+Frequency
+Full Backup
+Weekly
+Incremental Backup
+Daily
+Transaction Log Backup
+Every 15 minutes
+Configuration Backup
+Daily
+Application Backup
+After major releases
+Audit Log Backup
+Daily
+Backups shall be encrypted before storage.
+
+13.16.9 Data Replication
+The architecture shall support database replication.
+Replication methods may include:
+Synchronous replication.
+Asynchronous replication.
+Read replicas.
+Continuous transaction log shipping.
+Storage replication.
+Replication health shall be continuously monitored.
+
+13.16.10 High Availability Strategy
+High Availability (HA) shall minimize downtime.
+HA mechanisms include:
+Multiple application servers.
+Database replication.
+Automatic failover.
+Load balancing.
+Redundant storage.
+Redundant networking.
+Clustered infrastructure.
+Health monitoring.
+High Availability complements Disaster Recovery by reducing service interruptions.
+
+13.16.11 Failover Architecture
+
+Primary Server
+       │
+       │ Failure
+       ▼
+Automatic Detection
+       │
+       ▼
+Secondary Server
+       │
+       ▼
+Restore Services
+       │
+       ▼
+Users Continue Operations
+
+Automatic failover shall minimize manual intervention whenever feasible.
+
+13.16.12 Disaster Recovery Workflow
+The disaster recovery process shall follow a structured workflow.
+
+Disaster Detected
+        │
+        ▼
+Incident Assessment
+        │
+        ▼
+Activate DR Plan
+        │
+        ▼
+Recover Infrastructure
+        │
+        ▼
+Restore Database
+        │
+        ▼
+Restore Applications
+        │
+        ▼
+Validation Testing
+        │
+        ▼
+Resume Operations
+
+Recovery activities shall be documented and auditable.
+
+13.16.13 Incident Response
+Incident response procedures shall include:
+Incident identification.
+Severity classification.
+Incident escalation.
+Communication procedures.
+Technical response.
+Recovery coordination.
+Post-incident review.
+Root cause analysis.
+Incident management shall align with organizational governance policies.
+
+13.16.14 Crisis Communication Plan
+During major incidents, communication shall be coordinated through predefined procedures.
+Communication stakeholders include:
+Executive Management.
+Hospital Administration.
+Clinical Departments.
+IT Operations.
+Information Security Team.
+External Service Providers.
+Regulatory Authorities (where required).
+Patients (where appropriate).
+Communication channels shall remain available during emergencies.
+
+13.16.15 Recovery Validation
+Following recovery activities, validation shall confirm:
+Database consistency.
+Application availability.
+User authentication.
+Clinical workflows.
+Financial operations.
+External integrations.
+Data integrity.
+Security controls.
+Hospital operations shall resume only after successful validation.
+
+13.16.16 Disaster Recovery Testing
+The Disaster Recovery Plan shall be tested regularly.
+Testing methods include:
+Test Type
+Frequency
+Backup Restoration Test
+Quarterly
+Failover Test
+Semi-Annually
+Disaster Recovery Simulation
+Annually
+Business Continuity Exercise
+Annually
+Security Recovery Validation
+Annually
+Test outcomes shall be documented and reviewed for continuous improvement.
+
+13.16.17 Recovery Governance
+Disaster Recovery governance shall define roles and responsibilities.
+Role
+Responsibility
+Disaster Recovery Manager
+Overall coordination
+Infrastructure Team
+Infrastructure restoration
+Database Administrator
+Database recovery
+Application Team
+Application recovery
+Security Team
+Security validation
+Hospital Administration
+Operational decision-making
+Executive Management
+Strategic oversight
+Governance responsibilities shall be documented and reviewed periodically.
+
+13.16.18 Continuous Improvement
+The Disaster Recovery program shall support continual improvement.
+Improvement activities include:
+Review of disaster recovery exercises.
+Lessons learned documentation.
+Recovery time optimization.
+Infrastructure modernization.
+Backup strategy enhancement.
+Security improvements.
+Risk reassessment.
+Policy updates.
+Continuous improvement ensures the recovery program remains effective as organizational needs evolve.
+
+13.16.19 Disaster Recovery & Business Continuity Acceptance Criteria
+The Disaster Recovery & Business Continuity Architecture shall be considered complete when:
+Business continuity strategies identify and prioritize critical healthcare services.
+Recovery Time Objectives (RTO) and Recovery Point Objectives (RPO) are defined and achievable.
+Backup, replication, failover, and recovery procedures are documented and regularly tested.
+Disaster recovery governance, communication, and validation processes ensure coordinated restoration of services.
+The architecture supports resilient, secure, and reliable healthcare operations with minimal disruption during adverse events.
+
+
+

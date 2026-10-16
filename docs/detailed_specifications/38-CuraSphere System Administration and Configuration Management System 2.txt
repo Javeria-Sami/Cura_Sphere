@@ -1,0 +1,465 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.14 - System Administration and Configuration Management System (ADM)
+
+5.14.15 Functional Requirement ADM-FR-011
+System Parameter Management
+
+Requirement ID
+ADM-FR-011
+Requirement Name
+System Parameter Configuration
+
+Description
+The system shall provide a centralized interface for configuring global system parameters that affect the behavior of all CuraSphere modules.
+System parameters shall be configurable without modifying application source code.
+
+Actors
+System Administrator
+Hospital Administrator
+IT Administrator
+
+Preconditions
+User must have system configuration privileges.
+
+Trigger
+Administrator updates a system parameter.
+
+Main Workflow
+Administrator Login
+        │
+        ▼
+Open System Parameters
+        │
+        ▼
+Modify Parameter
+        │
+        ▼
+Validate Value
+        │
+        ▼
+Save Configuration
+        │
+        ▼
+Apply Configuration
+        │
+        ▼
+Audit Log Created
+
+Configurable Parameters
+The system shall support configuration of:
+Hospital Working Hours
+Appointment Duration
+Password Policy
+Session Timeout
+File Upload Limits
+Email Configuration
+SMS Configuration
+Notification Settings
+Time Zone
+Currency
+Tax Percentage
+Backup Schedule
+Audit Retention Period
+Login Retry Limits
+API Configuration
+Digital Signature Settings
+
+Business Rules
+ADM-BR-031
+Only authorized administrators may modify system parameters.
+ADM-BR-032
+Critical parameter changes shall require administrator confirmation.
+ADM-BR-033
+Configuration history shall be preserved.
+
+Acceptance Criteria
+Parameters configurable.
+Validation enforced.
+Audit maintained.
+
+5.14.16 Functional Requirement ADM-FR-012
+Backup and Restore Management
+
+Requirement ID
+ADM-FR-012
+Requirement Name
+Backup and Disaster Recovery Management
+
+Description
+The system shall provide automated and manual backup functionality to protect hospital data.
+
+Supported Backup Types
+Full Backup
+Incremental Backup
+Differential Backup
+Database Backup
+File Storage Backup
+Configuration Backup
+
+Backup Workflow
+Backup Scheduler
+        │
+        ▼
+Select Backup Type
+        │
+        ▼
+Backup Started
+        │
+        ▼
+Data Verification
+        │
+        ▼
+Backup Completed
+        │
+        ▼
+Backup History Updated
+
+Restore Workflow
+Administrator
+       │
+       ▼
+Select Backup
+       │
+       ▼
+Integrity Verification
+       │
+       ▼
+Restore Data
+       │
+       ▼
+System Validation
+
+Business Rules
+ADM-BR-034
+Only authorized administrators may restore backups.
+ADM-BR-035
+Backup integrity shall be verified before restoration.
+ADM-BR-036
+Restore activities shall be fully audited.
+
+Acceptance Criteria
+Backup successful.
+Restore successful.
+Backup history maintained.
+
+5.14.17 Functional Requirement ADM-FR-013
+System Monitoring and Health Dashboard
+
+Requirement ID
+ADM-FR-013
+
+Description
+The system shall continuously monitor application health and infrastructure status.
+
+Monitoring Areas
+Application Status
+Database Status
+API Status
+CPU Usage
+Memory Usage
+Disk Space
+Network Usage
+Active Users
+Failed Logins
+Error Rate
+Background Jobs
+Queue Status
+
+Monitoring Architecture
+Application
+      │
+      ▼
+Monitoring Service
+      │
+      ▼
+Health Dashboard
+      │
+ ┌────┼─────┬─────┐
+ ▼    ▼     ▼     ▼
+CPU Memory API Database
+
+Business Rules
+Critical failures shall generate immediate administrator alerts.
+
+Acceptance Criteria
+Real-time monitoring available.
+
+5.14.18 Functional Requirement ADM-FR-014
+Maintenance Mode Management
+
+Requirement ID
+ADM-FR-014
+
+Description
+The system shall support Maintenance Mode to allow upgrades and maintenance without data corruption.
+
+Workflow
+Administrator
+      │
+      ▼
+Enable Maintenance
+      │
+      ▼
+Notify Users
+      │
+      ▼
+Restrict Access
+      │
+      ▼
+Perform Maintenance
+      │
+      ▼
+Disable Maintenance
+
+Business Rules
+Emergency users may remain authorized according to configured hospital policy.
+
+Acceptance Criteria
+Maintenance mode functions correctly.
+
+5.14.19 Functional Requirement ADM-FR-015
+License and Subscription Management
+
+Requirement ID
+ADM-FR-015
+
+Description
+The system shall manage CuraSphere software licensing information.
+
+License Information
+License Number
+Hospital Name
+Branch Count
+User Limit
+Module Activation
+License Expiry
+Renewal Date
+Support Status
+
+Workflow
+License Loaded
+      │
+      ▼
+License Validation
+      │
+      ▼
+Modules Activated
+      │
+      ▼
+Usage Monitoring
+
+Business Rules
+Expired licenses shall generate administrator warnings according to licensing policy.
+
+Acceptance Criteria
+License status monitored successfully.
+
+5.14.20 Functional Requirement ADM-FR-016
+Configuration Audit Management
+
+Requirement ID
+ADM-FR-016
+
+Description
+Every configuration modification shall generate an immutable audit record.
+
+Audit Information
+Audit ID
+Administrator
+Configuration Area
+Previous Value
+New Value
+Date
+Time
+IP Address
+Device
+Session ID
+
+Workflow
+Configuration Changed
+        │
+        ▼
+Audit Created
+        │
+        ▼
+Audit Repository
+        │
+        ▼
+Audit Reports
+
+Business Rules
+Audit records shall not be modified or deleted.
+
+Acceptance Criteria
+Configuration history completely traceable.
+
+5.14.21 Functional Requirement ADM-FR-017
+Administration Security
+
+Requirement ID
+ADM-FR-017
+
+Description
+Administrative functions shall be protected through multiple layers of security.
+
+Security Controls
+Multi-Factor Authentication (MFA)
+Role-Based Access Control (RBAC)
+Password Complexity Policy
+Session Timeout
+IP Restrictions
+Account Lockout
+Digital Audit Trail
+Encryption
+
+Security Workflow
+Administrator Login
+         │
+         ▼
+Authentication
+         │
+         ▼
+MFA Verification
+         │
+         ▼
+Permission Validation
+         │
+         ▼
+Administration Access
+
+Business Rules
+High-risk administrative actions may require re-authentication based on hospital security policy.
+
+Acceptance Criteria
+Unauthorized administration prevented.
+
+5.14.22 Functional Requirement ADM-FR-018
+Administration Integration Requirements
+The Administration module shall integrate with:
+Module
+Purpose
+Authentication
+User management
+HR
+Employee synchronization
+Patient Registration
+Master configuration
+Billing
+Financial settings
+Inventory
+Warehouse configuration
+Reporting
+Administrative reports
+Notification
+System notifications
+Audit
+Audit logging
+External APIs
+System integrations
+
+Integration Architecture
+Administration
+       │
+       ▼
+Configuration Engine
+       │
+ ┌─────┼────────────┐
+ ▼     ▼            ▼
+Users Modules System Settings
+       │
+       ▼
+Audit & Monitoring
+
+5.14.23 Functional Requirement ADM-FR-019
+Administration Non-Functional Requirements
+The Administration module shall satisfy the following:
+Performance
+Administrative pages should typically load within 2 seconds under normal operating conditions.
+Configuration changes should be applied according to their defined scope, with immediate or scheduled activation as appropriate.
+Availability
+Target availability: 99.9%, excluding planned maintenance.
+Reliability
+Administrative transactions shall use database transactions to ensure configuration consistency.
+Security
+Administrative operations shall require strong authentication and authorization.
+Scalability
+Support multiple hospitals, branches, and thousands of users.
+Backup
+Configuration data shall be included in scheduled backups.
+
+5.14.24 Functional Requirement ADM-FR-020
+Administration Requirement Traceability Matrix
+Requirement ID
+Functional Area
+ADM-FR-001
+Hospital Profile
+ADM-FR-002
+Branch Management
+ADM-FR-003
+Department Management
+ADM-FR-004
+User Management
+ADM-FR-005
+Role Management
+ADM-FR-006
+Permission Management
+ADM-FR-007
+Master Data
+ADM-FR-008
+Workflow Configuration
+ADM-FR-009
+Localization
+ADM-FR-010
+Numbering Sequences
+ADM-FR-011
+System Parameters
+ADM-FR-012
+Backup & Restore
+ADM-FR-013
+Monitoring Dashboard
+ADM-FR-014
+Maintenance Mode
+ADM-FR-015
+License Management
+ADM-FR-016
+Configuration Audit
+ADM-FR-017
+Administration Security
+ADM-FR-018
+Integration Requirements
+ADM-FR-019
+Non-Functional Requirements
+ADM-FR-020
+Requirement Traceability
+
+5.14.25 Administration Module Architecture Summary
+                    Administrator
+                           │
+                           ▼
+              Administration Dashboard
+                           │
+      ┌────────────────────┼────────────────────┐
+      ▼                    ▼                    ▼
+ User Management    Configuration Engine   Monitoring
+      │                    │                    │
+      ├──────────────┬──────┴──────┬─────────────┤
+      ▼              ▼             ▼             ▼
+  Master Data   System Settings  Workflows   Parameters
+      │              │             │             │
+      └──────────────┼─────────────┴─────────────┘
+                     ▼
+              Security Validation
+                     │
+                     ▼
+             Configuration Database
+                     │
+                     ▼
+             Audit & Monitoring Logs
+                     │
+                     ▼
+               Reporting Dashboard
+
+
+

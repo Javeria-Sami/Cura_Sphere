@@ -1,0 +1,465 @@
+﻿CURASPHERE
+Hospital Management System
+Software Requirements Specification (SRS)
+Document ID: CS-SRS-001Project Name: CuraSphereSystem Type: Hospital Management SystemDocument Type: Software Requirements SpecificationDocument Version: 1.0Document Status: DraftDevelopment Model: Rapid Application Development (RAD)Architecture Direction: Modular Clean ArchitectureFrontend Technology: React.jsBackend Technology: ASP.NET Core / C#Database: PostgreSQLPrimary Development Environment: Visual StudioAPI Style: RESTful APIPrepared For: CuraSphere Software Engineering ProjectClassification: Internal Project Documentation
+
+DOCUMENT REVISION HISTORY
+Version
+Date
+Description
+Status
+0.1
+Initial Draft
+Initial SRS structure created
+Draft
+0.2
+TBD
+Functional requirements review
+Planned
+0.3
+TBD
+Non-functional requirements review
+Planned
+0.4
+TBD
+Use case and business rule review
+Planned
+1.0
+TBD
+Approved baseline SRS
+Planned
+
+DOCUMENT APPROVAL
+Role
+Responsibility
+Approval Status
+Product Owner
+Business requirement approval
+Pending
+Project Manager
+Project scope approval
+Pending
+Software Architect
+Technical feasibility review
+Pending
+UI/UX Lead
+User experience requirement review
+Pending
+Development Lead
+Implementation feasibility review
+Pending
+QA Lead
+Testability review
+Pending
+Hospital Representative
+Healthcare workflow validation
+Pending
+
+TABLE OF CONTENTS
+1. Introduction
+1.1 Purpose1.2 Document Purpose1.3 Intended Audience1.4 Product Scope1.5 Product Vision1.6 Business Context1.7 Definitions, Acronyms, and Abbreviations1.8 Document Conventions1.9 References1.10 Document Overview
+2. Overall Description
+2.1 Product Perspective2.2 Product Functions2.3 Product Boundary2.4 User Classes and Characteristics2.5 Operating Environment2.6 Design and Implementation Constraints2.7 User Documentation2.8 Assumptions2.9 Dependencies2.10 System Context
+3. Stakeholder Requirements
+3.1 Hospital Management Requirements3.2 Administrator Requirements3.3 Doctor Requirements3.4 Nurse Requirements3.5 Receptionist Requirements3.6 Patient Requirements3.7 Pharmacist Requirements3.8 Laboratory Staff Requirements3.9 Radiology Staff Requirements3.10 Accountant Requirements3.11 HR Staff Requirements3.12 Inventory Staff Requirements3.13 IT Support Requirements
+4. System Modules
+4.1 Identity and Access Management4.2 Dashboard and Analytics4.3 Patient Management4.4 Doctor Management4.5 Nurse Management4.6 Appointment Management4.7 OPD Management4.8 IPD Management4.9 Emergency Management4.10 Electronic Medical Records4.11 Pharmacy Management4.12 Laboratory Management4.13 Radiology Management4.14 Billing Management4.15 Insurance Management4.16 Inventory Management4.17 Human Resource Management4.18 Finance Management4.19 Notification Management4.20 Reporting Management4.21 Audit Management4.22 System Administration
+5. Functional Requirements
+5.1 Authentication Requirements5.2 Authorization Requirements5.3 User Management Requirements5.4 Patient Requirements5.5 Appointment Requirements5.6 Clinical Requirements5.7 Admission Requirements5.8 Emergency Requirements5.9 Pharmacy Requirements5.10 Laboratory Requirements5.11 Radiology Requirements5.12 Billing Requirements5.13 Insurance Requirements5.14 Inventory Requirements5.15 HR Requirements5.16 Reporting Requirements5.17 Notification Requirements5.18 Audit Requirements5.19 Configuration Requirements
+6. Non-Functional Requirements
+6.1 Performance6.2 Scalability6.3 Availability6.4 Reliability6.5 Security6.6 Privacy6.7 Usability6.8 Accessibility6.9 Maintainability6.10 Testability6.11 Portability6.12 Interoperability6.13 Recoverability6.14 Logging and Observability
+7. External Interface Requirements
+7.1 User Interfaces7.2 API Interfaces7.3 Database Interfaces7.4 Hardware Interfaces7.5 Communication Interfaces7.6 External Service Interfaces
+8. Data Requirements
+8.1 Data Entities8.2 Data Classification8.3 Data Validation8.4 Data Integrity8.5 Data Retention8.6 Data Archiving8.7 Data Backup8.8 Data Recovery8.9 Data Migration
+9. Security Requirements
+9.1 Authentication9.2 Role-Based Access Control9.3 Permission Management9.4 Token Security9.5 Password Security9.6 Data Encryption9.7 Audit Logging9.8 Session Management9.9 API Security9.10 Database Security9.11 Security Incident Requirements
+10. Business Rules
+10.1 Patient Rules10.2 Appointment Rules10.3 Admission Rules10.4 Medical Record Rules10.5 Pharmacy Rules10.6 Laboratory Rules10.7 Billing Rules10.8 Inventory Rules10.9 Staff Rules10.10 Access Control Rules
+11. Use Case Specification
+11.1 Use Case Model11.2 Actor Model11.3 Authentication Use Cases11.4 Patient Use Cases11.5 Appointment Use Cases11.6 Clinical Use Cases11.7 Pharmacy Use Cases11.8 Laboratory Use Cases11.9 Billing Use Cases11.10 Administration Use Cases
+12. User Stories and Acceptance Criteria
+12.1 Administrative User Stories12.2 Doctor User Stories12.3 Nurse User Stories12.4 Reception User Stories12.5 Patient User Stories12.6 Pharmacy User Stories12.7 Laboratory User Stories12.8 Finance User Stories
+13. System Models and Diagrams
+13.1 System Context Diagram13.2 Use Case Diagram13.3 Actor Hierarchy Diagram13.4 Module Decomposition Diagram13.5 Data Flow Diagrams13.6 Activity Diagrams13.7 Sequence Diagrams13.8 State Diagrams13.9 Domain Model13.10 Requirement Traceability Model
+14. UI/UX Requirements
+14.1 General Interface Requirements14.2 Navigation Requirements14.3 Dashboard Requirements14.4 Form Requirements14.5 Table Requirements14.6 Responsive Requirements14.7 Accessibility Requirements14.8 Error State Requirements14.9 Loading State Requirements14.10 Design Consistency Requirements
+15. DevOps and Operational Requirements
+15.1 Source Control Requirements15.2 Branching Requirements15.3 Build Requirements15.4 CI Requirements15.5 CD Requirements15.6 Environment Requirements15.7 Container Requirements15.8 Configuration Requirements15.9 Logging Requirements15.10 Monitoring Requirements
+16. Testing Requirements
+16.1 Unit Testing16.2 Integration Testing16.3 API Testing16.4 Database Testing16.5 UI Testing16.6 Security Testing16.7 Performance Testing16.8 User Acceptance Testing
+17. Requirement Traceability
+17.1 Requirement Identification17.2 Requirement Priority17.3 Requirement Status17.4 Requirement-to-Use-Case Mapping17.5 Requirement-to-Module Mapping17.6 Requirement-to-Test Mapping
+18. Constraints, Risks, and Assumptions
+18.1 Technical Constraints18.2 Business Constraints18.3 Operational Constraints18.4 Project Risks18.5 System Assumptions
+19. Appendices
+19.1 Glossary19.2 Requirement ID Convention19.3 Priority Classification19.4 Requirement Status Model19.5 Change Control Process
+
+1. INTRODUCTION
+1.1 Purpose
+The purpose of CuraSphere is to provide a centralized, secure, modular, and scalable Hospital Management System for managing the clinical, administrative, operational, and financial activities of a healthcare organization.
+CuraSphere is intended to replace fragmented manual processes, paper-based records, isolated spreadsheets, and disconnected departmental software with a unified digital platform.
+The system will support the complete operational flow of a hospital, beginning with patient registration and continuing through appointments, clinical consultations, admissions, laboratory services, radiology, pharmacy, billing, discharge, and reporting.
+The software shall provide authorized hospital personnel with access to accurate information according to their assigned responsibilities and permissions.
+CuraSphere is designed as a long-term software product rather than a single-purpose academic application.
+The product shall therefore emphasize:
+modularity;
+security;
+scalability;
+maintainability;
+usability;
+auditability;
+data integrity;
+operational reliability;
+testability;
+future integration capability.
+
+1.2 Document Purpose
+This Software Requirements Specification defines the functional and non-functional requirements of CuraSphere.
+The SRS acts as the formal requirements baseline for the software.
+It answers the following questions:
+What shall CuraSphere do?
+Who shall use CuraSphere?
+What hospital processes shall the system support?
+What business rules shall control system operations?
+What security restrictions shall be applied?
+What performance is expected from the software?
+What information shall the system store?
+What interfaces shall the system provide?
+What quality characteristics shall the system maintain?
+How shall requirements be traced to development and testing?
+The SRS shall be used before and during:
+UI/UX design;
+software architecture design;
+database design;
+API design;
+frontend development;
+backend development;
+DevOps implementation;
+software testing;
+deployment;
+maintenance.
+The following relationship shall be maintained:
+BUSINESS NEED      │      ▼PROJECT VISION      │      ▼SOFTWARE REQUIREMENT      │      ▼USE CASE / USER STORY      │      ▼UI DESIGN      │      ▼SOFTWARE ARCHITECTURE      │      ▼DATABASE + API      │      ▼IMPLEMENTATION      │      ▼TEST CASE      │      ▼DEPLOYED FEATURE
+A feature should not be added to CuraSphere without understanding its business or system requirement.
+
+1.3 Intended Audience
+This document is intended for all participants involved in the planning, design, development, validation, deployment, and operation of CuraSphere.
+1.3.1 Product Owner
+The Product Owner shall use the SRS to:
+understand product scope;
+review business requirements;
+prioritize features;
+approve requirement changes;
+validate product direction.
+1.3.2 Hospital Management
+Hospital management shall use the document to understand:
+system capabilities;
+supported hospital processes;
+management reporting;
+administrative controls;
+expected operational benefits.
+1.3.3 Software Architect
+The Software Architect shall use the SRS to design:
+application architecture;
+system boundaries;
+module boundaries;
+security architecture;
+integration architecture;
+deployment architecture.
+1.3.4 UI/UX Designers
+UI/UX designers shall use requirements to identify:
+users;
+user tasks;
+screens;
+workflows;
+navigation structures;
+form requirements;
+dashboard requirements;
+system states.
+1.3.5 Frontend Developers
+React.js developers shall use the SRS to understand:
+required pages;
+application routes;
+user interactions;
+validation rules;
+permissions;
+API requirements;
+error states;
+loading states.
+1.3.6 Backend Developers
+ASP.NET Core developers shall use the SRS to understand:
+business operations;
+API capabilities;
+business rules;
+authorization requirements;
+validation requirements;
+application workflows.
+1.3.7 Database Engineers
+Database engineers shall use the SRS to identify:
+business entities;
+data relationships;
+integrity rules;
+transaction requirements;
+retention requirements;
+audit requirements.
+1.3.8 DevOps Engineers
+DevOps engineers shall use the document to determine:
+build requirements;
+deployment requirements;
+environment requirements;
+monitoring needs;
+logging requirements;
+backup expectations;
+availability expectations.
+1.3.9 Quality Assurance Engineers
+QA engineers shall convert requirements into:
+test scenarios;
+test cases;
+integration tests;
+acceptance tests;
+performance tests;
+security tests.
+1.3.10 Hospital Users
+Selected hospital representatives shall review requirements to verify that CuraSphere accurately represents real hospital workflows.
+
+1.4 Product Scope
+CuraSphere shall provide an integrated hospital management platform covering four primary operational domains.
+A. Clinical Management
+The clinical domain shall support activities directly associated with patient healthcare.
+It includes:
+patient medical records;
+doctor consultations;
+OPD operations;
+IPD operations;
+emergency care;
+nursing activities;
+diagnosis records;
+prescriptions;
+clinical notes;
+patient vitals;
+procedures;
+discharge processes.
+B. Diagnostic and Medical Support Services
+The diagnostic domain shall manage supporting medical services.
+It includes:
+laboratory test requests;
+sample collection;
+laboratory results;
+radiology requests;
+imaging reports;
+pharmacy prescriptions;
+medicine dispensing.
+C. Administrative and Operational Management
+The administrative domain shall support hospital operations.
+It includes:
+user management;
+doctor management;
+nurse management;
+department management;
+appointment scheduling;
+room and bed management;
+staff management;
+inventory;
+system configuration.
+D. Financial and Management Services
+The financial domain shall support:
+billing;
+invoices;
+payments;
+refunds;
+insurance;
+expenses;
+financial reporting;
+management analytics.
+
+1.5 Product Vision
+The vision of CuraSphere is:
+To provide a secure, intelligent, scalable, and unified digital healthcare management platform that connects hospital departments and enables healthcare professionals to deliver efficient and patient-centered services.
+CuraSphere shall evolve through controlled development iterations.
+The initial objective is not to build every imaginable healthcare feature.
+The objective is to build a strong software foundation on which advanced healthcare capabilities can be developed safely.
+The product evolution is represented below:
+                    CURASPHERE PRODUCT EVOLUTION                              ┌─────────────┐                              │ CuraSphere  │                              │    Core     │                              └──────┬──────┘                                     │                ┌────────────────────┼────────────────────┐                │                    │                    │                ▼                    ▼                    ▼        Clinical Services    Hospital Operations    Financial Services                │                    │                    │                └────────────────────┼────────────────────┘                                     │                                     ▼                           Integrated Hospital                                Platform                                     │                                     ▼                          Multi-Hospital Support                                     │                                     ▼                         Healthcare Integration                                     │                                     ▼                       Analytics and Intelligence                                     │                                     ▼                      Digital Healthcare Ecosystem
+
+1.6 Business Context
+Hospitals consist of multiple departments that depend on shared information.
+For example, a patient’s hospital journey may involve:
+PATIENT   │   ▼RECEPTION   │   ▼PATIENT REGISTRATION   │   ▼APPOINTMENT / TOKEN   │   ▼DOCTOR CONSULTATION   │   ├──────────────► LABORATORY   │   ├──────────────► RADIOLOGY   │   └──────────────► PHARMACY   │   ▼FOLLOW-UP / ADMISSION   │   ▼IPD / WARD / ICU   │   ▼BILLING   │   ▼DISCHARGE   │   ▼PATIENT HISTORY
+In a fragmented hospital environment, every department may maintain separate information.
+Example:
+Reception ─────► Registration SpreadsheetDoctor ────────► Paper Patient FileLaboratory ────► Separate Laboratory SoftwarePharmacy ──────► Stock SpreadsheetBilling ───────► Separate Billing SoftwareManagement ────► Manual Reports
+This creates information silos.
+Fragmented System Model
+             ┌──────────────┐             │  Reception   │             └──────────────┘ ┌──────────────┐                    ┌──────────────┐ │    Doctor    │                    │  Laboratory  │ └──────────────┘                    └──────────────┘             NO CENTRAL INFORMATION FLOW ┌──────────────┐                    ┌──────────────┐ │   Pharmacy   │                    │   Billing    │ └──────────────┘                    └──────────────┘             ┌──────────────┐             │  Management  │             └──────────────┘
+CuraSphere changes this model.
+CuraSphere Integrated Model
+                         ┌─────────────────┐                         │   RECEPTION     │                         └────────┬────────┘                                  │                                  ▼┌────────────┐           ┌─────────────────┐           ┌────────────┐│   DOCTOR   │◄─────────►│                 │◄─────────►│ LABORATORY │└────────────┘           │                 │           └────────────┘                         │   CURASPHERE    │┌────────────┐           │                 │           ┌────────────┐│   NURSE    │◄─────────►│ CENTRAL SYSTEM  │◄─────────►│ RADIOLOGY  │└────────────┘           │                 │           └────────────┘                         │                 │┌────────────┐           │                 │           ┌────────────┐│  PHARMACY  │◄─────────►│                 │◄─────────►│  BILLING   │└────────────┘           └────────┬────────┘           └────────────┘                                  │                                  ▼                         ┌─────────────────┐                         │   MANAGEMENT    │                         └─────────────────┘
+The business goal is to create one controlled information ecosystem.
+
+1.7 Definitions, Acronyms, and Abbreviations
+Term
+Definition
+HMS
+Hospital Management System
+EMR
+Electronic Medical Record
+EHR
+Electronic Health Record
+OPD
+Outpatient Department
+IPD
+Inpatient Department
+ICU
+Intensive Care Unit
+ER
+Emergency Room
+RAD
+Rapid Application Development
+SRS
+Software Requirements Specification
+UI
+User Interface
+UX
+User Experience
+API
+Application Programming Interface
+REST
+Representational State Transfer
+JWT
+JSON Web Token
+RBAC
+Role-Based Access Control
+ORM
+Object-Relational Mapping
+EF Core
+Entity Framework Core
+CI
+Continuous Integration
+CD
+Continuous Delivery or Deployment
+UAT
+User Acceptance Testing
+QA
+Quality Assurance
+PHI
+Protected Health Information
+PII
+Personally Identifiable Information
+SLA
+Service Level Agreement
+RTO
+Recovery Time Objective
+RPO
+Recovery Point Objective
+CRUD
+Create, Read, Update, Delete
+MRN
+Medical Record Number
+DTO
+Data Transfer Object
+MFA
+Multi-Factor Authentication
+
+1.8 Document Conventions
+The following requirement terminology shall be used throughout this document.
+SHALL
+The word shall represents a mandatory system requirement.
+Example:
+The system shall require authentication before allowing access to protected hospital information.
+SHOULD
+The word should represents a recommended requirement.
+Example:
+The dashboard should display the most important operational indicators first.
+MAY
+The word may represents an optional capability.
+Example:
+The hospital administrator may configure additional dashboard widgets.
+MUST NOT
+The phrase must not defines prohibited system behavior.
+Example:
+A receptionist must not modify a doctor’s clinical diagnosis.
+
+1.8.1 Requirement Identification Convention
+Every formal requirement shall have a unique ID.
+The standard format is:
+CS-[MODULE]-[TYPE]-[NUMBER]
+Where:
+CS       = CuraSphereMODULE   = System ModuleTYPE     = Requirement TypeNUMBER   = Sequential Requirement Number
+Example:
+CS-AUTH-FR-001
+Meaning:
+CS      CuraSphereAUTH    Authentication ModuleFR      Functional Requirement001     Requirement Number
+Requirement Type Codes
+Code
+Requirement Type
+BR
+Business Requirement
+SR
+Stakeholder Requirement
+FR
+Functional Requirement
+NFR
+Non-Functional Requirement
+SEC
+Security Requirement
+DATA
+Data Requirement
+UI
+User Interface Requirement
+OPS
+Operational Requirement
+DEV
+Development Requirement
+TEST
+Testing Requirement
+Examples:
+CS-PAT-FR-001
+Patient Functional Requirement 001.
+CS-BILL-BR-004
+Billing Business Rule 004.
+CS-API-SEC-003
+API Security Requirement 003.
+CS-UI-UI-012
+User Interface Requirement 012.
+
+1.8.2 Requirement Structure
+Each major requirement shall follow this format:
+Requirement ID:Requirement Name:Description:Priority:Source:Actor:Precondition:Trigger:Main Requirement:Business Rule:Expected Result:Exception:Acceptance Criteria:Dependencies:Traceability:Status:
+Example:
+Requirement ID: CS-PAT-FR-001Requirement Name:Register New PatientDescription:The system shall allow an authorized receptionistto register a new patient.Priority:Must HaveSource:Hospital Reception WorkflowActor:ReceptionistPrecondition:The receptionist is authenticated and haspatient registration permission.Trigger:The receptionist selects "Register Patient".Main Requirement:The system shall collect and validate requiredpatient information.Business Rule:The system shall generate a unique MedicalRecord Number.Expected Result:A new patient record is created.Exception:If a probable duplicate patient is identified,the system shall warn the user.Acceptance Criteria:A valid patient record is stored and assigneda unique Medical Record Number.Dependencies:Identity and Access Management.Traceability:Patient Registration Use Case.Status:Proposed
+This structure will later help us create:
+REQUIREMENT     │     ├────► USE CASE     │     ├────► UI SCREEN     │     ├────► API ENDPOINT     │     ├────► DATABASE ENTITY     │     └────► TEST CASE
+
+1.9 References
+The CuraSphere requirements process shall consider applicable software engineering, healthcare interoperability, security, accessibility, and software quality guidance during detailed design and implementation.
+Reference categories include:
+software requirements engineering standards;
+software quality models;
+healthcare information system practices;
+healthcare interoperability principles;
+RESTful API design practices;
+secure software development practices;
+accessibility guidance;
+PostgreSQL technical documentation;
+React technical documentation;
+ASP.NET Core technical documentation;
+Entity Framework Core technical documentation;
+containerization and CI/CD documentation.
+Specific regulatory and healthcare compliance requirements shall be selected according to the country, hospital, and deployment jurisdiction before production deployment.
+CuraSphere shall not automatically claim compliance with a healthcare regulation merely because a security feature has been implemented.
+Regulatory compliance requires formal legal, technical, organizational, and operational assessment.
+
+1.10 Document Overview
+The CuraSphere SRS is organized using the following requirements engineering flow:
+                         CURASPHERE SRS MODEL┌──────────────────────┐│    PRODUCT VISION    │└──────────┬───────────┘           │           ▼┌──────────────────────┐│   BUSINESS CONTEXT   │└──────────┬───────────┘           │           ▼┌──────────────────────┐│     STAKEHOLDERS     │└──────────┬───────────┘           │           ▼┌──────────────────────┐│ STAKEHOLDER NEEDS    │└──────────┬───────────┘           │           ▼┌──────────────────────┐│ SYSTEM REQUIREMENTS  │└──────────┬───────────┘           │           ├───────────────┐           │               │           ▼               ▼┌────────────────┐  ┌────────────────┐│   FUNCTIONAL   │  │ NON-FUNCTIONAL ││  REQUIREMENTS  │  │  REQUIREMENTS  │└────────┬───────┘  └────────┬───────┘         │                    │         └─────────┬──────────┘                   │                   ▼          ┌──────────────────┐          │  BUSINESS RULES  │          └────────┬─────────┘                   │                   ▼          ┌──────────────────┐          │    USE CASES     │          └────────┬─────────┘                   │                   ▼          ┌──────────────────┐          │   USER STORIES   │          └────────┬─────────┘                   │                   ▼          ┌──────────────────┐          │ ACCEPTANCE TESTS │          └──────────────────┘
+The SRS is a central engineering document.
+The relationship between the SRS and future CuraSphere documentation is:
+                    PROJECT VISION DOCUMENT                              │                              ▼                  SOFTWARE REQUIREMENTS (SRS)                              │          ┌───────────────────┼───────────────────┐          │                   │                   │          ▼                   ▼                   ▼ SOFTWARE ARCHITECTURE   UI/UX ARCHITECTURE   DATA ARCHITECTURE          │                   │                   │          └───────────────────┼───────────────────┘                              │                              ▼                       API SPECIFICATION                              │                              ▼                       IMPLEMENTATION                              │                              ▼                    TESTING DOCUMENTATION                              │                              ▼                     DEVOPS ARCHITECTURE                              │                              ▼                         DEPLOYMENT
+
+SECTION 1 STATUS
+Section: SRS IntroductionProject: CuraSphereDocument: CS-SRS-001Section Version: 1.0 DraftStatus: Completed
+The Introduction section establishes the requirements engineering foundation of CuraSphere.
+No database table, React component, ASP.NET controller, API endpoint, or deployment pipeline is defined as an implementation decision in this section.
+The purpose of this stage is to establish what the product is, why the SRS exists, who will use the requirements, the scope of the product, and how requirements will be formally identified and traced.
+

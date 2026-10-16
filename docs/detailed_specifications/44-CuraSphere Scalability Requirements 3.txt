@@ -1,0 +1,298 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.13 - Scalability Requirements (NFR-02)
+
+6.13 Scalability Requirements
+6.13.1 Introduction
+The Scalability Requirements define how the CuraSphere Hospital Management System shall expand its capacity to support increasing numbers of users, hospitals, departments, services, data, and transactions without requiring major architectural changes.
+The system shall be designed using a modular and extensible architecture to accommodate future growth while maintaining acceptable performance, reliability, and availability.
+Scalability shall be supported at the application, database, infrastructure, and integration levels.
+
+6.13.2 Objectives
+The Scalability Requirements shall ensure that the system:
+Supports future hospital expansion.
+Accommodates increasing patient volumes.
+Handles higher transaction loads.
+Supports multiple hospital branches.
+Supports distributed deployments.
+Enables infrastructure growth with minimal downtime.
+Maintains consistent performance during expansion.
+Reduces the need for application redesign.
+
+6.13.3 Scalability Architecture
+                     Users
+                       │
+                       ▼
+                Load Balancer
+                       │
+      ┌────────────────┼────────────────┐
+      ▼                ▼                ▼
+ Application      Application      Application
+   Server 1         Server 2         Server N
+      │                │                │
+      └────────────────┼────────────────┘
+                       ▼
+                API Services Layer
+                       │
+         ┌─────────────┼─────────────┐
+         ▼             ▼             ▼
+      Database      Cache        Message Queue
+       Cluster      Layer          Services
+
+6.13.4 Horizontal Scalability
+The system shall support horizontal scaling by allowing additional application servers to be deployed as demand increases.
+Features
+Multiple application servers
+Stateless application services
+Shared session management
+Centralized authentication
+Distributed workload
+High availability support
+
+Horizontal Scaling Workflow
+Increase User Load
+        │
+        ▼
+Deploy Additional Server
+        │
+        ▼
+Load Balancer Updated
+        │
+        ▼
+Traffic Distributed
+        │
+        ▼
+Improved Performance
+
+Business Rules
+NFR-SCL-001
+Application servers shall remain functionally identical to simplify deployment and maintenance.
+NFR-SCL-002
+Traffic shall be distributed by the load balancer according to the configured balancing strategy.
+
+6.13.5 Vertical Scalability
+The system shall support vertical scaling by increasing the hardware resources allocated to application or database servers.
+Examples include:
+Additional CPU cores
+Increased RAM
+Faster storage (SSD/NVMe)
+Higher network bandwidth
+
+Vertical Scaling Workflow
+Server Resources
+        │
+        ▼
+Increase CPU/RAM
+        │
+        ▼
+Restart Services (if required)
+        │
+        ▼
+Higher Processing Capacity
+
+6.13.6 Multi-Hospital Support
+CuraSphere shall support deployment across multiple hospitals using a centralized management model.
+
+Supported Features
+Multiple Hospitals
+Independent Hospital Profiles
+Shared Platform
+Central Administration
+Independent Users
+Independent Reports
+Independent Billing
+Independent Inventory
+Independent Security Policies
+
+Multi-Hospital Architecture
+               CuraSphere Platform
+                      │
+       ┌──────────────┼──────────────┐
+       ▼              ▼              ▼
+ Hospital A     Hospital B     Hospital C
+       │              │              │
+ Departments   Departments   Departments
+
+6.13.7 Multi-Branch Support
+Each hospital may contain multiple operational branches.
+
+Branch Structure
+Hospital
+    │
+ ┌──┼───────────────┐
+ ▼  ▼               ▼
+Branch 1      Branch 2      Branch 3
+Each branch shall support:
+Independent Departments
+Staff
+Inventory
+Billing
+Reports
+Patients (shared or isolated according to configuration)
+
+6.13.8 Database Scalability
+The PostgreSQL database shall support increasing data volumes through appropriate database architecture and administration.
+
+Database Features
+Connection Pooling
+Index Optimization
+Table Partitioning (where appropriate)
+Read Replicas (optional)
+Backup Replicas
+Query Optimization
+Archive Management
+
+Database Architecture
+Application
+      │
+      ▼
+Connection Pool
+      │
+      ▼
+Primary Database
+      │
+ ┌────┴─────┐
+ ▼          ▼
+Read Replica Backup Replica
+
+Business Rules
+NFR-SCL-003
+Database optimization shall be performed before hardware expansion whenever practical.
+
+6.13.9 Load Balancing
+The system shall support load balancing to distribute requests across multiple application instances.
+
+Load Balancer Responsibilities
+Request Routing
+Health Checks
+Session Affinity (if configured)
+Failover
+Traffic Distribution
+SSL Termination (optional)
+
+Load Balancing Flow
+Users
+   │
+   ▼
+Load Balancer
+   │
+ ┌─┼─────────────┐
+ ▼ ▼             ▼
+App1 App2      App3
+
+6.13.10 Distributed Services
+The system architecture shall support independent deployment of services.
+Examples include:
+Authentication Service
+Notification Service
+Reporting Service
+Laboratory Service
+Billing Service
+Inventory Service
+
+Distributed Architecture
+Frontend
+     │
+     ▼
+API Gateway
+     │
+ ┌───┼───────────────┐
+ ▼   ▼               ▼
+Auth Billing Reporting
+ │    │              │
+ └────┼──────────────┘
+      ▼
+ PostgreSQL
+
+6.13.11 Storage Scalability
+The storage architecture shall support increasing volumes of:
+Patient Records
+Laboratory Reports
+Medical Images
+Prescriptions
+Audit Logs
+Documents
+Backups
+Storage expansion shall be possible without modifying application code.
+
+6.13.12 Infrastructure Scalability
+The infrastructure shall support deployment in:
+On-Premises Data Centers
+Private Cloud
+Public Cloud
+Hybrid Cloud
+
+Infrastructure Model
+Users
+   │
+   ▼
+Internet / VPN
+   │
+   ▼
+Load Balancer
+   │
+   ▼
+Application Cluster
+   │
+   ▼
+Database Cluster
+
+6.13.13 Scalability Testing
+Scalability shall be verified through:
+Load Testing
+Capacity Testing
+Volume Testing
+Stress Testing
+Endurance Testing
+Multi-Branch Simulation
+Database Growth Testing
+
+Testing Workflow
+Simulated Users
+        │
+        ▼
+Application Cluster
+        │
+        ▼
+Performance Analysis
+        │
+        ▼
+Scaling Validation
+
+6.13.14 Scalability Acceptance Criteria
+The system shall be accepted when:
+Additional application servers can be added with minimal configuration changes.
+The system maintains acceptable performance as user load increases within planned capacity.
+Multiple hospitals and branches operate independently without data leakage.
+Database performance remains acceptable under expected data growth.
+Infrastructure expansion does not require major application redesign.
+
+6.13.15 Scalability Requirement Traceability Matrix
+Requirement ID
+Functional Area
+NFR-SCL-001
+Horizontal Scalability
+NFR-SCL-002
+Vertical Scalability
+NFR-SCL-003
+Multi-Hospital Support
+NFR-SCL-004
+Multi-Branch Support
+NFR-SCL-005
+Database Scalability
+NFR-SCL-006
+Load Balancing
+NFR-SCL-007
+Distributed Services
+NFR-SCL-008
+Storage Scalability
+NFR-SCL-009
+Infrastructure Scalability
+NFR-SCL-010
+Scalability Testing
+NFR-SCL-011
+Acceptance Criteria
+
+
+

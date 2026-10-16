@@ -1,0 +1,412 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.15 - Security Requirements (NFR-05)
+
+6.15 Security Requirements
+6.15.1 Introduction
+Security is one of the most critical quality attributes of the CuraSphere Hospital Management System. The system stores and processes sensitive patient records, medical histories, laboratory reports, prescriptions, billing information, employee records, and financial data.
+The Security Requirements define the non-functional characteristics that ensure the confidentiality, integrity, availability, authenticity, accountability, and privacy of hospital information.
+These requirements apply to every module of CuraSphere, including the web application, APIs, database, integrations, infrastructure, and supporting services.
+
+6.15.2 Objectives
+The Security Requirements shall ensure that the system:
+Protects patient confidentiality.
+Prevents unauthorized access.
+Ensures data integrity.
+Secures communications.
+Protects APIs.
+Supports secure authentication.
+Maintains auditability.
+Detects security threats.
+Supports regulatory compliance.
+Protects hospital infrastructure.
+Supports secure software updates.
+Minimizes cybersecurity risks.
+
+6.15.3 Security Architecture
+                  Users
+                    │
+                    ▼
+           Authentication Layer
+                    │
+                    ▼
+         Authorization Engine
+                    │
+                    ▼
+           Business Services
+                    │
+        ┌───────────┼────────────┐
+        ▼           ▼            ▼
+ Encryption      Audit      Monitoring
+        │
+        ▼
+   PostgreSQL Database
+
+6.15.4 Confidentiality Requirements
+The system shall ensure that sensitive information is accessible only to authorized users.
+
+Confidential Information
+The following information shall be protected:
+Patient Demographics
+Medical Records
+Laboratory Results
+Radiology Reports
+Prescriptions
+Billing Information
+Insurance Information
+Employee Records
+Payroll Data
+Audit Logs
+
+Confidentiality Workflow
+User Request
+      │
+      ▼
+Identity Verification
+      │
+      ▼
+Permission Check
+      │
+      ▼
+Authorized?
+ │            │
+Yes          No
+ │            │
+Access      Deny
+
+Acceptance Criteria
+Only authorized users may access protected information.
+
+6.15.5 Integrity Requirements
+The system shall protect information from unauthorized modification.
+
+Integrity Controls
+Input Validation
+Transaction Management
+Database Constraints
+Digital Signatures (where applicable)
+Checksums (where applicable)
+Audit Trails
+
+Integrity Workflow
+User Update
+      │
+      ▼
+Validate Input
+      │
+      ▼
+Database Transaction
+      │
+      ▼
+Audit Log
+      │
+      ▼
+Commit Changes
+
+Acceptance Criteria
+Data integrity maintained during all transactions.
+
+6.15.6 Authentication Requirements
+The system shall verify user identities before granting access.
+
+Supported Authentication
+Username & Password
+Employee ID & Password
+Multi-Factor Authentication
+Single Sign-On (Optional)
+OAuth 2.0 (Supported Integrations)
+
+Authentication Workflow
+Login Request
+      │
+      ▼
+Credential Validation
+      │
+      ▼
+MFA Verification
+      │
+      ▼
+Create Secure Session
+
+Acceptance Criteria
+Unauthenticated users cannot access protected resources.
+
+6.15.7 Authorization Requirements
+The system shall implement Role-Based Access Control (RBAC).
+
+Authorization Levels
+System Administrator
+Hospital Administrator
+Doctor
+Nurse
+Receptionist
+Pharmacist
+Laboratory Technician
+Radiologist
+HR Officer
+Finance Officer
+Patient
+
+Authorization Workflow
+Authenticated User
+        │
+        ▼
+Retrieve Role
+        │
+        ▼
+Permission Validation
+        │
+        ▼
+Access Granted / Denied
+
+Acceptance Criteria
+Users access only authorized resources.
+
+6.15.8 Password Security Requirements
+Passwords shall follow configurable security policies.
+
+Password Policy
+Requirement
+Value
+Minimum Length
+12 Characters (Default)
+Uppercase Letters
+Required
+Lowercase Letters
+Required
+Numbers
+Required
+Special Characters
+Required
+Password History
+Configurable
+Password Expiration
+Configurable
+Account Lockout
+Configurable
+
+Password Storage
+Passwords shall be stored using secure password hashing algorithms such as:
+Argon2id
+bcrypt
+PBKDF2
+Plain-text passwords shall never be stored.
+
+6.15.9 Encryption Requirements
+The system shall protect sensitive information using encryption.
+
+Encryption Categories
+Data at Rest
+Database Encryption
+Backup Encryption
+File Encryption
+Data in Transit
+HTTPS
+TLS 1.2 or newer (TLS 1.3 preferred where supported)
+
+Encryption Architecture
+Sensitive Data
+       │
+       ▼
+Encryption Layer
+       │
+       ▼
+Database
+       │
+       ▼
+Authorized User
+
+Acceptance Criteria
+Sensitive information encrypted during storage and transmission.
+
+6.15.10 Secure Communication Requirements
+All communications between clients, servers, APIs, and external systems shall use secure transport protocols.
+
+Protected Communications
+Browser ↔ Application
+Application ↔ API
+API ↔ Database
+API ↔ Third-Party Services
+Mobile Application ↔ Server
+
+Communication Workflow
+Client
+   │
+HTTPS/TLS
+   │
+   ▼
+Application
+   │
+Secure API
+   │
+   ▼
+Database
+
+6.15.11 Privacy Requirements
+The system shall support patient privacy by limiting data access to authorized purposes.
+
+Privacy Principles
+Minimum Necessary Access
+Role-Based Access
+Auditability
+Secure Disposal
+User Accountability
+
+Acceptance Criteria
+Privacy controls consistently enforced.
+
+6.15.12 Audit Logging Requirements
+Every security-sensitive event shall generate an audit log.
+
+Logged Events
+Login
+Logout
+Failed Login
+Password Reset
+Patient Record Access
+Permission Changes
+User Creation
+Configuration Changes
+API Access
+File Downloads
+
+Audit Workflow
+Security Event
+      │
+      ▼
+Audit Logger
+      │
+      ▼
+Audit Repository
+      │
+      ▼
+Security Reports
+
+6.15.13 Security Monitoring Requirements
+The system shall continuously monitor for abnormal activities.
+
+Monitoring Events
+Failed Login Attempts
+Privilege Escalation
+Suspicious API Requests
+Malware Alerts
+Database Errors
+Unauthorized Access
+Network Anomalies
+
+Monitoring Workflow
+Security Events
+       │
+       ▼
+Monitoring Engine
+       │
+       ▼
+Alert Generation
+       │
+       ▼
+Administrator Dashboard
+
+6.15.14 Vulnerability Management
+The organization shall establish a vulnerability management process.
+
+Activities
+Security Patch Management
+Dependency Updates
+Vulnerability Scanning
+Penetration Testing
+Configuration Reviews
+Security Hardening
+
+Workflow
+Identify Vulnerability
+        │
+        ▼
+Risk Assessment
+        │
+        ▼
+Apply Fix
+        │
+        ▼
+Verification Testing
+
+6.15.15 Compliance Requirements
+The system shall support applicable healthcare, privacy, and organizational security requirements.
+Depending on the deployment country and organization, this may include compliance with:
+Healthcare privacy regulations
+Data protection regulations
+Organizational security policies
+Information security management standards
+Electronic records retention policies
+The exact regulatory framework shall be determined during project deployment based on the hospital's legal jurisdiction.
+
+6.15.16 Security Testing
+Security verification shall include:
+Authentication Testing
+Authorization Testing
+Penetration Testing
+Vulnerability Assessment
+API Security Testing
+Session Management Testing
+Encryption Verification
+Input Validation Testing
+
+Security Testing Workflow
+Security Test
+      │
+      ▼
+Identify Weakness
+      │
+      ▼
+Correct Issue
+      │
+      ▼
+Re-Test
+      │
+      ▼
+Security Approved
+
+6.15.17 Security Acceptance Criteria
+The system shall be accepted when:
+Authentication and authorization function correctly.
+Sensitive data is encrypted at rest and in transit.
+Audit logs are generated for all security-sensitive events.
+Vulnerability testing does not identify unresolved critical or high-risk issues.
+Role-based access controls are consistently enforced.
+Secure communication is enabled for all supported interfaces.
+Security monitoring and alerting operate as configured.
+
+6.15.18 Security Requirement Traceability Matrix
+Requirement ID
+Functional Area
+NFR-SEC-001
+Confidentiality
+NFR-SEC-002
+Integrity
+NFR-SEC-003
+Authentication
+NFR-SEC-004
+Authorization
+NFR-SEC-005
+Password Security
+NFR-SEC-006
+Encryption
+NFR-SEC-007
+Secure Communication
+NFR-SEC-008
+Privacy
+NFR-SEC-009
+Audit Logging
+NFR-SEC-010
+Security Monitoring
+NFR-SEC-011
+Vulnerability Management
+NFR-SEC-012
+Compliance
+NFR-SEC-013
+Security Testing
+NFR-SEC-014
+Acceptance Criteria
+
+
+

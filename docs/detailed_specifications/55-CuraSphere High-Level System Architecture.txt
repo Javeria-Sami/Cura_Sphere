@@ -1,0 +1,381 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 7 - System Architecture
+Part 7.3 - High-Level System Architecture
+
+7.3 High-Level System Architecture
+
+7.3.1 Introduction
+The High-Level System Architecture (HLSA) defines the overall structural organization of the CuraSphere Hospital Management System. It illustrates how users, software modules, external systems, databases, infrastructure services, and healthcare devices interact to provide an integrated, secure, scalable, and reliable healthcare platform.
+Unlike the Layered Enterprise Architecture (Section 7.2), which describes responsibilities of architectural layers, the High-Level System Architecture focuses on the major functional components, their relationships, communication pathways, and system-wide interactions.
+The architecture is designed to support:
+Multi-hospital deployments
+Multi-branch healthcare networks
+Multi-specialty hospitals
+High user concurrency
+Distributed infrastructure
+Secure external integrations
+Cloud-native deployment
+Continuous scalability
+
+7.3.2 Architectural Goals
+The High-Level System Architecture shall achieve the following goals:
+Goal
+Description
+Scalability
+Support horizontal and vertical scaling
+Availability
+Ensure 24×7 system operation
+Reliability
+Minimize downtime and failures
+Security
+Protect healthcare information
+Maintainability
+Simplify updates and enhancements
+Interoperability
+Integrate with healthcare standards
+Performance
+Deliver low-latency responses
+Fault Tolerance
+Continue operation despite component failures
+Modularity
+Enable independent development of modules
+Extensibility
+Support future functional expansion
+
+7.3.3 Enterprise System Architecture Overview
+                                   USERS
+                                      │
+      ┌───────────────────────────────┼────────────────────────────────┐
+      │                               │                                │
+ Patients                    Medical Staff                   Administrators
+      │                               │                                │
+      └───────────────────────────────┼────────────────────────────────┘
+                                      │
+                                      ▼
+                        React Web & Mobile Applications
+                                      │
+                                      ▼
+                     Authentication & Authorization Services
+                                      │
+                                      ▼
+                               API Gateway Layer
+                                      │
+       ┌──────────────────────────────┼──────────────────────────────┐
+       │                              │                              │
+       ▼                              ▼                              ▼
+ Patient Services            Clinical Services            Administrative Services
+       │                              │                              │
+       ├──────────────┬───────────────┼──────────────┬───────────────┤
+       ▼              ▼               ▼              ▼               ▼
+ Registration   Appointment     OPD/IPD       Emergency        Billing
+       │              │               │              │               │
+       ▼              ▼               ▼              ▼               ▼
+ Laboratory     Radiology      Pharmacy     Inventory      HR & Payroll
+       │              │               │              │               │
+       └──────────────┴───────────────┼──────────────┴───────────────┘
+                                      ▼
+                           Reporting & Analytics
+                                      │
+                                      ▼
+                          Integration & External APIs
+                                      │
+         ┌──────────────┬──────────────┬──────────────┬──────────────┐
+         ▼              ▼              ▼              ▼
+      HL7/FHIR      DICOM PACS    Insurance     Payment Gateway
+                                      │
+                                      ▼
+                           PostgreSQL Database Cluster
+                                      │
+                                      ▼
+          Backup • Monitoring • Logging • Cache • Disaster Recovery
+
+7.3.4 Major Architectural Components
+The CuraSphere system is composed of the following major architectural components:
+Component
+Description
+Presentation Layer
+Web and mobile user interfaces
+Authentication Service
+Identity verification and session management
+API Gateway
+Centralized request routing and API security
+Patient Management
+Patient registration and demographic management
+Clinical Services
+OPD, IPD, Emergency, EMR/EHR workflows
+Diagnostic Services
+Laboratory and Radiology management
+Pharmacy Services
+Medication inventory and dispensing
+Financial Services
+Billing, invoicing, payments, insurance
+Administrative Services
+HR, Inventory, Configuration
+Reporting Services
+Reports, dashboards, KPIs
+Integration Services
+External healthcare systems and APIs
+Database Layer
+Persistent storage and replication
+Infrastructure Services
+Logging, monitoring, caching, backups
+
+7.3.5 Functional Domain Architecture
+To improve modularity and maintainability, the system is organized into business domains.
+Domain
+Modules
+Patient Care
+Registration, OPD, IPD, Emergency
+Diagnostics
+Laboratory, Radiology
+Pharmacy
+Prescriptions, Dispensing, Stock
+Financial
+Billing, Payments, Insurance
+Administration
+HR, Inventory, User Management
+Analytics
+Reporting, Dashboards
+Platform
+Authentication, Notifications, Audit Logs
+Each domain shall own its business rules, services, and data access while communicating with other domains through well-defined service interfaces.
+
+7.3.6 Component Interaction Model
+The following diagram illustrates how the major system components collaborate.
+Patient Registration
+        │
+        ▼
+Patient Service
+        │
+        ▼
+Medical Record Service
+        │
+        ├──────────────► Appointment Service
+        │
+        ├──────────────► Billing Service
+        │
+        ├──────────────► Laboratory Service
+        │
+        ├──────────────► Radiology Service
+        │
+        ├──────────────► Pharmacy Service
+        │
+        └──────────────► Notification Service
+This interaction ensures that patient information remains synchronized across all relevant modules.
+
+7.3.7 Cross-Module Communication
+Modules communicate through internal service interfaces. Direct database access between modules is prohibited.
+Communication Matrix
+Source Module
+Target Module
+Purpose
+Registration
+Appointment
+Schedule visits
+Registration
+Billing
+Create patient account
+Appointment
+OPD
+Consultation workflow
+OPD
+Laboratory
+Order diagnostic tests
+OPD
+Radiology
+Request imaging
+OPD
+Pharmacy
+Generate prescriptions
+Laboratory
+Billing
+Charge laboratory tests
+Radiology
+Billing
+Charge imaging services
+Pharmacy
+Inventory
+Update medicine stock
+Billing
+Reporting
+Financial analytics
+HR
+Administration
+Staff management
+Notification
+All Modules
+Alerts and reminders
+
+7.3.8 End-to-End Request Lifecycle
+Every request shall follow a standardized processing pipeline.
+User
+ │
+ ▼
+Presentation Layer
+ │
+ ▼
+Authentication
+ │
+ ▼
+API Gateway
+ │
+ ▼
+Business Service
+ │
+ ▼
+Validation
+ │
+ ▼
+Repository
+ │
+ ▼
+Database
+ │
+ ▼
+Business Service
+ │
+ ▼
+API Gateway
+ │
+ ▼
+Presentation Layer
+ │
+ ▼
+User Response
+
+7.3.9 Example Workflow — Patient Consultation
+Patient Registration
+          │
+          ▼
+Appointment Booking
+          │
+          ▼
+Doctor Consultation
+          │
+          ▼
+Clinical Notes Saved
+          │
+     ┌────┼─────┐
+     ▼    ▼     ▼
+ Laboratory  Radiology  Pharmacy
+     │        │         │
+     └────────┼─────────┘
+              ▼
+         Billing Service
+              │
+              ▼
+      Payment Processing
+              │
+              ▼
+ Patient Receives Invoice
+
+7.3.10 System Dependency Diagram
+Presentation Layer
+        │
+        ▼
+Authentication
+        │
+        ▼
+API Gateway
+        │
+        ▼
+Business Services
+        │
+ ┌──────┼───────────────┐
+ ▼      ▼               ▼
+Repositories  Integration  Notifications
+        │
+        ▼
+Database
+        │
+        ▼
+Infrastructure
+Dependencies shall always flow downward. Lower layers shall never depend on higher layers.
+
+7.3.11 Scalability Strategy
+The architecture shall support:
+Horizontal scaling of application servers.
+Load balancing across multiple instances.
+Database replication for read-heavy workloads.
+Distributed caching.
+Independent scaling of individual services.
+Container orchestration using Kubernetes.
+Stateless application servers.
+
+7.3.12 Fault Tolerance
+To ensure continuous hospital operations, the architecture shall provide:
+Redundant application servers.
+Database failover.
+Automatic service restart.
+Retry mechanisms for transient failures.
+Health monitoring.
+Circuit breaker patterns where appropriate.
+Graceful degradation of non-critical services.
+
+7.3.13 High Availability
+The production deployment shall target:
+System Availability: ≥ 99.9%
+Automatic failover for critical services.
+Redundant network paths.
+Backup power integration (hospital infrastructure).
+Continuous database replication.
+Scheduled disaster recovery testing.
+
+7.3.14 Security Architecture Overview
+Security controls are integrated across all architectural components.
+Key controls include:
+Multi-Factor Authentication (MFA)
+Role-Based Access Control (RBAC)
+JWT-based authentication
+TLS encryption for all communications
+Encryption of sensitive data at rest
+Comprehensive audit logging
+API rate limiting
+Secure secrets management
+Continuous security monitoring
+
+7.3.15 Logging and Monitoring Integration
+Every major component shall publish operational and security events to centralized monitoring services.
+Monitored metrics include:
+API response times
+CPU and memory utilization
+Database performance
+Failed login attempts
+Error rates
+Background job execution
+Queue lengths
+Service availability
+
+7.3.16 Architecture Principles Applied
+Principle
+Implementation
+Separation of Concerns
+Independent architectural layers
+Loose Coupling
+Service interfaces and dependency injection
+High Cohesion
+Domain-focused modules
+Single Responsibility
+Dedicated services for each function
+Scalability
+Stateless services and load balancing
+Security by Design
+Authentication, RBAC, encryption
+Modularity
+Independent business domains
+Reusability
+Shared infrastructure services
+
+7.3.17 Acceptance Criteria
+The High-Level System Architecture shall be considered complete when:
+All major system components are identified and documented.
+Interactions between components are clearly defined.
+Cross-module communication follows approved interfaces.
+Request processing lifecycle is standardized.
+Domain boundaries are established and enforced.
+Scalability, availability, fault tolerance, and security strategies are documented.
+Architectural dependencies are well defined and do not violate the layered architecture.
+The architecture provides a clear foundation for detailed component, deployment, and infrastructure designs.
+
+

@@ -1,0 +1,541 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere -Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.11 - Human Resource Management System (HRM)
+
+5.11.10 Functional Requirement HRM-FR-006
+Leave Management
+
+Requirement ID
+HRM-FR-006
+Requirement Name
+Employee Leave Management
+
+Description
+The system shall manage all employee leave requests, approvals, balances, and leave history according to hospital HR policies.
+The Leave Management System shall support different leave categories, approval workflows, leave balance calculations, and integration with attendance and payroll.
+
+Actors
+Employee
+Department Manager
+HR Officer
+HR Manager
+Payroll Officer
+
+Preconditions
+Employee must be active.
+Employee must have an assigned leave policy.
+Leave balance must be available (where applicable).
+
+Trigger
+Employee submits a leave request.
+
+Main Workflow
+Employee Requests Leave
+          │
+          ▼
+Leave Balance Validation
+          │
+          ▼
+Manager Approval
+          │
+     ┌────┴────┐
+     │         │
+ Approved   Rejected
+     │
+     ▼
+HR Verification
+     │
+     ▼
+Attendance Updated
+     │
+     ▼
+Payroll Updated
+     │
+     ▼
+Audit Log Created
+
+Supported Leave Types
+The system shall support configurable leave categories, including:
+Annual Leave
+Casual Leave
+Sick Leave
+Maternity Leave
+Paternity Leave
+Emergency Leave
+Study Leave
+Unpaid Leave
+Compensatory Leave
+Bereavement Leave
+Public Holiday
+Special Leave
+
+Leave Request Information
+The system shall record:
+Leave Request ID
+Employee ID
+Leave Type
+Start Date
+End Date
+Total Days
+Reason
+Attachment (Medical Certificate if applicable)
+Approval Status
+Approver
+Approval Date
+Comments
+
+Business Rules
+HRM-BR-020
+Employees cannot request leave exceeding available leave balance unless the leave type permits negative balances or unpaid leave.
+HRM-BR-021
+Approved leave shall automatically update attendance records.
+HRM-BR-022
+Rejected leave shall not affect attendance or payroll.
+HRM-BR-023
+Medical leave beyond configurable limits may require supporting documentation.
+HRM-BR-024
+Leave requests overlapping with existing approved leave shall be rejected.
+
+Acceptance Criteria
+Leave requests processed electronically.
+Leave balances updated automatically.
+Attendance synchronized.
+Payroll notified.
+Audit generated.
+
+5.11.11 Functional Requirement HRM-FR-007
+Overtime Management
+
+Requirement ID
+HRM-FR-007
+Requirement Name
+Employee Overtime Management
+
+Description
+The system shall calculate and manage employee overtime based on attendance records, approved overtime requests, and hospital policies.
+
+Actors
+Employee
+Department Manager
+HR Officer
+Payroll Officer
+
+Workflow
+Extra Working Hours
+        │
+        ▼
+Manager Approval
+        │
+        ▼
+HR Verification
+        │
+        ▼
+Payroll Calculation
+        │
+        ▼
+Salary Updated
+
+Overtime Information
+Overtime ID
+Employee
+Department
+Date
+Start Time
+End Time
+Total Hours
+Approval Status
+Overtime Rate
+
+Business Rules
+HRM-BR-025
+Only approved overtime shall be included in payroll.
+HRM-BR-026
+Maximum daily overtime shall follow hospital HR policy.
+HRM-BR-027
+Overtime calculations shall support configurable pay rates.
+
+Acceptance Criteria
+Approved overtime reflected in payroll.
+
+5.11.12 Functional Requirement HRM-FR-008
+Payroll Integration
+
+Requirement ID
+HRM-FR-008
+Requirement Name
+Payroll Integration
+
+Description
+The HR module shall integrate with the Payroll and Finance systems to automate salary calculations.
+
+Payroll Inputs
+The system shall use:
+Basic Salary
+Attendance
+Leave
+Overtime
+Allowances
+Bonuses
+Deductions
+Taxes
+Insurance
+Loan Deductions
+
+Payroll Workflow
+Employee Attendance
+        │
+        ▼
+Leave Calculation
+        │
+        ▼
+Overtime Calculation
+        │
+        ▼
+Salary Calculation
+        │
+        ▼
+Finance Verification
+        │
+        ▼
+Payroll Generated
+
+Business Rules
+HRM-BR-028
+Payroll shall only include active employees.
+HRM-BR-029
+Attendance and leave data shall be locked after payroll processing.
+HRM-BR-030
+Salary calculations shall follow configured payroll policies.
+
+Acceptance Criteria
+Payroll generated automatically from HR data.
+
+5.11.13 Functional Requirement HRM-FR-009
+Performance Evaluation Management
+
+Requirement ID
+HRM-FR-009
+Requirement Name
+Employee Performance Evaluation
+
+Description
+The system shall support periodic employee performance evaluations.
+Evaluations may include:
+Annual Reviews
+Quarterly Reviews
+Probation Reviews
+Promotion Reviews
+Department Assessments
+
+Evaluation Workflow
+Evaluation Created
+        │
+        ▼
+Manager Assessment
+        │
+        ▼
+Employee Feedback
+        │
+        ▼
+HR Review
+        │
+        ▼
+Performance Record Updated
+
+Evaluation Criteria
+Professional Knowledge
+Attendance
+Teamwork
+Patient Care
+Communication
+Discipline
+Productivity
+Leadership
+Technical Skills
+Training Completion
+
+Business Rules
+Performance records shall become part of the permanent employee history.
+
+Acceptance Criteria
+Performance evaluations stored successfully.
+
+5.11.14 Functional Requirement HRM-FR-010
+Training and Development Management
+
+Requirement ID
+HRM-FR-010
+
+Description
+The system shall manage employee training programs and continuing professional development.
+
+Training Types
+Orientation
+Infection Control
+CPR
+ACLS
+Fire Safety
+Laboratory Safety
+Equipment Training
+Clinical Skills
+Management Training
+Software Training
+
+Workflow
+Training Scheduled
+        │
+        ▼
+Employee Assigned
+        │
+        ▼
+Training Completed
+        │
+        ▼
+Certificate Recorded
+
+Business Rules
+Mandatory training shall generate reminders before expiry.
+
+Acceptance Criteria
+Training history maintained.
+
+5.11.15 Functional Requirement HRM-FR-011
+Promotion and Transfer Management
+
+Requirement ID
+HRM-FR-011
+
+Description
+The system shall manage employee promotions, department transfers, and designation changes.
+
+Workflow
+Promotion Request
+        │
+        ▼
+Manager Recommendation
+        │
+        ▼
+HR Approval
+        │
+        ▼
+Employee Record Updated
+
+Business Rules
+All promotions and transfers shall maintain historical records.
+
+Acceptance Criteria
+Promotion history maintained.
+
+5.11.16 Functional Requirement HRM-FR-012
+Employee Separation Management
+
+Requirement ID
+HRM-FR-012
+
+Description
+The system shall manage employee resignation, retirement, contract completion, and termination.
+
+Separation Types
+Resignation
+Retirement
+Contract Completion
+Termination
+Death in Service
+
+Workflow
+Separation Initiated
+        │
+        ▼
+Exit Clearance
+        │
+        ▼
+Asset Return
+        │
+        ▼
+Final Payroll
+        │
+        ▼
+Employee Status Updated
+
+Business Rules
+Employee accounts shall be disabled after separation.
+
+Acceptance Criteria
+Separated employees archived successfully.
+
+5.11.17 Functional Requirement HRM-FR-013
+HR Reports and Analytics
+The HR module shall generate:
+Employee List
+Attendance Report
+Leave Report
+Overtime Report
+Payroll Summary
+Department Staffing Report
+Employee Turnover Report
+Promotion Report
+Training Report
+License Expiry Report
+Performance Report
+Retirement Forecast
+Recruitment Report
+Vacancy Report
+
+Reporting Architecture
+HR Database
+      │
+      ▼
+Analytics Engine
+      │
+      ▼
+Filtering
+      │
+      ▼
+Dashboard
+      │
+      ▼
+PDF / Excel / CSV
+
+5.11.18 Functional Requirement HRM-FR-014
+HR Security and Audit
+Every HR transaction shall generate an audit record.
+Audit data shall include:
+Audit ID
+Employee ID
+User ID
+Role
+Action
+Previous Value
+New Value
+Timestamp
+Device Information
+Session ID
+
+Security Workflow
+User Login
+      │
+      ▼
+Role Validation
+      │
+      ▼
+HR Operation
+      │
+      ▼
+Audit Generated
+
+Business Rules
+Only HR-authorized users may modify employee records.
+Audit logs shall not be deleted.
+
+5.11.19 Functional Requirement HRM-FR-015
+HR Integration Requirements
+The HR module shall integrate with:
+Module
+Purpose
+Authentication
+Employee login
+Payroll
+Salary processing
+Finance
+Payroll accounting
+Attendance
+Working hours
+Appointment
+Doctor schedules
+Nursing
+Duty roster
+Laboratory
+Staff assignment
+Pharmacy
+Staff assignment
+Operation Theatre
+Shift allocation
+Notification
+Alerts and reminders
+Audit
+Compliance monitoring
+
+5.11.20 Functional Requirement HRM-FR-016
+HR Non-Functional Requirements
+The HR module shall provide:
+Performance
+Employee searches should typically complete within 2 seconds under normal operating conditions.
+Attendance synchronization should occur immediately after successful check-in or check-out.
+Availability
+Target availability: 99.9%, excluding planned maintenance.
+Security
+Multi-factor authentication may be enabled for HR administrators.
+Role-Based Access Control (RBAC) shall restrict HR functions.
+Reliability
+Payroll-related operations shall use transactional processing to ensure consistency.
+Scalability
+The architecture shall support thousands of employees across multiple hospital branches.
+Backup & Recovery
+Employee records shall be included in scheduled backup and disaster recovery procedures.
+
+5.11.21 Functional Requirement HRM-FR-017
+HR Requirement Traceability Matrix
+Requirement ID
+Functional Area
+HRM-FR-001
+Employee Master
+HRM-FR-002
+Recruitment
+HRM-FR-003
+Credential Management
+HRM-FR-004
+Attendance
+HRM-FR-005
+Shift & Duty Roster
+HRM-FR-006
+Leave Management
+HRM-FR-007
+Overtime
+HRM-FR-008
+Payroll Integration
+HRM-FR-009
+Performance Evaluation
+HRM-FR-010
+Training & Development
+HRM-FR-011
+Promotion & Transfer
+HRM-FR-012
+Employee Separation
+HRM-FR-013
+HR Reports & Analytics
+HRM-FR-014
+Security & Audit
+HRM-FR-015
+Integration Requirements
+HRM-FR-016
+Non-Functional Requirements
+HRM-FR-017
+Requirement Traceability
+
+5.11.22 Human Resource Module Architecture Summary
+                 Recruitment
+                      │
+                      ▼
+             Employee Master
+                      │
+      ┌───────────────┼────────────────┐
+      ▼               ▼                ▼
+ Attendance      Leave Management   Shift Roster
+      │               │                │
+      └───────────────┼────────────────┘
+                      ▼
+             Payroll Integration
+                      │
+      ┌───────────────┼────────────────┐
+      ▼               ▼                ▼
+ Performance     Training      Promotions
+                      │
+                      ▼
+               HR Reports
+                      │
+                      ▼
+                 Audit System
+
+
+

@@ -1,0 +1,3148 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.20 — AUDIT TRAIL, SECURITY EVENT, COMPLIANCE AND SYSTEM ACTIVITY MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: AUD/SECModule Name: Audit Trail, Security Event, Compliance and System Activity Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.1583 MODULE PURPOSE
+The Audit Trail, Security Event, Compliance and System Activity Management System shall provide the centralized functional foundation through which CuraSphere records, preserves, correlates, searches, monitors, investigates, exports, and protects eligible audit, security, administrative, clinical-access, financial, workforce, integration, and system activity events.
+The module shall support:
+audit event registration;
+audit event identification;
+audit event classification;
+audit event category;
+audit event severity;
+audit event timestamp;
+audit event source;
+audit event source module;
+audit event source service;
+actor identification;
+authenticated actor identification;
+anonymous actor boundaries;
+patient actor boundaries;
+staff actor boundaries;
+administrator actor boundaries;
+system actor boundaries;
+background worker actor boundaries;
+integration actor boundaries;
+service actor boundaries;
+actor type;
+actor identifier;
+actor display reference boundaries;
+actor role context;
+actor permission context boundaries;
+hospital context;
+department context;
+organizational context;
+tenant boundary preparation;
+session context;
+authentication session reference;
+correlation identifier;
+request identifier;
+trace identifier boundaries;
+source IP address boundaries;
+device information boundaries;
+user agent boundaries;
+request origin boundaries;
+action identification;
+action category;
+action result;
+successful action events;
+failed action events;
+denied action events;
+resource identification;
+resource type;
+resource identifier;
+patient record access events;
+patient profile access events;
+patient demographic change events;
+appointment activity events;
+admission activity events;
+discharge activity events;
+clinical record access events;
+clinical note creation events;
+clinical note modification events;
+clinical note finalization events;
+laboratory activity events;
+laboratory result verification events;
+radiology activity events;
+radiology report approval events;
+prescription activity events;
+medication dispensing activity events;
+pharmacy activity events;
+inventory adjustment events;
+inventory transfer events;
+billing activity events;
+invoice activity events;
+payment activity events;
+refund activity events;
+financial adjustment events;
+insurance activity events;
+HR activity events;
+employee record access events;
+employee record modification events;
+attendance activity events;
+leave activity events;
+payroll activity events;
+document activity events;
+document download events;
+document export events;
+reporting activity events;
+report execution events;
+report export events;
+notification administration events;
+template administration events;
+identity events;
+authentication events;
+login success events;
+login failure events;
+logout events;
+password activity boundaries;
+password reset events;
+account lock events;
+account unlock events;
+MFA boundaries;
+authorization events;
+authorization denial events;
+role assignment events;
+role removal events;
+permission assignment events;
+permission removal events;
+privileged access events;
+administrator actions;
+configuration change events;
+provider configuration events;
+integration configuration events;
+security configuration events;
+hospital configuration events;
+system configuration events;
+sensitive data access events;
+sensitive data modification events;
+sensitive export events;
+bulk access events;
+bulk export events;
+unusual activity events;
+suspicious activity events;
+security events;
+security event severity;
+security event status;
+security event investigation boundaries;
+security event assignment boundaries;
+security event acknowledgement boundaries;
+security event resolution boundaries;
+compliance evidence boundaries;
+audit search;
+audit filtering;
+audit pagination;
+audit sorting;
+audit date-range filtering;
+actor filtering;
+action filtering;
+resource filtering;
+patient-related audit filtering boundaries;
+hospital filtering;
+department filtering;
+source-module filtering;
+event-category filtering;
+severity filtering;
+result filtering;
+correlation filtering;
+security event filtering;
+audit event detail;
+audit timeline;
+patient access history;
+resource activity history;
+user activity history;
+administrator activity history;
+financial activity history;
+clinical activity history;
+security activity history;
+audit export;
+compliance export;
+investigation export boundaries;
+export authorization;
+export justification boundaries;
+export watermark boundaries;
+export integrity boundaries;
+audit retention;
+audit archival boundaries;
+audit legal hold boundaries;
+audit purge boundaries;
+audit deletion restrictions;
+append-only audit boundaries;
+audit immutability;
+audit integrity;
+audit hash boundaries;
+tamper-evidence boundaries;
+audit chain boundaries;
+database privilege boundaries;
+application privilege boundaries;
+privileged audit access;
+separation of duties;
+audit administrator boundaries;
+security administrator boundaries;
+system administrator restrictions;
+database administrator boundaries;
+audit service boundaries;
+centralized audit processing;
+audit event schema;
+audit metadata;
+old-value boundaries;
+new-value boundaries;
+change summary;
+field-change boundaries;
+sensitive-value masking;
+secret masking;
+credential exclusion;
+password exclusion;
+token exclusion;
+clinical-data minimization;
+audit metadata minimization;
+structured audit events;
+audit event validation;
+audit event normalization;
+duplicate event boundaries;
+audit event idempotency boundaries;
+audit event persistence;
+synchronous audit boundaries;
+asynchronous audit boundaries;
+durable audit boundaries;
+audit failure behavior;
+critical audit failure behavior;
+business transaction boundaries;
+audit delivery boundaries;
+audit buffering boundaries;
+future message broker integration;
+transactional outbox boundaries;
+future centralized security information and event management integration;
+future SIEM integration;
+future SOC integration;
+future anomaly detection;
+future behavioral analytics;
+future AI-assisted investigation;
+audit monitoring;
+audit ingestion monitoring;
+audit persistence monitoring;
+audit search monitoring;
+audit export monitoring;
+audit storage monitoring;
+audit retention monitoring;
+security event monitoring;
+audit performance;
+audit latency;
+audit observability;
+audit correlation;
+distributed tracing boundaries;
+DevOps audit boundaries;
+deployment event boundaries;
+configuration deployment boundaries;
+database migration event boundaries;
+CI/CD activity integration boundaries;
+future infrastructure audit integration;
+future cloud audit integration;
+future regulatory reporting boundaries.
+The high-level audit lifecycle shall be:
+USER / SYSTEM / INTEGRATION ACTION                │                ▼          SOURCE MODULE                │                ▼          BUSINESS ACTION                │                ▼       AUDIT-ELIGIBLE EVENT                │                ▼             AUD/SEC                │                ▼        EVENT VALIDATION                │                ▼       EVENT NORMALIZATION                │                ▼       SENSITIVE DATA POLICY                │                ▼       AUDIT EVENT PERSISTENCE                │                ▼        PROTECTED AUDIT STORE                │       ┌────────┼─────────┐       ▼        ▼         ▼    SEARCH   MONITOR   INVESTIGATE
+The security-event lifecycle shall be:
+SYSTEM ACTIVITY      │      ▼SECURITY SIGNAL      │      ▼SECURITY EVENT      │      ▼SEVERITY CLASSIFICATION      │      ▼SECURITY MONITORING      │      ▼INVESTIGATION BOUNDARY      │   ┌──┴───┐   ▼      ▼RESOLVED ESCALATED
+The module shall help CuraSphere answer questions such as:
+WHO VIEWED THIS PATIENT RECORD?WHEN WAS THE PATIENT RECORD VIEWED?WHICH HOSPITAL WAS THE USER OPERATING IN?WHICH DEPARTMENT WAS THE USER ASSOCIATED WITH?WHICH USER CHANGED THE PATIENT'S PHONE NUMBER?WHAT WAS CHANGED?WHEN WAS THE CHANGE MADE?WHAT WAS THE PREVIOUS VALUE?WHAT IS THE NEW VALUE?SHOULD THE OLD AND NEW VALUES BE STORED?DO THE VALUES CONTAIN SENSITIVE INFORMATION?WHO CREATED THIS CLINICAL NOTE?WHO MODIFIED THIS CLINICAL NOTE?WHO FINALIZED THE CLINICAL NOTE?WHO VERIFIED THIS LAB RESULT?WHO APPROVED THIS RADIOLOGY REPORT?WHO CREATED THIS PRESCRIPTION?WHO DISPENSED THIS MEDICATION?WHO CHANGED THE STOCK QUANTITY?WHO CREATED THIS INVOICE?WHO RECORDED THIS PAYMENT?WHO REVERSED THIS PAYMENT?WHO APPROVED THIS REFUND?WHO CHANGED THIS EMPLOYEE RECORD?WHO APPROVED THIS LEAVE REQUEST?WHO GENERATED THIS PAYROLL RECORD?WHO DOWNLOADED THIS DOCUMENT?WHO EXPORTED THIS PATIENT REPORT?WHO EXPORTED 50,000 PATIENT RECORDS?WHO ASSIGNED THIS ROLE?WHO GRANTED THIS PERMISSION?WHO REMOVED THIS PERMISSION?WHO UNLOCKED THIS USER ACCOUNT?WHO CHANGED THIS SECURITY CONFIGURATION?WHO CHANGED THIS COMMUNICATION PROVIDER?WHO CHANGED THIS HOSPITAL CONFIGURATION?WHICH LOGIN ATTEMPTS FAILED?FROM WHICH NETWORK SOURCE?HOW MANY LOGIN FAILURES OCCURRED?WAS ACCESS DENIED?WHY WAS ACCESS DENIED?WHICH RESOURCE WAS REQUESTED?WAS THE USER AUTHENTICATED?WHICH SESSION WAS USED?WHICH REQUEST CAUSED THE EVENT?WHICH CORRELATION ID CONNECTS THE EVENTS?CAN WE FOLLOW AN APPOINTMENT REQUEST ACROSS MODULES?CAN A SYSTEM ADMINISTRATOR DELETE AUDIT HISTORY?CAN AN AUDIT ADMINISTRATOR EDIT AN AUDIT EVENT?CAN A DATABASE ADMINISTRATOR MODIFY AUDIT TABLES?WHAT HAPPENS IF SOMEONE MODIFIES AN AUDIT RECORD?CAN THE SYSTEM DETECT TAMPERING?CAN AUDIT RECORDS BE APPEND-ONLY?CAN AN APPLICATION BUG DELETE AUDIT EVENTS?WHAT HAPPENS IF AUDIT STORAGE IS UNAVAILABLE?SHOULD A PAYMENT SUCCEED IF ITS REQUIRED AUDIT EVENT CANNOT BE RECORDED?SHOULD A PATIENT PROFILE VIEW FAIL IF ASYNCHRONOUS AUDIT PROCESSING IS DELAYED?WHICH EVENTS ARE CRITICAL AUDIT EVENTS?WHICH EVENTS MAY BE PROCESSED ASYNCHRONOUSLY?CAN AUDIT EVENTS BE LOST DURING APPLICATION RESTART?CAN A MESSAGE BE PROCESSED TWICE?CAN THE AUDIT SYSTEM STORE PASSWORDS?CAN IT STORE ACCESS TOKENS?CAN IT STORE REFRESH TOKENS?CAN IT STORE DATABASE PASSWORDS?CAN IT STORE COMPLETE CLINICAL NOTES IN EVERY AUDIT EVENT?CAN IT STORE FULL CREDIT OR PAYMENT PROVIDER SECRETS?CAN AUDIT LOGS BECOME A SECOND UNPROTECTED PATIENT DATABASE?WHO CAN SEARCH AUDIT EVENTS?CAN A DOCTOR SEARCH ALL SYSTEM ADMINISTRATOR ACTIONS?CAN HR SEARCH PATIENT CLINICAL AUDIT HISTORY?CAN A BILLING USER SEARCH PAYROLL AUDIT HISTORY?CAN A PATIENT VIEW THEIR ACCESS HISTORY?CAN COMPLIANCE EXPORT AUDIT EVIDENCE?WHO EXPORTED THE AUDIT EVIDENCE?CAN AUDIT EXPORT ITSELF BE AUDITED?HOW LONG ARE AUDIT EVENTS RETAINED?CAN A LEGAL HOLD PREVENT PURGE?HOW IS OLD AUDIT DATA ARCHIVED?HOW IS AUDIT STORAGE MONITORED?CAN AUDIT SEARCH OVERLOAD POSTGRESQL?DO WE NEED A SEPARATE AUDIT DATABASE ON DAY ONE?DO WE NEED ELASTICSEARCH ON DAY ONE?DO WE NEED KAFKA ON DAY ONE?CAN WE INTEGRATE WITH A SIEM LATER?CAN WE SEND SECURITY EVENTS TO A SOC LATER?CAN AI HELP INVESTIGATORS LATER?
+
+5.1584 AUDIT DOMAIN BOUNDARY
+The AUD/SEC module shall own centralized audit-event and security-event processing boundaries.
+Source modules shall own their business facts.
+Example:
+PATIENT MODULE      │      ▼OWNS PATIENT DEMOGRAPHICS
+Patient update:
+PHONE NUMBER CHANGED
+The Patient module shall:
+VALIDATE CHANGEAUTHORIZE CHANGEUPDATE PATIENT RECORD
+AUD/SEC shall:
+RECORD ELIGIBLE CHANGE EVENTIDENTIFY ACTORIDENTIFY RESOURCEIDENTIFY ACTIONRECORD RESULTPRESERVE TRACEABILITY
+Therefore:
+AUDIT EVENT     ≠BUSINESS RECORD
+AUD/SEC shall not become the source of truth for:
+PATIENT DEMOGRAPHICSAPPOINTMENT STATUSCLINICAL DIAGNOSISLAB RESULTRADIOLOGY REPORTPRESCRIPTIONINVENTORY QUANTITYINVOICE BALANCEPAYMENT STATEEMPLOYEE SALARY
+Critical Principle
+SOURCE DOMAIN      │      ▼OWNS BUSINESS TRUTH
+AUD/SEC   │   ▼OWNS ACTIVITY TRACEABILITY
+
+5.1585 AUDIT LOG VERSUS APPLICATION LOG BOUNDARY
+CuraSphere shall distinguish audit events from technical application logs.
+Application log example:
+DATABASE QUERY COMPLETED IN 42 MS
+Audit event example:
+USER USR-00128 VIEWED PATIENT PAT-00982
+Security event example:
+USER USR-00128 WAS DENIED ACCESSTO PATIENT PAT-00982
+Therefore:
+APPLICATION LOG      ≠AUDIT EVENT      ≠SECURITY EVENT
+Application logs primarily support:
+DEBUGGINGOPERATIONSPERFORMANCE DIAGNOSTICS
+Audit events primarily support:
+ACCOUNTABILITYTRACEABILITYCOMPLIANCE EVIDENCEACTIVITY INVESTIGATION
+Security events primarily support:
+THREAT DETECTIONSECURITY INVESTIGATIONABUSE INVESTIGATION
+A single activity may create more than one event type where justified.
+
+5.1586 REACT AUDIT BOUNDARY
+React shall not be the authoritative creator of protected audit events.
+Incorrect:
+REACTauditLog.push({    userId,    action: "PATIENT_VIEWED"})
+Preferred:
+REACT  │  ▼ASP.NET CORE API  │  ▼AUTHENTICATION  │  ▼AUTHORIZATION  │  ▼DOMAIN ACTION  │  ▼SERVER-SIDE AUDIT EVENT
+React may:
+DISPLAY AUTHORIZED AUDIT DATASUBMIT AUDIT SEARCH FILTERSREQUEST AUDIT EXPORTDISPLAY SECURITY EVENT STATUSDISPLAY PATIENT ACCESS HISTORY WHERE AUTHORIZED
+React shall not:
+DEFINE AUTHORITATIVE ACTOR IDDEFINE AUTHORITATIVE HOSPITAL SCOPEDEFINE AUTHORITATIVE ACTION RESULTDELETE AUDIT HISTORYEDIT AUDIT HISTORYDIRECTLY INSERT PROTECTED AUDIT EVENTSSUPPRESS SERVER-SIDE AUDIT EVENTS
+Critical Principle
+CLIENT CLAIM     ≠AUDIT TRUTH
+
+5.1587 AUDIT ACTORS
+Actor
+Audit Responsibility
+Patient
+May view eligible patient-facing access history boundaries
+Doctor
+Generates clinical access and action events
+Nurse
+Generates care access and action events
+Receptionist
+Generates patient and appointment activity events
+Laboratory Staff
+Generates laboratory workflow events
+Radiology Staff
+Generates radiology workflow events
+Pharmacist
+Generates pharmacy and dispensing events
+Billing Staff
+Generates financial activity events
+HR Staff
+Generates workforce activity events
+Department Manager
+Generates management and approval events
+Hospital Manager
+Reviews eligible hospital audit information
+Compliance Officer
+Reviews approved compliance evidence
+Security Analyst
+Investigates eligible security events
+Security Administrator
+Manages approved security-event workflows
+Audit Administrator
+Manages approved audit configuration boundaries
+System Administrator
+Generates privileged administrative events
+Database Administrator
+Operates database infrastructure under privileged audit boundaries
+DevOps Engineer
+Generates deployment and operational change events
+Background Worker
+Generates system-processing audit events
+Integration Service
+Generates approved integration activity events
+External System
+Participates through integration identity boundaries
+AUD/SEC Module
+Owns centralized audit processing
+Audit Export Process
+Produces authorized audit evidence
+Future SIEM
+Consumes approved security events
+Future SOC
+Investigates security information
+Future AI Investigation Assistant
+Assists authorized investigation boundaries
+
+5.1588 AUDIT FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-AUD-FR-001
+Create Audit Event
+M
+CS-AUD-FR-002
+Generate Audit Event Identifier
+M
+CS-AUD-FR-003
+Record Event Timestamp
+M
+CS-AUD-FR-004
+Record Event Category
+M
+CS-AUD-FR-005
+Record Event Severity
+M
+CS-AUD-FR-006
+Identify Source Module
+M
+CS-AUD-FR-007
+Identify Actor
+M
+CS-AUD-FR-008
+Record Actor Type
+M
+CS-AUD-FR-009
+Record Actor Role Context
+M
+CS-AUD-FR-010
+Record Hospital Context
+M
+CS-AUD-FR-011
+Record Department Context
+S
+CS-AUD-FR-012
+Record Session Context
+M
+CS-AUD-FR-013
+Record Correlation Identifier
+M
+CS-AUD-FR-014
+Record Request Identifier
+M
+CS-AUD-FR-015
+Record Network Source Boundary
+M
+CS-AUD-FR-016
+Record Device Context Boundary
+S
+CS-AUD-FR-017
+Identify Audit Action
+M
+CS-AUD-FR-018
+Record Action Result
+M
+CS-AUD-FR-019
+Identify Resource Type
+M
+CS-AUD-FR-020
+Identify Resource
+M
+CS-AUD-FR-021
+Store Audit Metadata
+M
+CS-AUD-FR-022
+Validate Audit Event
+M
+CS-AUD-FR-023
+Normalize Audit Event
+M
+CS-AUD-FR-024
+Apply Sensitive Data Policy
+M
+CS-AUD-FR-025
+Exclude Password Data
+M
+CS-AUD-FR-026
+Exclude Authentication Tokens
+M
+CS-AUD-FR-027
+Exclude Infrastructure Secrets
+M
+CS-AUD-FR-028
+Mask Eligible Sensitive Values
+M
+CS-AUD-FR-029
+Record Change Summary
+M
+CS-AUD-FR-030
+Record Field Change Boundary
+S
+CS-AUD-FR-031
+Record Old Value Boundary
+S
+CS-AUD-FR-032
+Record New Value Boundary
+S
+CS-AUD-FR-033
+Record Patient Record Access
+M
+CS-AUD-FR-034
+Record Patient Data Modification
+M
+CS-AUD-FR-035
+Record Appointment Activity
+M
+CS-AUD-FR-036
+Record Admission Activity
+M
+CS-AUD-FR-037
+Record Discharge Activity
+M
+CS-AUD-FR-038
+Record Clinical Record Access
+M
+CS-AUD-FR-039
+Record Clinical Note Activity
+M
+CS-AUD-FR-040
+Record Laboratory Activity
+M
+CS-AUD-FR-041
+Record Laboratory Verification
+M
+CS-AUD-FR-042
+Record Radiology Activity
+M
+CS-AUD-FR-043
+Record Radiology Approval
+M
+CS-AUD-FR-044
+Record Prescription Activity
+M
+CS-AUD-FR-045
+Record Medication Dispensing Activity
+M
+CS-AUD-FR-046
+Record Inventory Adjustment
+M
+CS-AUD-FR-047
+Record Inventory Transfer
+M
+CS-AUD-FR-048
+Record Invoice Activity
+M
+CS-AUD-FR-049
+Record Payment Activity
+M
+CS-AUD-FR-050
+Record Refund Activity
+M
+CS-AUD-FR-051
+Record Financial Adjustment
+M
+CS-AUD-FR-052
+Record Insurance Activity
+M
+CS-AUD-FR-053
+Record Employee Record Activity
+M
+CS-AUD-FR-054
+Record Attendance Activity
+M
+CS-AUD-FR-055
+Record Leave Activity
+M
+CS-AUD-FR-056
+Record Payroll Activity
+M
+CS-AUD-FR-057
+Record Document Activity
+M
+CS-AUD-FR-058
+Record Document Download
+M
+CS-AUD-FR-059
+Record Report Activity
+M
+CS-AUD-FR-060
+Record Sensitive Export
+M
+CS-AUD-FR-061
+Record Bulk Access
+M
+CS-AUD-FR-062
+Record Bulk Export
+M
+CS-AUD-FR-063
+Record Notification Administration Activity
+M
+CS-AUD-FR-064
+Record Authentication Event
+M
+CS-AUD-FR-065
+Record Login Success
+M
+CS-AUD-FR-066
+Record Login Failure
+M
+CS-AUD-FR-067
+Record Logout Event
+M
+CS-AUD-FR-068
+Record Password Reset Event
+M
+CS-AUD-FR-069
+Record Account Lock Event
+M
+CS-AUD-FR-070
+Record Account Unlock Event
+M
+CS-AUD-FR-071
+Record Authorization Denial
+M
+CS-AUD-FR-072
+Record Role Assignment
+M
+CS-AUD-FR-073
+Record Role Removal
+M
+CS-AUD-FR-074
+Record Permission Assignment
+M
+CS-AUD-FR-075
+Record Permission Removal
+M
+CS-AUD-FR-076
+Record Privileged Access
+M
+CS-AUD-FR-077
+Record Administrator Action
+M
+CS-AUD-FR-078
+Record Configuration Change
+M
+CS-AUD-FR-079
+Create Security Event
+M
+CS-AUD-FR-080
+Generate Security Event Identifier
+M
+CS-AUD-FR-081
+Classify Security Event Severity
+M
+CS-AUD-FR-082
+Maintain Security Event Status
+M
+CS-AUD-FR-083
+Assign Security Event Boundary
+S
+CS-AUD-FR-084
+Acknowledge Security Event
+M
+CS-AUD-FR-085
+Resolve Security Event
+M
+CS-AUD-FR-086
+Escalate Security Event Boundary
+S
+CS-AUD-FR-087
+Search Audit Events
+M
+CS-AUD-FR-088
+Filter Audit Events
+M
+CS-AUD-FR-089
+Paginate Audit Results
+M
+CS-AUD-FR-090
+Sort Audit Results
+M
+CS-AUD-FR-091
+Retrieve Audit Event Detail
+M
+CS-AUD-FR-092
+Retrieve Patient Access History
+M
+CS-AUD-FR-093
+Retrieve Resource Activity History
+M
+CS-AUD-FR-094
+Retrieve User Activity History
+M
+CS-AUD-FR-095
+Retrieve Administrator Activity History
+M
+CS-AUD-FR-096
+Retrieve Security Activity History
+M
+CS-AUD-FR-097
+Export Authorized Audit Evidence
+M
+CS-AUD-FR-098
+Record Audit Export Event
+M
+CS-AUD-FR-099
+Require Export Authorization
+M
+CS-AUD-FR-100
+Support Export Justification Boundary
+S
+CS-AUD-FR-101
+Apply Audit Record Scope
+M
+CS-AUD-FR-102
+Apply Hospital Audit Scope
+M
+CS-AUD-FR-103
+Apply Department Audit Scope
+S
+CS-AUD-FR-104
+Apply Patient Audit Scope
+M
+CS-AUD-FR-105
+Protect Privileged Audit Access
+M
+CS-AUD-FR-106
+Restrict Audit Modification
+M
+CS-AUD-FR-107
+Restrict Audit Deletion
+M
+CS-AUD-FR-108
+Preserve Append-Only Audit Boundary
+M
+CS-AUD-FR-109
+Preserve Audit Immutability Boundary
+M
+CS-AUD-FR-110
+Support Audit Integrity Verification
+M
+CS-AUD-FR-111
+Support Tamper-Evidence Boundary
+S
+CS-AUD-FR-112
+Support Audit Hash Boundary
+S
+CS-AUD-FR-113
+Support Audit Chain Boundary
+S
+CS-AUD-FR-114
+Apply Separation of Duties
+M
+CS-AUD-FR-115
+Restrict System Administrator Audit Authority
+M
+CS-AUD-FR-116
+Restrict Audit Administrator Business Authority
+M
+CS-AUD-FR-117
+Support Audit Retention Policy
+M
+CS-AUD-FR-118
+Support Audit Archival Boundary
+S
+CS-AUD-FR-119
+Support Legal Hold Boundary
+S
+CS-AUD-FR-120
+Support Controlled Audit Purge Boundary
+S
+CS-AUD-FR-121
+Persist Audit Event
+M
+CS-AUD-FR-122
+Support Critical Synchronous Audit Boundary
+M
+CS-AUD-FR-123
+Support Asynchronous Audit Boundary
+M
+CS-AUD-FR-124
+Preserve Durable Audit Processing
+M
+CS-AUD-FR-125
+Handle Audit Processing Failure
+M
+CS-AUD-FR-126
+Handle Critical Audit Failure
+M
+CS-AUD-FR-127
+Support Audit Event Idempotency Boundary
+M
+CS-AUD-FR-128
+Monitor Audit Ingestion
+M
+CS-AUD-FR-129
+Monitor Audit Persistence
+M
+CS-AUD-FR-130
+Monitor Audit Search
+M
+CS-AUD-FR-131
+Monitor Audit Export
+M
+CS-AUD-FR-132
+Monitor Audit Storage
+M
+CS-AUD-FR-133
+Monitor Security Events
+M
+CS-AUD-FR-134
+Monitor Audit Performance
+M
+CS-AUD-FR-135
+Monitor Audit Latency
+M
+CS-AUD-FR-136
+Support Structured Audit Logging
+M
+CS-AUD-FR-137
+Support Audit Correlation
+M
+CS-AUD-FR-138
+Support Distributed Trace Boundary
+S
+CS-AUD-FR-139
+Record Deployment Event Boundary
+S
+CS-AUD-FR-140
+Record Database Migration Event Boundary
+S
+CS-AUD-FR-141
+Record Configuration Deployment Boundary
+S
+CS-AUD-FR-142
+Support Future Transactional Outbox Integration
+S
+CS-AUD-FR-143
+Support Future Message Broker Integration
+S
+CS-AUD-FR-144
+Support Future SIEM Integration
+S
+CS-AUD-FR-145
+Support Future SOC Integration
+S
+CS-AUD-FR-146
+Support Future Anomaly Detection
+S
+CS-AUD-FR-147
+Support Future Behavioral Analytics
+S
+CS-AUD-FR-148
+Support Future AI-Assisted Investigation
+S
+
+5.1589 CREATE AUDIT EVENT
+CS-AUD-FR-001 — Create Audit Event
+The system shall create an audit event for approved audit-eligible activities.
+Example:
+PATIENT_RECORD_VIEWED
+Another:
+PATIENT_PHONE_UPDATED
+Another:
+PAYMENT_RECORDED
+Another:
+ROLE_ASSIGNED
+Conceptually:
+ACTION  │  ▼AUDIT POLICY  │  ▼AUDIT ELIGIBLE?  │ ┌┴─┐ │  │YES NO │  │ ▼  ▼EVENT NO EVENT
+The audit policy shall be centrally governed.
+
+5.1590 AUDIT EVENT IDENTIFIER
+CS-AUD-FR-002 — Generate Audit Event Identifier
+The system shall generate a unique audit event identifier.
+Example:
+AUD-EVT-00000098211
+The audit event identifier shall support:
+TRACEABILITYINVESTIGATIONEXPORTCORRELATIONINTEGRITY VERIFICATION
+The identifier shall not replace authorization.
+
+5.1591 EVENT TIMESTAMP
+CS-AUD-FR-003 — Record Event Timestamp
+The system shall record the authoritative audit event time.
+Potential time information includes:
+EVENT OCCURRED TIMEEVENT RECEIVED TIMEEVENT PERSISTED TIME
+where architecture requires such distinction.
+Critical Principle
+REACT BROWSER CLOCK        ≠AUTHORITATIVE AUDIT CLOCK
+Server-controlled time shall be used for authoritative audit processing.
+
+5.1592 EVENT CATEGORY
+CS-AUD-FR-004 — Record Event Category
+The system shall classify audit events using approved categories.
+Potential categories include:
+AUTHENTICATIONAUTHORIZATIONPATIENTAPPOINTMENTADMISSIONCLINICALLABORATORYRADIOLOGYPHARMACYINVENTORYBILLINGINSURANCEWORKFORCEDOCUMENTREPORTINGNOTIFICATIONADMINISTRATIONCONFIGURATIONINTEGRATIONSECURITYSYSTEMDEVOPS
+Category shall support search, monitoring, and retention policies.
+
+5.1593 EVENT SEVERITY
+CS-AUD-FR-005 — Record Event Severity
+The system shall support approved audit and security severity classifications.
+Potential values include:
+INFORMATIONNOTICEWARNINGHIGHCRITICAL
+Severity shall be assigned according to approved event policy.
+React shall not independently classify authoritative event severity.
+
+5.1594 SOURCE MODULE IDENTIFICATION
+CS-AUD-FR-006 — Identify Source Module
+The system shall identify the approved source module associated with an audit event.
+Example:
+PATIENT
+Another:
+BILLING
+Another:
+IAM
+Conceptually:
+SOURCE MODULE      │      ▼AUDIT EVENT
+The source shall support traceability.
+
+5.1595 ACTOR IDENTIFICATION
+CS-AUD-FR-007 — Identify Actor
+The system shall identify the actor associated with an eligible activity.
+Potential actors include:
+AUTHENTICATED USERPATIENTSTAFF USERADMINISTRATORSYSTEM PROCESSBACKGROUND WORKERINTEGRATION SERVICEEXTERNAL SYSTEM
+Example:
+ActorId = USR-000982
+The actor shall be derived from trusted server-side identity context where available.
+Incorrect:
+React sends:actorId = "USR-000001"
+and the server blindly stores it.
+Preferred:
+AUTHENTICATED PRINCIPAL          │          ▼SERVER IDENTITY CONTEXT          │          ▼AUDIT ACTOR
+
+5.1596 ACTOR TYPE
+CS-AUD-FR-008 — Record Actor Type
+The system shall record an approved actor type.
+Potential values include:
+PATIENTUSERSTAFFADMINISTRATORSYSTEMSERVICEWORKERINTEGRATION
+Actor type shall help distinguish human and machine activity.
+
+5.1597 ACTOR ROLE CONTEXT
+CS-AUD-FR-009 — Record Actor Role Context
+The system shall support recording approved role context associated with eligible actions.
+Example:
+USERUSR-000982
+Role context:
+BILLING_OFFICER
+The role context may represent the authorization context at the time of action.
+Critical Principle
+CURRENT USER ROLE       ≠HISTORICAL ROLE AT EVENT TIME
+If the user’s role changes later, historical audit meaning shall remain understandable.
+
+5.1598 HOSPITAL CONTEXT
+CS-AUD-FR-010 — Record Hospital Context
+The system shall record hospital context for eligible scoped actions.
+Example:
+HOSPITALHSP-00001
+This shall support:
+MULTI-HOSPITAL TRACEABILITYAUDIT SCOPEINVESTIGATIONCOMPLIANCE
+The hospital identifier shall derive from trusted application context.
+
+5.1599 DEPARTMENT CONTEXT
+CS-AUD-FR-011 — Record Department Context
+Priority
+Should Have
+The system should record department context for eligible actions.
+Example:
+CARDIOLOGY
+Department context may help answer:
+WHICH DEPARTMENT ACCESSED THE PATIENT RECORD?
+The exact department-context strategy shall be defined during Identity and Data Architecture.
+
+5.1600 SESSION CONTEXT
+CS-AUD-FR-012 — Record Session Context
+The system shall support correlation of eligible audit events with authenticated session context.
+Potential reference:
+SES-00098211
+The audit event shall not store raw session credentials.
+Therefore:
+SESSION REFERENCE       ✓
+RAW SESSION TOKEN       ✗
+
+5.1601 CORRELATION IDENTIFIER
+CS-AUD-FR-013 — Record Correlation Identifier
+The system shall record correlation identifiers for eligible activities.
+Example:
+COR-98AB-7211
+Conceptually:
+HTTP REQUEST     │     ▼PATIENT SERVICE     │     ▼DOCUMENT SERVICE     │     ▼NOTIFICATION SERVICE     │     ▼AUDIT EVENTS
+Eligible events may share:
+COR-98AB-7211
+This shall support end-to-end investigation.
+
+5.1602 REQUEST IDENTIFIER
+CS-AUD-FR-014 — Record Request Identifier
+The system shall support a request identifier for eligible request-driven events.
+Example:
+REQ-000000821
+The request identifier shall help distinguish:
+ONE HTTP REQUEST
+from:
+MULTIPLE RELATED REQUESTS
+A correlation identifier may span multiple requests.
+
+5.1603 NETWORK SOURCE BOUNDARY
+CS-AUD-FR-015 — Record Network Source Boundary
+The system shall support recording approved network-source information for eligible security and audit events.
+Potential information includes:
+SOURCE IP ADDRESS BOUNDARYFORWARDED SOURCE BOUNDARYPROXY CONTEXT BOUNDARY
+Network-source processing shall consider trusted proxy configuration.
+Critical Principle
+X-FORWARDED-FOR
+shall not automatically be trusted from every client.
+The final trusted-proxy strategy shall be defined during Infrastructure and Security Architecture.
+
+5.1604 DEVICE CONTEXT BOUNDARY
+CS-AUD-FR-016 — Record Device Context Boundary
+Priority
+Should Have
+The system should support approved device and client context.
+Potential information includes:
+USER AGENTCLIENT TYPEAPPLICATION TYPEDEVICE REFERENCE BOUNDARY
+The system shall avoid uncontrolled device fingerprinting.
+Privacy requirements shall govern the final design.
+
+5.1605 AUDIT ACTION IDENTIFICATION
+CS-AUD-FR-017 — Identify Audit Action
+The system shall identify the action associated with an audit event.
+Examples:
+VIEWCREATEUPDATEDELETE_REQUESTEDFINALIZEVERIFYAPPROVEREJECTDISPENSEEXPORTDOWNLOADASSIGNREMOVELOCKUNLOCKLOGINLOGOUT
+Domain-specific actions may use explicit event names.
+Example:
+LAB_RESULT_VERIFIED
+is preferable to an ambiguous:
+RECORD_UPDATED
+for important clinical workflow events.
+
+5.1606 ACTION RESULT
+CS-AUD-FR-018 — Record Action Result
+The system shall record the outcome of eligible actions.
+Potential results include:
+SUCCESSFAILEDDENIEDPARTIAL BOUNDARYCANCELLED
+Example:
+PATIENT_RECORD_VIEWEDRESULT = SUCCESS
+Another:
+PATIENT_RECORD_ACCESSRESULT = DENIED
+Denied actions may also create security events.
+
+5.1607 RESOURCE TYPE
+CS-AUD-FR-019 — Identify Resource Type
+The system shall identify the type of resource involved in eligible events.
+Potential values include:
+PATIENTAPPOINTMENTADMISSIONENCOUNTERCLINICAL_NOTELAB_ORDERLAB_RESULTRADIOLOGY_ORDERRADIOLOGY_REPORTPRESCRIPTIONDISPENSING_RECORDINVENTORY_ITEMINVENTORY_TRANSACTIONINVOICEPAYMENTREFUNDEMPLOYEELEAVE_REQUESTPAYROLL_RECORDDOCUMENTREPORTUSERROLEPERMISSIONCONFIGURATION
+
+5.1608 RESOURCE IDENTIFICATION
+CS-AUD-FR-020 — Identify Resource
+The system shall record an approved resource reference for eligible events.
+Example:
+ResourceType = PATIENTResourceId = PAT-000982
+The resource reference shall support investigation.
+The audit event shall not automatically copy the complete resource record.
+
+5.1609 AUDIT METADATA
+CS-AUD-FR-021 — Store Audit Metadata
+The system shall support structured approved metadata.
+Example:
+{    "changeType": "CONTACT_UPDATE",    "fieldCount": 1}
+Metadata shall follow an approved schema.
+Incorrect:
+metadata = COMPLETE_PATIENT_OBJECT
+Preferred:
+metadata = MINIMUM_REQUIRED_AUDIT_CONTEXT
+Critical Principle
+AUDIT METADATA      ≠SECONDARY BUSINESS DATABASE
+
+5.1610 AUDIT EVENT VALIDATION
+CS-AUD-FR-022 — Validate Audit Event
+The system shall validate audit events before protected persistence.
+Validation may include:
+EVENT TYPEEVENT CATEGORYACTOR CONTEXTSOURCE MODULEACTIONRESULTRESOURCE CONTEXTTIMESTAMPMETADATA SCHEMA
+Invalid audit events shall support monitoring and investigation.
+Critical audit events shall not be silently discarded.
+
+5.1611 AUDIT EVENT NORMALIZATION
+CS-AUD-FR-023 — Normalize Audit Event
+The system shall normalize approved event information.
+Example source values:
+SUCCESSSucceededsuccessful
+shall not create uncontrolled audit result variants.
+The normalized value may be:
+SUCCESS
+Normalization shall support reliable search and reporting.
+
+5.1612 SENSITIVE DATA POLICY
+CS-AUD-FR-024 — Apply Sensitive Data Policy
+The system shall evaluate audit data against approved sensitive-data policies before persistence.
+Potential sensitive categories include:
+AUTHENTICATION SECRETAUTHORIZATION TOKENPATIENT CLINICAL DATAPATIENT IDENTITY DATAEMPLOYEE DATAFINANCIAL DATAPROVIDER SECRETINFRASTRUCTURE SECRET
+The policy may:
+EXCLUDEMASKHASH BOUNDARYREFERENCESTORE APPROVED VALUE
+according to data classification.
+
+5.1613 PASSWORD EXCLUSION
+CS-AUD-FR-025 — Exclude Password Data
+The system shall not store passwords in audit events.
+This includes:
+PLAIN-TEXT PASSWORDOLD PASSWORDNEW PASSWORDPASSWORD RESET VALUE
+Incorrect:
+USER_CHANGED_PASSWORDoldPassword = "abc123"newPassword = "newpass"
+Preferred:
+PASSWORD_CHANGEDActorId = USR-000982Result = SUCCESS
+
+5.1614 AUTHENTICATION TOKEN EXCLUSION
+CS-AUD-FR-026 — Exclude Authentication Tokens
+The system shall not store raw authentication tokens in audit events.
+This includes:
+ACCESS TOKENREFRESH TOKENSESSION SECRETMFA SECRETPASSWORD RESET TOKEN
+Approved token references or irreversible fingerprints may be evaluated during Security Architecture where justified.
+
+5.1615 INFRASTRUCTURE SECRET EXCLUSION
+CS-AUD-FR-027 — Exclude Infrastructure Secrets
+The system shall not store infrastructure or provider secrets in audit events.
+Examples include:
+DATABASE PASSWORDSMTP PASSWORDSMS API KEYCLOUD SECRETPRIVATE KEYCONNECTION STRING WITH CREDENTIALS
+Configuration changes may be audited as:
+SMS_PROVIDER_CONFIGURATION_UPDATED
+without storing:
+apiKey = "SECRET"
+
+5.1616 SENSITIVE VALUE MASKING
+CS-AUD-FR-028 — Mask Eligible Sensitive Values
+The system shall support masking of eligible sensitive audit values.
+Example:
+PHONE NUMBER03********1
+Another:
+EMAILu***@example.com
+The masking policy shall depend on:
+DATA CLASSIFICATIONAUDIT NEEDINVESTIGATION NEEDPRIVACY POLICY
+
+5.1617 CHANGE SUMMARY
+CS-AUD-FR-029 — Record Change Summary
+The system shall record an approved change summary for important modification events.
+Example:
+PATIENT CONTACT INFORMATION UPDATED
+Another:
+INVOICE ADJUSTMENT APPROVED
+The summary shall remain understandable without exposing unnecessary sensitive content.
+
+5.1618 FIELD CHANGE BOUNDARY
+CS-AUD-FR-030 — Record Field Change Boundary
+Priority
+Should Have
+The system should support field-level change tracking for eligible resources.
+Example:
+FIELDphoneNumber
+Change:
+OLD VALUE BOUNDARYNEW VALUE BOUNDARY
+Not every database field shall automatically require field-level audit history.
+The exact field-audit matrix shall be defined during Data and Domain Architecture.
+
+5.1619 OLD VALUE BOUNDARY
+CS-AUD-FR-031 — Record Old Value Boundary
+Priority
+Should Have
+The system should support recording approved previous values for eligible changes.
+Example:
+PATIENT STATUSOLD = ACTIVE
+Sensitive old values shall follow audit data policy.
+Critical Principle
+AUDIT EVERYTHING
+shall not mean:
+COPY EVERY OLD DATABASE VALUE
+
+5.1620 NEW VALUE BOUNDARY
+CS-AUD-FR-032 — Record New Value Boundary
+Priority
+Should Have
+The system should support recording approved new values for eligible changes.
+Example:
+PATIENT STATUSNEW = INACTIVE
+The new value shall follow the same data-classification policy as the old value.
+
+5.1621 PATIENT RECORD ACCESS EVENT
+CS-AUD-FR-033 — Record Patient Record Access
+The system shall record eligible patient-record access events.
+Example:
+EventType = PATIENT_RECORD_VIEWEDActorId = USR-000982ResourceId = PAT-000128HospitalId = HSP-00001Result = SUCCESS
+This shall support the question:
+WHO ACCESSED THIS PATIENT?
+The exact patient-access audit matrix shall be defined during Clinical and Security Architecture.
+
+5.1622 PATIENT DATA MODIFICATION EVENT
+CS-AUD-FR-034 — Record Patient Data Modification
+The system shall record eligible patient-data modifications.
+Potential events include:
+PATIENT_CREATEDPATIENT_DEMOGRAPHICS_UPDATEDPATIENT_CONTACT_UPDATEDPATIENT_STATUS_UPDATEDPATIENT_MERGE_BOUNDARY
+The event shall identify the actor and patient resource.
+
+5.1623 APPOINTMENT ACTIVITY EVENT
+CS-AUD-FR-035 — Record Appointment Activity
+The system shall record eligible appointment events.
+Potential events include:
+APPOINTMENT_CREATEDAPPOINTMENT_RESCHEDULEDAPPOINTMENT_CANCELLEDAPPOINTMENT_CHECKED_INAPPOINTMENT_STATUS_CHANGED
+The Appointment module shall remain the source of truth for appointment state.
+
+5.1624 ADMISSION ACTIVITY EVENT
+CS-AUD-FR-036 — Record Admission Activity
+The system shall record eligible admission events.
+Potential events include:
+ADMISSION_CREATEDBED_ASSIGNEDBED_CHANGEDWARD_TRANSFERREDADMISSION_STATUS_CHANGED
+Sensitive clinical context shall be minimized in the audit event.
+
+5.1625 DISCHARGE ACTIVITY EVENT
+CS-AUD-FR-037 — Record Discharge Activity
+The system shall record eligible discharge events.
+Potential events include:
+DISCHARGE_INITIATEDDISCHARGE_APPROVEDDISCHARGE_COMPLETEDDISCHARGE_CANCELLED
+The event shall support clinical and operational traceability.
+
+5.1626 CLINICAL RECORD ACCESS EVENT
+CS-AUD-FR-038 — Record Clinical Record Access
+The system shall record eligible access to protected clinical information.
+Potential resources include:
+ENCOUNTERCLINICAL NOTEDIAGNOSISMEDICAL HISTORYLAB RESULTRADIOLOGY REPORTPRESCRIPTION
+High-sensitivity resource access may require stronger event classification.
+
+5.1627 CLINICAL NOTE ACTIVITY EVENT
+CS-AUD-FR-039 — Record Clinical Note Activity
+The system shall record eligible clinical note actions.
+Potential events include:
+CLINICAL_NOTE_CREATEDCLINICAL_NOTE_UPDATEDCLINICAL_NOTE_FINALIZEDCLINICAL_NOTE_AMENDEDCLINICAL_NOTE_VIEWED
+The audit event shall not automatically contain the complete clinical note body.
+Preferred:
+ResourceId = CLN-000982Action = FINALIZE
+The Clinical module shall retain the actual note content.
+
+5.1628 LABORATORY ACTIVITY EVENT
+CS-AUD-FR-040 — Record Laboratory Activity
+The system shall record eligible laboratory activities.
+Potential events include:
+LAB_ORDER_CREATEDSPECIMEN_COLLECTEDSPECIMEN_RECEIVEDLAB_RESULT_ENTEREDLAB_RESULT_UPDATEDLAB_RESULT_CANCELLED
+
+5.1629 LABORATORY VERIFICATION EVENT
+CS-AUD-FR-041 — Record Laboratory Verification
+The system shall record laboratory result verification events.
+Example:
+LAB_RESULT_VERIFIED
+The event shall identify:
+VERIFIERLAB RESULT REFERENCEEVENT TIMERESULT
+The complete result content shall remain in the Laboratory domain.
+
+5.1630 RADIOLOGY ACTIVITY EVENT
+CS-AUD-FR-042 — Record Radiology Activity
+The system shall record eligible radiology workflow activities.
+Potential events include:
+RADIOLOGY_ORDER_CREATEDRADIOLOGY_STUDY_STARTEDRADIOLOGY_STUDY_COMPLETEDRADIOLOGY_REPORT_CREATEDRADIOLOGY_REPORT_UPDATED
+
+5.1631 RADIOLOGY APPROVAL EVENT
+CS-AUD-FR-043 — Record Radiology Approval
+The system shall record eligible radiology report approval or finalization events.
+Example:
+RADIOLOGY_REPORT_FINALIZED
+The event shall identify the authorized actor.
+
+5.1632 PRESCRIPTION ACTIVITY EVENT
+CS-AUD-FR-044 — Record Prescription Activity
+The system shall record eligible prescription activities.
+Potential events include:
+PRESCRIPTION_CREATEDPRESCRIPTION_UPDATEDPRESCRIPTION_CANCELLEDPRESCRIPTION_RENEWED BOUNDARY
+The complete prescription shall remain in the clinical or medication domain.
+
+5.1633 MEDICATION DISPENSING ACTIVITY EVENT
+CS-AUD-FR-045 — Record Medication Dispensing Activity
+The system shall record eligible medication dispensing actions.
+Potential events include:
+MEDICATION_DISPENSEDDISPENSING_CANCELLEDDISPENSING_REVERSED
+The event shall identify the dispensing actor and approved dispensing reference.
+
+5.1634 INVENTORY ADJUSTMENT EVENT
+CS-AUD-FR-046 — Record Inventory Adjustment
+The system shall record eligible inventory adjustments.
+Potential events include:
+STOCK_ADJUSTEDSTOCK_CORRECTION_APPROVEDDAMAGED_STOCK_RECORDEDEXPIRED_STOCK_RECORDED
+Where required, the audit event may record:
+OLD QUANTITY BOUNDARYNEW QUANTITY BOUNDARYADJUSTMENT REASON
+
+5.1635 INVENTORY TRANSFER EVENT
+CS-AUD-FR-047 — Record Inventory Transfer
+The system shall record eligible inventory transfer activities.
+Potential events include:
+TRANSFER_CREATEDTRANSFER_APPROVEDTRANSFER_DISPATCHEDTRANSFER_RECEIVEDTRANSFER_CANCELLED
+The Inventory module shall own the transfer state.
+
+5.1636 INVOICE ACTIVITY EVENT
+CS-AUD-FR-048 — Record Invoice Activity
+The system shall record eligible invoice activities.
+Potential events include:
+INVOICE_CREATEDINVOICE_UPDATEDINVOICE_FINALIZEDINVOICE_CANCELLEDINVOICE_ADJUSTED
+Financial audit events shall support strong traceability.
+
+5.1637 PAYMENT ACTIVITY EVENT
+CS-AUD-FR-049 — Record Payment Activity
+The system shall record eligible payment actions.
+Potential events include:
+PAYMENT_INITIATEDPAYMENT_RECORDEDPAYMENT_CONFIRMEDPAYMENT_FAILEDPAYMENT_REVERSED
+The event shall identify:
+ACTORPAYMENT REFERENCEACTIONRESULTTIME
+Raw payment credentials shall not be stored.
+
+5.1638 REFUND ACTIVITY EVENT
+CS-AUD-FR-050 — Record Refund Activity
+The system shall record eligible refund actions.
+Potential events include:
+REFUND_REQUESTEDREFUND_APPROVEDREFUND_REJECTEDREFUND_PROCESSEDREFUND_FAILED
+Approval and processing actors shall remain distinguishable.
+
+5.1639 FINANCIAL ADJUSTMENT EVENT
+CS-AUD-FR-051 — Record Financial Adjustment
+The system shall record eligible financial adjustments.
+Example:
+INVOICE_AMOUNT_ADJUSTED
+Potential audit context includes:
+ADJUSTMENT REASONAPPROVER REFERENCEOLD AMOUNT BOUNDARYNEW AMOUNT BOUNDARY
+Sensitive payment information shall remain excluded.
+
+5.1640 INSURANCE ACTIVITY EVENT
+CS-AUD-FR-052 — Record Insurance Activity
+The system shall record eligible insurance workflow actions.
+Potential events include:
+CLAIM_CREATEDCLAIM_SUBMITTEDCLAIM_UPDATEDCLAIM_APPROVEDCLAIM_REJECTEDCLAIM_RESUBMITTED
+External provider response data shall follow integration logging policy.
+
+5.1641 EMPLOYEE RECORD ACTIVITY EVENT
+CS-AUD-FR-053 — Record Employee Record Activity
+The system shall record eligible employee record access and modification activities.
+Potential events include:
+EMPLOYEE_RECORD_VIEWEDEMPLOYEE_CREATEDEMPLOYEE_UPDATEDEMPLOYEE_STATUS_CHANGED
+HR information shall remain protected through audit record scope.
+
+5.1642 ATTENDANCE ACTIVITY EVENT
+CS-AUD-FR-054 — Record Attendance Activity
+The system shall record eligible attendance activities.
+Potential events include:
+ATTENDANCE_RECORDEDATTENDANCE_UPDATEDATTENDANCE_CORRECTEDATTENDANCE_OVERRIDE_APPROVED
+Manual corrections shall support actor traceability.
+
+5.1643 LEAVE ACTIVITY EVENT
+CS-AUD-FR-055 — Record Leave Activity
+The system shall record eligible leave workflow actions.
+Potential events include:
+LEAVE_REQUESTEDLEAVE_APPROVEDLEAVE_REJECTEDLEAVE_CANCELLEDLEAVE_UPDATED
+The event shall identify eligible decision actors.
+
+5.1644 PAYROLL ACTIVITY EVENT
+CS-AUD-FR-056 — Record Payroll Activity
+The system shall record eligible payroll actions.
+Potential events include:
+PAYROLL_GENERATEDPAYROLL_RECALCULATEDPAYROLL_APPROVEDPAYROLL_FINALIZEDPAYROLL_PAYMENT_STATUS_UPDATED
+Payroll audit access shall remain restricted.
+
+5.1645 DOCUMENT ACTIVITY EVENT
+CS-AUD-FR-057 — Record Document Activity
+The system shall record eligible document actions.
+Potential events include:
+DOCUMENT_UPLOADEDDOCUMENT_VIEWEDDOCUMENT_UPDATEDDOCUMENT_ARCHIVEDDOCUMENT_DELETED_BOUNDARY
+The audit event shall not automatically contain the document binary.
+
+5.1646 DOCUMENT DOWNLOAD EVENT
+CS-AUD-FR-058 — Record Document Download
+The system shall record eligible sensitive document downloads.
+Example:
+DOCUMENT_DOWNLOADEDResourceId = DOC-000982
+The event may identify:
+ACTORPATIENT CONTEXT BOUNDARYDOCUMENT CATEGORYTIMERESULT
+
+5.1647 REPORT ACTIVITY EVENT
+CS-AUD-FR-059 — Record Report Activity
+The system shall record eligible report actions.
+Potential events include:
+REPORT_EXECUTEDREPORT_COMPLETEDREPORT_FAILEDREPORT_VIEWEDREPORT_DOWNLOADED
+Sensitive report execution shall support additional monitoring.
+
+5.1648 SENSITIVE EXPORT EVENT
+CS-AUD-FR-060 — Record Sensitive Export
+The system shall record eligible sensitive data exports.
+Potential exports include:
+PATIENT EXPORTCLINICAL EXPORTFINANCIAL EXPORTPAYROLL EXPORTAUDIT EXPORT
+The event should support:
+EXPORT TYPEACTORSCOPERECORD COUNT BOUNDARYFORMATTIMERESULT
+
+5.1649 BULK ACCESS EVENT
+CS-AUD-FR-061 — Record Bulk Access
+The system shall identify and record eligible bulk data access.
+Example:
+USER ACCESSES 20,000 PATIENT RECORDS
+This may differ from:
+USER VIEWS ONE PATIENT
+Bulk-access thresholds shall be defined during Security Architecture.
+
+5.1650 BULK EXPORT EVENT
+CS-AUD-FR-062 — Record Bulk Export
+The system shall record bulk export activity.
+Example:
+50,000 PATIENT RECORDS EXPORTED
+Potential response may include:
+AUDIT EVENTSECURITY EVENTNOTIFICATION ALERTREVIEW BOUNDARY
+depending on policy.
+
+5.1651 NOTIFICATION ADMINISTRATION ACTIVITY
+CS-AUD-FR-063 — Record Notification Administration Activity
+The system shall record eligible NTF/COM administration actions.
+Potential events include:
+NOTIFICATION_TEMPLATE_CREATEDNOTIFICATION_TEMPLATE_UPDATEDNOTIFICATION_TEMPLATE_ACTIVATEDPROVIDER_CONFIGURATION_UPDATEDMASS_NOTIFICATION_INITIATEDEMERGENCY_BROADCAST_INITIATED
+
+5.1652 AUTHENTICATION EVENT
+CS-AUD-FR-064 — Record Authentication Event
+The system shall record approved authentication events.
+Potential events include:
+LOGIN_SUCCESSLOGIN_FAILURELOGOUTPASSWORD_RESET_REQUESTEDPASSWORD_RESET_COMPLETEDACCOUNT_LOCKEDACCOUNT_UNLOCKEDMFA_CHALLENGE_BOUNDARYMFA_FAILURE_BOUNDARY
+Authentication secrets shall remain excluded.
+
+5.1653 LOGIN SUCCESS EVENT
+CS-AUD-FR-065 — Record Login Success
+The system shall record successful login events.
+Potential information includes:
+USER REFERENCEEVENT TIMESESSION REFERENCENETWORK SOURCE BOUNDARYCLIENT CONTEXT
+The user’s password shall not be recorded.
+
+5.1654 LOGIN FAILURE EVENT
+CS-AUD-FR-066 — Record Login Failure
+The system shall record eligible failed login attempts.
+Potential information includes:
+LOGIN IDENTIFIER REFERENCE BOUNDARYEVENT TIMENETWORK SOURCEFAILURE CATEGORYCLIENT CONTEXT
+The system shall avoid exposing account existence through audit APIs.
+Repeated login failures may create a security event.
+
+5.1655 LOGOUT EVENT
+CS-AUD-FR-067 — Record Logout Event
+The system shall record eligible logout events.
+Potential logout categories include:
+USER_LOGOUTSESSION_EXPIREDADMINISTRATIVE_SESSION_TERMINATION BOUNDARYSECURITY_SESSION_TERMINATION BOUNDARY
+
+5.1656 PASSWORD RESET EVENT
+CS-AUD-FR-068 — Record Password Reset Event
+The system shall record eligible password reset activities.
+Potential events include:
+PASSWORD_RESET_REQUESTEDPASSWORD_RESET_COMPLETEDPASSWORD_RESET_FAILED
+The password and reset token shall not be stored.
+
+5.1657 ACCOUNT LOCK EVENT
+CS-AUD-FR-069 — Record Account Lock Event
+The system shall record account lock events.
+Potential reasons include:
+FAILED LOGIN POLICYSECURITY ADMINISTRATOR ACTIONAUTOMATED SECURITY POLICY
+The reason category shall support investigation.
+
+5.1658 ACCOUNT UNLOCK EVENT
+CS-AUD-FR-070 — Record Account Unlock Event
+The system shall record account unlock actions.
+The event shall identify:
+TARGET USERUNLOCK ACTORTIMEREASON BOUNDARY
+Automatic and manual unlock actions shall remain distinguishable.
+
+5.1659 AUTHORIZATION DENIAL EVENT
+CS-AUD-FR-071 — Record Authorization Denial
+The system shall record eligible authorization denials.
+Example:
+ActorId = USR-000982Action = VIEWResourceType = PATIENTResourceId = PAT-000128Result = DENIED
+Repeated or suspicious authorization denials may create security events.
+Critical Principle
+DENIED ACCESS      │      ▼NO BUSINESS DATA RETURNED
+but may still create:
+AUDIT / SECURITY EVIDENCE
+
+5.1660 ROLE ASSIGNMENT EVENT
+CS-AUD-FR-072 — Record Role Assignment
+The system shall record role assignments.
+The event shall identify:
+ASSIGNING ACTORTARGET USERROLETIMERESULT
+Example:
+ROLE_ASSIGNEDRole = BILLING_MANAGER
+
+5.1661 ROLE REMOVAL EVENT
+CS-AUD-FR-073 — Record Role Removal
+The system shall record role removal actions.
+The historical event shall remain available even if the role is later deleted or renamed.
+Stable role identifiers shall support traceability.
+
+5.1662 PERMISSION ASSIGNMENT EVENT
+CS-AUD-FR-074 — Record Permission Assignment
+The system shall record eligible permission grants.
+Example:
+PERMISSION_GRANTEDPermission = BIL_REFUND_APPROVE
+Privileged permission grants may create security events.
+
+5.1663 PERMISSION REMOVAL EVENT
+CS-AUD-FR-075 — Record Permission Removal
+The system shall record eligible permission removal.
+The event shall identify:
+ACTORTARGET ROLE / USERPERMISSIONTIMERESULT
+
+5.1664 PRIVILEGED ACCESS EVENT
+CS-AUD-FR-076 — Record Privileged Access
+The system shall record eligible privileged access.
+Potential privileged actions include:
+SECURITY CONFIGURATION ACCESSAUDIT EXPORTSYSTEM CONFIGURATION ACCESSPROVIDER CONFIGURATION ACCESSDATABASE ADMINISTRATION BOUNDARYEMERGENCY ACCESS BOUNDARY
+Privileged access shall support stronger monitoring.
+
+5.1665 ADMINISTRATOR ACTION EVENT
+CS-AUD-FR-077 — Record Administrator Action
+The system shall record eligible administrative actions.
+Potential events include:
+USER_CREATEDUSER_DISABLEDUSER_ENABLEDACCOUNT_UNLOCKEDROLE_ASSIGNEDPERMISSION_GRANTEDCONFIGURATION_CHANGEDPROVIDER_CHANGED
+Critical Principle
+ADMINISTRATOR      │      ▼MORE AUTHORITY      │      ▼MORE AUDIT REQUIREMENT
+Privileged users shall not receive less audit visibility because they are administrators.
+
+5.1666 CONFIGURATION CHANGE EVENT
+CS-AUD-FR-078 — Record Configuration Change
+The system shall record eligible configuration changes.
+Potential categories include:
+HOSPITAL CONFIGURATIONSECURITY CONFIGURATIONNOTIFICATION CONFIGURATIONINTEGRATION CONFIGURATIONREPORTING CONFIGURATIONSYSTEM CONFIGURATION
+Secrets shall be excluded.
+Where appropriate, the event may record:
+CONFIGURATION KEYOLD VALUE BOUNDARYNEW VALUE BOUNDARY
+according to sensitive-data policy.
+
+5.1667 CREATE SECURITY EVENT
+CS-AUD-FR-079 — Create Security Event
+The system shall create security events for approved security-relevant activities.
+Potential events include:
+EXCESSIVE_LOGIN_FAILURESSUSPICIOUS_AUTHORIZATION_DENIALSUNUSUAL_PATIENT_ACCESSBULK_PATIENT_EXPORTUNAUTHORIZED_ADMIN_ACTIONAUDIT_ACCESS_DENIEDAUDIT_TAMPER_SIGNALEXCESSIVE_NOTIFICATION_ACTIVITYSECURE_LINK_ABUSEUNUSUAL_INTEGRATION_ACTIVITY
+A security event may reference one or multiple audit events.
+Conceptually:
+AUDIT EVENTS     │     ▼SECURITY POLICY / DETECTION     │     ▼SECURITY EVENT
+
+5.1668 SECURITY EVENT IDENTIFIER
+CS-AUD-FR-080 — Generate Security Event Identifier
+The system shall generate a unique security event identifier.
+Example:
+SEC-EVT-00098211
+The identifier shall support:
+INVESTIGATIONASSIGNMENTESCALATIONCORRELATIONREPORTING
+
+5.1669 SECURITY EVENT SEVERITY
+CS-AUD-FR-081 — Classify Security Event Severity
+The system shall classify security events according to approved security policy.
+Potential severity values include:
+LOWMEDIUMHIGHCRITICAL
+Example:
+ONE FAILED LOGIN
+may not equal:
+10,000 FAILED LOGINSFROM DISTRIBUTED SOURCES
+The exact severity matrix shall be defined during Security Architecture.
+
+5.1670 SECURITY EVENT STATUS
+CS-AUD-FR-082 — Maintain Security Event Status
+The system shall maintain security-event workflow status.
+Potential statuses include:
+OPENACKNOWLEDGEDUNDER_INVESTIGATIONESCALATEDRESOLVEDCLOSED
+The exact workflow shall be defined during Security Operations Design.
+
+5.1671 SECURITY EVENT ASSIGNMENT BOUNDARY
+CS-AUD-FR-083 — Assign Security Event Boundary
+Priority
+Should Have
+The system should support assignment of security events to authorized investigators.
+Potential information includes:
+ASSIGNED TOASSIGNED BYASSIGNED TIME
+Assignment shall be audited.
+
+5.1672 SECURITY EVENT ACKNOWLEDGEMENT
+CS-AUD-FR-084 — Acknowledge Security Event
+The system shall allow authorized security personnel to acknowledge eligible security events.
+Acknowledgement means:
+SECURITY EVENT HAS BEEN SEEN
+It shall not mean:
+SECURITY EVENT IS RESOLVED
+Therefore:
+ACKNOWLEDGED      ≠RESOLVED
+
+5.1673 SECURITY EVENT RESOLUTION
+CS-AUD-FR-085 — Resolve Security Event
+The system shall allow authorized security personnel to resolve eligible security events.
+Resolution may require:
+RESOLUTION CATEGORYRESOLUTION SUMMARYRESOLVED BYRESOLVED TIME
+Potential categories include:
+FALSE_POSITIVEEXPECTED_ACTIVITYPOLICY_VIOLATIONACCOUNT_COMPROMISE_BOUNDARYSOFTWARE_DEFECTCONFIGURATION_ERROREXTERNAL_ATTACK_BOUNDARY
+Detailed incident-response requirements shall be defined separately.
+
+5.1674 SECURITY EVENT ESCALATION BOUNDARY
+CS-AUD-FR-086 — Escalate Security Event Boundary
+Priority
+Should Have
+The system should support escalation of eligible security events.
+Conceptually:
+SECURITY EVENT      │      ▼HIGH / CRITICAL      │      ▼ESCALATION POLICY      │      ▼SECURITY LEAD / MANAGEMENT / SOC BOUNDARY
+Escalation shall integrate with NTF/COM where communication is required.
+
+5.1675 SEARCH AUDIT EVENTS
+CS-AUD-FR-087 — Search Audit Events
+The system shall allow authorized users to search eligible audit events.
+Search shall remain permission-controlled.
+Potential search context includes:
+EVENT IDACTORACTIONRESOURCECORRELATION ID
+Audit search shall not provide universal system visibility to ordinary users.
+
+5.1676 FILTER AUDIT EVENTS
+CS-AUD-FR-088 — Filter Audit Events
+The system shall support approved audit filters.
+Potential filters include:
+DATE RANGEEVENT CATEGORYEVENT SEVERITYSOURCE MODULEACTORACTOR TYPEACTIONRESULTRESOURCE TYPERESOURCE IDHOSPITALDEPARTMENTCORRELATION ID
+Filters shall be validated server-side.
+
+5.1677 AUDIT PAGINATION
+CS-AUD-FR-089 — Paginate Audit Results
+The system shall paginate audit search results.
+Incorrect:
+SELECT ALL AUDIT EVENTS
+and return millions of rows to React.
+Preferred:
+FILTER  │  ▼SERVER-SIDE QUERY  │  ▼PAGINATED RESULT
+The exact pagination strategy shall be selected during Data Architecture.
+
+5.1678 AUDIT SORTING
+CS-AUD-FR-090 — Sort Audit Results
+The system shall support approved server-side audit sorting.
+Potential sort fields include:
+EVENT TIMESEVERITYEVENT CATEGORY
+Unsupported sort expressions shall be rejected.
+
+5.1679 AUDIT EVENT DETAIL
+CS-AUD-FR-091 — Retrieve Audit Event Detail
+The system shall allow authorized users to retrieve eligible audit-event details.
+Potential information includes:
+EVENT IDEVENT TYPECATEGORYSEVERITYACTORSOURCEACTIONRESULTRESOURCEHOSPITAL CONTEXTDEPARTMENT CONTEXTSESSION REFERENCECORRELATION IDREQUEST IDEVENT TIMEAPPROVED METADATA
+Sensitive metadata shall remain masked or restricted according to permission.
+
+5.1680 PATIENT ACCESS HISTORY
+CS-AUD-FR-092 — Retrieve Patient Access History
+The system shall support authorized retrieval of patient-record access history.
+Conceptually:
+PATIENT PAT-000982        │        ▼ACCESS EVENTS        │        ├── DOCTOR VIEW        ├── NURSE VIEW        ├── LAB VIEW        └── BILLING VIEW BOUNDARY
+Access history shall follow Clinical, Privacy, and Legal policy.
+Patient-facing access history may be considered during Patient Portal Architecture.
+
+5.1681 RESOURCE ACTIVITY HISTORY
+CS-AUD-FR-093 — Retrieve Resource Activity History
+The system shall support authorized activity history for eligible resources.
+Example:
+INVOICE INV-000982
+History:
+CREATEDUPDATEDFINALIZEDPAYMENT APPLIEDADJUSTMENT APPROVED
+The audit history shall not replace the Billing domain’s financial records.
+
+5.1682 USER ACTIVITY HISTORY
+CS-AUD-FR-094 — Retrieve User Activity History
+The system shall support authorized retrieval of eligible user activity.
+Example:
+USER USR-000982
+Potential history:
+LOGINPATIENT VIEWREPORT EXECUTIONDOCUMENT DOWNLOADLOGOUT
+User activity history shall require appropriate audit permission.
+
+5.1683 ADMINISTRATOR ACTIVITY HISTORY
+CS-AUD-FR-095 — Retrieve Administrator Activity History
+The system shall support authorized review of privileged administrator activity.
+Potential events include:
+USER DISABLEDROLE ASSIGNEDPERMISSION GRANTEDSECURITY CONFIGURATION CHANGEDPROVIDER CONFIGURATION CHANGED
+Administrator activity shall receive strong audit protection.
+
+5.1684 SECURITY ACTIVITY HISTORY
+CS-AUD-FR-096 — Retrieve Security Activity History
+The system shall support authorized review of security events and related audit evidence.
+Conceptually:
+SEC-EVT-000982       │       ▼RELATED AUDIT EVENTS       │       ├── LOGIN_FAILURE       ├── LOGIN_FAILURE       ├── LOGIN_FAILURE       ├── ACCOUNT_LOCKED       └── ADMIN_REVIEW
+
+5.1685 AUDIT EVIDENCE EXPORT
+CS-AUD-FR-097 — Export Authorized Audit Evidence
+The system shall support authorized audit evidence export.
+Potential formats may include:
+CSVPDF BOUNDARYJSON BOUNDARY
+The final formats shall be defined during Reporting and Compliance Architecture.
+Audit exports shall follow:
+AUTHORIZATIONSCOPEDATA MINIMIZATIONEXPORT MONITORING
+
+5.1686 AUDIT EXPORT EVENT
+CS-AUD-FR-098 — Record Audit Export Event
+The system shall audit audit-data exports.
+Conceptually:
+AUDIT DATA    │    ▼EXPORTED    │    ▼AUDIT EVENT
+Therefore:
+AUDIT EXPORT      │      ▼IS ITSELF AUDITABLE
+Potential event:
+AUDIT_EVIDENCE_EXPORTED
+
+5.1687 AUDIT EXPORT AUTHORIZATION
+CS-AUD-FR-099 — Require Export Authorization
+The system shall require explicit permission for audit export.
+Potential permission:
+AUD_AUDIT_EXPORT
+Permission to:
+VIEW AUDIT
+shall not automatically grant:
+EXPORT AUDIT
+
+5.1688 EXPORT JUSTIFICATION BOUNDARY
+CS-AUD-FR-100 — Support Export Justification Boundary
+Priority
+Should Have
+The system should support required justification for eligible sensitive audit exports.
+Example:
+COMPLIANCE REVIEW CASE CR-2026-0012
+The justification may be stored with the export event.
+
+5.1689 AUDIT RECORD SCOPE
+CS-AUD-FR-101 — Apply Audit Record Scope
+The system shall enforce audit record scope server-side.
+Conceptually:
+AUDIT REQUEST      │      ▼AUTHENTICATE      │      ▼AUTHORIZE      │      ▼AUDIT PERMISSION      │      ▼ORGANIZATIONAL SCOPE      │      ▼RESOURCE SENSITIVITY      │      ▼RESULT
+Knowledge of an audit event identifier shall not grant access.
+
+5.1690 HOSPITAL AUDIT SCOPE
+CS-AUD-FR-102 — Apply Hospital Audit Scope
+The system shall restrict hospital-scoped audit access.
+Example:
+HOSPITAL A AUDITOR        │        ▼HOSPITAL A EVENTS
+The user shall not automatically retrieve:
+HOSPITAL B EVENTS
+Cross-hospital audit access shall require explicit authorization.
+
+5.1691 DEPARTMENT AUDIT SCOPE
+CS-AUD-FR-103 — Apply Department Audit Scope
+Priority
+Should Have
+The system should support department-level audit scope.
+Example:
+CARDIOLOGY MANAGER        │        ▼ELIGIBLE CARDIOLOGY EVENTS
+Department scope shall not automatically expose unrelated HR, payroll, or security events.
+
+5.1692 PATIENT AUDIT SCOPE
+CS-AUD-FR-104 — Apply Patient Audit Scope
+The system shall enforce patient-related audit access policy.
+A patient-facing audit endpoint shall derive patient identity from the authenticated account relationship.
+Incorrect:
+GET /patient-access-history?patientId=PAT-000982
+trusted directly.
+Preferred:
+AUTHENTICATED PATIENT        │        ▼SERVER-DERIVED PATIENT ID        │        ▼ELIGIBLE ACCESS HISTORY
+
+5.1693 PRIVILEGED AUDIT ACCESS
+CS-AUD-FR-105 — Protect Privileged Audit Access
+The system shall apply stronger authorization to privileged audit functions.
+Potential privileged functions include:
+CROSS-HOSPITAL AUDIT SEARCHSECURITY EVENT INVESTIGATIONAUDIT EXPORTADMINISTRATOR ACTIVITY REVIEWAUDIT INTEGRITY REVIEWAUDIT RETENTION MANAGEMENT
+Privileged audit access shall itself be audited.
+
+5.1694 AUDIT MODIFICATION RESTRICTION
+CS-AUD-FR-106 — Restrict Audit Modification
+The system shall prevent ordinary modification of persisted protected audit events.
+Incorrect:
+PUT /audit-events/AUD-EVT-000982
+with:
+action = "NOTHING_HAPPENED"
+Preferred:
+PERSISTED AUDIT EVENT          │          ▼NO ORDINARY UPDATE OPERATION
+If an audit interpretation requires correction, the architecture should use an additional correction or annotation event boundary rather than silently rewriting history.
+Critical Principle
+CORRECT HISTORY      ≠REWRITE HISTORY
+
+5.1695 AUDIT DELETION RESTRICTION
+CS-AUD-FR-107 — Restrict Audit Deletion
+The system shall prevent ordinary users and ordinary administrators from deleting protected audit events.
+Incorrect:
+SYSTEM ADMINDELETE FROM audit_events;
+through normal application functionality.
+Controlled retention and purge processes shall remain separate from ordinary deletion.
+
+5.1696 APPEND-ONLY AUDIT BOUNDARY
+CS-AUD-FR-108 — Preserve Append-Only Audit Boundary
+The system shall preserve an append-oriented audit model.
+Conceptually:
+EVENT 1 ──► STOREEVENT 2 ──► STOREEVENT 3 ──► STORE
+Not:
+EVENT 1 ──► STORE             │             ▼          EDIT LATER
+The exact PostgreSQL enforcement strategy shall be defined during Data Architecture.
+
+5.1697 AUDIT IMMUTABILITY BOUNDARY
+CS-AUD-FR-109 — Preserve Audit Immutability Boundary
+The architecture shall protect persisted audit evidence from unauthorized modification.
+Potential controls may include:
+APPLICATION PERMISSION RESTRICTIONSDATABASE ROLE RESTRICTIONSAPPEND-ONLY TABLE STRATEGYTRIGGER BOUNDARYHASH BOUNDARYEXTERNAL ARCHIVE BOUNDARYBACKUP PROTECTION
+No specific implementation is finalized by this SRS section.
+Critical Principle
+NO DELETE BUTTON IN REACT          ≠IMMUTABLE AUDIT
+Real protection shall exist server-side and at appropriate data boundaries.
+
+5.1698 AUDIT INTEGRITY VERIFICATION
+CS-AUD-FR-110 — Support Audit Integrity Verification
+The system shall support verification of protected audit-data integrity.
+The integrity strategy may evaluate:
+EVENT HASHBATCH HASHCHAINED HASHSIGNED ARCHIVEDATABASE CONTROLSEXTERNAL IMMUTABLE STORAGE
+The exact method shall be selected during Security and Data Architecture.
+
+5.1699 TAMPER-EVIDENCE BOUNDARY
+CS-AUD-FR-111 — Support Tamper-Evidence Boundary
+Priority
+Should Have
+The architecture should support detection of unauthorized audit modification.
+Conceptually:
+AUDIT EVENT     │     ▼INTEGRITY VALUE     │     ▼LATER VERIFICATION     │   ┌─┴─┐   │   │VALID INVALID   │   │   ▼   ▼ OK  TAMPER SIGNAL
+Tamper evidence shall not be described as absolute tamper prevention.
+
+5.1700 AUDIT HASH BOUNDARY
+CS-AUD-FR-112 — Support Audit Hash Boundary
+Priority
+Should Have
+The architecture should support cryptographic hashing of approved audit representations where justified.
+Conceptually:
+NORMALIZED AUDIT EVENT          │          ▼CANONICAL REPRESENTATION          │          ▼HASH FUNCTION          │          ▼INTEGRITY VALUE
+The hash algorithm and canonicalization strategy shall be selected during Security Architecture.
+
+5.1701 AUDIT CHAIN BOUNDARY
+CS-AUD-FR-113 — Support Audit Chain Boundary
+Priority
+Should Have
+The architecture should support chained audit integrity where justified.
+Conceptually:
+EVENT 1  │  ▼HASH 1  │  ▼EVENT 2 + HASH 1  │  ▼HASH 2  │  ▼EVENT 3 + HASH 2
+The engineering team shall evaluate:
+CONCURRENCYPARTITIONINGMULTI-HOSPITAL SCALEEVENT ORDERINGFAILURE RECOVERY
+before selecting chained hashing.
+Critical Principle
+BLOCKCHAIN
+is not automatically required for audit integrity.
+
+5.1702 SEPARATION OF DUTIES
+CS-AUD-FR-114 — Apply Separation of Duties
+The system shall preserve separation between:
+BUSINESS ADMINISTRATIONSECURITY ADMINISTRATIONAUDIT REVIEWAUDIT CONFIGURATIONDATABASE ADMINISTRATION
+Example:
+BILLING ADMIN
+shall not automatically become:
+AUDIT ADMIN
+Another:
+AUDIT ADMIN
+shall not automatically become:
+PAYMENT APPROVER
+
+5.1703 SYSTEM ADMINISTRATOR AUDIT RESTRICTION
+CS-AUD-FR-115 — Restrict System Administrator Audit Authority
+System administration authority shall not automatically grant unrestricted audit modification or deletion authority.
+Conceptually:
+SYSTEM ADMIN     │     ├── MANAGE ELIGIBLE SYSTEM CONFIGURATION     │     └── VIEW ELIGIBLE OPERATIONAL STATUS
+Not automatically:
+EDIT AUDIT HISTORYDELETE SECURITY EVIDENCE
+
+5.1704 AUDIT ADMINISTRATOR BUSINESS AUTHORITY RESTRICTION
+CS-AUD-FR-116 — Restrict Audit Administrator Business Authority
+Audit administration permission shall not automatically grant operational business permissions.
+An audit administrator shall not automatically receive:
+PATIENT_EDITCLINICAL_NOTE_EDITLAB_RESULT_VERIFYRADIOLOGY_REPORT_FINALIZEPRESCRIPTION_CREATEPAYMENT_REVERSEREFUND_APPROVEPAYROLL_APPROVE
+Critical Principle
+CAN REVIEW ACTIVITY        ≠CAN PERFORM ALL ACTIVITY
+
+5.1705 AUDIT RETENTION POLICY
+CS-AUD-FR-117 — Support Audit Retention Policy
+The system shall support centrally governed audit retention.
+Retention may depend on:
+EVENT CATEGORYDATA CLASSIFICATIONHOSPITAL POLICYLEGAL REQUIREMENTREGULATORY REQUIREMENTINVESTIGATION STATUS
+The exact retention periods shall be defined during Compliance and Legal Architecture.
+Retention values shall not be hardcoded throughout source modules.
+
+5.1706 AUDIT ARCHIVAL BOUNDARY
+CS-AUD-FR-118 — Support Audit Archival Boundary
+Priority
+Should Have
+The architecture should support archival of eligible older audit events.
+Conceptually:
+ACTIVE AUDIT STORE        │        ▼RETENTION / ARCHIVAL POLICY        │        ▼PROTECTED ARCHIVE
+Archived data shall remain subject to authorization and integrity requirements.
+
+5.1707 LEGAL HOLD BOUNDARY
+CS-AUD-FR-119 — Support Legal Hold Boundary
+Priority
+Should Have
+The architecture should support prevention of normal purge for audit evidence under an approved legal or investigation hold.
+Conceptually:
+AUDIT RECORD     │     ▼PURGE ELIGIBLE?     │     ▼LEGAL HOLD?     │   ┌─┴─┐   │   │ YES   NO   │   │   ▼   ▼KEEP  POLICY
+The exact legal-hold process requires Legal and Compliance review.
+
+5.1708 CONTROLLED AUDIT PURGE BOUNDARY
+CS-AUD-FR-120 — Support Controlled Audit Purge Boundary
+Priority
+Should Have
+The architecture should support controlled purge when retention policy permits.
+Purge shall require:
+RETENTION POLICYLEGAL HOLD CHECKAUTHORIZED PROCESSPURGE TRACEABILITYOPERATIONAL MONITORING
+Purge shall not be exposed as an ordinary audit-record delete button.
+
+5.1709 AUDIT EVENT PERSISTENCE
+CS-AUD-FR-121 — Persist Audit Event
+The system shall persist validated audit events to an approved protected data store.
+The initial architecture may use:
+POSTGRESQL
+with a dedicated audit schema boundary.
+Conceptually:
+AUDIT EVENT     │     ▼AUDIT APPLICATION SERVICE     │     ▼AUDIT PERSISTENCE BOUNDARY     │     ▼POSTGRESQL AUDIT SCHEMA
+The exact schema shall be defined during Data Architecture.
+
+5.1710 CRITICAL SYNCHRONOUS AUDIT BOUNDARY
+CS-AUD-FR-122 — Support Critical Synchronous Audit Boundary
+The system shall identify actions for which audit persistence is part of the critical operation boundary.
+Potential examples may include:
+PRIVILEGE GRANTROLE ASSIGNMENTPAYMENT REVERSALREFUND APPROVALCLINICAL FINALIZATIONSECURITY CONFIGURATION CHANGE
+Conceptually:
+CRITICAL ACTION      │      ▼BUSINESS VALIDATION      │      ▼BUSINESS CHANGE + REQUIRED AUDIT BOUNDARY      │   ┌──┴───┐   │      │SUCCESS FAILURE   │      │   ▼      ▼COMMIT  CONTROLLED FAILURE
+The exact critical-audit matrix shall be defined during Domain and Security Architecture.
+
+5.1711 ASYNCHRONOUS AUDIT BOUNDARY
+CS-AUD-FR-123 — Support Asynchronous Audit Boundary
+The architecture shall support asynchronous processing for eligible audit events.
+Example:
+NORMAL RESOURCE VIEW
+may generate an event through a durable processing boundary where architecture permits.
+Conceptually:
+SOURCE ACTION     │     ▼AUDIT EVENT CREATED     │     ▼DURABLE AUDIT WORK     │     ▼BACKGROUND PROCESSOR     │     ▼AUDIT STORE
+Critical Principle
+ASYNCHRONOUS      ≠OPTIONAL
+An asynchronous audit event may still be mandatory and durable.
+
+5.1712 DURABLE AUDIT PROCESSING
+CS-AUD-FR-124 — Preserve Durable Audit Processing
+The architecture shall preserve durable processing for required asynchronous audit events.
+Incorrect:
+AUDIT EVENT     │     ▼IN-MEMORY LIST     │     ▼APPLICATION RESTART     │     ▼EVENT LOST
+Preferred boundary:
+AUDIT EVENT     │     ▼DURABLE STATE     │     ▼PROCESSING
+The exact durable technology shall be selected during Application Architecture.
+
+5.1713 AUDIT PROCESSING FAILURE
+CS-AUD-FR-125 — Handle Audit Processing Failure
+The system shall handle audit-processing failures.
+Potential failure categories include:
+VALIDATION FAILUREPERSISTENCE FAILUREDATABASE UNAVAILABLESERIALIZATION FAILURESCHEMA FAILUREPROCESSING TIMEOUT
+Failures shall support:
+MONITORINGRETRY BOUNDARYISOLATION BOUNDARYOPERATIONAL ALERT
+Critical audit failures shall follow stronger rules.
+
+5.1714 CRITICAL AUDIT FAILURE
+CS-AUD-FR-126 — Handle Critical Audit Failure
+The system shall define controlled behavior when a required critical audit event cannot be preserved.
+Example:
+PAYMENT REVERSAL       │       ▼REQUIRED AUDIT PERSISTENCE FAILURE
+The system shall not silently complete the privileged operation and discard required evidence.
+Potential behavior may include:
+TRANSACTION FAILUREOPERATION BLOCKSECURITY ALERTOPERATIONAL ALERT
+according to the critical-audit matrix.
+Critical Principle
+CRITICAL ACTION SUCCEEDED          +REQUIRED AUDIT LOST
+shall be treated as an architecture failure condition.
+
+5.1715 AUDIT EVENT IDEMPOTENCY BOUNDARY
+CS-AUD-FR-127 — Support Audit Event Idempotency Boundary
+The system shall support duplicate-processing protection for eligible audit-event delivery.
+Example:
+AUD-EVT-SOURCE-001
+processed twice.
+The system shall avoid uncontrolled duplicate persistence where the same event is reprocessed.
+Important Distinction
+Two legitimate actions:
+PATIENT VIEWED AT 10:00PATIENT VIEWED AT 10:05
+are two audit events.
+The same delivery processed twice:
+EVENT XEVENT X
+should not automatically become two historical actions.
+
+5.1716 AUDIT INGESTION MONITORING
+CS-AUD-FR-128 — Monitor Audit Ingestion
+The system shall monitor audit-event ingestion.
+Potential metrics include:
+EVENTS RECEIVEDEVENTS VALIDATEDEVENTS REJECTEDEVENTS NORMALIZEDEVENTS QUEUEDEVENTS DUPLICATED
+Metrics shall not expose sensitive event metadata.
+
+5.1717 AUDIT PERSISTENCE MONITORING
+CS-AUD-FR-129 — Monitor Audit Persistence
+The system shall monitor audit persistence.
+Potential metrics include:
+EVENTS PERSISTEDPERSISTENCE FAILURESPERSISTENCE LATENCYRETRY COUNTAUDIT BACKLOG
+A growing audit backlog shall support operational alerting.
+
+5.1718 AUDIT SEARCH MONITORING
+CS-AUD-FR-130 — Monitor Audit Search
+The system shall monitor audit-search operations.
+Potential metrics include:
+SEARCH COUNTSEARCH LATENCYSLOW SEARCHESFAILED SEARCHESHIGH-VOLUME SEARCHES
+Sensitive search filters shall not automatically be written into unrestricted technical logs.
+
+5.1719 AUDIT EXPORT MONITORING
+CS-AUD-FR-131 — Monitor Audit Export
+The system shall monitor audit export activity.
+Potential metrics include:
+EXPORT COUNTEXPORT RECORD COUNTEXPORT FAILURE RATEEXPORT DURATIONEXPORT VOLUME
+Unusual export activity may create a security event.
+
+5.1720 AUDIT STORAGE MONITORING
+CS-AUD-FR-132 — Monitor Audit Storage
+The system shall monitor audit storage capacity.
+Potential indicators include:
+TABLE SIZEINDEX SIZEDATABASE GROWTHARCHIVE BACKLOGRETENTION BACKLOGAVAILABLE STORAGE BOUNDARY
+Audit storage growth shall be considered during Capacity Architecture.
+
+5.1721 SECURITY EVENT MONITORING
+CS-AUD-FR-133 — Monitor Security Events
+The system shall monitor security-event volume and status.
+Potential metrics include:
+OPEN EVENTSHIGH-SEVERITY EVENTSCRITICAL EVENTSUNACKNOWLEDGED EVENTSEVENTS UNDER INVESTIGATIONESCALATED EVENTSRESOLUTION TIME
+Security metrics shall follow privileged access restrictions.
+
+5.1722 AUDIT PERFORMANCE MONITORING
+CS-AUD-FR-134 — Monitor Audit Performance
+The system shall monitor audit-processing performance.
+Potential measurements include:
+EVENT VALIDATION TIMENORMALIZATION TIMEPERSISTENCE TIMEQUEUE WAIT TIMESEARCH TIMEEXPORT TIME
+Performance monitoring shall not expose protected audit content.
+
+5.1723 AUDIT LATENCY MONITORING
+CS-AUD-FR-135 — Monitor Audit Latency
+The system shall monitor end-to-end audit latency.
+Conceptually:
+ACTION OCCURRED      │      ▼EVENT CREATED      │      ▼EVENT RECEIVED      │      ▼EVENT PERSISTED
+Potential measurements include:
+ACTION-TO-CREATION LATENCYCREATION-TO-INGESTION LATENCYINGESTION-TO-PERSISTENCE LATENCY
+Critical audit events may require stronger latency objectives.
+
+5.1724 STRUCTURED AUDIT LOGGING
+CS-AUD-FR-136 — Support Structured Audit Logging
+The system shall use structured audit-event representations.
+Conceptual example:
+EventIdEventTypeCategorySeverityActorIdActorTypeActionResultResourceTypeResourceIdHospitalIdCorrelationIdOccurredAt
+The exact C# model shall be defined during Application Architecture.
+Critical Principle
+Preferred:
+EventType = "PATIENT_RECORD_VIEWED"
+Not only:
+Message = "John did something to patient data"
+Structured events support reliable filtering and investigation.
+
+5.1725 AUDIT CORRELATION
+CS-AUD-FR-137 — Support Audit Correlation
+The system shall correlate related audit events.
+Example:
+COR-98AB-7211      │      ├── APPOINTMENT_CREATED      ├── INVOICE_CREATED      ├── NOTIFICATION_CREATED      └── NOTIFICATION_DELIVERED
+Correlation shall support cross-module investigation.
+
+5.1726 DISTRIBUTED TRACE BOUNDARY
+CS-AUD-FR-138 — Support Distributed Trace Boundary
+Priority
+Should Have
+The architecture should support future distributed tracing integration.
+Potential trace information includes:
+TRACE IDSPAN ID BOUNDARY
+Critical Principle
+DISTRIBUTED TRACE        ≠AUDIT TRAIL
+A trace may be sampled or retained for operational periods.
+Required audit evidence shall follow audit retention policy.
+
+5.1727 DEPLOYMENT EVENT BOUNDARY
+CS-AUD-FR-139 — Record Deployment Event Boundary
+Priority
+Should Have
+The architecture should support approved deployment events.
+Potential events include:
+APPLICATION_DEPLOYEDAPPLICATION_ROLLBACKSERVICE_STARTEDSERVICE_STOPPED BOUNDARY
+Potential context includes:
+ENVIRONMENTVERSIONCOMMIT REFERENCE BOUNDARYPIPELINE REFERENCEDEPLOYMENT ACTOR
+This shall support future DevOps traceability.
+
+5.1728 DATABASE MIGRATION EVENT BOUNDARY
+CS-AUD-FR-140 — Record Database Migration Event Boundary
+Priority
+Should Have
+The architecture should support recording approved database migration events.
+Potential event:
+DATABASE_MIGRATION_APPLIED
+Potential context:
+MIGRATION IDDATABASE BOUNDARYENVIRONMENTDEPLOYMENT REFERENCERESULT
+Database credentials shall remain excluded.
+
+5.1729 CONFIGURATION DEPLOYMENT BOUNDARY
+CS-AUD-FR-141 — Record Configuration Deployment Boundary
+Priority
+Should Have
+The architecture should support recording eligible configuration deployment changes.
+Example:
+APPLICATION_CONFIGURATION_DEPLOYED
+The event shall not contain unrestricted secret values.
+Potential context:
+CONFIGURATION VERSIONENVIRONMENTDEPLOYMENT REFERENCERESULT
+
+5.1730 FUTURE TRANSACTIONAL OUTBOX INTEGRATION
+CS-AUD-FR-142 — Support Future Transactional Outbox Integration
+Priority
+Should Have
+The architecture should preserve a future transactional outbox boundary.
+Problem:
+BUSINESS TRANSACTION COMMITTED          │          ▼APPLICATION CRASHED          │          ▼AUDIT EVENT NEVER PUBLISHED
+Potential future pattern:
+BUSINESS TRANSACTION        │        ├── BUSINESS DATA        │        └── OUTBOX EVENT                │                ▼            COMMIT                │                ▼        OUTBOX PROCESSOR                │                ▼             AUD/SEC
+Critical Principle
+TRANSACTIONAL OUTBOX BOUNDARY             ≠MANDATORY KAFKA
+The pattern may be implemented using PostgreSQL before a message broker is required.
+
+5.1731 FUTURE MESSAGE BROKER INTEGRATION
+CS-AUD-FR-143 — Support Future Message Broker Integration
+Priority
+Should Have
+The architecture should support future message-broker integration where system scale justifies it.
+Conceptually:
+SOURCE MODULE      │      ▼EVENT      │      ▼MESSAGE BROKER      │      ▼AUDIT CONSUMER      │      ▼AUDIT STORE
+Potential technologies shall be evaluated during Integration Architecture.
+No broker is selected by this SRS.
+
+5.1732 FUTURE SIEM INTEGRATION
+CS-AUD-FR-144 — Support Future SIEM Integration
+Priority
+Should Have
+The architecture should preserve integration with a future Security Information and Event Management platform.
+Conceptually:
+AUD/SEC   │   ▼APPROVED SECURITY EVENT STREAM   │   ▼SIEM
+Only approved security information shall be transmitted.
+The SIEM shall not automatically receive unrestricted patient clinical records.
+
+5.1733 FUTURE SOC INTEGRATION
+CS-AUD-FR-145 — Support Future SOC Integration
+Priority
+Should Have
+The architecture should support future Security Operations Center workflows.
+Potential capabilities include:
+SECURITY EVENT FORWARDINGINCIDENT REFERENCE CORRELATIONINVESTIGATION STATUS BOUNDARYESCALATION BOUNDARY
+The final SOC integration shall be defined during Security Operations Architecture.
+
+5.1734 FUTURE ANOMALY DETECTION
+CS-AUD-FR-146 — Support Future Anomaly Detection
+Priority
+Should Have
+The architecture should preserve a future anomaly-detection boundary.
+Potential examples include:
+DOCTOR ACCESSES 10,000 PATIENTSUSER LOGS IN FROM UNUSUAL PATTERN BOUNDARYBILLING USER EXPORTS LARGE CLINICAL DATASETADMINISTRATOR GRANTS MANY PRIVILEGESEMPLOYEE ACCESSES RECORDS OUTSIDE NORMAL WORKFLOW
+An anomaly signal shall not automatically prove malicious activity.
+Therefore:
+ANOMALY    ≠CONFIRMED ATTACK
+
+5.1735 FUTURE BEHAVIORAL ANALYTICS
+CS-AUD-FR-147 — Support Future Behavioral Analytics
+Priority
+Should Have
+The architecture should support future approved user and entity behavioral analytics.
+Potential inputs may include:
+ACCESS FREQUENCYRESOURCE TYPETIME PATTERNROLE CONTEXTHOSPITAL CONTEXTEXPORT ACTIVITY
+Behavioral analytics shall require:
+SECURITY REVIEWPRIVACY REVIEWLEGAL REVIEWDATA GOVERNANCE
+
+5.1736 FUTURE AI-ASSISTED INVESTIGATION
+CS-AUD-FR-148 — Support Future AI-Assisted Investigation
+Priority
+Should Have
+The architecture should preserve a future AI-assisted investigation boundary.
+Potential future capabilities include:
+SECURITY EVENT SUMMARYAUDIT TIMELINE SUMMARYRELATED EVENT DISCOVERYINVESTIGATION QUERY ASSISTANCEANOMALY EXPLANATION ASSISTANCE
+Critical Principle
+AI INVESTIGATION OUTPUT          │          ▼ASSISTIVE INFORMATION
+shall not automatically become:
+CONFIRMED SECURITY FINDING
+Human security and compliance personnel shall retain decision authority where required.
+Sensitive audit information provided to an AI system shall follow approved data-governance and security policies.
+
+5.1737 AUDIT EVENT DATA FLOW MODEL
+USER / SYSTEM      │      ▼SOURCE MODULE      │      ▼ACTION      │      ▼AUDIT POLICY      │      ▼AUDIT EVENT FACTORY      │      ▼ACTOR CONTEXT      │      ▼RESOURCE CONTEXT      │      ▼CORRELATION CONTEXT      │      ▼AUDIT EVENT      │      ▼AUD/SEC
+
+5.1738 AUDIT PERSISTENCE DATA FLOW MODEL
+AUDIT EVENT     │     ▼VALIDATION     │     ▼NORMALIZATION     │     ▼SENSITIVE DATA POLICY     │     ▼STRUCTURED EVENT     │     ▼AUDIT PERSISTENCE     │     ▼POSTGRESQL AUDIT SCHEMA     │     ▼PROTECTED AUDIT RECORD
+
+5.1739 PATIENT ACCESS AUDIT DATA FLOW MODEL
+DOCTOR  │  ▼REACT  │  ▼PATIENT API  │  ▼AUTHENTICATION  │  ▼AUTHORIZATION  │  ▼PATIENT RECORD ACCESS  │  ├──────────────► PATIENT DATA  │  ▼PATIENT_RECORD_VIEWED EVENT  │  ▼AUD/SEC  │  ▼AUDIT STORE
+The audit event shall be created server-side.
+
+5.1740 AUTHORIZATION DENIAL DATA FLOW MODEL
+USER REQUEST     │     ▼AUTHENTICATION     │     ▼AUTHORIZATION     │     ▼ACCESS ALLOWED?     │   ┌─┴─┐   │   │ YES   NO   │   │   ▼   ▼ACTION DENIAL EVENT          │          ▼        AUD/SEC          │          ▼SECURITY POLICY EVALUATION          │       ┌──┴──┐       ▼     ▼   AUDIT ONLY SECURITY EVENT
+
+5.1741 CRITICAL AUDIT TRANSACTION MODEL
+PRIVILEGED ACTION       │       ▼AUTHORIZATION       │       ▼BUSINESS VALIDATION       │       ▼DATABASE TRANSACTION       │       ├──► BUSINESS CHANGE       │       └──► REQUIRED AUDIT EVENT                    │                    ▼                 COMMIT
+Failure:
+REQUIRED AUDIT EVENT        │        ▼CANNOT PERSIST        │        ▼TRANSACTION POLICY        │        ▼ROLLBACK / CONTROLLED FAILURE
+The exact critical-event list shall be defined during Detailed Design.
+
+5.1742 ASYNCHRONOUS AUDIT MODEL
+SOURCE MODULE      │      ▼AUDIT EVENT      │      ▼DURABLE EVENT BOUNDARY      │      ▼BACKGROUND AUDIT PROCESSOR      │      ▼AUDIT VALIDATION      │      ▼AUDIT STORE
+Potential future extension:
+POSTGRESQL OUTBOX        │        ▼OUTBOX PROCESSOR        │        ▼MESSAGE BROKER        │        ▼AUDIT CONSUMER
+The broker shall only be introduced when justified.
+
+5.1743 AUDIT SEARCH DATA FLOW MODEL
+AUTHORIZED USER       │       ▼REACT AUDIT UI       │       ▼AUDIT API       │       ▼AUTHENTICATION       │       ▼AUDIT AUTHORIZATION       │       ▼RECORD SCOPE       │       ▼FILTER VALIDATION       │       ▼POSTGRESQL QUERY       │       ▼PAGINATED RESULT       │       ▼MASKING / FIELD POLICY       │       ▼REACT
+
+5.1744 SECURITY EVENT DATA FLOW MODEL
+AUDIT EVENT / SECURITY SIGNAL              │              ▼       SECURITY POLICY              │              ▼       SECURITY EVENT              │              ▼      SEVERITY CLASSIFICATION              │              ▼        SECURITY STORE              │       ┌──────┼──────┐       ▼      ▼      ▼   MONITOR  ALERT  INVESTIGATE              │              ▼            NTF/COM
+
+5.1745 AUDIT EXPORT DATA FLOW MODEL
+COMPLIANCE USER       │       ▼AUDIT EXPORT REQUEST       │       ▼AUTHENTICATION       │       ▼EXPORT AUTHORIZATION       │       ▼SCOPE VALIDATION       │       ▼JUSTIFICATION BOUNDARY       │       ▼AUDIT QUERY       │       ▼DATA MINIMIZATION       │       ▼EXPORT GENERATION       │       ▼EXPORT RESULT       │       ▼AUDIT_EVIDENCE_EXPORTED EVENT
+
+5.1746 AUDIT EVENT CONCEPTUAL MODEL
+AUDIT EVENT    │    ├── EVENT ID    ├── EVENT TYPE    ├── CATEGORY    ├── SEVERITY    ├── OCCURRED TIME    │    ├── ACTOR    │     ├── ACTOR ID    │     ├── ACTOR TYPE    │     └── ROLE CONTEXT    │    ├── ORGANIZATION    │     ├── HOSPITAL    │     └── DEPARTMENT    │    ├── ACTION    │     └── RESULT    │    ├── RESOURCE    │     ├── RESOURCE TYPE    │     └── RESOURCE ID    │    ├── REQUEST CONTEXT    │     ├── SESSION REFERENCE    │     ├── REQUEST ID    │     └── CORRELATION ID    │    └── APPROVED METADATA
+
+5.1747 SECURITY EVENT STATE MODEL
+OPEN │ ▼ACKNOWLEDGED │ ▼UNDER_INVESTIGATION │ ├────────────► ESCALATED │                   │ │                   ▼ │           UNDER_INVESTIGATION │ ▼RESOLVED │ ▼CLOSED
+The exact transition rules shall be defined during Security Operations Design.
+
+5.1748 AUDIT RETENTION LIFECYCLE MODEL
+AUDIT EVENT CREATED        │        ▼ACTIVE RETENTION        │        ▼RETENTION POLICY EVALUATION        │        ▼LEGAL HOLD?        │     ┌──┴──┐     │     │    YES    NO     │     │     ▼     ▼   RETAIN ARCHIVE / PURGE POLICY             │             ▼      CONTROLLED PROCESS
+
+5.1749 AUDIT INTEGRITY CONCEPTUAL MODEL
+AUDIT EVENT     │     ▼NORMALIZED REPRESENTATION     │     ▼INTEGRITY PROCESS     │     ▼INTEGRITY EVIDENCE     │     ▼PROTECTED STORAGE     │     ▼VERIFICATION PROCESS     │   ┌─┴─┐   │   │VALID INVALID   │   │   ▼   ▼ OK  SECURITY EVENT
+
+5.1750 AUDIT BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-AUD-BR-001
+Source modules shall remain owners of business facts
+CS-AUD-BR-002
+AUD/SEC shall own centralized activity traceability boundaries
+CS-AUD-BR-003
+Audit events shall not replace source business records
+CS-AUD-BR-004
+Application logs, audit events, and security events shall remain conceptually distinct
+CS-AUD-BR-005
+React shall not be the authoritative creator of protected audit events
+CS-AUD-BR-006
+Audit actor identity shall derive from trusted server-side context where available
+CS-AUD-BR-007
+Client-provided actor identifiers shall not be trusted as authoritative identity
+CS-AUD-BR-008
+Server-controlled time shall be used for authoritative audit timestamps
+CS-AUD-BR-009
+Audit events shall identify approved source modules
+CS-AUD-BR-010
+Historical role context shall remain understandable after role changes
+CS-AUD-BR-011
+Hospital context shall derive from trusted organizational scope
+CS-AUD-BR-012
+Raw session credentials shall not be stored in audit events
+CS-AUD-BR-013
+Correlation identifiers shall support cross-module investigation
+CS-AUD-BR-014
+Forwarded network headers shall only be trusted through approved proxy configuration
+CS-AUD-BR-015
+Important domain actions should use explicit audit event names
+CS-AUD-BR-016
+Failed and denied actions may remain audit eligible
+CS-AUD-BR-017
+Audit events shall identify eligible resource types and resource references
+CS-AUD-BR-018
+Audit metadata shall not become a duplicate business database
+CS-AUD-BR-019
+Audit events shall be validated before protected persistence
+CS-AUD-BR-020
+Audit event values shall be normalized for reliable search
+CS-AUD-BR-021
+Sensitive-data policy shall apply before audit persistence
+CS-AUD-BR-022
+Passwords shall never be stored in audit events
+CS-AUD-BR-023
+Raw authentication tokens shall never be stored in audit events
+CS-AUD-BR-024
+Infrastructure secrets shall never be stored in audit events
+CS-AUD-BR-025
+Eligible sensitive audit values shall support masking
+CS-AUD-BR-026
+Field-level change history shall be governed by an audit matrix
+CS-AUD-BR-027
+Audit everything shall not mean copying every old and new database value
+CS-AUD-BR-028
+Patient-record access shall support actor traceability
+CS-AUD-BR-029
+Clinical audit events shall not automatically contain complete clinical notes
+CS-AUD-BR-030
+Laboratory verification shall identify the authorized verifier
+CS-AUD-BR-031
+Radiology finalization shall identify the authorized actor
+CS-AUD-BR-032
+Medication dispensing activity shall support actor traceability
+CS-AUD-BR-033
+Inventory adjustments shall support reason and change traceability where required
+CS-AUD-BR-034
+Financial activities shall support strong actor and action traceability
+CS-AUD-BR-035
+Payment credentials shall not be stored in audit events
+CS-AUD-BR-036
+Refund approval and refund processing actors shall remain distinguishable
+CS-AUD-BR-037
+Employee and payroll audit data shall remain scope protected
+CS-AUD-BR-038
+Sensitive document downloads shall support audit events
+CS-AUD-BR-039
+Sensitive exports shall support export audit evidence
+CS-AUD-BR-040
+Bulk access shall remain distinguishable from ordinary single-record access
+CS-AUD-BR-041
+Bulk export may create both audit and security events
+CS-AUD-BR-042
+Authentication secrets shall remain excluded from authentication audit events
+CS-AUD-BR-043
+Audit APIs shall not expose user-account existence through login-failure data
+CS-AUD-BR-044
+Authorization denial may create security evidence without returning business data
+CS-AUD-BR-045
+Role and permission changes shall be auditable
+CS-AUD-BR-046
+Privileged permission grants may require security-event creation
+CS-AUD-BR-047
+More administrative authority shall require stronger audit accountability
+CS-AUD-BR-048
+Configuration changes shall exclude secret values
+CS-AUD-BR-049
+Security events may correlate multiple audit events
+CS-AUD-BR-050
+Security severity shall follow centrally governed policy
+CS-AUD-BR-051
+Security-event acknowledgement shall remain distinct from resolution
+CS-AUD-BR-052
+Security-event assignment and resolution shall be audited
+CS-AUD-BR-053
+Audit search shall require explicit authorization
+CS-AUD-BR-054
+Audit search filters shall be validated server-side
+CS-AUD-BR-055
+Audit results shall be paginated
+CS-AUD-BR-056
+Audit event detail shall follow metadata sensitivity policy
+CS-AUD-BR-057
+Patient access history shall follow clinical, privacy, and legal policy
+CS-AUD-BR-058
+Audit resource history shall not replace source-domain records
+CS-AUD-BR-059
+User activity history shall require privileged audit permission
+CS-AUD-BR-060
+Administrator activity shall receive strong audit protection
+CS-AUD-BR-061
+Audit evidence exports shall themselves be audited
+CS-AUD-BR-062
+Audit view permission shall not automatically grant audit export permission
+CS-AUD-BR-063
+Sensitive audit exports may require justification
+CS-AUD-BR-064
+Audit record scope shall be enforced server-side
+CS-AUD-BR-065
+Cross-hospital audit access shall require explicit authority
+CS-AUD-BR-066
+Patient-facing audit scope shall derive from authenticated patient identity
+CS-AUD-BR-067
+Privileged audit access shall itself be audited
+CS-AUD-BR-068
+Persisted protected audit events shall not support ordinary update operations
+CS-AUD-BR-069
+Audit corrections shall preserve historical evidence rather than silently rewriting it
+CS-AUD-BR-070
+Ordinary users and administrators shall not delete protected audit events
+CS-AUD-BR-071
+Retention purge shall remain separate from ordinary deletion
+CS-AUD-BR-072
+The audit persistence model shall preserve an append-oriented boundary
+CS-AUD-BR-073
+Removing a delete button from React does not create audit immutability
+CS-AUD-BR-074
+Audit integrity shall require server and data-layer protection
+CS-AUD-BR-075
+Tamper evidence shall not be represented as absolute tamper prevention
+CS-AUD-BR-076
+Cryptographic integrity strategies shall use canonical event representations
+CS-AUD-BR-077
+Blockchain shall not automatically be required for audit integrity
+CS-AUD-BR-078
+Business, security, audit, and database administration duties shall remain separable
+CS-AUD-BR-079
+System administrators shall not automatically receive audit deletion authority
+CS-AUD-BR-080
+Audit administrators shall not automatically receive hospital business authority
+CS-AUD-BR-081
+Audit retention shall be centrally governed
+CS-AUD-BR-082
+Legal hold shall override normal purge eligibility where approved
+CS-AUD-BR-083
+Audit purge shall use a controlled process
+CS-AUD-BR-084
+PostgreSQL may provide the initial protected audit persistence boundary
+CS-AUD-BR-085
+Critical actions may require audit persistence within the operation boundary
+CS-AUD-BR-086
+Critical required audit failure shall not be silently ignored
+CS-AUD-BR-087
+Asynchronous audit processing shall not mean optional audit processing
+CS-AUD-BR-088
+Required asynchronous audit events shall preserve a durable processing boundary
+CS-AUD-BR-089
+Audit processing failures shall support monitoring and controlled retry
+CS-AUD-BR-090
+Duplicate event delivery shall not automatically create duplicate historical actions
+CS-AUD-BR-091
+Two legitimate repeated user actions may create two legitimate audit events
+CS-AUD-BR-092
+Audit metrics shall not expose sensitive event metadata
+CS-AUD-BR-093
+Growing audit backlog shall support operational alerting
+CS-AUD-BR-094
+Audit search activity shall support monitoring
+CS-AUD-BR-095
+Unusual audit export activity may create a security event
+CS-AUD-BR-096
+Audit storage growth shall be capacity planned
+CS-AUD-BR-097
+Security-event metrics shall follow privileged access restrictions
+CS-AUD-BR-098
+Structured audit events shall be preferred over ambiguous free-text-only logs
+CS-AUD-BR-099
+Distributed traces shall remain distinct from required audit evidence
+CS-AUD-BR-100
+Deployment and migration events shall exclude credentials
+CS-AUD-BR-101
+Transactional outbox architecture shall not automatically require a message broker
+CS-AUD-BR-102
+Message-broker technology shall only be introduced when architecture evidence justifies it
+CS-AUD-BR-103
+SIEM integration shall receive approved security information rather than unrestricted clinical data
+CS-AUD-BR-104
+Anomaly signals shall not automatically prove malicious activity
+CS-AUD-BR-105
+Behavioral analytics shall require privacy and governance review
+CS-AUD-BR-106
+AI-assisted investigation shall remain assistive and shall not automatically confirm security findings
+
+5.1751 AUDIT PERMISSION CONCEPT
+Potential permissions include:
+AUD_EVENT_VIEWAUD_EVENT_VIEW_HOSPITALAUD_EVENT_VIEW_DEPARTMENTAUD_EVENT_VIEW_CROSS_HOSPITALAUD_PATIENT_ACCESS_HISTORY_VIEWAUD_CLINICAL_ACTIVITY_VIEWAUD_FINANCIAL_ACTIVITY_VIEWAUD_WORKFORCE_ACTIVITY_VIEWAUD_ADMIN_ACTIVITY_VIEWAUD_SECURITY_ACTIVITY_VIEWAUD_EVENT_DETAIL_VIEWAUD_EVENT_METADATA_SENSITIVE_VIEWAUD_USER_ACTIVITY_VIEWAUD_RESOURCE_HISTORY_VIEWAUD_AUDIT_EXPORTAUD_AUDIT_EXPORT_SENSITIVEAUD_AUDIT_INTEGRITY_VIEWAUD_AUDIT_RETENTION_VIEWAUD_AUDIT_RETENTION_MANAGEAUD_SECURITY_EVENT_VIEWAUD_SECURITY_EVENT_ACKNOWLEDGEAUD_SECURITY_EVENT_ASSIGNAUD_SECURITY_EVENT_INVESTIGATEAUD_SECURITY_EVENT_RESOLVEAUD_SECURITY_EVENT_ESCALATEAUD_SECURITY_MONITOR_VIEWAUD_AUDIT_MONITOR_VIEWAUD_AUDIT_STORAGE_VIEWAUD_ADMIN
+Patient:
+PATIENT   │   ▼AUD_PATIENT_ACCESS_HISTORY_VIEW
+where approved by policy.
+Hospital Auditor:
+HOSPITAL AUDITOR       │       ├── AUD_EVENT_VIEW_HOSPITAL       ├── AUD_EVENT_DETAIL_VIEW       └── AUD_RESOURCE_HISTORY_VIEW
+Compliance Officer:
+COMPLIANCE OFFICER        │        ├── AUD_EVENT_VIEW_HOSPITAL        ├── AUD_AUDIT_EXPORT        └── AUD_PATIENT_ACCESS_HISTORY_VIEW
+Security Analyst:
+SECURITY ANALYST       │       ├── AUD_SECURITY_EVENT_VIEW       ├── AUD_SECURITY_EVENT_ACKNOWLEDGE       ├── AUD_SECURITY_EVENT_INVESTIGATE       └── AUD_SECURITY_ACTIVITY_VIEW
+Security Lead:
+SECURITY LEAD      │      ├── AUD_SECURITY_EVENT_ASSIGN      ├── AUD_SECURITY_EVENT_RESOLVE      └── AUD_SECURITY_EVENT_ESCALATE
+Audit Administrator:
+AUDIT ADMINISTRATOR         │         ├── AUD_AUDIT_MONITOR_VIEW         ├── AUD_AUDIT_STORAGE_VIEW         ├── AUD_AUDIT_INTEGRITY_VIEW         └── AUD_AUDIT_RETENTION_MANAGE
+Critical Principle
+AUD_ADMIN
+shall not automatically grant:
+PATIENT_EDITCLINICAL_NOTE_EDITLAB_RESULT_VERIFYRADIOLOGY_REPORT_FINALIZEPRESCRIPTION_CREATEMEDICATION_DISPENSEINVOICE_ADJUSTPAYMENT_REVERSEREFUND_APPROVEPAYROLL_APPROVEIAM_PERMISSION_GRANT
+Audit administration shall not become universal CuraSphere authority.
+
+5.1752 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Audit event creation
+CS-AUD-FR-001 to 006
+Actor identification
+CS-AUD-FR-007 to 009
+Organizational context
+CS-AUD-FR-010 to 011
+Session and correlation
+CS-AUD-FR-012 to 014
+Network and device context
+CS-AUD-FR-015 to 016
+Action and resource traceability
+CS-AUD-FR-017 to 020
+Audit metadata
+CS-AUD-FR-021
+Event validation and normalization
+CS-AUD-FR-022 to 023
+Sensitive data protection
+CS-AUD-FR-024 to 028
+Change tracking
+CS-AUD-FR-029 to 032
+Patient audit
+CS-AUD-FR-033 to 034
+Appointment audit
+CS-AUD-FR-035
+Admission and discharge audit
+CS-AUD-FR-036 to 037
+Clinical audit
+CS-AUD-FR-038 to 039
+Laboratory audit
+CS-AUD-FR-040 to 041
+Radiology audit
+CS-AUD-FR-042 to 043
+Prescription and dispensing audit
+CS-AUD-FR-044 to 045
+Inventory audit
+CS-AUD-FR-046 to 047
+Financial audit
+CS-AUD-FR-048 to 052
+Workforce audit
+CS-AUD-FR-053 to 056
+Document audit
+CS-AUD-FR-057 to 058
+Reporting and export audit
+CS-AUD-FR-059 to 062
+Notification administration audit
+CS-AUD-FR-063
+Authentication audit
+CS-AUD-FR-064 to 070
+Authorization audit
+CS-AUD-FR-071
+Role and permission audit
+CS-AUD-FR-072 to 075
+Privileged administration audit
+CS-AUD-FR-076 to 078
+Security event management
+CS-AUD-FR-079 to 086
+Audit search
+CS-AUD-FR-087 to 091
+Audit activity history
+CS-AUD-FR-092 to 096
+Audit export
+CS-AUD-FR-097 to 100
+Audit record scope
+CS-AUD-FR-101 to 105
+Audit modification protection
+CS-AUD-FR-106 to 109
+Audit integrity
+CS-AUD-FR-110 to 113
+Separation of duties
+CS-AUD-FR-114 to 116
+Audit retention
+CS-AUD-FR-117 to 120
+Audit persistence
+CS-AUD-FR-121
+Critical audit processing
+CS-AUD-FR-122
+Asynchronous audit processing
+CS-AUD-FR-123 to 124
+Audit failure management
+CS-AUD-FR-125 to 126
+Audit idempotency
+CS-AUD-FR-127
+Audit monitoring
+CS-AUD-FR-128 to 135
+Structured audit events
+CS-AUD-FR-136
+Audit correlation
+CS-AUD-FR-137
+Distributed tracing
+CS-AUD-FR-138
+DevOps activity boundaries
+CS-AUD-FR-139 to 141
+Transactional outbox
+CS-AUD-FR-142
+Message broker
+CS-AUD-FR-143
+SIEM integration
+CS-AUD-FR-144
+SOC integration
+CS-AUD-FR-145
+Anomaly detection
+CS-AUD-FR-146
+Behavioral analytics
+CS-AUD-FR-147
+AI-assisted investigation
+CS-AUD-FR-148
+
+5.1753 AUDIT, SECURITY AND COMPLIANCE RISK ANALYSIS
+Risk 1 — React Creates Authoritative Audit Events
+Problem
+The browser sends:
+actorId = ADMINaction = SAFE_ACTION
+Impact
+The client can falsify audit evidence.
+Mitigation
+Create protected audit events from trusted server-side context.
+
+Risk 2 — System Administrator Deletes Audit History
+Problem
+An administrator performs a privileged action and deletes the evidence.
+Impact
+Accountability and compliance evidence are destroyed.
+Mitigation
+Separate system administration from protected audit deletion authority.
+
+Risk 3 — Audit Administrator Edits History
+Problem
+Audit administrator changes:
+PAYMENT_REVERSED
+to:
+PAYMENT_VIEWED
+Impact
+Historical evidence becomes unreliable.
+Mitigation
+Use append-oriented persistence and no ordinary update workflow.
+
+Risk 4 — No Patient Access Audit
+Problem
+Hundreds of employees view a patient record.
+No access events exist.
+Impact
+Unauthorized access cannot be investigated.
+Mitigation
+Record eligible patient and clinical record access.
+
+Risk 5 — Password Stored in Audit Event
+Problem
+Password change audit records old and new passwords.
+Impact
+Audit storage becomes a credential database.
+Mitigation
+Never store password values.
+
+Risk 6 — Access Token Stored in Audit Metadata
+Problem
+JWT access token is logged.
+Impact
+Token theft from audit storage may permit account access.
+Mitigation
+Exclude raw authentication tokens.
+
+Risk 7 — Provider Secret Stored in Configuration Audit
+Problem
+SMS configuration event records the API key.
+Impact
+Audit users can obtain provider credentials.
+Mitigation
+Audit the configuration action without storing the secret.
+
+Risk 8 — Complete Clinical Note Copied Into Audit
+Problem
+Every note update copies the full note body into audit metadata.
+Impact
+AUD/SEC becomes a second clinical database with broader access.
+Mitigation
+Store event and resource references with governed field-level change boundaries.
+
+Risk 9 — Every Database Field Is Audited Automatically
+Problem
+ORM serializes complete old and new entities.
+Impact
+Passwords, tokens, clinical data, and internal values may enter audit storage.
+Mitigation
+Use an explicit audit matrix and sensitive-data policy.
+
+Risk 10 — No Role Assignment Audit
+Problem
+A user receives administrator privileges.
+No event exists.
+Impact
+Privilege escalation cannot be traced.
+Mitigation
+Audit role and permission changes.
+
+Risk 11 — Privileged Users Have Less Audit
+Problem
+Administrator actions are excluded because administrators are trusted.
+Impact
+The highest-risk actions have the weakest evidence.
+Mitigation
+Apply stronger audit requirements to privileged activity.
+
+Risk 12 — Audit Search Is Universal
+Problem
+Every manager can search every audit event.
+Impact
+Clinical, payroll, financial, and security information is exposed.
+Mitigation
+Apply audit permission and record scope.
+
+Risk 13 — Hospital A Auditor Reads Hospital B Events
+Problem
+Client changes hospital ID.
+Impact
+Cross-hospital audit information is exposed.
+Mitigation
+Derive organizational scope server-side.
+
+Risk 14 — Patient Changes Patient ID in Access History Request
+Problem
+Patient requests another patient’s access history.
+Impact
+Private audit information is exposed.
+Mitigation
+Derive patient scope from authenticated identity.
+
+Risk 15 — Audit Export Is Not Audited
+Problem
+Compliance user exports one million audit events.
+No evidence exists.
+Impact
+Sensitive audit extraction cannot be investigated.
+Mitigation
+Audit audit-data exports.
+
+Risk 16 — View Permission Automatically Grants Export
+Problem
+A user who can view ten events can export ten million events.
+Impact
+Bulk data exposure risk increases.
+Mitigation
+Separate audit view and export permissions.
+
+Risk 17 — Audit Table Has Normal UPDATE Permission
+Problem
+Application database role can update audit rows.
+Impact
+A software defect may rewrite history.
+Mitigation
+Use restricted database roles and append-oriented design.
+
+Risk 18 — No Tamper Detection
+Problem
+A privileged infrastructure actor modifies audit rows.
+Impact
+Modification may remain invisible.
+Mitigation
+Evaluate integrity and tamper-evidence mechanisms.
+
+Risk 19 — Blockchain Added Without Engineering Need
+Problem
+The team assumes audit means blockchain.
+Impact
+Complexity increases without solving application authorization and database security.
+Mitigation
+Evaluate practical append-only, privilege, hashing, archival, and backup controls first.
+
+Risk 20 — Audit Storage Failure Is Silently Ignored
+Problem
+Payment reversal succeeds.
+Audit insert fails.
+Application continues.
+Impact
+A critical financial action has no required evidence.
+Mitigation
+Define critical synchronous audit boundaries.
+
+Risk 21 — Every Read Waits on a Remote Audit Service
+Problem
+Patient screen cannot load because remote audit service is slow.
+Impact
+Clinical workflows may become unavailable.
+Mitigation
+Use durable asynchronous boundaries for eligible events.
+
+Risk 22 — Asynchronous Audit Is In Memory
+Problem
+Audit event waits in application memory.
+The server restarts.
+Impact
+Required audit evidence is lost.
+Mitigation
+Use durable audit processing.
+
+Risk 23 — Duplicate Delivery Creates False Duplicate Actions
+Problem
+One payment event is processed twice by an audit consumer.
+Impact
+History appears to show two payment actions.
+Mitigation
+Use event idempotency boundaries.
+
+Risk 24 — Legitimate Repeated Actions Are Deduplicated
+Problem
+Doctor views the same patient twice.
+System removes the second event as a duplicate.
+Impact
+Real activity history becomes incomplete.
+Mitigation
+Distinguish duplicate event delivery from repeated legitimate actions.
+
+Risk 25 — Audit Search Loads Entire Table
+Problem
+React requests all audit records.
+Impact
+PostgreSQL and application memory are overloaded.
+Mitigation
+Use server-side filtering and pagination.
+
+Risk 26 — Unindexed Audit Growth
+Problem
+Billions of events accumulate with poor query design.
+Impact
+Audit investigation becomes unusable.
+Mitigation
+Define indexing, partitioning, archival, and retention during Data Architecture.
+
+Risk 27 — Audit Storage Fills Database Disk
+Problem
+Audit events grow continuously.
+No capacity monitoring exists.
+Impact
+PostgreSQL storage exhaustion may affect the entire hospital system.
+Mitigation
+Monitor audit storage and define capacity thresholds.
+
+Risk 28 — Security Event Equals Confirmed Attack
+Problem
+One anomaly automatically disables a doctor and reports compromise.
+Impact
+Legitimate clinical work may be disrupted.
+Mitigation
+Separate anomaly signals from confirmed findings.
+
+Risk 29 — Security Events Are Never Acknowledged
+Problem
+Critical alerts remain open for days.
+Impact
+Security response is delayed.
+Mitigation
+Monitor unacknowledged high-severity events.
+
+Risk 30 — Audit Logs Used as Distributed Traces
+Problem
+Every low-level technical span is retained as compliance audit evidence.
+Impact
+Storage grows uncontrollably and audit meaning becomes unclear.
+Mitigation
+Keep tracing and audit concepts distinct.
+
+Risk 31 — Distributed Traces Used as Audit Trail
+Problem
+Sampled traces are treated as complete audit evidence.
+Impact
+Required actions may be missing.
+Mitigation
+Use explicit required audit events.
+
+Risk 32 — Kafka Added Before Modular Architecture Exists
+Problem
+The RAD team introduces distributed event infrastructure on day one.
+Impact
+Deployment, debugging, and DevOps complexity increase.
+Mitigation
+Start with modular AUD/SEC boundaries and PostgreSQL-based durability where appropriate.
+
+Risk 33 — Separate Audit Microservice on Day One
+Problem
+Every business transaction depends on a network call to an immature audit microservice.
+Impact
+Network failure becomes a hospital-wide workflow dependency.
+Mitigation
+Define domain and persistence boundaries first; extract services only when justified.
+
+Risk 34 — SIEM Receives Full Patient Records
+Problem
+Complete clinical data is forwarded with every security event.
+Impact
+Sensitive patient data spreads into security tooling.
+Mitigation
+Forward approved security context and minimum required references.
+
+Risk 35 — AI Has Unrestricted Audit Access
+Problem
+AI investigation system receives all patient, payroll, financial, and security audit data.
+Impact
+Data governance and privacy exposure increase.
+Mitigation
+Apply explicit scope, minimization, authorization, and governance to AI-assisted investigation.
+
+5.1754 COMPLETE AUDIT AND SECURITY CAPABILITY MODEL
+                         AUD/SEC PLATFORM                               │          ┌────────────────────┼────────────────────┐          │                    │                    │          ▼                    ▼                    ▼       AUDIT EVENT           ACTOR               RESOURCE          │                    │                    │          ▼                    ▼                    ▼       CATEGORY             IDENTITY               TYPE          │                    │                    │          ▼                    ▼                    ▼       SEVERITY               ROLE                  ID          │                    │                    │          └────────────────────┼────────────────────┘                               ▼                         ACTION + RESULT                               │                               ▼                        REQUEST CONTEXT                               │                ┌──────────────┼──────────────┐                ▼              ▼              ▼             SESSION        REQUEST       CORRELATION                               │                               ▼                       SENSITIVE DATA POLICY                               │                 ┌─────────────┼─────────────┐                 ▼             ▼             ▼              EXCLUDE         MASK        REFERENCE                               │                               ▼                         AUDIT PERSISTENCE                               │                 ┌─────────────┼─────────────┐                 ▼             ▼             ▼             APPEND ONLY    INTEGRITY      RETENTION                               │                               ▼                           AUDIT ACCESS                               │                 ┌─────────────┼─────────────┐                 ▼             ▼             ▼               SEARCH        HISTORY        EXPORT                               │                               ▼                         SECURITY EVENTS                               │               ┌───────────────┼───────────────┐               ▼               ▼               ▼            DETECTION      INVESTIGATION     ESCALATION                               │                               ▼                          OBSERVABILITY                               │                ┌──────────────┼──────────────┐                ▼              ▼              ▼             INGESTION       STORAGE       PERFORMANCE                               │                               ▼                         FUTURE SECURITY                               │                ┌──────────────┼──────────────┐                ▼              ▼              ▼               SIEM           SOC             AI
+
+5.1755 AUDIT MODULE COMPLETION STATUS
+Module: Audit Trail, Security Event, Compliance and System Activity Management SystemModule Code: AUD/SECRequirement Range: CS-AUD-FR-001 to CS-AUD-FR-148Business Rule Range: CS-AUD-BR-001 to CS-AUD-BR-106
+Audit Domain Boundary: DefinedApplication Log Boundary: DefinedSecurity Event Boundary: DefinedReact Audit Boundary: DefinedAudit Actors: DefinedAudit Event Creation: DefinedAudit Event Identifier: DefinedAudit Timestamp: DefinedEvent Category: DefinedEvent Severity: DefinedSource Module: DefinedActor Identification: DefinedActor Type: DefinedActor Role Context: DefinedHospital Context: DefinedDepartment Context: DefinedSession Context: DefinedCorrelation Identifier: DefinedRequest Identifier: DefinedNetwork Source Boundary: DefinedDevice Context Boundary: DefinedAudit Action: DefinedAction Result: DefinedResource Type: DefinedResource Identification: DefinedAudit Metadata: DefinedAudit Event Validation: DefinedAudit Event Normalization: DefinedSensitive Data Policy: DefinedPassword Exclusion: DefinedAuthentication Token Exclusion: DefinedInfrastructure Secret Exclusion: DefinedSensitive Value Masking: DefinedChange Summary: DefinedField Change Boundary: DefinedOld Value Boundary: DefinedNew Value Boundary: DefinedPatient Record Access Audit: DefinedPatient Data Modification Audit: DefinedAppointment Audit: DefinedAdmission Audit: DefinedDischarge Audit: DefinedClinical Record Access Audit: DefinedClinical Note Audit: DefinedLaboratory Audit: DefinedLaboratory Verification Audit: DefinedRadiology Audit: DefinedRadiology Approval Audit: DefinedPrescription Audit: DefinedMedication Dispensing Audit: DefinedInventory Adjustment Audit: DefinedInventory Transfer Audit: DefinedInvoice Audit: DefinedPayment Audit: DefinedRefund Audit: DefinedFinancial Adjustment Audit: DefinedInsurance Audit: DefinedEmployee Record Audit: DefinedAttendance Audit: DefinedLeave Audit: DefinedPayroll Audit: DefinedDocument Audit: DefinedDocument Download Audit: DefinedReport Audit: DefinedSensitive Export Audit: DefinedBulk Access Audit: DefinedBulk Export Audit: DefinedNotification Administration Audit: DefinedAuthentication Audit: DefinedLogin Success Audit: DefinedLogin Failure Audit: DefinedLogout Audit: DefinedPassword Reset Audit: DefinedAccount Lock Audit: DefinedAccount Unlock Audit: DefinedAuthorization Denial Audit: DefinedRole Assignment Audit: DefinedRole Removal Audit: DefinedPermission Assignment Audit: DefinedPermission Removal Audit: DefinedPrivileged Access Audit: DefinedAdministrator Action Audit: DefinedConfiguration Change Audit: DefinedSecurity Event Creation: DefinedSecurity Event Identifier: DefinedSecurity Event Severity: DefinedSecurity Event Status: DefinedSecurity Event Assignment Boundary: DefinedSecurity Event Acknowledgement: DefinedSecurity Event Resolution: DefinedSecurity Event Escalation: DefinedAudit Search: DefinedAudit Filtering: DefinedAudit Pagination: DefinedAudit Sorting: DefinedAudit Event Detail: DefinedPatient Access History: DefinedResource Activity History: DefinedUser Activity History: DefinedAdministrator Activity History: DefinedSecurity Activity History: DefinedAudit Evidence Export: DefinedAudit Export Audit: DefinedAudit Export Authorization: DefinedExport Justification Boundary: DefinedAudit Record Scope: DefinedHospital Audit Scope: DefinedDepartment Audit Scope: DefinedPatient Audit Scope: DefinedPrivileged Audit Access: DefinedAudit Modification Restriction: DefinedAudit Deletion Restriction: DefinedAppend-Only Audit Boundary: DefinedAudit Immutability Boundary: DefinedAudit Integrity Verification: DefinedTamper-Evidence Boundary: DefinedAudit Hash Boundary: DefinedAudit Chain Boundary: DefinedSeparation of Duties: DefinedSystem Administrator Audit Restriction: DefinedAudit Administrator Business Authority Restriction: DefinedAudit Retention: DefinedAudit Archival Boundary: DefinedLegal Hold Boundary: DefinedControlled Audit Purge Boundary: DefinedAudit Persistence: DefinedCritical Synchronous Audit Boundary: DefinedAsynchronous Audit Boundary: DefinedDurable Audit Processing: DefinedAudit Processing Failure: DefinedCritical Audit Failure: DefinedAudit Event Idempotency: DefinedAudit Ingestion Monitoring: DefinedAudit Persistence Monitoring: DefinedAudit Search Monitoring: DefinedAudit Export Monitoring: DefinedAudit Storage Monitoring: DefinedSecurity Event Monitoring: DefinedAudit Performance Monitoring: DefinedAudit Latency Monitoring: DefinedStructured Audit Logging: DefinedAudit Correlation: DefinedDistributed Trace Boundary: DefinedDeployment Event Boundary: DefinedDatabase Migration Event Boundary: DefinedConfiguration Deployment Boundary: DefinedTransactional Outbox Boundary: DefinedMessage Broker Boundary: DefinedSIEM Integration Boundary: DefinedSOC Integration Boundary: DefinedAnomaly Detection Boundary: DefinedBehavioral Analytics Boundary: DefinedAI-Assisted Investigation Boundary: DefinedAudit Data Flow Models: DefinedSecurity Event Data Flow: DefinedCritical Audit Transaction Model: DefinedAsynchronous Audit Model: DefinedAudit Search Model: DefinedAudit Export Model: DefinedAudit Conceptual Model: DefinedSecurity Event State Model: DefinedAudit Retention Lifecycle: DefinedAudit Integrity Model: DefinedAudit Permission Concept: DefinedRequirement Traceability: EstablishedAudit, Security and Compliance Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The Audit Trail, Security Event, Compliance and System Activity Management requirements establish the accountability, investigation, security-evidence, and protected system-activity foundation of CuraSphere.
+These requirements shall later be transformed into:
+audit domain architecture;
+security event architecture;
+compliance architecture;
+audit application architecture;
+audit data architecture;
+audit security architecture;
+audit integration architecture;
+audit use case model;
+search audit use case;
+view audit detail use case;
+view patient access history use case;
+view resource activity history use case;
+view user activity history use case;
+view administrator activity history use case;
+export audit evidence use case;
+acknowledge security event use case;
+assign security event use case;
+investigate security event use case;
+resolve security event use case;
+escalate security event use case;
+audit ingestion activity diagram;
+critical audit activity diagram;
+asynchronous audit activity diagram;
+audit search activity diagram;
+audit export activity diagram;
+security event activity diagram;
+audit retention activity diagram;
+audit integrity verification activity diagram;
+patient record access audit sequence diagram;
+authorization denial audit sequence diagram;
+role assignment audit sequence diagram;
+payment reversal audit sequence diagram;
+audit search sequence diagram;
+audit export sequence diagram;
+security event sequence diagram;
+Audit Event entity;
+Audit Event Metadata entity boundary;
+Audit Field Change entity;
+Security Event entity;
+Security Event Assignment entity;
+Security Event Activity entity;
+Audit Export entity;
+Audit Retention Policy entity;
+Legal Hold entity boundary;
+Audit Integrity Record entity boundary;
+PostgreSQL audit schema;
+audit table strategy;
+audit partitioning evaluation;
+audit indexing strategy;
+event identifier strategy;
+security event identifier strategy;
+audit event naming convention;
+audit event registry;
+audit category registry;
+audit severity matrix;
+security severity matrix;
+audit event factory;
+audit context accessor;
+actor context resolver;
+hospital context resolver;
+department context resolver;
+session context strategy;
+request identifier middleware;
+correlation identifier middleware;
+trace context integration;
+audit event validation;
+audit event normalization;
+audit metadata schema strategy;
+audit sensitive-data classifier;
+audit masking strategy;
+password exclusion tests;
+token exclusion tests;
+secret exclusion tests;
+patient data audit matrix;
+clinical audit matrix;
+laboratory audit matrix;
+radiology audit matrix;
+pharmacy audit matrix;
+inventory audit matrix;
+billing audit matrix;
+insurance audit matrix;
+HR audit matrix;
+payroll audit matrix;
+document audit matrix;
+reporting audit matrix;
+IAM audit matrix;
+notification audit matrix;
+administrator audit matrix;
+configuration audit matrix;
+field-level change tracking strategy;
+old-value strategy;
+new-value strategy;
+audit annotation strategy;
+audit correction-event strategy;
+append-only persistence strategy;
+PostgreSQL audit database role;
+PostgreSQL GRANT and REVOKE strategy;
+audit table UPDATE restriction;
+audit table DELETE restriction;
+audit stored procedure evaluation;
+PostgreSQL trigger evaluation;
+EF Core audit persistence boundary;
+EF Core interceptor evaluation;
+domain event audit strategy;
+application service audit strategy;
+middleware audit strategy;
+audit event idempotency strategy;
+critical synchronous audit matrix;
+asynchronous audit matrix;
+transactional audit strategy;
+transactional outbox evaluation;
+PostgreSQL outbox table evaluation;
+outbox processor;
+background audit worker;
+ASP.NET Core BackgroundService evaluation;
+Hangfire audit worker evaluation;
+Quartz.NET evaluation;
+durable audit queue strategy;
+audit retry strategy;
+audit dead-letter boundary;
+audit poison-event boundary;
+audit failure alerting;
+audit event hash strategy;
+canonical audit serialization;
+SHA-256 evaluation boundary;
+HMAC evaluation boundary;
+digital signature evaluation boundary;
+chained hash evaluation;
+Merkle-tree evaluation boundary;
+immutable archive evaluation;
+object-lock storage evaluation boundary;
+write-once storage evaluation boundary;
+audit backup strategy;
+audit restoration integrity checks;
+audit retention policy engine;
+audit archival strategy;
+audit legal hold model;
+audit purge workflow;
+audit purge evidence;
+audit search query service;
+audit query specification pattern evaluation;
+PostgreSQL audit indexes;
+B-tree index evaluation;
+BRIN index evaluation;
+GIN JSONB index evaluation;
+audit table partitioning;
+time-based partitioning evaluation;
+hospital partitioning evaluation;
+audit pagination strategy;
+keyset pagination evaluation;
+offset pagination boundary;
+audit search DTO;
+audit event detail DTO;
+audit masking response policy;
+patient access history service;
+resource activity history service;
+user activity history service;
+administrator activity history service;
+security event service;
+security event detection rules;
+failed login detection;
+authorization denial detection;
+unusual patient access detection;
+bulk access detection;
+bulk export detection;
+privilege escalation detection;
+audit tamper detection;
+security event assignment workflow;
+security event acknowledgement workflow;
+security event investigation workflow;
+security event resolution workflow;
+security event escalation workflow;
+NTF/COM security alert integration;
+audit export service;
+audit export authorization;
+audit export justification;
+audit export job strategy;
+audit export watermark evaluation;
+audit export checksum evaluation;
+compliance evidence package boundary;
+audit monitoring metrics;
+audit ingestion metrics;
+audit persistence metrics;
+audit backlog metrics;
+audit search metrics;
+audit export metrics;
+audit storage metrics;
+security event metrics;
+audit latency metrics;
+OpenTelemetry integration evaluation;
+structured application logging boundary;
+Serilog evaluation;
+Microsoft.Extensions.Logging strategy;
+audit versus application logging policy;
+trace versus audit policy;
+SIEM integration evaluation;
+Microsoft Sentinel evaluation boundary;
+Splunk evaluation boundary;
+Elastic Security evaluation boundary;
+Wazuh evaluation boundary;
+SOC workflow integration;
+syslog boundary;
+CEF boundary;
+OpenTelemetry log export boundary;
+message broker evaluation;
+RabbitMQ evaluation;
+Apache Kafka evaluation;
+Azure Service Bus evaluation;
+audit event consumer strategy;
+idempotent consumer strategy;
+React audit module architecture;
+React audit dashboard;
+React audit search page;
+React audit filter panel;
+React audit event table;
+React audit event detail drawer;
+React patient access history;
+React resource timeline;
+React user activity timeline;
+React administrator activity page;
+React audit export workflow;
+React security event dashboard;
+React security event detail;
+React security investigation timeline;
+React security event assignment UI;
+React security event resolution UI;
+TanStack Query audit query strategy;
+Zustand audit UI-state strategy;
+audit URL filter state strategy;
+audit accessibility;
+audit keyboard navigation;
+audit table screen-reader behavior;
+audit authorization tests;
+audit scope tests;
+cross-hospital audit tests;
+patient audit scope tests;
+department audit scope tests;
+audit actor tests;
+audit timestamp tests;
+audit source tests;
+audit correlation tests;
+audit request ID tests;
+audit session tests;
+network source tests;
+proxy trust tests;
+audit validation tests;
+audit normalization tests;
+password exclusion tests;
+token exclusion tests;
+secret exclusion tests;
+sensitive masking tests;
+audit metadata minimization tests;
+patient access audit tests;
+patient modification audit tests;
+appointment audit tests;
+admission audit tests;
+clinical audit tests;
+laboratory verification audit tests;
+radiology finalization audit tests;
+prescription audit tests;
+dispensing audit tests;
+inventory adjustment audit tests;
+payment audit tests;
+refund audit tests;
+payroll audit tests;
+document download audit tests;
+report export audit tests;
+bulk access audit tests;
+bulk export audit tests;
+login audit tests;
+failed login audit tests;
+password reset audit tests;
+account lock audit tests;
+authorization denial audit tests;
+role assignment audit tests;
+permission assignment audit tests;
+privileged action audit tests;
+configuration change audit tests;
+audit search tests;
+audit pagination tests;
+audit sorting tests;
+audit event detail tests;
+patient access history tests;
+resource activity tests;
+user activity tests;
+administrator activity tests;
+audit export tests;
+audit export authorization tests;
+audit export audit tests;
+append-only tests;
+audit update prevention tests;
+audit deletion prevention tests;
+database role tests;
+audit integrity tests;
+audit tamper tests;
+audit hash tests;
+audit chain tests;
+audit retention tests;
+legal hold tests;
+audit purge tests;
+critical audit failure tests;
+asynchronous audit tests;
+application restart tests;
+durable audit tests;
+duplicate event tests;
+audit backlog tests;
+audit ingestion load tests;
+audit search load tests;
+audit export load tests;
+audit storage growth tests;
+partition performance tests;
+index performance tests;
+audit latency tests;
+security event detection tests;
+security event acknowledgement tests;
+security event assignment tests;
+security event resolution tests;
+security event escalation tests;
+SIEM integration tests;
+future anomaly detection tests;
+future behavioral analytics governance tests;
+future AI-assisted investigation governance tests.
+No separate audit microservice, security event microservice, compliance microservice, immutable ledger service, blockchain network, private blockchain, public blockchain, Hyperledger deployment, Ethereum deployment, separate audit database, separate PostgreSQL cluster, audit table schema, audit partition key, partition interval, index design, B-tree index, BRIN index, GIN index, JSONB metadata structure, audit retention period, patient access retention period, clinical audit retention period, financial audit retention period, security event retention period, archive period, purge period, legal hold process, audit database role, database GRANT strategy, database REVOKE strategy, PostgreSQL trigger, audit stored procedure, EF Core SaveChanges interceptor, MediatR audit behavior, ASP.NET Core middleware audit strategy, domain event strategy, transactional outbox implementation, outbox polling interval, outbox lease, outbox retry count, message broker, RabbitMQ deployment, Apache Kafka deployment, Azure Service Bus deployment, Amazon SQS deployment, MassTransit deployment, NServiceBus deployment, Wolverine deployment, audit consumer concurrency, audit worker technology, Hangfire deployment, Quartz.NET deployment, BackgroundService implementation, audit retry policy, audit dead-letter storage, audit poison-event threshold, hash algorithm, HMAC key strategy, digital signature algorithm, chained hash design, Merkle tree, immutable object storage, Azure Blob Immutable Storage, Amazon S3 Object Lock, write-once storage, SIEM provider, Microsoft Sentinel deployment, Splunk deployment, Elastic Security deployment, Wazuh deployment, SOC provider, CEF integration, syslog integration, audit export format, audit export watermark, export checksum, export signing, compliance package format, audit search engine, Elasticsearch deployment, OpenSearch deployment, audit analytics warehouse, data lake, audit OLAP database, ClickHouse deployment, time-series database, Redis cache, audit search cache, audit API page size, audit search date-range limit, bulk-access threshold, bulk-export threshold, failed-login threshold, authorization-denial threshold, anomaly detection algorithm, behavioral analytics model, machine-learning platform, AI investigation model, large language model provider, AI prompt architecture, AI vector database, AI audit embedding strategy, or AI security decision automation has been finalized by this SRS section.
+Those decisions shall be made during Domain Architecture, Application Architecture, Data Architecture, Audit Architecture, Security Architecture, Identity and Access Architecture, Clinical Architecture, Financial Architecture, Compliance Architecture, Privacy Architecture, Integration Architecture, Infrastructure Architecture, Performance Architecture, DevOps Architecture, Observability Architecture, Disaster Recovery Architecture, UI Architecture, Detailed Design, threat modeling, privacy review, legal review, compliance review, database benchmarking, load testing, failure testing, penetration testing, audit integrity testing, security operations planning, and approved hospital governance.
+

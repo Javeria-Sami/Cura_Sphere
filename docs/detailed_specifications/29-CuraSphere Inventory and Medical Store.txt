@@ -1,0 +1,415 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere — Hospital Management System
+Section 5 — System Functional Requirements
+Part 5.10 — Inventory and Medical Store Management System (INV)
+
+5.10.1 Introduction
+The Inventory and Medical Store Management System (INV) is the centralized module responsible for managing all hospital inventory, medical supplies, consumables, pharmaceuticals, laboratory reagents, surgical instruments, office supplies, biomedical equipment, and warehouse operations.
+The Inventory Management System ensures that all hospital departments have the required supplies at the right time while minimizing shortages, overstocking, wastage, and financial loss.
+This module integrates with almost every operational department of CuraSphere, making it one of the hospital's core operational systems.
+
+Inventory Module Scope
+The Inventory Management System shall manage:
+Medical Store
+Central Warehouse
+Department Stores
+Pharmacy Inventory
+Laboratory Inventory
+Radiology Inventory
+Surgical Store
+Nursing Store
+Biomedical Equipment Inventory
+Office Supplies
+Consumables
+Reagents
+Medical Devices
+Purchase Requests
+Purchase Orders
+Goods Receiving
+Supplier Management
+Stock Transfers
+Stock Returns
+Stock Adjustments
+Inventory Valuation
+Stock Audits
+Cycle Counting
+Expiry Monitoring
+Batch Tracking
+Inventory Reports
+
+Inventory Workflow
+Supplier
+    │
+    ▼
+Purchase Order
+    │
+    ▼
+Goods Received
+    │
+    ▼
+Warehouse Inventory
+    │
+    ▼
+Department Requests
+    │
+    ▼
+Stock Transfer
+    │
+    ▼
+Department Inventory
+    │
+    ▼
+Consumption
+    │
+    ▼
+Billing / Clinical Module
+    │
+    ▼
+Inventory Updated
+    │
+    ▼
+Audit Log
+
+5.10.2 Objectives
+The Inventory System shall:
+Maintain centralized inventory records.
+Prevent stock shortages.
+Prevent overstocking.
+Track medicine batches.
+Track expiry dates.
+Manage suppliers.
+Manage purchase orders.
+Support multiple warehouses.
+Maintain inventory valuation.
+Reduce inventory wastage.
+Support stock forecasting.
+Integrate with Pharmacy.
+Integrate with Laboratory.
+Integrate with Billing.
+Maintain complete inventory audit history.
+
+5.10.3 Actors
+Actor
+Description
+Inventory Officer
+Manages inventory
+Store Manager
+Manages warehouse
+Procurement Officer
+Purchases supplies
+Supplier
+Provides inventory
+Pharmacist
+Requests medicines
+Laboratory Staff
+Requests reagents
+Nurse
+Requests consumables
+Finance Officer
+Reviews inventory costs
+Hospital Administrator
+Configures inventory
+Auditor
+Reviews stock
+CuraSphere System
+Automatic inventory processing
+
+5.10.4 High-Level Inventory Architecture
+                Supplier
+                   │
+                   ▼
+         Procurement Module
+                   │
+                   ▼
+          Purchase Order System
+                   │
+                   ▼
+          Goods Receiving System
+                   │
+                   ▼
+          Central Warehouse
+                   │
+       ┌───────────┼────────────┐
+       ▼           ▼            ▼
+ Pharmacy      Laboratory    Surgery
+       │           │            │
+       └───────────┼────────────┘
+                   ▼
+        Department Inventory
+                   │
+                   ▼
+         Inventory Consumption
+                   │
+      ┌────────────┼────────────┐
+      ▼            ▼            ▼
+ Billing       Patient Care   Reports
+                   │
+                   ▼
+               Audit System
+
+5.10.5 Functional Requirement INV-FR-001
+Inventory Master Management
+
+Requirement ID
+INV-FR-001
+Requirement Name
+Inventory Item Master Management
+
+Description
+The system shall maintain a centralized Inventory Master Database containing every stock item used within the hospital.
+Each inventory item shall be uniquely identified and categorized.
+
+Actors
+Inventory Officer
+Store Manager
+Administrator
+
+Preconditions
+User has inventory management permissions.
+
+Trigger
+Authorized user creates or updates an inventory item.
+
+Main Workflow
+Create Item
+      │
+      ▼
+Enter Item Details
+      │
+      ▼
+Validate Information
+      │
+      ▼
+Assign Item Code
+      │
+      ▼
+Save Item
+      │
+      ▼
+Audit Log
+
+Item Information
+The Inventory Master shall maintain:
+Item ID
+Item Code
+Item Name
+Category
+Unit of Measure
+Manufacturer
+Brand
+Supplier
+Reorder Level
+Maximum Level
+Storage Condition
+Barcode
+Status
+
+Business Rules
+INV-BR-001
+Each inventory item shall possess one unique Item Code.
+INV-BR-002
+Inventory records shall never be permanently deleted.
+INV-BR-003
+Only authorized inventory personnel may modify inventory information.
+
+Acceptance Criteria
+Inventory items can be created.
+Duplicate Item Codes are prevented.
+Audit records are generated.
+
+5.10.6 Functional Requirement INV-FR-002
+Supplier Management
+
+Requirement ID
+INV-FR-002
+
+Description
+The system shall maintain supplier information for procurement and inventory operations.
+
+Supplier Information
+Supplier ID
+Company Name
+Contact Person
+Address
+Phone
+Email
+Tax Number
+License Number
+Bank Details
+Status
+
+Workflow
+Create Supplier
+        │
+        ▼
+Validate Information
+        │
+        ▼
+Save Supplier
+        │
+        ▼
+Supplier Available
+
+Business Rules
+Supplier IDs shall be unique.
+Inactive suppliers cannot receive purchase orders.
+
+Acceptance Criteria
+Authorized users can manage suppliers.
+
+5.10.7 Functional Requirement INV-FR-003
+Purchase Requisition Management
+
+Requirement ID
+INV-FR-003
+
+Description
+Departments shall be able to request inventory through electronic purchase requisitions.
+
+Workflow
+Department Requests Item
+          │
+          ▼
+Inventory Check
+          │
+          ▼
+Available?
+     │          │
+    Yes        No
+     │          │
+Issue Stock  Create Purchase Requisition
+                 │
+                 ▼
+             Approval
+                 │
+                 ▼
+         Procurement Department
+
+Business Rules
+Purchase requisitions require department approval.
+Duplicate requisitions shall be prevented.
+
+Acceptance Criteria
+Departments can request inventory electronically.
+
+5.10.8 Functional Requirement INV-FR-004
+Purchase Order Management
+
+Requirement ID
+INV-FR-004
+
+Description
+The Procurement Department shall generate electronic Purchase Orders (POs) for approved requisitions.
+
+Purchase Order Lifecycle
+Draft
+  │
+  ▼
+Pending Approval
+  │
+  ▼
+Approved
+  │
+  ▼
+Sent to Supplier
+  │
+  ▼
+Goods Received
+  │
+  ▼
+Closed
+
+Purchase Order Information
+PO Number
+Supplier
+Purchase Date
+Delivery Date
+Requested Items
+Quantities
+Prices
+Taxes
+Status
+
+Business Rules
+Purchase Orders require authorization before submission.
+
+Acceptance Criteria
+Approved purchase orders are sent to suppliers.
+
+5.10.9 Functional Requirement INV-FR-005
+Goods Receiving Management
+
+Requirement ID
+INV-FR-005
+
+Description
+The system shall record all goods received from suppliers and update inventory automatically after verification.
+
+Workflow
+Supplier Delivery
+       │
+       ▼
+Receive Goods
+       │
+       ▼
+Inspect Items
+       │
+       ▼
+Quality Check
+       │
+       ▼
+Accept / Reject
+       │
+       ▼
+Inventory Updated
+
+System Records
+GRN Number
+Supplier
+Purchase Order
+Batch Number
+Expiry Date
+Quantity
+Receiver
+Date
+Warehouse
+
+Business Rules
+Only accepted goods increase inventory levels.
+
+Acceptance Criteria
+Inventory updates immediately after successful goods receipt.
+
+5.10 Progress
+Inventory Module
+
+✔ Introduction
+✔ Objectives
+✔ Actors
+✔ Architecture
+✔ Inventory Master
+✔ Supplier Management
+✔ Purchase Requisition
+✔ Purchase Order
+✔ Goods Receiving
+
+Completed: ~30%
+
+Next (Part 2 of Section 5.10)
+The next section will continue with:
+INV-FR-006 — Warehouse Management
+INV-FR-007 — Stock Issue Management
+INV-FR-008 — Stock Transfer Management
+INV-FR-009 — Stock Return Management
+INV-FR-010 — Stock Adjustment Management
+INV-FR-011 — Inventory Consumption Tracking
+INV-FR-012 — Batch and Expiry Management
+INV-FR-013 — Inventory Valuation
+INV-FR-014 — Reorder Level & Automatic Procurement
+INV-FR-015 — Inventory Reporting & Analytics
+INV-FR-016 — Inventory Audit & Security
+INV-FR-017 — Integration Requirements
+INV-FR-018 — Non-Functional Requirements
+INV-FR-019 — Requirement Traceability Matrix
+
+

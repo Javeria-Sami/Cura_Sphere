@@ -1,0 +1,1639 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.3 — DOCTOR, APPOINTMENT, AND QUEUE MANAGEMENT
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Codes: DOC, APT, QUEModule Names: Doctor Management, Appointment Management, Queue ManagementProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.54 MODULE GROUP PURPOSE
+The Doctor, Appointment, and Queue Management modules shall collectively manage the administrative workflow through which a patient is scheduled for consultation, arrives at the hospital, checks in, enters an operational queue, and becomes available to the appropriate doctor.
+The three modules shall maintain clear business ownership.
+DOC │ ▼WHO CAN PROVIDE THE CLINICAL SERVICEAND WHEN ARE THEY AVAILABLE?APT │ ▼WHEN IS THE PATIENT SCHEDULEDTO RECEIVE THE SERVICE?QUE │ ▼WHO IS CURRENTLY WAITINGAND WHO SHOULD BE CALLED NEXT?
+These modules shall not own the complete clinical consultation.
+Clinical documentation shall be managed by the appropriate clinical modules.
+The complete boundary is:
+DOCDoctor and Clinical Provider Context              │              ▼APTScheduled Consultation              │              ▼QUEOperational Waiting Flow              │              ▼OPD / EMRClinical Encounter
+
+5.55 END-TO-END PATIENT CONSULTATION ENTRY FLOW
+PATIENT   │   ▼SEARCH / IDENTIFY PATIENT   │   ▼SELECT DEPARTMENT / SERVICE   │   ▼SELECT DOCTOR   │   ▼CHECK DOCTOR AVAILABILITY   │   ▼SELECT DATE AND SLOT   │   ▼VALIDATE APPOINTMENT   │   ▼CREATE APPOINTMENT   │   ▼PATIENT ARRIVES   │   ▼CHECK-IN   │   ▼QUEUE ENTRY   │   ▼TOKEN / QUEUE POSITION   │   ▼DOCTOR WORKLIST   │   ▼PATIENT CALLED   │   ▼CLINICAL ENCOUNTER
+This flow represents a major operational pathway within CuraSphere.
+
+5.56 DOC — DOCTOR MANAGEMENT
+5.56.1 Module Purpose
+The Doctor Management module shall manage the administrative and operational information required to identify doctors and other configured clinical providers who may participate in CuraSphere workflows.
+The DOC module shall support:
+doctor profile management;
+employee association;
+department assignment;
+specialization assignment;
+consultation service assignment;
+doctor operational status;
+doctor availability;
+doctor schedule definition;
+schedule exception management;
+doctor search;
+doctor work context.
+The Doctor module shall not independently own employee payroll or general human resource records.
+The module boundary shall be:
+HR MODULE    │    ▼WHO IS THE EMPLOYEE?DOC MODULE    │    ▼WHAT IS THE DOCTOR'SCLINICAL OPERATIONAL CONTEXT?
+Example:
+HR OWNSEmployee IDEmployment InformationEmployment StatusPayroll RelationshipGeneral Staff Information
+Compared with:
+DOC OWNS / MANAGESDoctor Operational ProfileSpecializationClinical Department AssignmentConsultation AvailabilityScheduling Context
+
+5.56.2 DOC Actors
+Actor
+Responsibility
+Hospital Administrator
+Manages approved doctor administrative configuration
+HR Officer
+Provides employee context
+Department Administrator
+Manages permitted department assignments
+Doctor
+Reviews permitted schedule and work context
+Receptionist
+Searches available doctors
+Appointment Coordinator
+Uses doctor availability
+CuraSphere System
+Validates doctor scheduling information
+
+5.56.3 DOC Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-DOC-FR-001
+Create Doctor Operational Profile
+M
+CS-DOC-FR-002
+Associate Doctor with Employee
+M
+CS-DOC-FR-003
+View Doctor Profile
+M
+CS-DOC-FR-004
+Update Doctor Profile
+M
+CS-DOC-FR-005
+Assign Doctor to Department
+M
+CS-DOC-FR-006
+Remove Doctor from Department
+M
+CS-DOC-FR-007
+Assign Doctor Specialization
+M
+CS-DOC-FR-008
+Update Doctor Specialization
+M
+CS-DOC-FR-009
+Change Doctor Operational Status
+M
+CS-DOC-FR-010
+Search Doctor
+M
+CS-DOC-FR-011
+Filter Doctors by Department
+M
+CS-DOC-FR-012
+Filter Doctors by Specialization
+M
+CS-DOC-FR-013
+Define Doctor Availability
+M
+CS-DOC-FR-014
+Update Doctor Availability
+M
+CS-DOC-FR-015
+Create Schedule Exception
+M
+CS-DOC-FR-016
+Remove Schedule Exception
+M
+CS-DOC-FR-017
+View Doctor Schedule
+M
+CS-DOC-FR-018
+Validate Doctor Availability
+M
+CS-DOC-FR-019
+View Doctor Worklist
+M
+CS-DOC-FR-020
+Record Doctor Administrative Audit Events
+M
+
+5.57 DOCTOR PROFILE REQUIREMENTS
+CS-DOC-FR-001 — Create Doctor Operational Profile
+Requirement Name
+Create Doctor Operational Profile
+Module
+DOC — Doctor Management
+Description
+The system shall allow an authorized user to create an operational doctor profile for an eligible clinical employee.
+Primary Actor
+Hospital Administrator
+Priority
+Must Have
+Preconditions
+The user is authenticated.
+The user has doctor profile management permission.
+The applicable employee exists.
+The employee is eligible for doctor profile association.
+Trigger
+An authorized user initiates doctor profile creation.
+Main Requirement
+The system shall create a doctor operational profile associated with an eligible employee record.
+Main Flow
+SELECT EMPLOYEE      │      ▼VERIFY ELIGIBILITY      │      ▼CREATE DOCTOR PROFILE      │      ▼ASSIGN CLINICAL CONTEXT      │      ├── Department      ├── Specialization      └── Operational Status      │      ▼VALIDATE      │      ▼SAVE PROFILE      │      ▼AUDIT
+Business Rules
+CS-DOC-BR-001
+Each doctor operational profile shall have a unique internal identifier.
+CS-DOC-BR-002
+A doctor profile shall reference an eligible employee or approved clinical provider identity.
+CS-DOC-BR-003
+Creating a doctor profile shall not automatically provide unrestricted clinical permissions.
+CS-DOC-BR-004
+IAM authorization and doctor operational identity shall remain separate concepts.
+Important Engineering Concept
+The following are not identical:
+USER ACCOUNT
+EMPLOYEE
+DOCTOR PROFILE
+Conceptually:
+USER ACCOUNT     │     ▼DIGITAL SYSTEM IDENTITYEMPLOYEE     │     ▼HOSPITAL EMPLOYMENT IDENTITYDOCTOR PROFILE     │     ▼CLINICAL OPERATIONAL IDENTITY
+A doctor may therefore conceptually be represented as:
+User AccountUSER-1004        │EmployeeEMP-0421        │Doctor ProfileDOC-0082
+The exact database relationships shall be finalized during data architecture.
+Acceptance Criteria
+Given an eligible employee and an authorized user, the system shall create a valid doctor operational profile.
+
+CS-DOC-FR-002 — Associate Doctor with Employee
+Description
+The system shall associate a doctor operational profile with the appropriate employee or approved provider identity.
+Priority
+Must Have
+Business Rule
+The system shall prevent invalid duplicate doctor-to-employee associations according to the approved relationship model.
+
+CS-DOC-FR-003 — View Doctor Profile
+Description
+The system shall allow authorized users to view permitted doctor operational information.
+Doctor Profile May Include
+doctor identifier;
+doctor display name;
+employee reference;
+department assignments;
+specialization;
+operational status;
+consultation availability summary.
+Security Rule
+Doctor profile access shall not automatically expose private HR information.
+
+CS-DOC-FR-004 — Update Doctor Profile
+Description
+The system shall allow an authorized user to update permitted doctor operational information.
+Priority
+Must Have
+Audit Requirement
+Significant doctor profile changes shall be auditable.
+
+5.58 DOCTOR DEPARTMENT MANAGEMENT
+CS-DOC-FR-005 — Assign Doctor to Department
+Description
+The system shall allow an authorized user to assign an eligible doctor to an eligible hospital department.
+Priority
+Must Have
+Example
+DOCTORDr. Ahmad Khan       │       ▼DEPARTMENT ASSIGNMENTS       │       ├── Cardiology       └── Emergency Medicine
+The final business model shall determine whether multiple active department assignments are permitted.
+Main Flow
+User selects the doctor.
+System retrieves permitted doctor information.
+User initiates department assignment.
+User selects an eligible department.
+System validates the assignment.
+System creates the department assignment.
+System records the administrative event.
+Business Rules
+CS-DOC-BR-005
+A department shall exist before it can be assigned to a doctor.
+CS-DOC-BR-006
+Invalid duplicate department assignments shall be prevented.
+CS-DOC-BR-007
+Department assignment shall not independently create appointment availability.
+This means:
+Doctor assigned to Cardiology
+does not automatically mean:
+Doctor available Monday 09:00–17:00
+Availability is a separate scheduling concept.
+
+CS-DOC-FR-006 — Remove Doctor from Department
+Description
+The system shall allow an authorized user to remove an eligible doctor department assignment.
+Priority
+Must Have
+Dependency Consideration
+Before removing an active department assignment, the system shall evaluate applicable dependent scheduling and appointment rules.
+Example:
+DOCTOR REMOVAL FROM CARDIOLOGY             │             ▼FUTURE CARDIOLOGY APPOINTMENTS EXIST?        │                    │       YES                   NO        │                    │        ▼                    ▼CONTROLLED WORKFLOW      REMOVE ASSIGNMENT
+The system shall not silently invalidate future appointments.
+
+5.59 DOCTOR SPECIALIZATION MANAGEMENT
+CS-DOC-FR-007 — Assign Doctor Specialization
+Description
+The system shall allow an authorized user to assign an approved specialization to an eligible doctor.
+Priority
+Must Have
+Examples
+CardiologyNeurologyDermatologyOrthopedicsPediatricsGeneral MedicineGeneral Surgery
+These values are examples only.
+Specializations shall be managed through approved reference data.
+Business Rule
+Specialization shall not be stored as uncontrolled free text where controlled reference data is required.
+Weak design:
+Doctor A: Heart DoctorDoctor B: CardiologistDoctor C: Cardiology Specialist
+Better conceptual design:
+SPECIALIZATIONCARDIOLOGY
+referenced by eligible doctor profiles.
+
+CS-DOC-FR-008 — Update Doctor Specialization
+Description
+The system shall allow authorized users to update doctor specialization assignments according to approved rules.
+Priority
+Must Have
+Audit Requirement
+Specialization changes should be traceable.
+
+5.60 DOCTOR OPERATIONAL STATUS
+CS-DOC-FR-009 — Change Doctor Operational Status
+Description
+The system shall allow an authorized user to change a doctor’s operational status according to valid state transition rules.
+Priority
+Must Have
+Conceptual Statuses
+ACTIVEINACTIVEON_LEAVESUSPENDED
+The exact vocabulary shall be finalized during domain design.
+State Model
+                    DOCTOR PROFILE CREATED                              │                              ▼                            ACTIVE                              │              ┌───────────────┼───────────────┐              │               │               │              ▼               ▼               ▼          ON_LEAVE         INACTIVE        SUSPENDED              │               │               │              └───────────────┼───────────────┘                              │                              ▼                            ACTIVE
+Important Rule
+A doctor who is operationally unavailable shall not automatically remain available for new appointment scheduling.
+Existing Appointment Consideration
+Status changes affecting doctor availability shall trigger evaluation of future scheduled appointments.
+
+5.61 DOCTOR SEARCH REQUIREMENTS
+CS-DOC-FR-010 — Search Doctor
+Description
+The system shall allow authorized users to search eligible doctor profiles.
+Priority
+Must Have
+Search Criteria May Include
+doctor name;
+doctor identifier;
+department;
+specialization;
+operational status.
+
+CS-DOC-FR-011 — Filter Doctors by Department
+Description
+The system shall allow authorized users to identify doctors associated with a selected department.
+Example Flow
+SELECT DEPARTMENTCardiology      │      ▼ELIGIBLE DOCTORSDr. ADr. BDr. C
+
+CS-DOC-FR-012 — Filter Doctors by Specialization
+Description
+The system shall allow authorized users to identify doctors associated with an approved specialization.
+Priority
+Must Have
+
+5.62 DOCTOR AVAILABILITY REQUIREMENTS
+CS-DOC-FR-013 — Define Doctor Availability
+Requirement Name
+Define Doctor Availability
+Description
+The system shall allow an authorized user to define recurring doctor consultation availability.
+Priority
+Must Have
+Example
+DOCTORDr. Ahmad KhanMONDAY09:00 ─────────── 13:00TUESDAY09:00 ─────────── 13:00WEDNESDAYNOT AVAILABLETHURSDAY14:00 ─────────── 18:00
+Main Requirement
+The system shall record approved availability periods that may be used by the Appointment module when evaluating scheduling eligibility.
+Availability Information May Include
+doctor;
+department or service context;
+day of week;
+start time;
+end time;
+slot duration;
+effective date range.
+Conceptual Availability Model
+DOCTOR   │   ▼AVAILABILITY RULE   │   ├── Day   ├── Start Time   ├── End Time   ├── Slot Duration   ├── Effective From   └── Effective To
+Business Rules
+CS-DOC-BR-008
+Availability start time shall occur before availability end time.
+CS-DOC-BR-009
+Slot duration shall satisfy approved scheduling rules.
+CS-DOC-BR-010
+Invalid overlapping availability rules shall be prevented or explicitly resolved.
+CS-DOC-BR-011
+Doctor availability shall be associated with an eligible active doctor context.
+Example Conflict
+Rule AMonday 09:00–13:00Rule BMonday 11:00–15:00
+These rules overlap.
+The system shall apply the approved overlap validation policy.
+
+CS-DOC-FR-014 — Update Doctor Availability
+Description
+The system shall allow authorized users to update eligible doctor availability rules.
+Priority
+Must Have
+Existing Appointment Consideration
+The system shall evaluate future appointments affected by an availability change.
+Example:
+OLD AVAILABILITYMonday09:00–13:00EXISTING APPOINTMENTMonday 11:00ADMIN CHANGES AVAILABILITY TOMonday 14:00–18:00
+The system shall not silently make the existing 11:00 appointment disappear.
+The affected appointment shall enter an approved operational resolution workflow.
+
+5.63 DOCTOR SCHEDULE EXCEPTIONS
+CS-DOC-FR-015 — Create Schedule Exception
+Description
+The system shall allow authorized users to define a temporary exception to a doctor’s recurring availability.
+Priority
+Must Have
+Example Exceptions
+Doctor LeaveEmergency MeetingHospital ClosureTrainingTemporary Additional Clinic
+Conceptual Model
+RECURRING AVAILABILITYMonday 09:00–13:00        │        ▼SCHEDULE EXCEPTIONMonday 20 JulyUnavailable        │        ▼EFFECTIVE AVAILABILITYNO APPOINTMENT SLOTS
+Another example:
+NORMALWednesdayUnavailableEXCEPTIONWednesday 22 July10:00–12:00RESULTTemporary Available Clinic
+Business Rules
+CS-DOC-BR-012
+Schedule exceptions shall apply to an identifiable date or approved date range.
+CS-DOC-BR-013
+Schedule exceptions shall be considered when calculating effective doctor availability.
+CS-DOC-BR-014
+An exception affecting existing appointments shall trigger applicable appointment resolution rules.
+
+CS-DOC-FR-016 — Remove Schedule Exception
+Description
+The system shall allow authorized users to remove an eligible doctor schedule exception.
+Priority
+Must Have
+Result
+Effective availability shall be recalculated according to the remaining schedule configuration.
+
+CS-DOC-FR-017 — View Doctor Schedule
+Description
+The system shall allow authorized users to view a doctor’s effective schedule.
+Priority
+Must Have
+Effective Schedule
+The effective schedule shall conceptually consider:
+RECURRING AVAILABILITY          +SCHEDULE EXCEPTIONS          +DOCTOR STATUS          +APPLICABLE HOSPITAL CALENDAR RULES          =EFFECTIVE SCHEDULE
+
+CS-DOC-FR-018 — Validate Doctor Availability
+Description
+The system shall determine whether a doctor is operationally available for a requested appointment time.
+Priority
+Must Have
+Validation Flow
+REQUESTED DOCTOR       │       ▼DOCTOR ACTIVE?   │          │  NO         YES   │          │   ▼          ▼REJECT    DEPARTMENT VALID?                │          ┌─────┴─────┐          │           │         NO          YES          │           │          ▼           ▼       REJECT    BASE AVAILABILITY?                        │                   ┌────┴────┐                   │         │                  NO        YES                   │         │                   ▼         ▼                REJECT   EXCEPTION?                              │                        ┌─────┴─────┐                        │           │                    BLOCKED       CLEAR                        │           │                        ▼           ▼                     REJECT     AVAILABLE
+Appointment conflict validation remains an Appointment module responsibility.
+
+5.64 APT — APPOINTMENT MANAGEMENT
+5.64.1 Module Purpose
+The Appointment Management module shall manage scheduled patient consultation reservations.
+The module shall support:
+appointment creation;
+appointment search;
+doctor slot discovery;
+schedule validation;
+conflict prevention;
+appointment confirmation;
+appointment rescheduling;
+appointment cancellation;
+appointment status management;
+patient arrival and check-in;
+no-show recording;
+appointment history;
+appointment auditing.
+The Appointment module answers:
+Which patient is expected to receive which scheduled service, from which doctor, at what time?
+
+5.64.2 Appointment Core Relationship
+PATIENT   │   ▼APPOINTMENT   │   ├── Doctor   ├── Department / Service   ├── Scheduled Date   ├── Scheduled Time   ├── Appointment Status   └── Appointment Source
+Conceptually:
+PATIENT ──────┐              │DOCTOR ───────┼────► APPOINTMENT              │DEPARTMENT ───┤              │SCHEDULE ─────┘
+
+5.64.3 APT Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-APT-FR-001
+Search Available Appointment Slots
+M
+CS-APT-FR-002
+Create Appointment
+M
+CS-APT-FR-003
+Generate Appointment Identifier
+M
+CS-APT-FR-004
+Validate Patient Eligibility
+M
+CS-APT-FR-005
+Validate Doctor Availability
+M
+CS-APT-FR-006
+Prevent Doctor Schedule Conflict
+M
+CS-APT-FR-007
+Prevent Invalid Patient Appointment Conflict
+M
+CS-APT-FR-008
+Confirm Appointment
+M
+CS-APT-FR-009
+View Appointment
+M
+CS-APT-FR-010
+Search Appointments
+M
+CS-APT-FR-011
+Reschedule Appointment
+M
+CS-APT-FR-012
+Cancel Appointment
+M
+CS-APT-FR-013
+Record Appointment Cancellation Reason
+M
+CS-APT-FR-014
+Mark Patient Arrived
+M
+CS-APT-FR-015
+Check In Patient
+M
+CS-APT-FR-016
+Mark Appointment as No-Show
+M
+CS-APT-FR-017
+View Patient Appointment History
+M
+CS-APT-FR-018
+View Doctor Appointment Schedule
+M
+CS-APT-FR-019
+Manage Walk-In Consultation Entry
+M
+CS-APT-FR-020
+Record Appointment Source
+S
+CS-APT-FR-021
+Record Appointment Administrative Events
+M
+CS-APT-FR-022
+Handle Appointment Affected by Doctor Unavailability
+M
+CS-APT-FR-023
+Prevent Invalid Appointment State Transition
+M
+CS-APT-FR-024
+View Daily Appointment List
+M
+CS-APT-FR-025
+Filter Appointments
+S
+
+5.65 APPOINTMENT SLOT DISCOVERY
+CS-APT-FR-001 — Search Available Appointment Slots
+Description
+The system shall allow an authorized user to search for available appointment opportunities using approved scheduling criteria.
+Primary Actor
+Receptionist
+Secondary Actors
+Appointment Coordinator
+Patient Portal, where supported
+Priority
+Must Have
+Search Criteria May Include
+department;
+doctor;
+specialization;
+requested date;
+service.
+Conceptual Slot Calculation
+DOCTOR AVAILABILITY         │         ▼SCHEDULE EXCEPTIONS         │         ▼EFFECTIVE AVAILABLE PERIOD         │         ▼SLOT DURATION         │         ▼GENERATE CANDIDATE SLOTS         │         ▼REMOVE OCCUPIED SLOTS         │         ▼REMOVE BLOCKED SLOTS         │         ▼AVAILABLE APPOINTMENT SLOTS
+Example
+Doctor Availability09:00–12:00Slot Duration30 MinutesCandidate Slots09:0009:3010:0010:3011:0011:30Existing Appointments09:3010:30Available09:0010:0011:0011:30
+Important Requirement
+Displayed availability shall not itself guarantee booking success.
+Why?
+Receptionist A sees 10:00 available.Receptionist B sees 10:00 available.Both click Book.
+The backend must perform final conflict validation during appointment creation.
+
+5.66 APPOINTMENT CREATION
+CS-APT-FR-002 — Create Appointment
+Requirement Name
+Create Appointment
+Description
+The system shall allow an authorized user to schedule an eligible patient with an eligible doctor for an available appointment time.
+Priority
+Must Have
+Preconditions
+The user is authenticated.
+The user has appointment creation permission.
+The patient exists.
+The doctor exists.
+The selected scheduling context is valid.
+Trigger
+The user confirms an appointment booking request.
+Main Flow
+1. User searches and selects the patient.2. User selects department or consultation context.3. User selects a doctor.4. User selects an available date.5. CuraSphere retrieves candidate appointment slots.6. User selects a candidate slot.7. User submits the appointment request.8. CuraSphere validates patient eligibility.9. CuraSphere validates doctor operational eligibility.10. CuraSphere validates effective doctor availability.11. CuraSphere validates doctor scheduling conflicts.12. CuraSphere validates applicable patient conflicts.13. CuraSphere validates the appointment state and business rules.14. CuraSphere creates the appointment.15. CuraSphere generates the appointment identifier.16. CuraSphere records the appointment event.17. CuraSphere confirms the appointment.
+Exception Flow A — Slot Already Occupied
+If another appointment occupies the requested slot before final creation:
+The system shall reject the conflicting booking.
+The system shall not create a duplicate conflicting appointment.
+The user shall be informed that the selected time is no longer available.
+Updated appointment availability should be provided.
+Exception Flow B — Doctor Becomes Unavailable
+If the doctor is no longer eligible for the requested time:
+The system shall reject the booking.
+The appointment shall not be created as confirmed.
+Exception Flow C — Invalid Patient
+The system shall reject the appointment when the patient is not eligible for the requested workflow.
+Business Rules
+CS-APT-BR-001
+An appointment shall reference an identifiable patient.
+CS-APT-BR-002
+An appointment shall reference an eligible doctor or approved service scheduling resource.
+CS-APT-BR-003
+Appointment creation shall perform final server-side schedule validation.
+CS-APT-BR-004
+Conflicting doctor appointments shall be prevented according to the approved scheduling model.
+CS-APT-BR-005
+Appointment creation shall be auditable.
+Outputs
+appointment;
+appointment identifier;
+appointment status;
+confirmation information.
+Acceptance Criteria
+AC-001
+Given an eligible patient, available doctor, and available appointment slot, an authorized user shall be able to create an appointment.
+AC-002
+Two conflicting confirmed appointments shall not occupy the same exclusive doctor time slot.
+AC-003
+If the slot becomes occupied before final booking, the later conflicting request shall be rejected.
+AC-004
+An unauthorized user shall not create an appointment through the protected operation.
+
+CS-APT-FR-003 — Generate Appointment Identifier
+Description
+The system shall assign a unique internal identifier to each appointment.
+Priority
+Must Have
+Business Rule
+Appointment identifiers shall not be reused for unrelated appointments.
+
+5.67 APPOINTMENT VALIDATION
+CS-APT-FR-004 — Validate Patient Eligibility
+Description
+The system shall validate whether the selected patient is eligible for the requested appointment workflow.
+Priority
+Must Have
+Validation May Consider
+patient existence;
+patient status;
+merged patient identity;
+applicable administrative restrictions.
+Example
+SELECTED PATIENT STATUSMERGED        │        ▼FIND SURVIVING PATIENT REFERENCE        │        ▼DO NOT BOOK AGAINSTINVALID INDEPENDENT MERGED RECORD
+
+CS-APT-FR-005 — Validate Doctor Availability
+Description
+The Appointment module shall use the effective doctor availability rules to validate the requested appointment time.
+Priority
+Must Have
+Dependency
+CS-DOC-FR-018 — Validate Doctor Availability
+
+CS-APT-FR-006 — Prevent Doctor Schedule Conflict
+Description
+The system shall prevent invalid overlapping appointments for an exclusive doctor scheduling resource.
+Priority
+Must Have
+Example
+Existing:
+10:00 ───────── 10:30Patient A
+Requested:
+10:15 ───────── 10:45Patient B
+Result:
+TIME OVERLAP     │     ▼REJECT
+Conceptual Overlap Rule
+For two time intervals:
+Appointment AA_Start ───────── A_EndAppointment BB_Start ───────── B_End
+An overlap conceptually exists when:
+A_Start < B_EndANDB_Start < A_End
+The exact implementation shall be finalized during technical design.
+Concurrency Requirement
+Conflict protection shall remain valid when multiple users attempt to book simultaneously.
+USER A ─────► BOOK 10:00                     │                     ▼                SERVER / DATABASE                     ▲                     │USER B ─────► BOOK 10:00
+The design shall ensure that the final persisted state does not contain an invalid double booking.
+
+CS-APT-FR-007 — Prevent Invalid Patient Appointment Conflict
+Description
+The system shall prevent patient appointment conflicts according to approved scheduling rules.
+Priority
+Must Have
+Example
+PATIENT ACardiology10:00–10:30Neurology10:10–10:40
+The system may classify this as an invalid overlapping patient appointment.
+The exact conflict policy shall be defined during appointment business rule configuration.
+
+5.68 APPOINTMENT CONFIRMATION AND VIEW
+CS-APT-FR-008 — Confirm Appointment
+Description
+The system shall establish the approved confirmed state for a successfully created appointment.
+Priority
+Must Have
+Appointment Confirmation May Include
+appointment identifier;
+patient identity summary;
+doctor;
+department;
+scheduled date;
+scheduled time;
+appointment status.
+
+CS-APT-FR-009 — View Appointment
+Description
+The system shall allow authorized users to view permitted appointment information.
+Priority
+Must Have
+Information May Include
+APPOINTMENTAppointment IDPatient IdentityDoctorDepartmentDateTimeStatusAppointment SourceCheck-In State
+Clinical notes shall not be stored as general appointment administrative information.
+
+CS-APT-FR-010 — Search Appointments
+Description
+The system shall allow authorized users to search appointments using approved criteria.
+Potential Criteria
+appointment identifier;
+patient;
+MRN;
+doctor;
+department;
+date;
+status.
+
+5.69 APPOINTMENT RESCHEDULING
+CS-APT-FR-011 — Reschedule Appointment
+Description
+The system shall allow an authorized user to move an eligible appointment to a new valid appointment time.
+Priority
+Must Have
+Main Flow
+SELECT APPOINTMENT        │        ▼VALIDATE RESCHEDULE ELIGIBILITY        │        ▼SEARCH NEW AVAILABILITY        │        ▼SELECT NEW SLOT        │        ▼FINAL SCHEDULE VALIDATION        │        ▼CONFLICT CHECK        │        ▼CONFIRM RESCHEDULE        │        ▼UPDATE APPOINTMENT        │        ▼AUDIT
+Important Requirement
+Rescheduling shall not be implemented as:
+DELETE OLD APPOINTMENT        +CREATE RANDOM NEW APPOINTMENT
+without maintaining business traceability.
+The appointment history shall identify the rescheduling event where required.
+Business Rules
+CS-APT-BR-006
+Only eligible appointment states may be rescheduled.
+CS-APT-BR-007
+The new appointment time shall pass current availability validation.
+CS-APT-BR-008
+The new appointment time shall pass conflict validation.
+CS-APT-BR-009
+Appointment rescheduling shall be auditable.
+Acceptance Criteria
+A rescheduled appointment shall reference a valid new schedule while preserving applicable appointment history.
+
+5.70 APPOINTMENT CANCELLATION
+CS-APT-FR-012 — Cancel Appointment
+Description
+The system shall allow an authorized user to cancel an eligible appointment.
+Priority
+Must Have
+Main Flow
+User selects an appointment.
+User initiates cancellation.
+System validates cancellation eligibility.
+System requests applicable cancellation information.
+User confirms cancellation.
+System changes the appointment to the approved cancelled state.
+System records the cancellation event.
+The appointment time becomes eligible for future scheduling according to scheduling rules.
+Business Rules
+CS-APT-BR-010
+A cancelled appointment shall not remain an active scheduled consultation.
+CS-APT-BR-011
+Appointment cancellation shall follow valid state transition rules.
+CS-APT-BR-012
+Cancellation shall be auditable.
+
+CS-APT-FR-013 — Record Appointment Cancellation Reason
+Description
+The system shall record an approved cancellation reason where required by hospital policy.
+Priority
+Must Have
+Example Reasons
+PATIENT_REQUESTDOCTOR_UNAVAILABLEHOSPITAL_OPERATIONDUPLICATE_BOOKINGSCHEDULING_ERROROTHER_APPROVED_REASON
+The final cancellation reason vocabulary shall use controlled reference data where appropriate.
+
+5.71 PATIENT ARRIVAL AND CHECK-IN
+CS-APT-FR-014 — Mark Patient Arrived
+Description
+The system shall allow an authorized user to record that a patient associated with an eligible appointment has arrived at the hospital or consultation area.
+Priority
+Must Have
+Conceptual Flow
+SCHEDULED    │    ▼PATIENT ARRIVES    │    ▼ARRIVED
+Arrival does not necessarily mean the patient has entered the doctor’s queue.
+The distinction is:
+ARRIVED   │   ▼Patient physically presentCHECKED_IN   │   ▼Patient accepted into operational consultation flow
+
+CS-APT-FR-015 — Check In Patient
+Description
+The system shall allow an authorized user to check in an eligible patient for the applicable appointment or walk-in consultation.
+Priority
+Must Have
+Main Flow
+PATIENT ARRIVES       │       ▼SEARCH APPOINTMENT       │       ▼VERIFY PATIENT IDENTITY       │       ▼VALIDATE APPOINTMENT       │       ▼MARK ARRIVAL       │       ▼CHECK IN       │       ▼CREATE / REQUEST QUEUE ENTRY       │       ▼QUEUE TOKEN
+Preconditions
+patient identity is available;
+appointment or approved walk-in workflow exists;
+consultation is eligible for check-in.
+Business Rules
+CS-APT-BR-013
+A patient shall not be checked in against an invalid cancelled appointment.
+CS-APT-BR-014
+Duplicate active check-in for the same consultation context shall be prevented.
+CS-APT-BR-015
+Patient identity should be verified before check-in.
+Acceptance Criteria
+A successfully checked-in appointment shall become eligible for the applicable queue workflow.
+
+5.72 NO-SHOW MANAGEMENT
+CS-APT-FR-016 — Mark Appointment as No-Show
+Description
+The system shall allow an authorized user or approved automated workflow to mark an eligible appointment as no-show according to hospital policy.
+Priority
+Must Have
+Definition
+A no-show represents a scheduled patient who did not attend according to the applicable attendance policy.
+State Flow
+CONFIRMED    │    ▼APPOINTMENT TIME PASSES    │    ▼PATIENT NOT CHECKED IN    │    ▼NO-SHOW ELIGIBILITY    │    ▼NO_SHOW
+Important Rule
+The SRS shall not hard-code an arbitrary no-show time threshold.
+Example:
+Exactly 5 minutes late = No-Show
+may not be valid for every hospital.
+The threshold or manual process shall be defined through approved policy.
+
+5.73 APPOINTMENT HISTORY AND SCHEDULE VIEWS
+CS-APT-FR-017 — View Patient Appointment History
+Description
+The system shall allow authorized users to review permitted patient appointment history.
+Priority
+Must Have
+History May Include
+scheduled appointments;
+completed appointments;
+cancelled appointments;
+rescheduled appointments;
+no-show appointments.
+Boundary
+Appointment history is not the complete medical history.
+
+CS-APT-FR-018 — View Doctor Appointment Schedule
+Description
+The system shall allow authorized users to view a doctor’s scheduled appointments.
+Priority
+Must Have
+Conceptual View
+DR. AHMAD KHAN14 JULY 202609:00  Patient A  Confirmed09:30  Patient B  Checked In10:00  Patient C  Confirmed10:30  Available11:00  Patient D  Cancelled11:30  Available
+The UI design shall later determine calendar, timeline, and list presentation.
+
+CS-APT-FR-024 — View Daily Appointment List
+Description
+The system shall allow authorized users to review appointments for a selected operational date.
+Priority
+Must Have
+Potential Uses
+reception desk;
+doctor schedule;
+department operations;
+appointment coordination.
+
+CS-APT-FR-025 — Filter Appointments
+Description
+The system should allow authorized users to filter appointment views.
+Potential Filters
+status;
+doctor;
+department;
+date range;
+appointment source.
+
+5.74 WALK-IN CONSULTATION MANAGEMENT
+CS-APT-FR-019 — Manage Walk-In Consultation Entry
+Description
+The system shall support an approved workflow for a patient who requires consultation without a previously scheduled appointment.
+Priority
+Must Have
+Example
+PATIENT ARRIVES      │      ▼NO APPOINTMENT      │      ▼SEARCH PATIENT      │      ▼PATIENT IDENTIFIED      │      ▼SELECT DEPARTMENT / DOCTOR      │      ▼VALIDATE WALK-IN ELIGIBILITY      │      ▼CREATE WALK-IN CONSULTATION ENTRY      │      ▼CHECK-IN      │      ▼QUEUE
+Important Concept
+Walk-in does not mean:
+NO BUSINESS RULES
+A walk-in workflow shall still validate:
+patient;
+doctor or service;
+department;
+operational eligibility;
+queue eligibility.
+Business Rules
+CS-APT-BR-016
+Walk-in consultations shall be distinguishable from scheduled appointments where operationally required.
+CS-APT-BR-017
+Walk-in entry shall follow applicable doctor or department capacity rules.
+
+5.75 APPOINTMENT SOURCE
+CS-APT-FR-020 — Record Appointment Source
+Description
+The system should record the source through which an appointment was created.
+Priority
+Should Have
+Potential Sources
+RECEPTIONCALL_CENTERPATIENT_PORTALDOCTOR_REQUESTWALK_INEXTERNAL_INTEGRATION
+Purpose
+Appointment source may support:
+reporting;
+operational analysis;
+service improvement.
+
+5.76 DOCTOR UNAVAILABILITY IMPACT
+CS-APT-FR-022 — Handle Appointment Affected by Doctor Unavailability
+Description
+The system shall support an operational workflow for future appointments affected by doctor unavailability.
+Priority
+Must Have
+Example
+DR. AHMAD15 JULY09:00 Patient A09:30 Patient B10:00 Patient C10:30 Patient D        │DOCTOR BECOMES UNAVAILABLE        │        ▼4 AFFECTED APPOINTMENTS
+The system shall identify affected appointments.
+Possible Resolution Actions
+Depending on policy:
+RESCHEDULEASSIGN ELIGIBLE ALTERNATIVE DOCTORCANCELCONTACT PATIENTMARK FOR REVIEW
+Important Requirement
+Doctor unavailability shall not silently delete appointments.
+Conceptual Flow
+DOCTOR UNAVAILABLE        │        ▼FIND AFFECTED FUTURE APPOINTMENTS        │        ▼CREATE OPERATIONAL ATTENTION STATE        │        ▼AUTHORIZED STAFF REVIEW        │    ┌───┼───────────┐    │   │           │    ▼   ▼           ▼RESCHEDULE REASSIGN CANCEL        │        ▼AUDIT RESOLUTION
+
+5.77 APPOINTMENT STATE MANAGEMENT
+CS-APT-FR-023 — Prevent Invalid Appointment State Transition
+Description
+The system shall enforce approved appointment state transitions.
+Priority
+Must Have
+Conceptual Appointment State Model
+                       APPOINTMENT CREATED                               │                               ▼                           CONFIRMED                               │             ┌─────────────────┼─────────────────┐             │                 │                 │             ▼                 ▼                 ▼         RESCHEDULED        CANCELLED          ARRIVED                                                   │                                                   ▼                                               CHECKED_IN                                                   │                                                   ▼                                               IN_QUEUE                                                   │                                                   ▼                                                CALLED                                                   │                                                   ▼                                             IN_CONSULTATION                                                   │                                                   ▼                                               COMPLETED
+No-show path:
+CONFIRMED    │    ▼NO_SHOW
+State Transition Principle
+The following should not be accepted merely because the client requests it:
+CANCELLED    │    ▼COMPLETED
+The backend domain workflow shall validate the requested transition.
+Business Rules
+CS-APT-BR-018
+Appointment state changes shall follow approved transitions.
+CS-APT-BR-019
+A terminal appointment state shall not transition to an incompatible active state without an approved recovery workflow.
+CS-APT-BR-020
+State-changing operations shall be protected by authorization.
+
+5.78 APPOINTMENT AUDIT REQUIREMENTS
+CS-APT-FR-021 — Record Appointment Administrative Events
+Description
+The system shall record appropriate administrative events for appointment activities.
+Priority
+Must Have
+Events Shall Include
+appointment creation;
+appointment rescheduling;
+appointment cancellation;
+patient arrival;
+patient check-in;
+no-show status;
+affected appointment resolution.
+Audit Example
+ACTORReceptionist USER-102ACTIONAPPOINTMENT_RESCHEDULEDTARGETAPT-002145OLD SCHEDULE14 JUL 10:00NEW SCHEDULE15 JUL 11:30RESULTSUCCESS
+The exact before-and-after audit strategy shall be defined in the Audit Architecture.
+
+5.79 QUE — QUEUE MANAGEMENT
+5.79.1 Module Purpose
+The Queue Management module shall manage the operational order and state of patients waiting for eligible hospital services.
+The first CuraSphere queue scope shall primarily support outpatient consultation flow.
+The module shall support:
+queue entry creation;
+token generation;
+queue position management;
+patient waiting state;
+patient call workflow;
+patient skip workflow;
+queue recall;
+consultation start handoff;
+queue completion;
+queue cancellation;
+doctor worklist;
+queue monitoring.
+The Queue module answers:
+Who is waiting now, for which service or doctor, and what is their current operational waiting state?
+
+5.79.2 Queue Is Not Appointment Scheduling
+APPOINTMENT     │     ▼FUTURE / SCHEDULED TIME RESERVATION
+Compared with:
+QUEUE   │   ▼CURRENT OPERATIONAL WAITING FLOW
+Example:
+Patient AAppointment: 09:00Arrives: 08:50Checks In: 08:55Patient BAppointment: 09:30Arrives: 08:40Checks In: 08:45
+Queue order shall follow the approved queue policy.
+It shall not automatically be assumed that:
+First physical arrival always goes first
+or:
+Appointment time alone always determines order
+The queue ordering policy shall be defined according to hospital operations.
+
+5.79.3 QUE Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-QUE-FR-001
+Create Queue Entry
+M
+CS-QUE-FR-002
+Generate Queue Token
+M
+CS-QUE-FR-003
+Validate Queue Eligibility
+M
+CS-QUE-FR-004
+Prevent Duplicate Active Queue Entry
+M
+CS-QUE-FR-005
+View Active Queue
+M
+CS-QUE-FR-006
+Calculate Queue Order
+M
+CS-QUE-FR-007
+Call Next Patient
+M
+CS-QUE-FR-008
+Call Selected Patient
+M
+CS-QUE-FR-009
+Mark Patient as Called
+M
+CS-QUE-FR-010
+Mark Patient as Waiting
+M
+CS-QUE-FR-011
+Skip Queue Patient
+M
+CS-QUE-FR-012
+Record Skip Reason
+S
+CS-QUE-FR-013
+Recall Skipped Patient
+M
+CS-QUE-FR-014
+Start Patient Consultation
+M
+CS-QUE-FR-015
+Complete Queue Entry
+M
+CS-QUE-FR-016
+Cancel Queue Entry
+M
+CS-QUE-FR-017
+View Doctor Queue Worklist
+M
+CS-QUE-FR-018
+View Patient Queue Status
+M
+CS-QUE-FR-019
+Recalculate Queue Position
+M
+CS-QUE-FR-020
+Record Queue Events
+M
+
+5.80 QUEUE ENTRY CREATION
+CS-QUE-FR-001 — Create Queue Entry
+Requirement Name
+Create Queue Entry
+Description
+The system shall create an operational queue entry for an eligible checked-in patient.
+Primary Actor
+Receptionist
+Secondary Actors
+Appointment Module
+Queue Module
+Doctor
+Priority
+Must Have
+Preconditions
+Patient exists.
+Patient is eligible for the consultation workflow.
+Applicable check-in has occurred.
+Doctor or service queue context exists.
+Main Flow
+CHECK-IN COMPLETE       │       ▼QUEUE ELIGIBILITY VALIDATION       │       ▼DUPLICATE ACTIVE ENTRY CHECK       │       ▼CREATE QUEUE ENTRY       │       ▼GENERATE TOKEN       │       ▼CALCULATE QUEUE ORDER       │       ▼STATUS = WAITING       │       ▼AVAILABLE IN DOCTOR WORKLIST
+Business Rules
+CS-QUE-BR-001
+A queue entry shall reference an identifiable patient.
+CS-QUE-BR-002
+A queue entry shall reference an eligible operational queue context.
+CS-QUE-BR-003
+Duplicate active queue entries for the same consultation context shall be prevented.
+CS-QUE-BR-004
+Queue creation shall follow successful applicable check-in.
+Acceptance Criteria
+A successfully checked-in eligible patient shall be able to enter the applicable active queue.
+
+5.81 QUEUE TOKEN GENERATION
+CS-QUE-FR-002 — Generate Queue Token
+Description
+The system shall generate or assign an operational token to an eligible queue entry according to the configured queue policy.
+Priority
+Must Have
+Example Tokens
+A-001A-002CARD-015OPD-104
+These are examples only.
+Token Scope
+The token may be unique within a configured operational scope.
+Example:
+Department + DateDoctor + DateQueue + Operational Session
+The final token scope shall be defined in Queue Design.
+Important Rule
+A queue token is not:
+Patient ID
+and is not:
+MRN
+Conceptually:
+MRN │ ▼LONG-TERM PATIENT RECORD IDENTITYQUEUE TOKEN │ ▼TEMPORARY OPERATIONAL WAITING IDENTITY
+
+5.82 QUEUE ELIGIBILITY
+CS-QUE-FR-003 — Validate Queue Eligibility
+Description
+The system shall validate whether a patient may enter the requested queue.
+Priority
+Must Have
+Validation May Consider
+patient identity;
+check-in status;
+appointment status;
+walk-in eligibility;
+doctor or service queue;
+duplicate active queue entry.
+
+CS-QUE-FR-004 — Prevent Duplicate Active Queue Entry
+Description
+The system shall prevent an invalid duplicate active queue entry for the same patient and consultation context.
+Priority
+Must Have
+Example
+PATIENT ADoctor:Dr. AhmadConsultation:APT-1004Active Queue Entry:QUE-5001
+The system shall not normally create:
+QUE-5002
+for the same active consultation context.
+
+5.83 ACTIVE QUEUE VIEW
+CS-QUE-FR-005 — View Active Queue
+Description
+The system shall allow authorized users to view the active queue for an eligible operational context.
+Priority
+Must Have
+Example
+CARDIOLOGY — DR. AHMADTOKEN   PATIENT       STATUS       POSITIONA-011   Patient A     CALLED          -A-012   Patient B     WAITING         1A-013   Patient C     WAITING         2A-014   Patient D     SKIPPED         -A-015   Patient E     WAITING         3
+Privacy Requirement
+Public queue displays may use token information instead of displaying full patient names.
+The UI and privacy design shall distinguish:
+STAFF QUEUE VIEW
+from:
+PUBLIC WAITING DISPLAY
+
+5.84 QUEUE ORDER MANAGEMENT
+CS-QUE-FR-006 — Calculate Queue Order
+Description
+The system shall determine the operational order of eligible waiting queue entries according to the approved queue policy.
+Priority
+Must Have
+Queue Policy May Consider
+appointment time;
+check-in time;
+priority classification;
+queue category;
+approved manual operational adjustment.
+Conceptual Model
+ACTIVE QUEUE ENTRIES         │         ▼FILTER ELIGIBLE WAITING ENTRIES         │         ▼APPLY QUEUE PRIORITY RULES         │         ▼APPLY ORDERING RULES         │         ▼QUEUE ORDER
+Important Requirement
+Queue position is a calculated operational concept.
+The system should avoid treating position as permanent historical identity.
+Example:
+Patient B Position 2Patient A completes        │        ▼Patient B Position 1
+Therefore:
+position = 2 forever
+would be a weak model.
+
+CS-QUE-FR-019 — Recalculate Queue Position
+Description
+The system shall recalculate applicable queue positions when active queue conditions change.
+Priority
+Must Have
+Triggers May Include
+new queue entry;
+patient called;
+patient skipped;
+patient recalled;
+queue entry cancelled;
+consultation started;
+queue priority change.
+
+5.85 PATIENT CALL WORKFLOW
+CS-QUE-FR-007 — Call Next Patient
+Description
+The system shall allow an authorized doctor or staff member to call the next eligible patient according to the queue policy.
+Priority
+Must Have
+Main Flow
+DOCTOR SELECTSCALL NEXT      │      ▼QUEUE CALCULATESNEXT ELIGIBLE PATIENT      │      ▼PATIENT IDENTIFIED      │      ▼QUEUE ENTRY = CALLED      │      ▼QUEUE POSITIONS RECALCULATED      │      ▼DOCTOR WORKLIST UPDATED
+Concurrency Consideration
+Two authorized staff actions shall not result in the same queue entry being independently treated as the next waiting patient in conflicting workflows.
+The final transaction and concurrency strategy shall be defined during architecture.
+
+CS-QUE-FR-008 — Call Selected Patient
+Description
+The system shall allow an authorized user to call a specific eligible patient from the queue when operational policy permits.
+Priority
+Must Have
+Example Use Cases
+clinical priority;
+patient previously skipped;
+operational correction.
+Authorization Rule
+Manual queue selection may require a distinct permission.
+
+CS-QUE-FR-009 — Mark Patient as Called
+Description
+The system shall transition an eligible queue entry to the called state.
+Priority
+Must Have
+Postcondition
+The queue entry shall no longer be treated as a normal waiting entry.
+
+CS-QUE-FR-010 — Mark Patient as Waiting
+Description
+The system shall establish the waiting state for an eligible queue entry.
+Priority
+Must Have
+Use Cases
+initial queue creation;
+approved return from another queue state.
+
+5.86 QUEUE SKIP AND RECALL
+CS-QUE-FR-011 — Skip Queue Patient
+Description
+The system shall allow an authorized user to temporarily skip an eligible called or waiting queue patient according to operational policy.
+Priority
+Must Have
+Example
+TOKEN A-012 CALLEDPatient does not respond.        │        ▼SKIP        │        ▼CALL NEXT PATIENT
+Important Requirement
+Skip does not necessarily mean:
+CANCEL CONSULTATION
+A skipped patient may remain eligible for recall.
+
+CS-QUE-FR-012 — Record Skip Reason
+Description
+The system should allow an approved skip reason to be recorded.
+Priority
+Should Have
+Example Reasons
+NO_RESPONSEPATIENT_TEMPORARILY_AWAYOPERATIONAL_HOLDCLINICAL_PREPARATION_PENDING
+
+CS-QUE-FR-013 — Recall Skipped Patient
+Description
+The system shall allow an authorized user to return an eligible skipped patient to the applicable queue workflow.
+Priority
+Must Have
+Conceptual Flow
+SKIPPED   │   ▼RECALL REQUEST   │   ▼VALIDATE ELIGIBILITY   │   ▼RETURN TO QUEUE / CALL
+The exact restored queue position shall follow approved queue policy.
+
+5.87 CONSULTATION HANDOFF
+CS-QUE-FR-014 — Start Patient Consultation
+Description
+The system shall allow an authorized doctor or clinical workflow to begin consultation for an eligible called patient.
+Priority
+Must Have
+Main Flow
+PATIENT CALLED      │      ▼PATIENT PRESENT      │      ▼VERIFY PATIENT CONTEXT      │      ▼START CONSULTATION      │      ▼QUEUE ENTRYIN_CONSULTATION      │      ▼CREATE / OPENCLINICAL ENCOUNTER
+Critical Boundary
+The Queue module shall not become the owner of clinical notes.
+Instead:
+QUEOperational State:IN_CONSULTATION        │        ▼OPD / EMRClinical Encounter
+Business Rules
+CS-QUE-BR-005
+Only an eligible queue entry may begin the applicable consultation.
+CS-QUE-BR-006
+Starting consultation shall establish or reference the appropriate clinical encounter workflow.
+CS-QUE-BR-007
+The selected patient identity shall remain consistent during the queue-to-clinical handoff.
+
+5.88 QUEUE COMPLETION AND CANCELLATION
+CS-QUE-FR-015 — Complete Queue Entry
+Description
+The system shall mark an eligible queue entry as completed when the operational waiting workflow has concluded.
+Priority
+Must Have
+Important Boundary
+Queue completion does not independently prove that all clinical documentation is complete.
+QUEUE COMPLETED
+and:
+CLINICAL ENCOUNTER FINALIZED
+may be related but are distinct domain states.
+
+CS-QUE-FR-016 — Cancel Queue Entry
+Description
+The system shall allow an authorized user to cancel an eligible queue entry.
+Priority
+Must Have
+Example Reasons
+patient left;
+incorrect queue;
+duplicate queue entry;
+consultation cancelled.
+Business Rule
+Queue cancellation shall not silently delete the associated appointment or patient.
+
+5.89 DOCTOR WORKLIST
+CS-DOC-FR-019 / CS-QUE-FR-017 — View Doctor Queue Worklist
+Description
+The system shall provide an authorized doctor with a worklist of eligible patients associated with the doctor’s current operational queue and schedule.
+Priority
+Must Have
+Conceptual Doctor Worklist
+DR. AHMAD KHANTODAY — CARDIOLOGYCURRENT PATIENTA-011Patient Identity SummaryStatus: CALLEDWAITINGA-012Patient BAppointment: 09:30Checked In: 09:20A-013Patient CAppointment: 10:00Checked In: 09:45SKIPPEDA-009Patient DReason: No Response
+Worklist Sources
+The worklist may combine permitted information from:
+DOCDoctor ContextAPTAppointment ContextQUECurrent Queue StatePATPatient Identity Summary
+Important Architecture Concept
+The doctor worklist is a read model or application view composed from multiple domain sources.
+It does not mean all worklist data must be stored in one giant database table.
+Weak design:
+doctor_worklist_everything_table
+Better conceptual design:
+PATIENT DATA ───────┐                    │APPOINTMENT DATA ───┼──► DOCTOR WORKLIST VIEW                    │QUEUE DATA ─────────┤                    │DOCTOR DATA ────────┘
+The final query architecture shall be documented later.
+
+5.90 PATIENT QUEUE STATUS
+CS-QUE-FR-018 — View Patient Queue Status
+Description
+The system shall allow authorized users to review the current operational queue status of an eligible patient.
+Priority
+Must Have
+Status Information May Include
+queue token;
+doctor or service;
+queue state;
+approximate position where permitted;
+call state.
+Public Display Consideration
+Public displays shall follow privacy rules.
+Example:
+TOKEN A-012PLEASE PROCEED TO ROOM 04
+may be preferred over:
+MUHAMMAD AHMADDOB 12 APRIL 1998PLEASE GO TO DR. X
+The exact public display information shall be defined during Privacy and UI Architecture.
+
+5.91 QUEUE STATE MODEL
+                       QUEUE ENTRY CREATED                               │                               ▼                            WAITING                               │                 ┌─────────────┼─────────────┐                 │             │             │                 ▼             ▼             ▼               CALLED        SKIPPED       CANCELLED                 │             │                 │             ▼                 │           RECALLED                 │             │                 │             ▼                 │           WAITING                 │                 ▼          IN_CONSULTATION                 │                 ▼             COMPLETED
+Possible call path:
+WAITING   │   ▼CALLED   │   ├────► SKIPPED   │         │   │         ▼   │      RECALLED   │         │   │         ▼   │       CALLED   │   ▼IN_CONSULTATION   │   ▼COMPLETED
+The exact transition matrix shall be finalized in the Queue State Transition Specification.
+
+5.92 QUEUE EVENT REQUIREMENTS
+CS-QUE-FR-020 — Record Queue Events
+Description
+The system shall record appropriate operational or audit events for significant queue activities.
+Priority
+Must Have
+Events May Include
+queue entry created;
+token generated;
+patient called;
+patient skipped;
+patient recalled;
+consultation started;
+queue entry completed;
+queue entry cancelled.
+Example
+EVENTQUEUE_PATIENT_CALLEDQUEUECARDIOLOGY-DR082-20260714TOKENA-012ACTORDOC-0082TIME2026-07-14 10:04RESULTSUCCESS
+The final event schema shall be defined during Audit and Observability Architecture.
+
+5.93 INTEGRATED DOC–APT–QUE DATA FLOW
+                         HOSPITAL ADMIN                               │                               ▼                     MANAGE DOCTOR PROFILE                               │                               ▼                        DOCTOR DATA                               │                               ▼                    DEFINE AVAILABILITY                               │                               ▼                       SCHEDULE DATAPATIENT ───────► RECEPTIONIST                       │                       ▼                SEARCH APPOINTMENT SLOT                       │                       ▼               EFFECTIVE DOCTOR SCHEDULE                       │                       ▼                 AVAILABLE SLOTS                       │                       ▼                 CREATE APPOINTMENT                       │                       ▼                  APPOINTMENT DATA                       │                       ▼                  PATIENT ARRIVES                       │                       ▼                      CHECK-IN                       │                       ▼                CREATE QUEUE ENTRY                       │                       ▼                   QUEUE DATA                       │                       ▼                 DOCTOR WORKLIST                       │                       ▼                  CALL PATIENT                       │                       ▼                START CONSULTATION                       │                       ▼                    OPD / EMR
+
+5.94 INTEGRATED SEQUENCE MODEL
+PATIENT     RECEPTION     APT      DOC      QUE      DOCTOR   │            │          │        │        │          │   │ Request    │          │        │        │          │   │ Booking    │          │        │        │          │   ├───────────►│          │        │        │          │   │            │ Search   │        │        │          │   │            │ Slots    │        │        │          │   │            ├─────────►│        │        │          │   │            │          │ Check  │        │          │   │            │          │ Avail. ├───────►│          │   │            │          │◄───────┤        │          │   │            │          │        │        │          │   │            │ Create   │        │        │          │   │            │ Appt.    │        │        │          │   │            ├─────────►│        │        │          │   │            │◄─────────┤        │        │          │   │ Confirmation│         │        │        │          │   │◄───────────┤          │        │        │          │   │            │          │        │        │          │   │ Arrives    │          │        │        │          │   ├───────────►│          │        │        │          │   │            │ Check-In │        │        │          │   │            ├─────────►│        │        │          │   │            │          │ Queue  │        │          │   │            │          ├────────────────►│          │   │            │          │        │        │ Token    │   │◄───────────┤          │        │        │          │   │            │          │        │        │ Worklist │   │            │          │        │        ├─────────►│   │            │          │        │        │          │   │            │          │        │        │ Call     │   │◄────────────────────────────────────────┤          │   │            │          │        │        │          │   │            │          │        │        │ Start    │   │            │          │        │        │ Consult. │   │            │          │        │        │◄─────────┤
+This is a conceptual interaction model.
+Detailed UML sequence diagrams shall be created during the design documentation stage.
+
+5.95 DOC BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-DOC-BR-001
+Each doctor profile shall have a unique internal identifier
+CS-DOC-BR-002
+Doctor profiles shall reference eligible provider identities
+CS-DOC-BR-003
+Doctor profile creation shall not provide unrestricted clinical access
+CS-DOC-BR-004
+IAM identity and doctor identity are separate concepts
+CS-DOC-BR-005
+Departments shall exist before doctor assignment
+CS-DOC-BR-006
+Invalid duplicate department assignments shall be prevented
+CS-DOC-BR-007
+Department assignment shall not automatically create availability
+CS-DOC-BR-008
+Availability start time shall precede end time
+CS-DOC-BR-009
+Slot duration shall satisfy scheduling rules
+CS-DOC-BR-010
+Invalid overlapping availability shall be prevented or resolved
+CS-DOC-BR-011
+Availability requires an eligible doctor context
+CS-DOC-BR-012
+Schedule exceptions shall identify applicable dates
+CS-DOC-BR-013
+Exceptions shall affect effective schedule calculation
+CS-DOC-BR-014
+Exceptions affecting appointments shall trigger resolution rules
+
+5.96 APT BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-APT-BR-001
+Appointment shall reference an identifiable patient
+CS-APT-BR-002
+Appointment shall reference an eligible scheduling resource
+CS-APT-BR-003
+Final appointment validation shall occur on the trusted backend
+CS-APT-BR-004
+Invalid doctor schedule conflicts shall be prevented
+CS-APT-BR-005
+Appointment creation shall be auditable
+CS-APT-BR-006
+Only eligible appointment states may be rescheduled
+CS-APT-BR-007
+New rescheduled time shall pass availability validation
+CS-APT-BR-008
+New rescheduled time shall pass conflict validation
+CS-APT-BR-009
+Appointment rescheduling shall be auditable
+CS-APT-BR-010
+Cancelled appointments shall not remain active scheduled consultations
+CS-APT-BR-011
+Cancellation shall follow valid state transitions
+CS-APT-BR-012
+Appointment cancellation shall be auditable
+CS-APT-BR-013
+Invalid cancelled appointments shall not be checked in
+CS-APT-BR-014
+Duplicate active consultation check-ins shall be prevented
+CS-APT-BR-015
+Patient identity should be verified before check-in
+CS-APT-BR-016
+Walk-in consultations shall be operationally identifiable
+CS-APT-BR-017
+Walk-in entry shall follow capacity rules
+CS-APT-BR-018
+Appointment state changes shall follow approved transitions
+CS-APT-BR-019
+Terminal states shall not return to incompatible active states without recovery workflow
+CS-APT-BR-020
+State-changing operations require authorization
+
+5.97 QUE BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-QUE-BR-001
+Queue entries shall reference identifiable patients
+CS-QUE-BR-002
+Queue entries shall reference valid queue contexts
+CS-QUE-BR-003
+Duplicate active queue entries shall be prevented
+CS-QUE-BR-004
+Queue creation shall follow applicable check-in
+CS-QUE-BR-005
+Only eligible queue entries may begin consultation
+CS-QUE-BR-006
+Consultation start shall establish or reference a clinical encounter workflow
+CS-QUE-BR-007
+Patient identity shall remain consistent during clinical handoff
+
+5.98 PERMISSION CONCEPT
+Potential Doctor Management permissions include:
+DOCTOR_VIEWDOCTOR_CREATEDOCTOR_UPDATEDOCTOR_DEPARTMENT_ASSIGNDOCTOR_SPECIALIZATION_MANAGEDOCTOR_STATUS_CHANGEDOCTOR_AVAILABILITY_MANAGEDOCTOR_SCHEDULE_VIEW
+Potential Appointment permissions include:
+APPOINTMENT_VIEWAPPOINTMENT_SEARCHAPPOINTMENT_CREATEAPPOINTMENT_RESCHEDULEAPPOINTMENT_CANCELAPPOINTMENT_CHECK_INAPPOINTMENT_NO_SHOWAPPOINTMENT_SCHEDULE_VIEW
+Potential Queue permissions include:
+QUEUE_VIEWQUEUE_ENTRY_CREATEQUEUE_CALL_NEXTQUEUE_CALL_SELECTEDQUEUE_SKIPQUEUE_RECALLQUEUE_START_CONSULTATIONQUEUE_CANCELQUEUE_COMPLETE
+Example Role Concept
+RECEPTIONIST     │     ├── PATIENT_SEARCH     ├── APPOINTMENT_VIEW     ├── APPOINTMENT_SEARCH     ├── APPOINTMENT_CREATE     ├── APPOINTMENT_RESCHEDULE     ├── APPOINTMENT_CANCEL     ├── APPOINTMENT_CHECK_IN     ├── QUEUE_VIEW     └── QUEUE_ENTRY_CREATE
+Compared with:
+DOCTOR   │   ├── DOCTOR_SCHEDULE_VIEW   ├── QUEUE_VIEW   ├── QUEUE_CALL_NEXT   ├── QUEUE_CALL_SELECTED   ├── QUEUE_SKIP   ├── QUEUE_RECALL   └── QUEUE_START_CONSULTATION
+The final role-permission matrix shall be created during Authorization Design.
+
+5.99 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Doctor profile management
+CS-DOC-FR-001 to 004
+Doctor department management
+CS-DOC-FR-005 to 006
+Doctor specialization
+CS-DOC-FR-007 to 008
+Doctor operational status
+CS-DOC-FR-009
+Doctor discovery
+CS-DOC-FR-010 to 012
+Doctor availability
+CS-DOC-FR-013 to 018
+Doctor worklist
+CS-DOC-FR-019
+Doctor auditing
+CS-DOC-FR-020
+Appointment slot discovery
+CS-APT-FR-001
+Appointment booking
+CS-APT-FR-002 to 008
+Appointment search
+CS-APT-FR-009 to 010
+Appointment rescheduling
+CS-APT-FR-011
+Appointment cancellation
+CS-APT-FR-012 to 013
+Patient arrival and check-in
+CS-APT-FR-014 to 015
+No-show management
+CS-APT-FR-016
+Appointment history
+CS-APT-FR-017
+Doctor schedule view
+CS-APT-FR-018
+Walk-in consultation
+CS-APT-FR-019
+Doctor unavailability
+CS-APT-FR-022
+Appointment state integrity
+CS-APT-FR-023
+Queue entry
+CS-QUE-FR-001 to 004
+Queue monitoring
+CS-QUE-FR-005
+Queue ordering
+CS-QUE-FR-006, 019
+Patient calling
+CS-QUE-FR-007 to 010
+Skip and recall
+CS-QUE-FR-011 to 013
+Consultation handoff
+CS-QUE-FR-014
+Queue completion
+CS-QUE-FR-015 to 016
+Doctor queue worklist
+CS-QUE-FR-017
+Patient queue status
+CS-QUE-FR-018
+Queue auditing
+CS-QUE-FR-020
+
+5.100 MODULE RISK ANALYSIS
+Risk 1 — Double Booking
+Problem
+Two users book the same doctor time simultaneously.
+Receptionist A ───► 10:00Receptionist B ───► 10:00
+Impact
+Two patients may arrive for one exclusive consultation slot.
+Mitigation
+final backend validation;
+transactional booking design;
+PostgreSQL concurrency protection;
+applicable database constraints.
+
+Risk 2 — Stale Availability
+Problem
+React displays a slot as available after another user has already booked it.
+Mitigation
+Displayed slots are candidate availability.
+Final booking eligibility shall be revalidated by the backend.
+
+Risk 3 — Doctor Becomes Unavailable
+Problem
+A doctor goes on leave while future appointments already exist.
+Mitigation
+Doctor schedule changes shall identify affected appointments and trigger an operational resolution workflow.
+
+Risk 4 — Duplicate Queue Entry
+Problem
+A patient is checked in multiple times for the same consultation.
+Impact
+The doctor may call the same patient multiple times or the queue count may become incorrect.
+Mitigation
+The system shall prevent invalid duplicate active queue entries.
+
+Risk 5 — Wrong Patient Called
+Problem
+Queue and patient identity information become inconsistent.
+Mitigation
+Queue entries shall maintain an identifiable patient relationship and use a consistent patient identity summary.
+
+Risk 6 — Queue Position Stored as Permanent Truth
+Problem
+The database stores:
+Patient A = Position 1Patient B = Position 2Patient C = Position 3
+but fails to update correctly as queue conditions change.
+Mitigation
+Queue position shall be treated as a calculated operational value according to queue rules.
+
+Risk 7 — Queue Module Owns Clinical Data
+Problem
+Developers begin storing:
+DiagnosisPrescriptionClinical Notes
+inside the queue record.
+Mitigation
+The Queue module shall manage waiting workflow only.
+Clinical information belongs to OPD and EMR domains.
+
+Risk 8 — React State Used as Scheduling Authority
+Problem
+The frontend assumes:
+selectedSlot.available === true
+therefore the appointment must be valid.
+Mitigation
+The trusted backend shall independently validate the complete appointment request.
+
+5.101 COMPLETE OPERATIONAL CAPABILITY MODEL
+                          DOCTOR MANAGEMENT                                  │                                  ▼                      DOCTOR OPERATIONAL PROFILE                                  │                    ┌─────────────┼─────────────┐                    │             │             │                    ▼             ▼             ▼                DEPARTMENT   SPECIALIZATION   STATUS                    │             │             │                    └─────────────┼─────────────┘                                  │                                  ▼                           AVAILABILITY                                  │                                  ▼                       SCHEDULE EXCEPTIONS                                  │                                  ▼                        EFFECTIVE SCHEDULE                                  │                                  ▼                         AVAILABLE SLOTS                                  │                                  ▼                            APPOINTMENT                                  │             ┌────────────────────┼────────────────────┐             │                    │                    │             ▼                    ▼                    ▼         RESCHEDULE            CANCEL               ARRIVAL                                                        │                                                        ▼                                                    CHECK-IN                                                        │                                                        ▼                                                      QUEUE                                                        │                              ┌─────────────────────────┼───────────────┐                              │                         │               │                              ▼                         ▼               ▼                           WAITING                    CALLED          SKIPPED                                                        │               │                                                        │               ▼                                                        │            RECALLED                                                        │               │                                                        └───────┬───────┘                                                                │                                                                ▼                                                        IN CONSULTATION                                                                │                                                                ▼                                                             OPD / EMR
+
+5.102 DOC–APT–QUE MODULE COMPLETION STATUS
+Module: Doctor ManagementModule Code: DOCRequirement Range: CS-DOC-FR-001 to CS-DOC-FR-020Business Rule Range: CS-DOC-BR-001 to CS-DOC-BR-014
+Module: Appointment ManagementModule Code: APTRequirement Range: CS-APT-FR-001 to CS-APT-FR-025Business Rule Range: CS-APT-BR-001 to CS-APT-BR-020
+Module: Queue ManagementModule Code: QUERequirement Range: CS-QUE-FR-001 to CS-QUE-FR-020Business Rule Range: CS-QUE-BR-001 to CS-QUE-BR-007
+Doctor Operational Model: DefinedDepartment Assignment Model: DefinedSpecialization Model: DefinedDoctor Availability Model: DefinedSchedule Exception Model: DefinedAppointment Booking Workflow: DefinedAppointment Conflict Model: DefinedAppointment State Model: DefinedPatient Check-In Workflow: DefinedWalk-In Workflow: DefinedDoctor Unavailability Resolution Concept: DefinedQueue Entry Model: DefinedToken Concept: DefinedQueue Ordering Concept: DefinedSkip and Recall Workflow: DefinedDoctor Worklist Concept: DefinedQueue State Model: DefinedIntegrated Data Flow: DefinedConceptual Sequence Model: DefinedRisk Analysis: DefinedTraceability: Established
+Status: Functional Requirements Draft Completed
+The DOC, APT, and QUE requirements establish the operational pathway through which a CuraSphere patient moves from doctor selection to scheduled consultation and finally into the active doctor worklist.
+These requirements shall later be transformed into:
+Doctor Management use cases;
+Appointment Management use cases;
+Queue Management use cases;
+doctor availability activity diagram;
+appointment booking activity diagram;
+patient check-in activity diagram;
+queue management activity diagram;
+doctor schedule state model;
+appointment state transition specification;
+queue state transition specification;
+appointment booking sequence diagram;
+appointment concurrency sequence diagram;
+patient check-in sequence diagram;
+queue call-next sequence diagram;
+doctor worklist design;
+Doctor domain model;
+Appointment domain model;
+Queue domain model;
+PostgreSQL scheduling model;
+PostgreSQL appointment conflict strategy;
+concurrency control design;
+React doctor schedule UI requirements;
+React appointment calendar requirements;
+React reception check-in requirements;
+React doctor worklist requirements;
+ASP.NET Core Doctor API specification;
+ASP.NET Core Appointment API specification;
+ASP.NET Core Queue API specification;
+unit tests;
+integration tests;
+concurrency tests;
+scheduling tests;
+queue workflow tests.
+No React calendar library, ASP.NET Core class structure, PostgreSQL table schema, queue ranking algorithm, appointment locking mechanism, SignalR implementation, or real-time event architecture is finalized by this SRS section.
+Those decisions shall be made during the architecture and detailed design stages.
+

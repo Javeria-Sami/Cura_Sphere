@@ -1,0 +1,1980 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.6 — RADIOLOGY AND MEDICAL IMAGING MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: RADModule Name: Radiology and Medical Imaging Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.214 MODULE PURPOSE
+The Radiology and Medical Imaging Management System shall manage the operational and clinical workflow associated with diagnostic imaging orders, imaging procedure selection, scheduling, patient arrival, imaging worklists, examination performance, imaging study tracking, radiology interpretation, report drafting, report verification, critical finding communication, final report generation, and authorized Electronic Medical Record availability.
+The Radiology module shall support the following high-level workflow:
+CLINICAL ENCOUNTER        │        ▼IMAGING ORDER        │        ▼ORDER VALIDATION        │        ▼IMAGING PROCEDURE        │        ▼CLINICAL / SAFETY INFORMATION        │        ▼SCHEDULING OR URGENT WORKFLOW        │        ▼PATIENT ARRIVAL        │        ▼PATIENT IDENTITY VERIFICATION        │        ▼IMAGING WORKLIST        │        ▼EXAMINATION PREPARATION        │        ▼EXAMINATION PERFORMED        │        ▼IMAGING STUDY        │        ▼RADIOLOGIST INTERPRETATION        │        ▼DRAFT REPORT        │        ▼REPORT REVIEW / VERIFICATION        │        ├── CRITICAL FINDING WORKFLOW        │        ▼FINAL RADIOLOGY REPORT        │        ▼EMR AVAILABILITY
+The module shall provide traceability from the original clinical imaging request to the final verified radiology report.
+Conceptually:
+WHO ORDERED THE EXAMINATION?        │        ▼FOR WHICH PATIENT?        │        ▼DURING WHICH CLINICAL CONTEXT?        │        ▼WHAT IMAGING PROCEDURE WAS REQUESTED?        │        ▼WHY WAS THE EXAMINATION REQUESTED?        │        ▼WHEN WAS THE PATIENT SCHEDULED?        │        ▼WAS PATIENT IDENTITY VERIFIED?        │        ▼WHICH EXAMINATION WAS PERFORMED?        │        ▼WHICH IMAGING STUDY WAS CREATED?        │        ▼WHO INTERPRETED THE STUDY?        │        ▼WHO VERIFIED THE REPORT?        │        ▼WERE CRITICAL FINDINGS COMMUNICATED?        │        ▼WHEN DID THE REPORT BECOME FINAL?
+This traceability shall be considered a fundamental radiology requirement.
+
+5.215 RADIOLOGY DOMAIN BOUNDARY
+The Radiology module shall manage diagnostic imaging workflow.
+It shall not own the complete clinical encounter.
+The conceptual domain relationship is:
+OPD / IPD / EMERGENCY          │          ▼     IMAGING ORDER          │          ▼       RADIOLOGY          │          ├── Procedure Catalog          ├── Order Validation          ├── Scheduling          ├── Patient Arrival          ├── Safety Workflow          ├── Imaging Worklist          ├── Examination          ├── Imaging Study          ├── Interpretation          ├── Report Verification          └── Critical Findings          │          ▼          EMR
+Responsibilities shall conceptually be divided as follows:
+CLINICAL MODULEDoctor decides:"The patient requiresa chest X-ray."
+RADIOLOGYRadiology manages:"When and how is the imagingexamination operationally performed,tracked, interpreted, and reported?"
+EMRClinical record provides:"Authorized access to the finalizedradiology report in the patient'slongitudinal clinical record."
+The Radiology module shall not be designed as a simple:
+patient_idimagereport
+table.
+Real diagnostic imaging contains multiple operational, technical, and clinical states.
+
+5.216 CRITICAL RADIOLOGY ARCHITECTURE CONCEPT
+CuraSphere shall distinguish the following concepts:
+IMAGING ORDER
+ORDERED IMAGING PROCEDURE
+RADIOLOGY APPOINTMENT
+IMAGING EXAMINATION
+IMAGING STUDY
+RADIOLOGY REPORT
+CRITICAL FINDING COMMUNICATION
+These concepts shall not automatically be treated as identical.
+Conceptually:
+IMAGING ORDER      │      ▼WHAT WAS CLINICALLY REQUESTED?
+ORDERED PROCEDURE      │      ▼WHICH IMAGING PROCEDUREWAS REQUESTED?
+RADIOLOGY APPOINTMENT      │      ▼WHEN IS THE PATIENT EXPECTED?
+IMAGING EXAMINATION      │      ▼WHAT PROCEDURE WASACTUALLY PERFORMED?
+IMAGING STUDY      │      ▼WHAT DIAGNOSTIC IMAGE DATAWAS PRODUCED?
+RADIOLOGY REPORT      │      ▼WHAT CLINICAL INTERPRETATIONWAS DOCUMENTED?
+Example:
+IMAGING ORDERRAD-ORD-1001Requested Procedure:CT Chest
+The patient may be scheduled for:
+RADIOLOGY APPOINTMENT15 JUL 202610:00 AM
+After patient arrival and preparation:
+IMAGING EXAMINATIONCT Chest Performed
+The modality may produce:
+IMAGING STUDYSTUDY-5001
+The radiologist then creates:
+RADIOLOGY REPORTFindingsImpression
+Therefore:
+ORDER = APPOINTMENT = EXAMINATION = STUDY = REPORT
+is an incorrect architectural assumption.
+
+5.217 RADIOLOGY ACTORS
+Actor
+Responsibility
+Doctor / Authorized Prescriber
+Creates eligible imaging order
+Radiology Reception Staff
+Manages permitted arrival and scheduling workflows
+Radiology Scheduler
+Schedules eligible imaging procedures
+Radiographer / Imaging Technologist
+Performs authorized imaging workflow
+Radiology Nurse
+Performs permitted preparation and clinical support
+Radiologist
+Interprets imaging studies and verifies reports
+Radiology Resident
+Performs permitted draft reporting activities
+Radiology Supervisor
+Manages authorized operational workflows
+Hospital Administrator
+Performs approved configuration activities
+Patient
+Receives imaging service
+OPD Module
+Initiates outpatient imaging order
+IPD Module
+Initiates inpatient imaging order
+Emergency Module
+Initiates emergency imaging order
+Billing Module
+Manages applicable financial workflow
+EMR Module
+Provides authorized final report history
+PACS / Imaging Archive
+Stores and provides imaging studies when integrated
+RIS / External Imaging System
+Participates in imaging workflow when integrated
+Imaging Modality
+Produces diagnostic imaging data when integrated
+CuraSphere System
+Enforces workflow, validation, authorization, and traceability
+
+5.218 RADIOLOGY FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-RAD-FR-001
+Maintain Imaging Procedure Catalog
+M
+CS-RAD-FR-002
+Create Imaging Procedure Definition
+M
+CS-RAD-FR-003
+Update Imaging Procedure Definition
+M
+CS-RAD-FR-004
+Activate or Deactivate Imaging Procedure
+M
+CS-RAD-FR-005
+Define Modality Requirement
+M
+CS-RAD-FR-006
+Define Procedure Preparation Instructions
+M
+CS-RAD-FR-007
+Define Imaging Safety Requirements
+M
+CS-RAD-FR-008
+Search Imaging Procedure Catalog
+M
+CS-RAD-FR-009
+Receive Imaging Order
+M
+CS-RAD-FR-010
+Validate Imaging Order
+M
+CS-RAD-FR-011
+Generate Imaging Order Identifier
+M
+CS-RAD-FR-012
+View Imaging Order
+M
+CS-RAD-FR-013
+View Ordered Imaging Procedures
+M
+CS-RAD-FR-014
+Cancel Eligible Imaging Order
+M
+CS-RAD-FR-015
+Track Imaging Order Status
+M
+CS-RAD-FR-016
+Record Clinical Indication
+M
+CS-RAD-FR-017
+Record Relevant Clinical Information
+M
+CS-RAD-FR-018
+Identify Imaging Safety Requirements
+M
+CS-RAD-FR-019
+Record Safety Screening
+M
+CS-RAD-FR-020
+Prevent Incomplete Required Safety Workflow
+M
+CS-RAD-FR-021
+Create Radiology Appointment
+M
+CS-RAD-FR-022
+Generate Radiology Appointment Identifier
+M
+CS-RAD-FR-023
+Search Available Imaging Schedule
+M
+CS-RAD-FR-024
+Schedule Imaging Procedure
+M
+CS-RAD-FR-025
+Reschedule Imaging Appointment
+M
+CS-RAD-FR-026
+Cancel Imaging Appointment
+M
+CS-RAD-FR-027
+Prevent Imaging Resource Conflict
+M
+CS-RAD-FR-028
+View Radiology Schedule
+M
+CS-RAD-FR-029
+Record Patient Arrival
+M
+CS-RAD-FR-030
+Verify Patient Context
+M
+CS-RAD-FR-031
+Create Imaging Worklist
+M
+CS-RAD-FR-032
+Filter Imaging Worklist
+M
+CS-RAD-FR-033
+Assign Imaging Work
+S
+CS-RAD-FR-034
+Start Imaging Examination
+M
+CS-RAD-FR-035
+Record Examination Start Time
+M
+CS-RAD-FR-036
+Record Procedure Performed
+M
+CS-RAD-FR-037
+Record Examination Completion
+M
+CS-RAD-FR-038
+Record Examination Notes
+M
+CS-RAD-FR-039
+Cancel Eligible Examination
+M
+CS-RAD-FR-040
+Track Examination Status
+M
+CS-RAD-FR-041
+Create Imaging Study Reference
+M
+CS-RAD-FR-042
+Associate Study With Patient
+M
+CS-RAD-FR-043
+Associate Study With Examination
+M
+CS-RAD-FR-044
+Prevent Invalid Study Association
+M
+CS-RAD-FR-045
+View Imaging Study Reference
+M
+CS-RAD-FR-046
+Support PACS Integration Architecture
+S
+CS-RAD-FR-047
+Create Radiology Reporting Worklist
+M
+CS-RAD-FR-048
+Assign Study for Interpretation
+S
+CS-RAD-FR-049
+Open Study Reporting Context
+M
+CS-RAD-FR-050
+Create Draft Radiology Report
+M
+CS-RAD-FR-051
+Record Findings
+M
+CS-RAD-FR-052
+Record Impression
+M
+CS-RAD-FR-053
+Record Report Comments
+S
+CS-RAD-FR-054
+Save Draft Radiology Report
+M
+CS-RAD-FR-055
+Update Draft Radiology Report
+M
+CS-RAD-FR-056
+Submit Report for Verification
+M
+CS-RAD-FR-057
+Review Radiology Report
+M
+CS-RAD-FR-058
+Verify Radiology Report
+M
+CS-RAD-FR-059
+Reject Report Verification
+M
+CS-RAD-FR-060
+Correct Final Radiology Report
+M
+CS-RAD-FR-061
+Create Report Addendum
+M
+CS-RAD-FR-062
+Identify Critical Imaging Finding
+M
+CS-RAD-FR-063
+Initiate Critical Finding Workflow
+M
+CS-RAD-FR-064
+Record Critical Finding Notification
+M
+CS-RAD-FR-065
+Record Critical Finding Recipient
+M
+CS-RAD-FR-066
+Track Critical Finding Acknowledgement
+M
+CS-RAD-FR-067
+Generate Final Radiology Report
+M
+CS-RAD-FR-068
+View Final Radiology Report
+M
+CS-RAD-FR-069
+Make Final Radiology Report Available to EMR
+M
+CS-RAD-FR-070
+Search Imaging Orders
+M
+CS-RAD-FR-071
+View Patient Imaging History
+M
+CS-RAD-FR-072
+Track Radiology Turnaround Time
+S
+CS-RAD-FR-073
+Record Radiology Audit Events
+M
+CS-RAD-FR-074
+Prevent Invalid Radiology State Transition
+M
+CS-RAD-FR-075
+Support DICOM Integration Architecture
+S
+CS-RAD-FR-076
+Support Modality Worklist Architecture
+S
+
+5.219 IMAGING PROCEDURE CATALOG
+CS-RAD-FR-001 — Maintain Imaging Procedure Catalog
+Requirement Name
+Maintain Imaging Procedure Catalog
+Description
+The system shall maintain a controlled catalog of imaging procedures available within CuraSphere.
+Priority
+Must Have
+Purpose
+Clinical users shall select approved imaging procedures from a controlled catalog.
+Weak design:
+Doctor enters:"Xray""x-ray chest""Chest xray""CXR""x ray of chest"
+The system may incorrectly treat these as unrelated procedures.
+A controlled procedure catalog provides:
+PROCEDURE CODERAD-XR-CHEST-PA
+PROCEDURE NAMEChest X-Ray PA View
+Conceptual Procedure Definition
+IMAGING PROCEDURE        │        ├── Procedure Code        ├── Procedure Name        ├── Modality        ├── Body Region        ├── Preparation Requirements        ├── Safety Requirements        ├── Scheduling Information        ├── Orderable Status        └── Active Status
+Example
+Procedure CodeRAD-CT-CHESTProcedure NameCT ChestModalityCTBody RegionChestStatusACTIVE
+Business Rules
+CS-RAD-BR-001
+Each imaging procedure shall have a unique internal identity.
+CS-RAD-BR-002
+Procedure codes shall be unique within the applicable coding scope.
+CS-RAD-BR-003
+Only eligible active procedures shall normally be available for new imaging orders.
+CS-RAD-BR-004
+Historical imaging records shall preserve applicable procedure relationships.
+
+CS-RAD-FR-002 — Create Imaging Procedure Definition
+Description
+The system shall allow an authorized radiology administrator to create an imaging procedure definition.
+Priority
+Must Have
+Information May Include
+procedure code;
+procedure name;
+modality;
+body region;
+procedure category;
+orderable status;
+active status.
+Main Flow
+AUTHORIZED USER       │       ▼OPEN PROCEDURE CATALOG       │       ▼CREATE PROCEDURE       │       ▼ENTER PROCEDURE DATA       │       ▼VALIDATE CODE       │       ▼VALIDATE CONFIGURATION       │       ▼SAVE       │       ▼AUDIT EVENT
+
+CS-RAD-FR-003 — Update Imaging Procedure Definition
+Description
+The system shall allow authorized users to update eligible imaging procedure configuration.
+Priority
+Must Have
+Historical Requirement
+Changes to procedure configuration shall not silently corrupt historical imaging records.
+Example:
+2026Procedure Name:CT Chest
+Later:
+2027Procedure Name:CT Thorax
+Historical reports shall preserve the required clinical interpretation and provenance.
+
+CS-RAD-FR-004 — Activate or Deactivate Imaging Procedure
+Description
+The system shall allow authorized users to activate or deactivate an eligible imaging procedure.
+Priority
+Must Have
+Rule
+ACTIVE PROCEDURE      │      ▼AVAILABLE FOR ELIGIBLE NEW ORDERS
+Compared with:
+INACTIVE PROCEDURE      │      ▼NOT NORMALLY AVAILABLEFOR NEW ORDERS      │      ▼HISTORICAL RECORDS REMAIN
+Deactivation shall not delete historical imaging information.
+
+5.220 MODALITY REQUIREMENT
+CS-RAD-FR-005 — Define Modality Requirement
+Description
+The system shall allow authorized radiology users to associate an imaging procedure with an applicable modality type or imaging resource requirement.
+Priority
+Must Have
+Modality Examples
+X-RAYCTMRIULTRASOUNDMAMMOGRAPHY
+Additional modalities may be configured according to hospital scope.
+Example
+PROCEDUREMRI Brain        │        ▼MODALITYMRI
+Another example:
+PROCEDUREChest X-Ray PA        │        ▼MODALITYX-RAY
+Important Architecture Principle
+Do not hardcode modality mapping throughout React.
+Weak design:
+if (procedure === "MRI Brain") {    room = "MRI";}
+Procedure and resource requirements shall be managed through trusted domain configuration.
+
+5.221 PROCEDURE PREPARATION INSTRUCTIONS
+CS-RAD-FR-006 — Define Procedure Preparation Instructions
+Description
+The system shall support configuration of applicable patient preparation instructions for imaging procedures.
+Priority
+Must Have
+Preparation Information May Include
+fasting instructions;
+hydration instructions;
+clothing or metal removal instructions;
+arrival instructions;
+medication-related instructions approved by clinical governance;
+other procedure-specific preparation information.
+Example Concept
+IMAGING PROCEDURE        │        ▼PREPARATION REQUIREMENTS        │        ├── Instruction A        ├── Instruction B        └── Instruction C
+Important Requirement
+Preparation information shall be controlled clinical or operational content.
+It shall not be casually embedded in individual React components.
+
+5.222 IMAGING SAFETY REQUIREMENTS
+CS-RAD-FR-007 — Define Imaging Safety Requirements
+Description
+The system shall support configuration of applicable imaging safety screening requirements.
+Priority
+Must Have
+Safety Context May Include
+pregnancy-related screening according to hospital policy;
+implanted device information;
+metal-related screening;
+allergy-related information where applicable;
+contrast-related safety information;
+renal function context where clinically required;
+procedure-specific safety questions.
+Important Scope Statement
+CuraSphere shall not independently invent clinical contraindication rules.
+Safety screening criteria shall be approved by appropriate clinical and radiology stakeholders.
+Conceptual Model
+IMAGING PROCEDURE        │        ▼SAFETY REQUIREMENT PROFILE        │        ├── Required Question 1        ├── Required Question 2        ├── Required Check 1        └── Escalation Rule
+
+CS-RAD-FR-008 — Search Imaging Procedure Catalog
+Description
+The system shall allow authorized users to search the imaging procedure catalog.
+Priority
+Must Have
+Search Criteria May Include
+procedure code;
+procedure name;
+modality;
+body region;
+category.
+
+5.223 IMAGING ORDER RECEIPT
+CS-RAD-FR-009 — Receive Imaging Order
+Requirement Name
+Receive Imaging Order
+Description
+The Radiology module shall receive eligible imaging orders from approved clinical workflows.
+Priority
+Must Have
+Potential Sources
+OPD │ ▼IMAGING ORDER
+IPD │ ▼IMAGING ORDER
+EMERGENCY │ ▼IMAGING ORDER
+Conceptual Flow
+DOCTOR   │   ▼CLINICAL ENCOUNTER   │   ▼IMAGING ORDER CREATED   │   ▼RADIOLOGY RECEIVES ORDER   │   ▼VALIDATE ORDER   │   ▼CREATE RADIOLOGY WORKFLOW
+Imaging Order Information May Include
+order identifier;
+patient;
+encounter;
+ordering clinician;
+ordering department;
+order date and time;
+priority;
+ordered procedures;
+clinical indication;
+relevant clinical information;
+order status.
+Business Rules
+CS-RAD-BR-005
+An imaging order shall reference an identifiable patient.
+CS-RAD-BR-006
+An imaging order shall maintain applicable ordering provenance.
+CS-RAD-BR-007
+An imaging order shall contain at least one eligible ordered imaging procedure.
+
+CS-RAD-FR-010 — Validate Imaging Order
+Description
+The system shall validate an imaging order before creating or continuing the radiology workflow.
+Priority
+Must Have
+Validation May Include
+PATIENT EXISTS?ORDER SOURCE VALID?ORDERING CLINICIAN AUTHORIZED?ENCOUNTER VALID?PROCEDURE SELECTED?PROCEDURE ACTIVE?PROCEDURE ORDERABLE?CLINICAL INDICATION AVAILABLE?DUPLICATE ORDER RULE APPLICABLE?ORDER STATE VALID?
+Security Requirement
+The trusted backend shall perform authoritative imaging order validation.
+React validation shall improve usability but shall not be the final authority.
+
+CS-RAD-FR-011 — Generate Imaging Order Identifier
+Description
+The system shall generate a unique identifier for each imaging order.
+Priority
+Must Have
+Example
+RAD-ORD-00000192
+The final identifier format shall be defined during Data Architecture.
+Rule
+Imaging order identifiers shall not be reused for unrelated orders.
+
+CS-RAD-FR-012 — View Imaging Order
+Description
+The system shall allow authorized users to view imaging order information.
+Priority
+Must Have
+Order View May Include
+Patient IdentityMRNOrder IDEncounterOrdering DoctorOrdering DepartmentClinical IndicationRelevant Clinical InformationPriorityOrdered ProcedureOrder Date / TimeOrder Status
+
+CS-RAD-FR-013 — View Ordered Imaging Procedures
+Description
+The system shall allow authorized users to view procedures requested within an imaging order.
+Priority
+Must Have
+Example
+RADIOLOGY ORDERRAD-ORD-192       │       ├── CT Chest       └── CT Abdomen
+The detailed order-to-procedure model shall be defined during Data Architecture.
+
+CS-RAD-FR-014 — Cancel Eligible Imaging Order
+Description
+The system shall allow an authorized user to cancel an eligible imaging order.
+Priority
+Must Have
+Example
+ORDERED   │   ▼CANCELLATION MAY BE ELIGIBLE
+Compared with:
+EXAMINATION COMPLETED        │        ▼ORDINARY ORDER CANCELLATIONMAY NO LONGER BE APPROPRIATE
+Business Rules
+CS-RAD-BR-008
+Only eligible imaging orders may be cancelled.
+CS-RAD-BR-009
+Imaging order cancellation shall record applicable reason, actor, and time.
+
+CS-RAD-FR-015 — Track Imaging Order Status
+Description
+The system shall track the operational status of imaging orders.
+Priority
+Must Have
+Conceptual Status Model
+ORDERED   │   ▼SCHEDULING_PENDING   │   ▼SCHEDULED   │   ▼PATIENT_ARRIVED   │   ▼EXAMINATION_IN_PROGRESS   │   ▼EXAMINATION_COMPLETED   │   ▼REPORT_PENDING   │   ▼PENDING_VERIFICATION   │   ▼FINAL
+Alternative paths may include:
+CANCELLED
+NO_SHOW
+SAFETY_REVIEW_REQUIRED
+EXAMINATION_NOT_PERFORMED
+The exact state vocabulary shall be finalized during Radiology Domain Design.
+
+5.224 CLINICAL INDICATION
+CS-RAD-FR-016 — Record Clinical Indication
+Description
+The system shall record the applicable clinical indication for an imaging order.
+Priority
+Must Have
+Example
+Weak request:
+CT Chest
+Better clinical context:
+Requested ProcedureCT ChestClinical IndicationPersistent cough and abnormalchest radiograph finding.
+Important Principle
+The imaging procedure answers:
+WHAT IMAGING IS REQUESTED?
+The clinical indication helps answer:
+WHY IS THE IMAGING REQUESTED?
+These are different concepts.
+Business Rule
+CS-RAD-BR-010
+Eligible imaging orders shall maintain applicable clinical indication information according to hospital policy.
+
+CS-RAD-FR-017 — Record Relevant Clinical Information
+Description
+The system shall support recording permitted clinical information relevant to the requested imaging procedure.
+Priority
+Must Have
+Information May Include
+relevant symptoms;
+relevant diagnosis;
+previous imaging context;
+surgical history relevant to imaging;
+other approved clinical information.
+Privacy Requirement
+Only information appropriate to the radiology workflow shall be exposed according to authorization policy.
+
+5.225 IMAGING SAFETY WORKFLOW
+CS-RAD-FR-018 — Identify Imaging Safety Requirements
+Description
+The system shall identify applicable safety screening requirements based on the imaging procedure and approved radiology configuration.
+Priority
+Must Have
+Conceptual Flow
+ORDERED PROCEDURE        │        ▼PROCEDURE CONFIGURATION        │        ▼SAFETY REQUIREMENT PROFILE        │        ▼REQUIRED SCREENING
+Example:
+MRI PROCEDURE      │      ▼MRI SAFETY SCREENING PROFILE
+Another procedure may have a different safety profile.
+Important Requirement
+The system shall not assume:
+ALL IMAGING PROCEDURES        │        ▼IDENTICAL SAFETY QUESTIONS
+
+CS-RAD-FR-019 — Record Safety Screening
+Description
+The system shall allow an authorized user to record required imaging safety screening information.
+Priority
+Must Have
+Conceptual Screening Record
+SAFETY SCREENING       │       ├── Patient       ├── Imaging Order       ├── Procedure       ├── Screening Responses       ├── Screening Status       ├── Recorded By       └── Recorded At
+Main Flow
+OPEN IMAGING ORDER        │        ▼IDENTIFY SAFETY REQUIREMENTS        │        ▼VERIFY PATIENT CONTEXT        │        ▼RECORD REQUIRED RESPONSES        │        ▼VALIDATE COMPLETENESS        │        ▼EVALUATE CONFIGURED WORKFLOW        │   ┌────┴────┐   │         │   ▼         ▼CLEAR   REVIEW REQUIRED
+Important Clinical Safety Requirement
+CuraSphere shall not automatically make an independent clinical decision beyond approved configured workflow rules.
+Where clinical review is required:
+SYSTEM   │   ▼FLAG / BLOCK ACCORDING TO POLICY   │   ▼AUTHORIZED CLINICAL REVIEW
+
+CS-RAD-FR-020 — Prevent Incomplete Required Safety Workflow
+Description
+The system shall prevent an imaging examination from progressing beyond configured safety control points when required safety workflow is incomplete.
+Priority
+Must Have
+Example
+MRI EXAMINATION       │       ▼REQUIRED SAFETY SCREENING       │       ▼INCOMPLETE       │       ▼START EXAMINATION?       │       ▼REJECT / REQUIRE AUTHORIZED RESOLUTION
+Business Rules
+CS-RAD-BR-011
+Required safety workflow shall be completed or appropriately resolved before configured examination control points.
+CS-RAD-BR-012
+Safety workflow bypass, where formally permitted, shall require appropriate authority and traceability.
+
+5.226 RADIOLOGY APPOINTMENT MANAGEMENT
+CS-RAD-FR-021 — Create Radiology Appointment
+Description
+The system shall create an appointment record for an eligible scheduled imaging procedure.
+Priority
+Must Have
+Conceptual Model
+RADIOLOGY APPOINTMENT        │        ├── Appointment ID        ├── Patient        ├── Imaging Order        ├── Procedure        ├── Scheduled Date        ├── Scheduled Time        ├── Imaging Resource        ├── Location        └── Status
+Important Principle
+The appointment is not the imaging examination.
+APPOINTMENT    │    ▼PLANNED SERVICE
+EXAMINATION    │    ▼ACTUAL PERFORMED IMAGING WORK
+A patient may have an appointment and never attend.
+Therefore:
+APPOINTMENT ≠ EXAMINATION
+
+CS-RAD-FR-022 — Generate Radiology Appointment Identifier
+Description
+The system shall generate a unique identifier for each radiology appointment.
+Priority
+Must Have
+Example
+RAD-APT-00000821
+
+CS-RAD-FR-023 — Search Available Imaging Schedule
+Description
+The system shall allow authorized users to search eligible imaging scheduling availability.
+Priority
+Must Have
+Search Context May Include
+procedure;
+modality;
+imaging resource;
+location;
+date;
+available time.
+Conceptual Flow
+PROCEDUREMRI Brain    │    ▼REQUIRED MODALITYMRI    │    ▼ELIGIBLE RESOURCESMRI-ROOM-01    │    ▼AVAILABLE SCHEDULE
+
+CS-RAD-FR-024 — Schedule Imaging Procedure
+Requirement Name
+Schedule Imaging Procedure
+Description
+The system shall allow an authorized user to schedule an eligible imaging procedure.
+Priority
+Must Have
+Main Flow
+OPEN IMAGING ORDER        │        ▼SELECT ORDERED PROCEDURE        │        ▼IDENTIFY REQUIRED MODALITY        │        ▼SEARCH ELIGIBLE RESOURCES        │        ▼SEARCH AVAILABLE TIME        │        ▼SELECT SLOT        │        ▼VALIDATE RESOURCE        │        ▼VALIDATE CONFLICT        │        ▼CREATE APPOINTMENT        │        ▼STATUS = SCHEDULED        │        ▼AUDIT EVENT
+Acceptance Criteria
+AC-001
+An authorized scheduler shall be able to schedule an eligible imaging procedure.
+AC-002
+The system shall reject an invalid imaging resource.
+AC-003
+The system shall reject an unavailable slot according to scheduling rules.
+AC-004
+The appointment shall remain linked to the applicable patient and imaging order.
+
+CS-RAD-FR-025 — Reschedule Imaging Appointment
+Description
+The system shall allow an authorized user to reschedule an eligible radiology appointment.
+Priority
+Must Have
+Requirements
+Rescheduling shall preserve appropriate history.
+Weak design:
+appointment_time = new_time
+with no traceability.
+Required concept:
+ORIGINAL SCHEDULE       │       ▼RESCHEDULE EVENT       │       ├── Previous Date / Time       ├── New Date / Time       ├── Actor       ├── Time       └── Reason, If Required
+
+CS-RAD-FR-026 — Cancel Imaging Appointment
+Description
+The system shall allow an authorized user to cancel an eligible radiology appointment.
+Priority
+Must Have
+Rule
+Appointment cancellation shall not automatically mean:
+DELETE IMAGING ORDER
+Conceptually:
+IMAGING ORDER      │      ▼RADIOLOGY APPOINTMENT      │      ▼CANCELLED
+The underlying imaging order may require separate workflow resolution.
+
+CS-RAD-FR-027 — Prevent Imaging Resource Conflict
+Description
+The system shall prevent invalid imaging resource scheduling conflicts.
+Priority
+Must Have
+Example
+MRI-ROOM-0110:00 – 10:30Patient A
+New request:
+MRI-ROOM-0110:15 – 10:45Patient B
+If overlapping use is not permitted:
+REJECT SCHEDULING CONFLICT
+Important Engineering Requirement
+Conflict validation shall occur in trusted backend logic and appropriate database transaction boundaries.
+React checking:
+if (slot.available) {   book();}
+is not sufficient.
+Two users may select the same slot simultaneously.
+
+CS-RAD-FR-028 — View Radiology Schedule
+Description
+The system shall allow authorized users to view permitted radiology scheduling information.
+Priority
+Must Have
+Schedule Views May Include
+DAILYWEEKLYBY MODALITYBY IMAGING RESOURCEBY LOCATION
+The exact visual schedule design shall be defined during UI/UX Architecture.
+
+5.227 PATIENT ARRIVAL
+CS-RAD-FR-029 — Record Patient Arrival
+Description
+The system shall allow authorized radiology users to record the arrival of an eligible patient for imaging services.
+Priority
+Must Have
+Main Flow
+PATIENT ARRIVES      │      ▼SEARCH APPOINTMENT / ORDER      │      ▼LOAD PATIENT CONTEXT      │      ▼VERIFY PATIENT      │      ▼VALIDATE APPOINTMENT / ORDER      │      ▼RECORD ARRIVAL      │      ▼STATUS = ARRIVED      │      ▼IMAGING WORKLIST UPDATED
+Arrival Information May Include
+patient;
+appointment;
+imaging order;
+arrival time;
+recording user;
+arrival location.
+
+5.228 PATIENT CONTEXT VERIFICATION
+CS-RAD-FR-030 — Verify Patient Context
+Description
+The system shall establish the correct patient context before applicable imaging workflow actions.
+Priority
+Must Have
+Patient Safety Model
+SELECTED PATIENT       │       ▼IMAGING ORDER PATIENT       │       ▼MATCH?    ┌──┴──┐    │     │   NO    YES    │     │    ▼     ▼ REJECT  CONTINUE
+The system shall not allow an examination or imaging study to be intentionally associated with an unrelated patient through ordinary workflow.
+Business Rule
+CS-RAD-BR-013
+The patient context of the imaging order, examination, and study shall be appropriately validated.
+
+5.229 IMAGING WORKLIST
+CS-RAD-FR-031 — Create Imaging Worklist
+Description
+The system shall provide authorized radiology users with a worklist of eligible imaging work.
+Priority
+Must Have
+Example
+IMAGING WORKLIST┌────────────┬─────────────┬──────────────┬─────────────┐│ Patient    │ Procedure   │ Modality     │ Status      │├────────────┼─────────────┼──────────────┼─────────────┤│ MRN-100    │ CT Chest    │ CT           │ ARRIVED     ││ MRN-205    │ MRI Brain   │ MRI          │ SCHEDULED   ││ MRN-310    │ Chest X-Ray │ X-RAY        │ IN_PROGRESS │└────────────┴─────────────┴──────────────┴─────────────┘
+Worklist Information May Include
+patient context;
+imaging order;
+procedure;
+modality;
+priority;
+appointment time;
+arrival status;
+examination status.
+
+CS-RAD-FR-032 — Filter Imaging Worklist
+Description
+The system shall allow authorized users to filter the imaging worklist.
+Priority
+Must Have
+Potential Filters
+MODALITYPROCEDURESTATUSPRIORITYDATELOCATIONIMAGING RESOURCE
+
+CS-RAD-FR-033 — Assign Imaging Work
+Description
+The system should allow eligible imaging work to be assigned to an authorized radiology user where operational workflow requires assignment.
+Priority
+Should Have
+Rule
+Assignment does not replace authorization.
+ASSIGNED
+does not mean:
+AUTHORIZED FOR EVERY ACTION
+
+5.230 START IMAGING EXAMINATION
+CS-RAD-FR-034 — Start Imaging Examination
+Requirement Name
+Start Imaging Examination
+Description
+The system shall allow an authorized imaging professional to start an eligible imaging examination.
+Priority
+Must Have
+Preconditions
+Imaging order exists.
+Patient context is valid.
+Ordered procedure is eligible.
+Required safety workflow is completed or appropriately resolved.
+User is authorized.
+Examination state permits start.
+Main Flow
+IMAGING WORKLIST       │       ▼SELECT PATIENT       │       ▼VERIFY PATIENT CONTEXT       │       ▼VERIFY ORDER       │       ▼VERIFY PROCEDURE       │       ▼CHECK SAFETY WORKFLOW       │       ▼VALIDATE USER AUTHORITY       │       ▼START EXAMINATION       │       ▼CREATE / ACTIVATE EXAMINATION CONTEXT       │       ▼RECORD START TIME       │       ▼STATUS = IN_PROGRESS
+Acceptance Criteria
+An authorized imaging professional shall be able to start an eligible examination only when required workflow controls have been satisfied.
+
+CS-RAD-FR-035 — Record Examination Start Time
+Description
+The system shall record the actual start time of an imaging examination.
+Priority
+Must Have
+Important Difference
+APPOINTMENT TIME10:00
+does not automatically mean:
+EXAMINATION START TIME10:00
+The patient may arrive late.
+The imaging resource may be delayed.
+Therefore:
+SCHEDULED_AT ≠ STARTED_AT
+
+5.231 PROCEDURE PERFORMED
+CS-RAD-FR-036 — Record Procedure Performed
+Description
+The system shall record the imaging procedure actually performed.
+Priority
+Must Have
+Important Clinical Workflow Concept
+ORDERED PROCEDURE
+and:
+PERFORMED PROCEDURE
+shall be distinguishable where required.
+Example:
+ORDEREDChest X-Ray
+During the imaging workflow, the performed procedure details may require explicit documentation.
+The system shall not silently change the original order to make it appear that a different procedure was originally requested.
+Conceptually:
+ORIGINAL ORDER      │      ▼ORDERED PROCEDURE
+and:
+EXAMINATION      │      ▼PERFORMED PROCEDURE
+Business Rule
+CS-RAD-BR-014
+The system shall preserve the original ordered procedure context.
+
+5.232 EXAMINATION COMPLETION
+CS-RAD-FR-037 — Record Examination Completion
+Description
+The system shall allow an authorized user to record completion of an eligible imaging examination.
+Priority
+Must Have
+Main Flow
+EXAMINATION IN_PROGRESS         │         ▼PROCEDURE COMPLETED         │         ▼VALIDATE REQUIRED EXAM DATA         │         ▼RECORD COMPLETION         │         ▼COMPLETED_AT         │         ▼STATUS = COMPLETED         │         ▼REPORTING WORKFLOW
+Business Rules
+CS-RAD-BR-015
+Only an eligible in-progress examination may normally be completed.
+CS-RAD-BR-016
+Examination completion shall maintain actor and timestamp information.
+
+CS-RAD-FR-038 — Record Examination Notes
+Description
+The system shall allow authorized imaging users to record permitted technical or operational examination notes.
+Priority
+Must Have
+Important Separation
+TECHNICAL EXAMINATION NOTE
+is not automatically:
+RADIOLOGIST DIAGNOSTIC INTERPRETATION
+The architecture shall distinguish technical workflow documentation from the formal radiology report.
+
+CS-RAD-FR-039 — Cancel Eligible Examination
+Description
+The system shall allow an authorized user to cancel or mark an eligible examination as not performed according to approved workflow.
+Priority
+Must Have
+Reasons May Include
+patient did not proceed;
+safety concern;
+equipment unavailable;
+clinical cancellation;
+patient refusal;
+other approved reason.
+Important Requirement
+Do not delete the examination history.
+Use:
+EXAMINATION     │     ▼NOT_PERFORMED / CANCELLED     │     ▼REASON     │     ▼ACTOR     │     ▼TIME
+
+CS-RAD-FR-040 — Track Examination Status
+Description
+The system shall track the operational status of imaging examinations.
+Priority
+Must Have
+Conceptual State Model
+PLANNED   │   ▼READY   │   ▼IN_PROGRESS   │   ▼COMPLETED
+Alternative states may include:
+CANCELLED
+NOT_PERFORMED
+SAFETY_REVIEW_REQUIRED
+The exact state model shall be finalized during Domain Architecture.
+
+5.233 IMAGING STUDY MANAGEMENT
+CS-RAD-FR-041 — Create Imaging Study Reference
+Description
+The system shall create or receive an identifiable reference to an imaging study associated with eligible radiology workflow.
+Priority
+Must Have
+Conceptual Imaging Study
+IMAGING STUDY      │      ├── Study Identity      ├── Patient Context      ├── Examination      ├── Procedure Context      ├── Study Date / Time      ├── Imaging System Reference      └── Study Status
+Important Architecture Principle
+CuraSphere’s PostgreSQL database shall not automatically be assumed to directly store every diagnostic image as a normal application record.
+The final image storage architecture shall be determined during Imaging Integration Architecture.
+Conceptually:
+CURASPHERE     │     ▼STUDY REFERENCE / METADATA
+PACS / IMAGING ARCHIVE     │     ▼DIAGNOSTIC IMAGE DATA
+The exact architecture shall depend on approved integration design.
+
+CS-RAD-FR-042 — Associate Study With Patient
+Description
+The system shall associate an imaging study reference with the correct patient context.
+Priority
+Must Have
+Patient Safety Requirement
+STUDY PATIENT      │      ▼EXPECTED PATIENT      │      ▼MATCH / VALIDATE
+Patient-study association shall be treated as safety-critical.
+
+CS-RAD-FR-043 — Associate Study With Examination
+Description
+The system shall associate an eligible imaging study with the applicable imaging examination.
+Priority
+Must Have
+Conceptual Relationship
+IMAGING ORDER      │      ▼EXAMINATION      │      ▼IMAGING STUDY
+The detailed cardinality shall be determined during Data and Integration Architecture.
+The SRS shall not force an incorrect universal assumption that:
+ONE EXAMINATION      │      ▼EXACTLY ONE IMAGE FILE
+An imaging study may contain many image instances.
+
+CS-RAD-FR-044 — Prevent Invalid Study Association
+Description
+The system shall prevent an imaging study from being incorrectly associated with unrelated patient imaging work through ordinary workflow.
+Priority
+Must Have
+Example
+STUDYSTUDY-5001Patient = MRN-100        │        ▼EXAMINATIONRAD-EXAM-200Patient = MRN-900        │        ▼ASSOCIATE?        │        ▼REJECT
+Business Rule
+CS-RAD-BR-017
+Study, examination, and patient context shall be appropriately validated before association.
+
+CS-RAD-FR-045 — View Imaging Study Reference
+Description
+The system shall allow authorized users to view permitted imaging study reference information.
+Priority
+Must Have
+Information May Include
+study identifier;
+patient;
+procedure;
+modality;
+study date and time;
+examination;
+imaging archive availability;
+study status.
+Actual diagnostic image viewing shall depend on the approved imaging viewer and integration architecture.
+
+5.234 PACS INTEGRATION ARCHITECTURE
+CS-RAD-FR-046 — Support PACS Integration Architecture
+Description
+The CuraSphere architecture should permit integration with an approved Picture Archiving and Communication System.
+Priority
+Should Have
+Conceptual Architecture
+IMAGING MODALITY       │       ▼IMAGING STUDY       │       ▼PACS       │       ├── Image Storage       ├── Study Retrieval       └── Imaging Archive       │       ▼CURASPHERE INTEGRATION LAYER       │       ▼STUDY REFERENCE       │       ▼RADIOLOGY REPORTING CONTEXT
+Important Scope Statement
+This SRS does not select:
+PACS vendor;
+image archive product;
+diagnostic viewer;
+cloud imaging platform;
+DICOM server;
+image compression strategy;
+storage hardware.
+These shall be evaluated during Architecture and Infrastructure Design.
+
+5.235 RADIOLOGY REPORTING WORKLIST
+CS-RAD-FR-047 — Create Radiology Reporting Worklist
+Description
+The system shall provide authorized radiology reporting users with a worklist of eligible studies requiring interpretation or reporting.
+Priority
+Must Have
+Example
+REPORTING WORKLIST┌───────────┬────────────┬────────────┬─────────────────┐│ Study     │ Patient    │ Procedure  │ Report Status   │├───────────┼────────────┼────────────┼─────────────────┤│ STD-5001  │ MRN-100    │ CT Chest   │ UNREPORTED      ││ STD-5002  │ MRN-205    │ MRI Brain  │ DRAFT           ││ STD-5003  │ MRN-310    │ X-Ray      │ PENDING_VERIFY  │└───────────┴────────────┴────────────┴─────────────────┘
+Reporting Worklist Information May Include
+study;
+patient context;
+procedure;
+modality;
+priority;
+examination completion time;
+report status;
+assigned radiologist.
+
+CS-RAD-FR-048 — Assign Study for Interpretation
+Description
+The system should allow an eligible imaging study to be assigned to an authorized reporting user.
+Priority
+Should Have
+Important Rule
+Assignment shall not replace permission checks.
+ASSIGNED TO DR. A
+does not mean:
+DR. A MAY BYPASS REPORTVERIFICATION RULES
+
+5.236 OPEN STUDY REPORTING CONTEXT
+CS-RAD-FR-049 — Open Study Reporting Context
+Description
+The system shall allow an authorized reporting user to open an eligible imaging study in a reporting context.
+Priority
+Must Have
+Reporting Context May Include
+PATIENT IDENTITYMRNAGE / RELEVANT DEMOGRAPHIC CONTEXTIMAGING ORDERORDERING CLINICIANCLINICAL INDICATIONRELEVANT CLINICAL INFORMATIONORDERED PROCEDUREPERFORMED PROCEDUREMODALITYSTUDY REFERENCEPREVIOUS IMAGING REFERENCESREPORT STATUS
+Patient Safety Requirement
+Patient identity shall remain appropriately visible in the reporting context.
+The radiologist shall not be expected to interpret an unidentified:
+image.jpg
+without appropriate study and patient context.
+
+5.237 CREATE DRAFT RADIOLOGY REPORT
+CS-RAD-FR-050 — Create Draft Radiology Report
+Requirement Name
+Create Draft Radiology Report
+Description
+The system shall allow an authorized reporting user to create a draft radiology report for an eligible imaging study.
+Priority
+Must Have
+Conceptual Report Model
+RADIOLOGY REPORT       │       ├── Report ID       ├── Imaging Study       ├── Patient Context       ├── Findings       ├── Impression       ├── Report Status       ├── Author       ├── Created At       ├── Verified By       └── Verified At
+Main Flow
+REPORTING WORKLIST        │        ▼SELECT STUDY        │        ▼LOAD REPORTING CONTEXT        │        ▼VERIFY PATIENT / STUDY CONTEXT        │        ▼CREATE REPORT        │        ▼ENTER FINDINGS        │        ▼ENTER IMPRESSION        │        ▼SAVE DRAFT        │        ▼STATUS = DRAFT
+Business Rules
+CS-RAD-BR-018
+A radiology report shall reference identifiable imaging work.
+CS-RAD-BR-019
+Report creation shall require appropriate authorization.
+
+5.238 RADIOLOGY FINDINGS
+CS-RAD-FR-051 — Record Findings
+Description
+The system shall allow an authorized reporting user to record radiological findings.
+Priority
+Must Have
+Concept
+FINDINGS    │    ▼DETAILED OBSERVATIONS FROMIMAGING INTERPRETATION
+Example structure:
+FINDINGSLung fields...Pleural spaces...Cardiomediastinal silhouette...Other observed imaging features...
+The actual clinical report content shall be authored by appropriately authorized clinical professionals.
+CuraSphere shall not invent radiological findings.
+
+5.239 RADIOLOGY IMPRESSION
+CS-RAD-FR-052 — Record Impression
+Description
+The system shall allow an authorized reporting user to record the radiology report impression.
+Priority
+Must Have
+Concept
+FINDINGS     │     ▼DETAILED IMAGING OBSERVATIONS
+Compared with:
+IMPRESSION     │     ▼CLINICALLY FOCUSED SUMMARYOF THE INTERPRETATION
+These concepts shall be separately identifiable where required by report design.
+
+CS-RAD-FR-053 — Record Report Comments
+Description
+The system should support permitted additional radiology report comments.
+Priority
+Should Have
+Comments may include approved reporting information that does not belong in the primary findings or impression sections.
+The exact report structure shall be approved during Clinical Reporting Design.
+
+5.240 DRAFT REPORT MANAGEMENT
+CS-RAD-FR-054 — Save Draft Radiology Report
+Description
+The system shall allow an eligible radiology report to remain in draft state.
+Priority
+Must Have
+Conceptual Model
+REPORT CREATED      │      ▼DRAFT      │      ├── Editable by Authorized User      ├── Not Final      └── Not Represented as Verified Report
+Important Requirement
+A draft radiology report shall be clearly distinguishable from a final verified radiology report.
+
+CS-RAD-FR-055 — Update Draft Radiology Report
+Description
+The system shall allow an authorized user to update an eligible draft radiology report.
+Priority
+Must Have
+Rule
+DRAFT  │  ▼ORDINARY AUTHORIZED EDITING
+Compared with:
+FINAL  │  ▼CONTROLLED CORRECTION / ADDENDUM
+
+5.241 SUBMIT REPORT FOR VERIFICATION
+CS-RAD-FR-056 — Submit Report for Verification
+Description
+The system shall allow an authorized reporting user to submit an eligible draft radiology report for verification.
+Priority
+Must Have
+Main Flow
+DRAFT REPORT      │      ▼VALIDATE STUDY ASSOCIATION      │      ▼VALIDATE REPORT COMPLETENESS      │      ▼VALIDATE REQUIRED SECTIONS      │      ▼SUBMIT FOR VERIFICATION      │      ▼STATUS = PENDING_VERIFICATION
+Business Rule
+CS-RAD-BR-020
+Only eligible reports may be submitted for verification.
+
+5.242 RADIOLOGY REPORT REVIEW
+CS-RAD-FR-057 — Review Radiology Report
+Description
+The system shall allow an authorized radiology reviewer to review an eligible report before verification.
+Priority
+Must Have
+Review Context May Include
+PATIENTCLINICAL INDICATIONORDERED PROCEDUREPERFORMED PROCEDUREIMAGING STUDYFINDINGSIMPRESSIONCRITICAL FINDING STATUSREPORT AUTHORREPORT HISTORY
+The final UI shall be designed during Clinical UI Architecture.
+
+5.243 RADIOLOGY REPORT VERIFICATION
+CS-RAD-FR-058 — Verify Radiology Report
+Requirement Name
+Verify Radiology Report
+Description
+The system shall allow an authorized radiology verifier to verify an eligible radiology report.
+Priority
+Must Have
+Primary Actor
+Authorized Radiologist / Radiology Verifier
+Preconditions
+Imaging study exists.
+Report exists.
+Report is eligible for verification.
+Required report information is available.
+User has report verification authority.
+Applicable critical finding workflow has been evaluated.
+Main Flow
+PENDING VERIFICATION        │        ▼AUTHORIZED VERIFIER OPENS REPORT        │        ▼VERIFY PATIENT CONTEXT        │        ▼REVIEW CLINICAL INDICATION        │        ▼REVIEW IMAGING STUDY CONTEXT        │        ▼REVIEW FINDINGS        │        ▼REVIEW IMPRESSION        │        ▼REVIEW CRITICAL FINDING STATUS        │        ▼SELECT VERIFY        │        ▼SERVER AUTHORIZATION        │        ▼FINAL VALIDATION        │        ▼REPORT = FINAL        │        ▼VERIFIER RECORDED        │        ▼VERIFICATION TIME RECORDED        │        ▼FINAL REPORT GENERATED        │        ▼EMR AVAILABILITY        │        ▼AUDIT EVENT
+Business Rules
+CS-RAD-BR-021
+Radiology report verification shall require appropriate authority.
+CS-RAD-BR-022
+Report verification shall identify the verifier.
+CS-RAD-BR-023
+Verification time shall be recorded.
+CS-RAD-BR-024
+A final report shall not remain freely editable as an ordinary draft.
+Acceptance Criteria
+AC-001
+An authorized verifier shall be able to verify an eligible report.
+AC-002
+An unauthorized user shall not verify the report.
+AC-003
+The final report shall maintain verification provenance.
+AC-004
+The final report shall become available according to approved release rules.
+
+5.244 REJECT REPORT VERIFICATION
+CS-RAD-FR-059 — Reject Report Verification
+Description
+The system shall allow an authorized reviewer to reject an eligible report from verification and return it to an approved correction workflow.
+Priority
+Must Have
+Conceptual Flow
+PENDING_VERIFICATION        │        ▼REVIEWER IDENTIFIES ISSUE        │        ▼REJECT VERIFICATION        │        ▼RECORD REASON        │        ▼REPORT REQUIRES REVISION
+Reasons May Include
+incomplete report;
+report inconsistency;
+study-report mismatch;
+required clarification;
+other approved reporting reason.
+Rule
+Verification rejection shall not delete report history.
+
+5.245 FINAL REPORT CORRECTION
+CS-RAD-FR-060 — Correct Final Radiology Report
+Description
+The system shall support controlled correction of an eligible finalized radiology report.
+Priority
+Must Have
+Critical Clinical Record Principle
+Weak design:
+FINAL REPORTImpression:No acute finding.        │        ▼SQL UPDATEImpression:Acute finding present.        │        ▼OLD REPORT LOST
+This destroys clinical record traceability.
+Required concept:
+ORIGINAL FINAL REPORT          │          ▼CONTROLLED CORRECTION WORKFLOW          │          ▼ORIGINAL VERSION TRACEABLE          │          +          ▼CORRECTED REPORT VERSION
+Correction Information May Include
+original report;
+correction reason;
+corrected report content;
+correction author;
+correction time;
+verification information.
+Business Rules
+CS-RAD-BR-025
+Final report correction shall follow an approved controlled workflow.
+CS-RAD-BR-026
+The original finalized report shall remain appropriately traceable.
+CS-RAD-BR-027
+Correction actor and time shall be identifiable.
+
+5.246 RADIOLOGY REPORT ADDENDUM
+CS-RAD-FR-061 — Create Report Addendum
+Description
+The system shall allow an authorized user to create an addendum to an eligible final radiology report according to approved reporting policy.
+Priority
+Must Have
+Important Difference
+CORRECTION
+may change or correct previously documented report information.
+ADDENDUM
+may append additional information to a finalized report.
+Conceptually:
+FINAL REPORT      │      ▼ADDENDUM      │      ├── Addendum Content      ├── Author      ├── Created At      ├── Verification      └── Relationship to Original Report
+Example
+ORIGINAL REPORTFinalized 10:30
+ADDENDUMAdded 12:15Additional comparison withprevious imaging is documented.
+The original report shall remain identifiable.
+
+5.247 CRITICAL IMAGING FINDING
+CS-RAD-FR-062 — Identify Critical Imaging Finding
+Description
+The system shall allow an authorized radiology professional or approved workflow to identify a critical imaging finding.
+Priority
+Must Have
+Important Concept
+A radiology report may contain:
+ROUTINE FINDING
+SIGNIFICANT FINDING
+CRITICAL FINDING
+The exact classification shall be defined by approved radiology policy.
+Critical Finding Concept
+IMAGING INTERPRETATION          │          ▼CRITICAL FINDING IDENTIFIED          │          ▼URGENT COMMUNICATION WORKFLOW
+Important Safety Requirement
+CuraSphere shall not independently diagnose a critical finding from an image unless a separately approved clinical AI system and governance process are formally introduced.
+For the current scope:
+AUTHORIZED CLINICAL USER          │          ▼IDENTIFIES CRITICAL FINDING
+or an approved external system may provide a validated flag in future integration.
+
+5.248 CRITICAL FINDING WORKFLOW
+CS-RAD-FR-063 — Initiate Critical Finding Workflow
+Description
+The system shall initiate an applicable critical finding communication workflow when a critical imaging finding is identified.
+Priority
+Must Have
+Conceptual Flow
+RADIOLOGIST INTERPRETATION           │           ▼CRITICAL FINDING?           │      ┌────┴────┐      │         │     NO        YES      │         │      ▼         ▼NORMAL       CRITICAL FINDINGREPORTING           │                    ▼           COMMUNICATION REQUIRED                    │                    ▼           IDENTIFY RECIPIENT                    │                    ▼          RECORD NOTIFICATION                    │                    ▼         TRACK ACKNOWLEDGEMENT
+Important Safety Principle
+A red icon is not a complete critical finding workflow.
+RED BADGE
+does not answer:
+WHO WAS CONTACTED?WHEN?HOW?WAS THE MESSAGE COMMUNICATED?WAS IT ACKNOWLEDGED?
+
+5.249 CRITICAL FINDING NOTIFICATION
+CS-RAD-FR-064 — Record Critical Finding Notification
+Description
+The system shall allow an authorized user to record a critical imaging finding notification event.
+Priority
+Must Have
+Notification Information May Include
+report or finding;
+patient;
+notification date and time;
+notifying user;
+recipient;
+communication method;
+communication outcome.
+Example
+CRITICAL FINDINGSuspected acute intracranial findingPatientMRN-000102Notified ByRAD-USR-020RecipientDr. AhmadNotification Time14 JUL 2026 14:52MethodTelephoneOutcomeCommunicated
+Clinical example wording is illustrative only and shall not define medical diagnostic policy.
+Business Rule
+CS-RAD-BR-028
+Critical finding communication events shall maintain appropriate provenance.
+
+CS-RAD-FR-065 — Record Critical Finding Recipient
+Description
+The system shall record the identifiable recipient or approved recipient context of a critical finding notification.
+Priority
+Must Have
+The system shall avoid vague documentation such as:
+Doctor informed.
+Where hospital policy requires identifiable communication, CuraSphere shall support:
+WHO WAS INFORMED?
+
+CS-RAD-FR-066 — Track Critical Finding Acknowledgement
+Description
+The system shall track applicable acknowledgement of a critical finding communication.
+Priority
+Must Have
+Conceptual States
+CRITICAL FINDING IDENTIFIED            │            ▼NOTIFICATION PENDING            │            ▼NOTIFIED            │            ▼ACKNOWLEDGED
+Alternative states may include:
+NOTIFICATION FAILED
+ESCALATION REQUIRED
+The final escalation process shall be defined with clinical governance stakeholders.
+
+5.250 FINAL RADIOLOGY REPORT
+CS-RAD-FR-067 — Generate Final Radiology Report
+Description
+The system shall generate a final radiology report for an eligible verified radiology interpretation.
+Priority
+Must Have
+Report Information May Include
+Hospital / Radiology IdentityPatient IdentityMRNImaging Order IDStudy ReferenceOrdering ClinicianClinical IndicationProcedure RequestedProcedure PerformedModalityExamination Date / TimeFindingsImpressionCritical Finding Information, If ApplicableReport StatusReport AuthorVerification InformationAddendum Information, If Applicable
+Conceptual Report
+┌─────────────────────────────────────────────────────────────┐│ CURASPHERE RADIOLOGY                                       │├─────────────────────────────────────────────────────────────┤│ Patient: Ahmad Khan              MRN: MRN-000102            ││ Study: STD-0005001                                        ││ Procedure: CT Chest                                       ││ Ordering Doctor: Dr. Ahmad                                │├─────────────────────────────────────────────────────────────┤│ CLINICAL INDICATION                                       ││ Persistent respiratory symptoms...                        │├─────────────────────────────────────────────────────────────┤│ FINDINGS                                                  ││ Authorized radiologist findings...                        │├─────────────────────────────────────────────────────────────┤│ IMPRESSION                                                ││ Authorized radiologist impression...                      │├─────────────────────────────────────────────────────────────┤│ Status: FINAL                                             ││ Verified By: Authorized Radiologist                       ││ Verified At: 14 JUL 2026 15:10                            │└─────────────────────────────────────────────────────────────┘
+Important Requirement
+The final report is a clinical artifact.
+Its authoritative data shall come from trusted finalized radiology information.
+React shall not independently construct or alter authoritative report meaning using uncontrolled browser state.
+
+CS-RAD-FR-068 — View Final Radiology Report
+Description
+The system shall allow authorized users to view eligible final radiology reports.
+Priority
+Must Have
+Potential Authorized Access
+radiologists;
+ordering clinicians;
+authorized doctors;
+authorized clinical users;
+authorized medical records users.
+Patient-facing report access shall be specified separately.
+
+5.251 EMR RADIOLOGY AVAILABILITY
+CS-RAD-FR-069 — Make Final Radiology Report Available to EMR
+Description
+The system shall make eligible finalized radiology reports available to the Electronic Medical Record.
+Priority
+Must Have
+Conceptual Integration
+RADIOLOGY REPORTDRAFT  │  ▼PENDING_VERIFICATION  │  ▼FINAL  │  ▼AUTHORIZED RELEASE  │  ▼EMR
+Important Requirement
+The EMR shall not automatically present an ordinary draft radiology report as a final verified interpretation.
+Conceptual Query
+EMR REQUESTS IMAGING HISTORY             │             ▼AUTHORIZED?             │             ▼RADIOLOGY READ MODEL             │             ▼ELIGIBLE FINAL REPORTS             │             ▼PATIENT TIMELINE
+Business Rules
+CS-RAD-BR-029
+Only eligible radiology information shall be released to the EMR.
+CS-RAD-BR-030
+Radiology report status shall be identifiable in clinical views.
+
+5.252 SEARCH IMAGING ORDERS
+CS-RAD-FR-070 — Search Imaging Orders
+Description
+The system shall allow authorized users to search permitted imaging orders.
+Priority
+Must Have
+Search Criteria May Include
+imaging order identifier;
+appointment identifier;
+study identifier;
+MRN;
+patient name;
+procedure;
+modality;
+order date;
+ordering clinician;
+status.
+Security Requirement
+Search results shall respect clinical access and authorization policies.
+
+5.253 PATIENT IMAGING HISTORY
+CS-RAD-FR-071 — View Patient Imaging History
+Description
+The system shall allow authorized clinical and radiology users to view permitted patient imaging history.
+Priority
+Must Have
+Example
+PATIENT IMAGING HISTORYPatientAhmad KhanMRNMRN-000102────────────────────────────────────14 JUL 2026CT ChestStatus:FINALReport:Available────────────────────────────────────20 JUN 2026Chest X-RayStatus:FINALReport:Available────────────────────────────────────04 MAR 2026Ultrasound AbdomenStatus:FINALReport:Available
+Important Difference
+IMAGING WORKLIST
+answers:
+What examinations need operational action?
+REPORTING WORKLIST
+answers:
+What imaging studies require interpretation or report action?
+PATIENT IMAGING HISTORY
+answers:
+What finalized imaging information is available in this patient’s clinical history?
+These are three different read models.
+
+5.254 RADIOLOGY TURNAROUND TIME
+CS-RAD-FR-072 — Track Radiology Turnaround Time
+Description
+The system should support measurement of applicable radiology turnaround times.
+Priority
+Should Have
+Potential Measurements
+ORDER TO SCHEDULEORDER TO EXAMINATIONARRIVAL TO EXAMINATION STARTEXAMINATION START TO COMPLETIONEXAMINATION COMPLETION TO DRAFT REPORTDRAFT REPORT TO VERIFICATIONEXAMINATION COMPLETION TO FINAL REPORT
+Example
+Examination Completed14:00        │        ▼Report Finalized15:30        │        ▼REPORT TURNAROUND TIME90 Minutes
+Important Engineering Principle
+Turnaround time shall be derived from meaningful event timestamps.
+Conceptually:
+VERIFIED_AT - EXAM_COMPLETED_AT        │        ▼REPORT TURNAROUND TIME
+Do not use:
+turnaround_time = "90 mins"
+as the only source of truth.
+
+5.255 RADIOLOGY AUDIT EVENTS
+CS-RAD-FR-073 — Record Radiology Audit Events
+Description
+The system shall record appropriate audit events for significant radiology operations.
+Priority
+Must Have
+Events May Include
+IMAGING_ORDER_RECEIVEDIMAGING_ORDER_CANCELLEDSAFETY_SCREENING_RECORDEDSAFETY_WORKFLOW_OVERRIDDENRADIOLOGY_APPOINTMENT_CREATEDRADIOLOGY_APPOINTMENT_RESCHEDULEDRADIOLOGY_APPOINTMENT_CANCELLEDPATIENT_ARRIVAL_RECORDEDEXAMINATION_STARTEDEXAMINATION_COMPLETEDEXAMINATION_CANCELLEDIMAGING_STUDY_ASSOCIATEDRADIOLOGY_REPORT_CREATEDRADIOLOGY_REPORT_UPDATEDRADIOLOGY_REPORT_SUBMITTEDRADIOLOGY_REPORT_VERIFIEDRADIOLOGY_REPORT_CORRECTEDRADIOLOGY_REPORT_ADDENDUM_CREATEDCRITICAL_FINDING_IDENTIFIEDCRITICAL_FINDING_NOTIFICATION_RECORDEDRADIOLOGY_REPORT_RELEASED
+Example
+EVENTRADIOLOGY_REPORT_VERIFIEDTARGETRAD-REPORT-882STUDYSTD-5001ACTORRAD-USR-020TIME2026-07-14 15:10RESULTSUCCESS
+Privacy Requirement
+Audit information shall provide sufficient traceability without unnecessarily duplicating sensitive clinical content.
+
+5.256 RADIOLOGY STATE TRANSITION VALIDATION
+CS-RAD-FR-074 — Prevent Invalid Radiology State Transition
+Description
+The system shall enforce approved radiology workflow state transitions.
+Priority
+Must Have
+Conceptual Order Workflow
+ORDERED   │   ▼SCHEDULING_PENDING   │   ▼SCHEDULED   │   ▼ARRIVED   │   ▼EXAMINATION_IN_PROGRESS   │   ▼EXAMINATION_COMPLETED   │   ▼REPORT_PENDING   │   ▼DRAFT_REPORT   │   ▼PENDING_VERIFICATION   │   ▼FINAL
+Invalid Transition Example
+ORDERED   │   ▼FINAL REPORT
+without imaging examination and reporting workflow.
+Another invalid transition:
+FINAL REPORT      │      ▼DRAFT
+as an ordinary edit action.
+Business Rules
+CS-RAD-BR-031
+Radiology workflow states shall follow approved transitions.
+CS-RAD-BR-032
+The trusted backend shall reject invalid client-requested state transitions.
+CS-RAD-BR-033
+Finalized radiology reports shall not return to ordinary draft editing.
+
+5.257 DICOM INTEGRATION ARCHITECTURE
+CS-RAD-FR-075 — Support DICOM Integration Architecture
+Description
+The CuraSphere architecture should permit future integration using approved medical imaging interoperability technologies, including applicable DICOM-based workflows.
+Priority
+Should Have
+Conceptual Architecture
+IMAGING MODALITY       │       ▼DICOM IMAGING DATA       │       ▼PACS / IMAGING INFRASTRUCTURE       │       ▼INTEGRATION LAYER       │       ▼CURASPHERE RADIOLOGY CONTEXT
+Important Scope Statement
+This requirement establishes an architectural integration boundary.
+It does not finalize:
+DICOM service implementation;
+DICOM storage service;
+DICOM query/retrieve configuration;
+transfer syntax policy;
+DICOMweb implementation;
+imaging viewer technology;
+PACS vendor.
+These decisions shall be documented during Integration Architecture.
+
+5.258 MODALITY WORKLIST ARCHITECTURE
+CS-RAD-FR-076 — Support Modality Worklist Architecture
+Description
+The CuraSphere architecture should permit future integration with an approved modality worklist workflow.
+Priority
+Should Have
+Problem
+Without controlled workflow, an imaging operator may manually enter:
+Patient NameAhmad Khan
+into an imaging modality.
+But the hospital may contain:
+Ahmad Khan — MRN-100Ahmad Khan — MRN-200Ahmad Khan — MRN-300
+Patient name alone is not a safe unique identifier.
+Conceptual Future Workflow
+CURASPHERE / RIS WORKFLOW         │         ▼SCHEDULED IMAGING PROCEDURE         │         ▼INTEGRATION LAYER         │         ▼MODALITY WORKLIST         │         ▼IMAGING MODALITY         │         ▼SELECT CORRECT PATIENT / PROCEDURE         │         ▼IMAGING STUDY
+Important Safety Goal
+Reduce uncontrolled manual transcription of patient and procedure information.
+The exact DICOM Modality Worklist implementation shall be defined during Imaging Integration Architecture.
+
+5.259 RADIOLOGY ENTITY RELATIONSHIP CONCEPT
+The following represents a conceptual domain relationship.
+It is not the final PostgreSQL ERD.
+                           PATIENT                              │                              ▼                       IMAGING ORDER                              │                              ▼                    ORDERED PROCEDURE                              │                 ┌────────────┴────────────┐                 │                         │                 ▼                         ▼        RADIOLOGY APPOINTMENT       SAFETY SCREENING                 │                         │                 └────────────┬────────────┘                              │                              ▼                      IMAGING EXAMINATION                              │                              ▼                        IMAGING STUDY                              │                              ▼                       RADIOLOGY REPORT                              │                 ┌────────────┴─────────────┐                 │                          │                 ▼                          ▼          CRITICAL FINDING             REPORT VERSION                 │                          │                 ▼                          ▼           NOTIFICATION               FINAL REPORT                                                │                                                ▼                                               EMR
+
+5.260 IMAGING ORDER RELATIONSHIP MODEL
+IMAGING ORDER      │      ├── Ordered Procedure A      ├── Ordered Procedure B      └── Ordered Procedure C
+Conceptually:
+ONE IMAGING ORDER        │        ▼ONE OR MORE ORDERED PROCEDURES
+An ordered procedure references an imaging procedure definition.
+ORDERED PROCEDURE        │        ▼IMAGING PROCEDURE DEFINITION
+Example:
+IMAGING ORDERRAD-ORD-192       │       ├── Ordered Procedure 1       │           │       │           ▼       │        CT Chest       │       └── Ordered Procedure 2                   │                   ▼                CT Abdomen
+This prevents the weak design:
+radiology_orderprocedure1procedure2procedure3procedure4
+
+5.261 RADIOLOGY APPOINTMENT RELATIONSHIP MODEL
+ORDERED PROCEDURE        │        ▼RADIOLOGY APPOINTMENT        │        ├── Scheduled Date        ├── Scheduled Time        ├── Imaging Resource        ├── Location        └── Appointment Status
+The architecture shall preserve the distinction between:
+REQUESTED WORK
+and:
+SCHEDULED WORK
+and:
+PERFORMED WORK
+Conceptually:
+ORDER  │  ▼APPOINTMENT  │  ▼EXAMINATION
+These shall not be collapsed into one database record without detailed architectural justification.
+
+5.262 IMAGING STUDY RELATIONSHIP MODEL
+IMAGING EXAMINATION        │        ▼IMAGING STUDY        │        ▼IMAGE SERIES        │        ▼IMAGE INSTANCES
+This is a conceptual medical imaging hierarchy.
+CuraSphere’s application database architecture shall not automatically reproduce the complete physical imaging archive structure.
+The detailed division between:
+POSTGRESQL APPLICATION DATA
+and:
+PACS / IMAGING DATA
+shall be defined during Architecture.
+
+5.263 RADIOLOGY REPORT RELATIONSHIP MODEL
+IMAGING STUDY      │      ▼RADIOLOGY REPORT      │      ├── Findings      ├── Impression      ├── Status      ├── Author      ├── Verification      └── Version / Addendum Context
+Conceptually:
+STUDY  │  ▼REPORT  │  ├── DRAFT  │  ▼PENDING_VERIFICATION  │  ▼FINAL  │  ├── CORRECTION  │  └── ADDENDUM
+The final report versioning strategy shall be defined during Data Architecture.
+
+5.264 COMPLETE RADIOLOGY WORKFLOW MODEL
+                              DOCTOR                                 │                                 ▼                         CLINICAL ENCOUNTER                                 │                                 ▼                       CREATE IMAGING ORDER                                 │                                 ▼                     SELECT IMAGING PROCEDURE                                 │                                 ▼                      RECORD CLINICAL INDICATION                                 │                                 ▼                       VALIDATE IMAGING ORDER                                 │                                 ▼                          ORDER RECEIVED                                 │                                 ▼                   IDENTIFY SAFETY REQUIREMENTS                                 │                                 ▼                       SCHEDULING REQUIRED?                                 │                     ┌───────────┴───────────┐                     │                       │                     ▼                       ▼                    YES                      NO                     │                       │                     ▼                       │             SEARCH AVAILABLE SLOT           │                     │                       │                     ▼                       │              SCHEDULE APPOINTMENT            │                     │                       │                     └───────────┬───────────┘                                 │                                 ▼                          PATIENT ARRIVES                                 │                                 ▼                    VERIFY PATIENT IDENTITY                                 │                                 ▼                      COMPLETE SAFETY WORKFLOW                                 │                                 ▼                         IMAGING WORKLIST                                 │                                 ▼                      START IMAGING EXAMINATION                                 │                                 ▼                       RECORD PROCEDURE PERFORMED                                 │                                 ▼                       COMPLETE EXAMINATION                                 │                                 ▼                          IMAGING STUDY                                 │                                 ▼                      RADIOLOGY REPORTING WORKLIST                                 │                                 ▼                       RADIOLOGIST OPENS STUDY                                 │                                 ▼                          CREATE DRAFT REPORT                                 │                                 ▼                           RECORD FINDINGS                                 │                                 ▼                          RECORD IMPRESSION                                 │                                 ▼                       CRITICAL FINDING?                                 │                     ┌───────────┴───────────┐                     │                       │                     ▼                       ▼                    NO                      YES                     │                       │                     │                       ▼                     │              CRITICAL FINDING CASE                     │                       │                     │                       ▼                     │               NOTIFICATION WORKFLOW                     │                       │                     └───────────┬───────────┘                                 │                                 ▼                      SUBMIT FOR VERIFICATION                                 │                                 ▼                           REPORT REVIEW                                 │                     ┌───────────┴───────────┐                     │                       │                     ▼                       ▼              VERIFICATION REJECTED         VERIFY                     │                       │                     ▼                       ▼                 REVISION                FINAL REPORT                                             │                               ┌─────────────┴─────────────┐                               │                           │                               ▼                           ▼                         RADIOLOGY HISTORY                 EMR
+
+5.265 RADIOLOGY SEQUENCE MODEL
+DOCTOR   CLINICAL   RADIOLOGY   SCHEDULER   TECHNOLOGIST   RADIOLOGIST   EMR  │         │           │           │             │             │         │  │ Order   │           │           │             │             │         │  ├────────►│           │           │             │             │         │  │         │ Create    │           │             │             │         │  │         │ Order     │           │             │             │         │  │         ├──────────►│           │             │             │         │  │         │           │           │             │             │         │  │         │           │ Schedule  │             │             │         │  │         │           ├──────────►│             │             │         │  │         │           │           │             │             │         │  │         │           │◄──────────┤ Appointment │             │         │  │         │           │           │             │             │         │  │         │           │ Imaging Work            │             │         │  │         │           ├────────────────────────►│             │         │  │         │           │           │             │             │         │  │         │           │           │             │ Perform     │         │  │         │           │◄────────────────────────┤ Examination │         │  │         │           │           │             │             │         │  │         │           │ Study / Reporting Work                │         │  │         │           ├──────────────────────────────────────►│         │  │         │           │           │             │             │         │  │         │           │           │             │             │ Report  │  │         │           │◄──────────────────────────────────────┤         │  │         │           │           │             │             │         │  │         │           │ Final Report                                      │  │         │           ├──────────────────────────────────────────────────►│
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.266 RADIOLOGY STATE MODELS
+Imaging Order State
+                   ORDERED                      │          ┌───────────┴────────────┐          │                        │          ▼                        ▼SCHEDULING_PENDING             CANCELLED          │          ▼       SCHEDULED          │          ▼        ARRIVED          │          ▼EXAMINATION_IN_PROGRESS          │          ▼EXAMINATION_COMPLETED          │          ▼     REPORT_PENDING          │          ▼         FINAL
+Radiology Appointment State
+CREATED   │   ▼SCHEDULED   │   ├──────────────► RESCHEDULED   │                      │   │                      ▼   │                  SCHEDULED   │   ├──────────────► CANCELLED   │   └──────────────► NO_SHOW   │   ▼ARRIVED
+Imaging Examination State
+PLANNED   │   ▼READY   │   ▼IN_PROGRESS   │   ▼COMPLETED
+Alternative:
+READY  │  ▼NOT_PERFORMED
+Radiology Report State
+DRAFT  │  ▼PENDING_VERIFICATION  │  ├──────────────► VERIFICATION_REJECTED  │                         │  │                         ▼  │                      REVISION  │                         │  │                         ▼  │                       DRAFT  │  ▼FINAL  │  ├──────────────► CORRECTED  │  └──────────────► ADDENDUM_ADDED
+The final aggregate and state boundaries shall be defined during Domain Architecture.
+
+5.267 RADIOLOGY BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-RAD-BR-001
+Each imaging procedure shall have a unique identity
+CS-RAD-BR-002
+Imaging procedure codes shall be unique within applicable scope
+CS-RAD-BR-003
+Only eligible active procedures shall normally be orderable
+CS-RAD-BR-004
+Historical records shall preserve applicable procedure relationships
+CS-RAD-BR-005
+Imaging order shall reference an identifiable patient
+CS-RAD-BR-006
+Imaging order shall maintain ordering provenance
+CS-RAD-BR-007
+Imaging order shall contain at least one eligible procedure
+CS-RAD-BR-008
+Only eligible imaging orders may be cancelled
+CS-RAD-BR-009
+Imaging order cancellation shall maintain reason and provenance
+CS-RAD-BR-010
+Imaging order shall maintain applicable clinical indication
+CS-RAD-BR-011
+Required safety workflow shall be completed or resolved
+CS-RAD-BR-012
+Safety bypass shall require authority and traceability where permitted
+CS-RAD-BR-013
+Patient context shall be validated across imaging workflow
+CS-RAD-BR-014
+Original ordered procedure context shall be preserved
+CS-RAD-BR-015
+Only eligible examinations may normally be completed
+CS-RAD-BR-016
+Examination completion shall maintain provenance
+CS-RAD-BR-017
+Study, examination, and patient context shall be validated
+CS-RAD-BR-018
+Radiology report shall reference identifiable imaging work
+CS-RAD-BR-019
+Report creation shall require authorization
+CS-RAD-BR-020
+Only eligible reports may be submitted for verification
+CS-RAD-BR-021
+Report verification shall require appropriate authority
+CS-RAD-BR-022
+Verification shall identify the verifier
+CS-RAD-BR-023
+Verification time shall be recorded
+CS-RAD-BR-024
+Final report shall not remain freely editable
+CS-RAD-BR-025
+Final report correction shall use controlled workflow
+CS-RAD-BR-026
+Original finalized report shall remain traceable
+CS-RAD-BR-027
+Report correction shall maintain actor and time
+CS-RAD-BR-028
+Critical finding communication shall maintain provenance
+CS-RAD-BR-029
+Only eligible radiology information shall be released to EMR
+CS-RAD-BR-030
+Radiology report status shall be identifiable
+CS-RAD-BR-031
+Radiology states shall follow approved transitions
+CS-RAD-BR-032
+Backend shall reject invalid radiology state transitions
+CS-RAD-BR-033
+Final reports shall not return to ordinary draft editing
+
+5.268 RADIOLOGY PERMISSION CONCEPT
+Potential radiology permissions include:
+RAD_PROCEDURE_CATALOG_VIEWRAD_PROCEDURE_CATALOG_CREATERAD_PROCEDURE_CATALOG_UPDATERAD_PROCEDURE_CATALOG_ACTIVATERAD_ORDER_VIEWRAD_ORDER_RECEIVERAD_ORDER_CANCELRAD_SAFETY_SCREEN_VIEWRAD_SAFETY_SCREEN_RECORDRAD_SAFETY_OVERRIDERAD_APPOINTMENT_VIEWRAD_APPOINTMENT_CREATERAD_APPOINTMENT_RESCHEDULERAD_APPOINTMENT_CANCELRAD_PATIENT_ARRIVAL_RECORDRAD_WORKLIST_VIEWRAD_WORK_ASSIGNRAD_EXAM_VIEWRAD_EXAM_STARTRAD_EXAM_COMPLETERAD_EXAM_CANCELRAD_STUDY_VIEWRAD_STUDY_ASSOCIATERAD_REPORTING_WORKLIST_VIEWRAD_REPORT_CREATERAD_REPORT_VIEWRAD_REPORT_UPDATE_DRAFTRAD_REPORT_SUBMITRAD_REPORT_REVIEWRAD_REPORT_VERIFYRAD_REPORT_CORRECTRAD_REPORT_ADDENDUMRAD_CRITICAL_FINDING_RECORDRAD_CRITICAL_NOTIFICATION_RECORDRAD_FINAL_REPORT_VIEW
+Example Imaging Technologist Concept
+IMAGING TECHNOLOGIST        │        ├── RAD_ORDER_VIEW        ├── RAD_SAFETY_SCREEN_VIEW        ├── RAD_SAFETY_SCREEN_RECORD        ├── RAD_WORKLIST_VIEW        ├── RAD_EXAM_VIEW        ├── RAD_EXAM_START        ├── RAD_EXAM_COMPLETE        └── RAD_STUDY_VIEW
+The imaging technologist shall not automatically receive:
+RAD_REPORT_VERIFY
+or:
+RAD_REPORT_CORRECT
+Example Radiologist Concept
+RADIOLOGIST      │      ├── RAD_ORDER_VIEW      ├── RAD_STUDY_VIEW      ├── RAD_REPORTING_WORKLIST_VIEW      ├── RAD_REPORT_CREATE      ├── RAD_REPORT_VIEW      ├── RAD_REPORT_UPDATE_DRAFT      ├── RAD_REPORT_SUBMIT      ├── RAD_REPORT_REVIEW      ├── RAD_REPORT_VERIFY      ├── RAD_CRITICAL_FINDING_RECORD      └── RAD_FINAL_REPORT_VIEW
+The final role-permission matrix shall be defined during Security Architecture.
+
+5.269 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Maintain imaging procedure catalog
+CS-RAD-FR-001 to 004
+Define modality requirements
+CS-RAD-FR-005
+Define preparation instructions
+CS-RAD-FR-006
+Define safety requirements
+CS-RAD-FR-007
+Search imaging procedures
+CS-RAD-FR-008
+Receive imaging orders
+CS-RAD-FR-009 to 015
+Record clinical indication
+CS-RAD-FR-016 to 017
+Manage imaging safety workflow
+CS-RAD-FR-018 to 020
+Create radiology appointment
+CS-RAD-FR-021 to 022
+Search imaging schedule
+CS-RAD-FR-023
+Schedule imaging procedure
+CS-RAD-FR-024
+Reschedule or cancel appointment
+CS-RAD-FR-025 to 026
+Prevent resource conflict
+CS-RAD-FR-027
+View radiology schedule
+CS-RAD-FR-028
+Record patient arrival
+CS-RAD-FR-029
+Verify patient context
+CS-RAD-FR-030
+Imaging worklist
+CS-RAD-FR-031 to 033
+Start imaging examination
+CS-RAD-FR-034 to 035
+Record performed procedure
+CS-RAD-FR-036
+Complete examination
+CS-RAD-FR-037 to 040
+Manage imaging study reference
+CS-RAD-FR-041 to 045
+Support PACS architecture
+CS-RAD-FR-046
+Reporting worklist
+CS-RAD-FR-047 to 049
+Create draft report
+CS-RAD-FR-050
+Record findings and impression
+CS-RAD-FR-051 to 053
+Manage draft report
+CS-RAD-FR-054 to 055
+Submit report
+CS-RAD-FR-056
+Review and verify report
+CS-RAD-FR-057 to 059
+Correct final report
+CS-RAD-FR-060
+Create report addendum
+CS-RAD-FR-061
+Critical imaging finding
+CS-RAD-FR-062 to 066
+Final radiology report
+CS-RAD-FR-067 to 068
+EMR radiology integration
+CS-RAD-FR-069
+Search imaging orders
+CS-RAD-FR-070
+Patient imaging history
+CS-RAD-FR-071
+Radiology turnaround time
+CS-RAD-FR-072
+Radiology auditing
+CS-RAD-FR-073
+Radiology state integrity
+CS-RAD-FR-074
+Future DICOM architecture
+CS-RAD-FR-075
+Future modality worklist
+CS-RAD-FR-076
+
+5.270 RADIOLOGY MODULE RISK ANALYSIS
+Risk 1 — Wrong Patient Imaging Study
+Problem
+An imaging study belonging to Patient A is associated with Patient B.
+Impact
+Severe patient safety risk.
+A doctor may make clinical decisions based on another patient’s imaging.
+Mitigation
+Validate:
+PATIENT   │   ▼IMAGING ORDER   │   ▼EXAMINATION   │   ▼IMAGING STUDY
+relationships.
+Patient-study association shall be treated as safety-critical.
+
+Risk 2 — Patient Name Used as Unique Imaging Identifier
+Problem
+The system relies on:
+Ahmad Khan
+to identify imaging work.
+Impact
+Patients with identical names may be confused.
+Mitigation
+Use validated patient and imaging workflow identifiers.
+
+Risk 3 — Appointment and Examination Treated as Same Record
+Problem
+The database assumes:
+APPOINTMENT = EXAMINATION
+Impact
+The system cannot correctly represent:
+no-show;
+late arrival;
+rescheduling;
+examination not performed;
+actual start time;
+actual completion time.
+Mitigation
+Model appointment and examination as distinct domain concepts.
+
+Risk 4 — Safety Questions Hardcoded in React
+Problem
+MRI safety questions exist only inside:
+MRIForm.jsx
+Impact
+Clinical safety workflow becomes frontend-dependent and difficult to govern.
+Mitigation
+Use approved safety requirement configuration and trusted backend validation.
+
+Risk 5 — Incomplete Safety Workflow Bypassed
+Problem
+A user manually calls:
+POST /api/radiology/examinations/start
+without completing required screening.
+Impact
+UI controls can be bypassed.
+Mitigation
+The ASP.NET Core backend shall validate required workflow state before starting the examination.
+
+Risk 6 — Original Imaging Order Silently Changed
+Problem
+The ordered procedure is changed after the examination so the order appears to match performed work.
+Impact
+Clinical ordering history becomes inaccurate.
+Mitigation
+Preserve:
+ORDERED PROCEDURE
+and separately record:
+PERFORMED PROCEDURE
+where required.
+
+Risk 7 — Diagnostic Images Stored as Random Application Uploads
+Problem
+Developers build:
+/uploads/xray1.jpg/uploads/xray2.jpg
+as the complete medical imaging architecture.
+Impact
+Poor imaging interoperability, traceability, metadata management, and clinical workflow support.
+Mitigation
+Design a formal imaging integration boundary and evaluate PACS/DICOM architecture.
+
+Risk 8 — Draft Report Appears in EMR as Final
+Problem
+A radiology resident saves a draft.
+The EMR displays it as a verified report.
+Impact
+Clinical decisions may be based on incomplete interpretation.
+Mitigation
+Respect report state and approved release rules.
+
+Risk 9 — Final Report Silently Edited
+Problem
+A finalized impression is changed using an ordinary database update.
+Impact
+Clinical report integrity and traceability are lost.
+Mitigation
+Use controlled correction or addendum workflows.
+
+Risk 10 — Critical Finding Only Shown as Red Badge
+Problem
+The UI displays:
+CRITICAL
+but no communication record exists.
+Impact
+The urgent finding may never reach the responsible clinical team.
+Mitigation
+Implement critical finding communication and acknowledgement workflow.
+
+Risk 11 — Radiologist Report Not Linked to Study
+Problem
+The report only contains:
+patient_idreport_text
+Impact
+The system cannot reliably determine which imaging study was interpreted.
+Mitigation
+Maintain explicit report-to-imaging-work relationships.
+
+Risk 12 — One Date Field for Radiology Workflow
+Problem
+Database contains:
+radiology_date
+Impact
+The system cannot distinguish:
+order time;
+scheduled time;
+arrival time;
+examination start;
+examination completion;
+report creation;
+report verification.
+Mitigation
+Record meaningful workflow event timestamps.
+
+Risk 13 — React Controls Report Authorization
+Problem
+Frontend logic:
+if (user.role === "Radiologist") {    showVerifyButton();}
+is treated as the security model.
+Impact
+API requests may bypass the hidden button.
+Mitigation
+The ASP.NET Core backend shall perform authoritative permission and workflow validation.
+
+Risk 14 — PACS Vendor Logic Embedded in Core Domain
+Problem
+Core radiology code directly depends on one vendor-specific API throughout the application.
+Impact
+Vendor replacement becomes expensive and risky.
+Mitigation
+Use an integration abstraction:
+RADIOLOGY DOMAIN       │       ▼IMAGING INTEGRATION CONTRACT       │       ▼PACS ADAPTER       │       ▼VENDOR SYSTEM
+
+5.271 COMPLETE RADIOLOGY CAPABILITY MODEL
+                       RADIOLOGY MANAGEMENT                                 │       ┌─────────────────────────┼─────────────────────────┐       │                         │                         │       ▼                         ▼                         ▼PROCEDURE CATALOG           IMAGING ORDERS             SCHEDULING       │                         │                         │       ├── Procedure             ├── Patient               ├── Appointment       ├── Modality              ├── Encounter             ├── Resource       ├── Body Region           ├── Doctor                ├── Date       ├── Preparation           ├── Indication            ├── Time       └── Safety                └── Priority              └── Status                                 │                                 ▼                         SAFETY SCREENING                                 │                                 ▼                         PATIENT ARRIVAL                                 │                                 ▼                         IMAGING WORKLIST                                 │                                 ▼                           EXAMINATION                                 │                                 ├── Start                                 ├── Performed Procedure                                 ├── Notes                                 └── Completion                                 │                                 ▼                           IMAGING STUDY                                 │                                 ▼                         REPORTING WORKLIST                                 │                                 ▼                         RADIOLOGY REPORT                                 │                   ┌─────────────┼─────────────┐                   │             │             │                   ▼             ▼             ▼                FINDINGS      IMPRESSION     CRITICAL                                               FINDING                   │             │             │                   └─────────────┼─────────────┘                                 │                                 ▼                        REPORT VERIFICATION                                 │                    ┌────────────┴────────────┐                    │                         │                    ▼                         ▼              CORRECTION / ADDENDUM       FINAL REPORT                                                │                                    ┌───────────┴───────────┐                                    │                       │                                    ▼                       ▼                              IMAGING HISTORY               EMR
+
+5.272 RADIOLOGY MODULE COMPLETION STATUS
+Module: Radiology and Medical Imaging Management SystemModule Code: RADRequirement Range: CS-RAD-FR-001 to CS-RAD-FR-076Business Rule Range: CS-RAD-BR-001 to CS-RAD-BR-033
+Radiology Domain Boundary: DefinedImaging Procedure Catalog: DefinedImaging Procedure Definition: DefinedModality Requirement Concept: DefinedProcedure Preparation Requirements: DefinedImaging Safety Requirement Concept: DefinedImaging Order Workflow: DefinedImaging Order Validation: DefinedClinical Indication: DefinedRelevant Clinical Information: DefinedSafety Screening Workflow: DefinedSafety Workflow Control Point: DefinedRadiology Appointment Model: DefinedImaging Scheduling Workflow: DefinedRescheduling Workflow: DefinedAppointment Cancellation: DefinedImaging Resource Conflict Control: DefinedPatient Arrival Workflow: DefinedPatient Context Verification: DefinedImaging Worklist: DefinedImaging Examination Workflow: DefinedExamination Start: DefinedOrdered vs Performed Procedure: DefinedExamination Completion: DefinedExamination Notes: DefinedExamination Cancellation: DefinedImaging Study Reference: DefinedPatient-Study Relationship Validation: DefinedStudy-Examination Relationship: DefinedPACS Integration Boundary: DefinedRadiology Reporting Worklist: DefinedStudy Reporting Context: DefinedDraft Radiology Report: DefinedFindings: DefinedImpression: DefinedDraft Report Workflow: DefinedReport Submission: DefinedReport Review: DefinedReport Verification: DefinedVerification Rejection: DefinedFinal Report Correction: DefinedReport Addendum: DefinedCritical Imaging Finding: DefinedCritical Finding Communication: DefinedCritical Finding Acknowledgement: DefinedFinal Radiology Report: DefinedEMR Radiology Availability: DefinedPatient Imaging History: DefinedRadiology Turnaround Time: DefinedRadiology Audit Events: DefinedRadiology State Models: DefinedDICOM Integration Boundary: DefinedModality Worklist Boundary: DefinedRadiology Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The Radiology and Medical Imaging Management System requirements establish the diagnostic imaging operational and clinical workflow of CuraSphere.
+These requirements shall later be transformed into:
+Radiology use case specification;
+imaging order use case;
+imaging safety screening use case;
+imaging scheduling use case;
+patient arrival use case;
+imaging examination use case;
+imaging study association use case;
+radiology report use case;
+report verification use case;
+critical finding communication use case;
+report correction use case;
+report addendum use case;
+imaging order activity diagram;
+safety screening activity diagram;
+radiology scheduling activity diagram;
+imaging examination activity diagram;
+reporting activity diagram;
+critical finding activity diagram;
+Imaging Order state machine;
+Radiology Appointment state machine;
+Imaging Examination state machine;
+Radiology Report state machine;
+Create Imaging Order sequence diagram;
+Schedule Imaging Procedure sequence diagram;
+Record Patient Arrival sequence diagram;
+Start Imaging Examination sequence diagram;
+Complete Imaging Examination sequence diagram;
+Create Radiology Report sequence diagram;
+Verify Radiology Report sequence diagram;
+Critical Finding Notification sequence diagram;
+Imaging Procedure domain model;
+Imaging Order domain model;
+Ordered Imaging Procedure domain model;
+Radiology Appointment domain model;
+Safety Screening domain model;
+Imaging Examination domain model;
+Imaging Study Reference domain model;
+Radiology Report domain model;
+Report Version domain model;
+Critical Finding domain model;
+PostgreSQL radiology schema;
+radiology report versioning strategy;
+imaging integration architecture;
+PACS adapter architecture;
+DICOM integration architecture;
+modality worklist integration architecture;
+radiology audit architecture;
+React Radiology Schedule requirements;
+React Imaging Worklist requirements;
+React Safety Screening requirements;
+React Examination Workspace requirements;
+React Reporting Worklist requirements;
+React Radiology Reporting Workspace requirements;
+React Critical Finding Dashboard requirements;
+ASP.NET Core Imaging Order API;
+ASP.NET Core Radiology Scheduling API;
+ASP.NET Core Imaging Examination API;
+ASP.NET Core Imaging Study API;
+ASP.NET Core Radiology Report API;
+ASP.NET Core Critical Finding API;
+radiology authorization policies;
+scheduling concurrency tests;
+patient-study relationship tests;
+imaging workflow state transition tests;
+safety workflow tests;
+report versioning integrity tests;
+critical finding communication tests;
+PACS integration contract tests.
+No React imaging viewer, diagnostic viewer, PACS product, RIS product, DICOM server, DICOM library, DICOMweb implementation, modality worklist implementation, image archive technology, cloud imaging provider, ASP.NET Core entity structure, PostgreSQL table structure, imaging resource scheduling algorithm, clinical safety rule engine, speech recognition technology, radiology dictation technology, or AI imaging model has been finalized by this SRS section.
+Those decisions shall be made during Architecture and Detailed Design.
+

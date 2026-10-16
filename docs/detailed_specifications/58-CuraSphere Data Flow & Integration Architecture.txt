@@ -1,0 +1,443 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 7 - System Architecture
+Part 7.6 - Data Flow & Integration Architecture
+
+7.6 Data Flow & Integration Architecture
+
+7.6.1 Introduction
+The Data Flow & Integration Architecture defines how information moves throughout the CuraSphere Hospital Management System, from the moment data is entered by a user until it is processed, stored, shared, analyzed, archived, or exchanged with external systems.
+Healthcare systems process highly sensitive and time-critical information, including patient demographics, clinical records, prescriptions, laboratory results, radiology images, billing transactions, and audit logs. Therefore, the architecture must ensure that data flows are secure, reliable, traceable, and compliant with healthcare standards.
+This section documents:
+Internal data flow
+External data exchange
+Module interactions
+Integration mechanisms
+Event-driven communication
+Data synchronization
+Healthcare interoperability
+Sequence diagrams
+Data validation lifecycle
+
+7.6.2 Objectives
+The Data Flow & Integration Architecture shall:
+Define how information flows across the system.
+Ensure consistency of clinical and administrative data.
+Support interoperability using healthcare standards.
+Enable secure exchange with external systems.
+Minimize data duplication.
+Ensure end-to-end traceability.
+Support real-time and asynchronous communication.
+Maintain data integrity during processing.
+
+7.6.3 Level 0 Context Diagram (System Context)
+The Level 0 Context Diagram presents CuraSphere as a single system interacting with external actors.
+                     Patients
+                         │
+                         │
+Doctors ─────────────► CuraSphere ◄──────────── Administrators
+                         │
+                         │
+Laboratories ◄───────────┼────────────► Pharmacies
+                         │
+                         │
+Insurance ◄──────────────┼────────────► Payment Gateway
+                         │
+                         │
+ Government Systems ◄────┼────► Notification Providers
+External Entities
+Entity
+Interaction
+Patients
+Registration, appointments, portal access
+Doctors
+Consultation, prescriptions, EMR updates
+Laboratories
+Test requests and results
+Pharmacies
+Medication dispensing
+Insurance Providers
+Claims processing
+Payment Gateways
+Online payments
+Government Systems
+Regulatory reporting
+Notification Providers
+SMS, Email, Push notifications
+
+7.6.4 Level 1 Data Flow Diagram
+The Level 1 DFD decomposes the system into its primary functional processes.
+Patient
+   │
+   ▼
+Registration
+   │
+   ▼
+Patient Database
+   │
+   ├────────► Appointment
+   │               │
+   │               ▼
+   │         Doctor Consultation
+   │               │
+   │      ┌────────┼────────┐
+   │      ▼        ▼        ▼
+Laboratory  Radiology  Pharmacy
+   │         │         │
+   └─────────┴─────────┘
+             ▼
+         Billing
+             ▼
+        Reporting
+
+7.6.5 Level 2 Data Flow Diagram – Patient Registration
+Patient
+    │
+    ▼
+Registration Form
+    │
+    ▼
+Input Validation
+    │
+    ▼
+Duplicate Patient Check
+    │
+    ▼
+Generate Patient ID
+    │
+    ▼
+Save Patient Record
+    │
+    ▼
+Patient Database
+    │
+    ▼
+Registration Confirmation
+
+7.6.6 Level 2 Data Flow Diagram – Appointment Management
+Patient
+    │
+    ▼
+Appointment Request
+    │
+    ▼
+Doctor Availability Check
+    │
+    ▼
+Time Slot Validation
+    │
+    ▼
+Appointment Creation
+    │
+    ▼
+Calendar Update
+    │
+    ▼
+Notification Service
+
+7.6.7 Level 2 Data Flow Diagram – Clinical Consultation
+Doctor Login
+      │
+      ▼
+Patient Record
+      │
+      ▼
+Clinical Assessment
+      │
+      ▼
+Diagnosis
+      │
+      ▼
+Treatment Plan
+      │
+      ▼
+Prescription
+      │
+      ▼
+Laboratory / Radiology Orders
+      │
+      ▼
+Billing
+
+7.6.8 Level 2 Data Flow Diagram – Laboratory Workflow
+Doctor
+   │
+   ▼
+Lab Order
+   │
+   ▼
+Sample Collection
+   │
+   ▼
+Sample Processing
+   │
+   ▼
+Quality Verification
+   │
+   ▼
+Result Approval
+   │
+   ▼
+Doctor Notification
+
+7.6.9 Level 2 Data Flow Diagram – Pharmacy Workflow
+Prescription
+      │
+      ▼
+Medicine Validation
+      │
+      ▼
+Stock Verification
+      │
+      ▼
+Medicine Dispensing
+      │
+      ▼
+Inventory Update
+      │
+      ▼
+Billing Update
+
+7.6.10 Internal Service Communication
+Business services communicate using secure internal APIs and service contracts.
+Patient Service
+       │
+       ▼
+Appointment Service
+       │
+       ▼
+Clinical Services
+       │
+ ┌─────┼─────────┐
+ ▼     ▼         ▼
+Lab   Radiology Pharmacy
+       │
+       ▼
+Billing
+       │
+       ▼
+Reporting
+
+7.6.11 Event-Driven Communication
+Certain operations are processed asynchronously using an event-driven architecture.
+Examples of Events
+Event
+Trigger
+Consumer
+PatientRegistered
+New patient created
+Notification, Audit
+AppointmentBooked
+Appointment confirmed
+Notification, Calendar
+PrescriptionIssued
+Doctor signs prescription
+Pharmacy
+LabResultApproved
+Result verified
+EMR, Notification
+InvoiceGenerated
+Billing completed
+Finance, Reporting
+PaymentReceived
+Successful payment
+Billing, Audit
+
+Event Processing Workflow
+Business Service
+       │
+       ▼
+Event Published
+       │
+       ▼
+Message Queue
+       │
+       ▼
+Subscribers
+       │
+       ▼
+Background Processing
+
+7.6.12 HL7 FHIR Integration
+To achieve interoperability with external healthcare systems, CuraSphere adopts the HL7 FHIR standard.
+Supported Resource Types
+Resource
+Purpose
+Patient
+Patient demographics
+Practitioner
+Doctors and clinicians
+Appointment
+Scheduling
+Encounter
+Clinical visits
+Observation
+Clinical measurements
+DiagnosticReport
+Laboratory and imaging reports
+MedicationRequest
+Prescriptions
+MedicationDispense
+Dispensed medications
+Invoice
+Billing records
+
+HL7 FHIR Integration Flow
+Business Service
+      │
+      ▼
+FHIR Resource Mapper
+      │
+      ▼
+FHIR API
+      │
+      ▼
+External Healthcare System
+
+7.6.13 DICOM / PACS Integration
+Radiology services shall integrate with imaging systems using the DICOM standard.
+Workflow
+Radiology Order
+      │
+      ▼
+PACS
+      │
+      ▼
+Image Acquisition
+      │
+      ▼
+Radiologist Review
+      │
+      ▼
+Diagnostic Report
+      │
+      ▼
+EMR Update
+
+7.6.14 Insurance Integration
+Insurance communication shall support:
+Eligibility verification
+Pre-authorization
+Claim submission
+Claim status inquiry
+Payment reconciliation
+Rejection management
+Invoice
+    │
+    ▼
+Insurance Claim
+    │
+    ▼
+Insurance Provider
+    │
+    ▼
+Approval / Rejection
+    │
+    ▼
+Billing Update
+
+7.6.15 Payment Gateway Integration
+Supported payment methods may include:
+Credit/Debit Cards
+Mobile Wallets
+Bank Transfers
+Digital Payment Platforms
+Payment Workflow
+Invoice
+   │
+   ▼
+Payment Gateway
+   │
+   ▼
+Payment Verification
+   │
+   ▼
+Receipt Generation
+   │
+   ▼
+Billing Update
+
+7.6.16 Notification Integration
+Notification providers support:
+Appointment reminders
+OTP verification
+Laboratory result notifications
+Payment confirmations
+Emergency alerts
+Password reset messages
+Delivery channels include:
+Email
+SMS
+Push notifications
+
+7.6.17 Data Validation Lifecycle
+Every data item processed by CuraSphere shall pass through a consistent validation lifecycle.
+Input
+ │
+ ▼
+Client Validation
+ │
+ ▼
+Server Validation
+ │
+ ▼
+Business Rules
+ │
+ ▼
+Database Constraints
+ │
+ ▼
+Persistence
+ │
+ ▼
+Audit Logging
+
+7.6.18 End-to-End Clinical Workflow
+Patient Registration
+        │
+        ▼
+Appointment Booking
+        │
+        ▼
+Doctor Consultation
+        │
+ ┌──────┼──────────────┐
+ ▼      ▼              ▼
+Lab   Radiology   Prescription
+ │      │              │
+ └──────┼──────────────┘
+        ▼
+Billing
+        ▼
+Payment
+        ▼
+Discharge / Follow-up
+
+7.6.19 Integration Security
+All integrations shall implement:
+TLS 1.2+ encryption
+Mutual authentication where applicable
+OAuth 2.0/OpenID Connect for supported services
+API keys or signed tokens for partner systems
+Request validation
+Rate limiting
+Audit logging
+Replay attack protection (where supported)
+Input/output sanitization
+
+7.6.20 Acceptance Criteria
+The Data Flow & Integration Architecture shall be accepted when:
+Data flow diagrams are documented for core workflows.
+Internal and external communication paths are defined.
+HL7 FHIR and DICOM integration strategies are specified.
+Insurance and payment integrations are documented.
+Event-driven communication is defined for asynchronous operations.
+Validation lifecycle is consistently applied.
+Security controls protect all integration points.
+End-to-end data flow is traceable across modules.
+
+7.6.21 Section Summary
+The Data Flow & Integration Architecture establishes how CuraSphere manages the movement of information across clinical, administrative, and external systems. By combining standardized healthcare interoperability (HL7 FHIR and DICOM), secure API-based integrations, event-driven processing, and comprehensive validation, the architecture supports reliable, scalable, and secure information exchange throughout the healthcare ecosystem.
+
+
+

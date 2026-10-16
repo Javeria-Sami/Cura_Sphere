@@ -1,0 +1,1771 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.13 — AUDIT LOGGING, ACTIVITY TRACKING AND SYSTEM TRACEABILITY SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: AUD/TRCModule Name: Audit Logging, Activity Tracking and System Traceability SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.795 MODULE PURPOSE
+The Audit Logging, Activity Tracking and System Traceability System shall provide a centralized, controlled, and tamper-resistant mechanism for recording significant user actions, system actions, security events, administrative changes, business workflow events, and technical traceability information within CuraSphere.
+The module shall support:
+user activity auditing;
+system activity auditing;
+security event auditing;
+authentication event auditing;
+authorization event auditing;
+patient record access auditing;
+clinical record activity auditing;
+billing activity auditing;
+payment activity auditing;
+inventory activity auditing;
+HR activity auditing;
+administrative configuration auditing;
+notification activity auditing;
+report activity auditing;
+data change traceability;
+before-and-after value context;
+actor identification;
+action identification;
+source module identification;
+source entity identification;
+timestamp recording;
+request correlation;
+session context;
+client context;
+audit event classification;
+audit severity classification;
+audit search;
+audit filtering;
+audit pagination;
+audit export controls;
+audit retention;
+audit integrity protection;
+audit access control;
+suspicious activity investigation;
+operational traceability;
+future compliance reporting;
+future security information and event management integration.
+The high-level audit lifecycle shall be:
+USER / SYSTEM ACTION         │         ▼BUSINESS OR SECURITY OPERATION         │         ▼AUDIT EVENT REQUIRED?      ┌──┴──┐      │     │     YES    NO      │     │      ▼     ▼BUILD AUDIT ENDCONTEXT      │      ▼CLASSIFY EVENT      │      ▼CAPTURE ACTOR + ACTION + TARGET      │      ▼SANITIZE AUDIT DATA      │      ▼WRITE AUDIT EVENT      │      ▼PRESERVE TRACEABILITY      │      ▼SEARCH / REVIEW / INVESTIGATION
+The module shall help CuraSphere answer questions such as:
+WHO PERFORMED THE ACTION?WHAT ACTION WAS PERFORMED?WHEN DID THE ACTION OCCUR?WHICH MODULE GENERATED THE EVENT?WHICH RECORD WAS AFFECTED?WHAT WAS THE PREVIOUS VALUE?WHAT WAS THE NEW VALUE?WAS THE ACTION SUCCESSFUL?WHY DID THE ACTION FAIL?WHICH REQUEST CAUSED THE ACTION?WHICH SESSION WAS INVOLVED?WAS PATIENT DATA VIEWED?WAS A BILL MODIFIED?WAS A PAYMENT REVERSED?WAS A USER ROLE CHANGED?WAS A NOTIFICATION RULE MODIFIED?WAS AN UNAUTHORIZED ACTION ATTEMPTED?CAN MULTIPLE RELATED EVENTS BE CORRELATED?
+
+5.796 AUDIT DOMAIN BOUNDARY
+The AUD/TRC module shall provide centralized audit and traceability capabilities.
+It shall not become the authoritative owner of source business records.
+Example:
+BILLING MODULE      │      ▼OWNS INVOICE
+Audit module:
+INVOICE UPDATED      │      ▼RECORDS AUDIT EVENT
+Therefore:
+AUDIT EVENT     ≠INVOICE
+Similarly:
+PATIENT MODULE      │      ▼OWNS PATIENT RECORD
+Audit module:
+PATIENT RECORD VIEWED          │          ▼ACCESS AUDIT EVENT
+Therefore:
+PATIENT ACCESS AUDIT          ≠PATIENT RECORD
+The Audit module shall not:
+CREATE PATIENTSUPDATE DIAGNOSESAPPROVE LAB RESULTSDISPENSE MEDICINESGENERATE INVOICESPROCESS PAYMENTSADJUST INVENTORYAPPROVE LEAVECHANGE USER PERMISSIONS
+It shall record eligible actions performed by those modules.
+Critical Principle
+SOURCE MODULE      │      ▼PERFORMS BUSINESS ACTION      │      ▼AUDIT MODULE      │      ▼RECORDS TRACEABILITY
+The audit system shall observe and preserve significant activity.
+It shall not replace the source-domain transaction.
+
+5.797 CRITICAL AUDIT ARCHITECTURE CONCEPT
+CuraSphere shall distinguish:
+APPLICATION LOG
+AUDIT EVENT
+SECURITY EVENT
+BUSINESS EVENT
+DATA CHANGE HISTORY
+REQUEST TRACE
+SYSTEM METRIC
+These concepts shall not be treated as identical.
+Example:
+APPLICATION LOGDatabase connection timeout occurred.
+Audit event:
+AUDIT EVENTUSR-000421 updated patient PAT-000731.
+Security event:
+SECURITY EVENTUSR-000421 attempted unauthorized accessto billing administration.
+Business event:
+BUSINESS EVENTPAYMENT_RECEIVED
+Data change history:
+OLD VALUEstatus = PENDINGNEW VALUEstatus = APPROVED
+Request trace:
+CORRELATION IDCOR-8F72A1
+System metric:
+HTTP REQUEST LATENCY245 ms
+Therefore:
+APPLICATION LOG      ≠AUDIT EVENT      ≠SECURITY EVENT      ≠BUSINESS EVENT      ≠METRIC
+The architecture may connect these concepts through correlation identifiers.
+
+5.798 AUDIT EVENT CONCEPT
+An audit event shall represent a significant traceable action or attempted action.
+Conceptual model:
+AUDIT EVENT      │      ├── Audit Event ID      ├── Event Code      ├── Event Category      ├── Severity      ├── Actor Type      ├── Actor Reference      ├── Action      ├── Source Module      ├── Target Entity Type      ├── Target Entity Reference      ├── Result      ├── Timestamp      ├── Correlation ID      ├── Session Context      ├── Client Context      └── Additional Sanitized Context
+Example:
+AUDIT EVENT IDAUD-00000421EVENT CODEPATIENT_RECORD_UPDATEDACTORUSR-000731SOURCE MODULEPATIENTTARGETPAT-000982RESULTSUCCESSTIMESTAMP2026-07-14 15:42:18
+
+5.799 AUDIT ACTORS
+Actor
+Audit Responsibility
+Patient
+Generates eligible patient portal activity events
+Doctor
+Generates clinical and patient access activity events
+Nurse
+Generates patient care and clinical workflow events
+Receptionist
+Generates registration and appointment activity events
+Pharmacist
+Generates pharmacy and dispensing activity events
+Laboratory Staff
+Generates laboratory workflow events
+Radiology Staff
+Generates radiology workflow events
+Billing Officer
+Generates billing and payment activity events
+Accountant
+Generates financial activity events
+HR Manager
+Generates workforce administration events
+Inventory Manager
+Generates inventory activity events
+Department Head
+Generates department-level administrative events
+Hospital Administrator
+Generates hospital administration events
+System Administrator
+Generates system configuration and security events
+Audit User
+Reviews authorized audit records
+Security Administrator
+Reviews authorized security-related events
+Compliance User
+Reviews approved compliance-related audit information
+CuraSphere Application
+Generates automated system audit events
+Background Worker
+Generates eligible processing audit events
+External Integration
+Generates eligible integration traceability events
+
+5.800 AUDIT FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-AUD-FR-001
+Create Audit Event
+M
+CS-AUD-FR-002
+Generate Audit Event Identifier
+M
+CS-AUD-FR-003
+Record Audit Event Code
+M
+CS-AUD-FR-004
+Classify Audit Event Category
+M
+CS-AUD-FR-005
+Assign Audit Event Severity
+M
+CS-AUD-FR-006
+Record Actor Type
+M
+CS-AUD-FR-007
+Record Actor Reference
+M
+CS-AUD-FR-008
+Record System Actor
+M
+CS-AUD-FR-009
+Record Anonymous Actor Context
+M
+CS-AUD-FR-010
+Record Audit Action
+M
+CS-AUD-FR-011
+Record Source Module
+M
+CS-AUD-FR-012
+Record Target Entity Type
+M
+CS-AUD-FR-013
+Record Target Entity Reference
+M
+CS-AUD-FR-014
+Record Audit Result
+M
+CS-AUD-FR-015
+Record Audit Timestamp
+M
+CS-AUD-FR-016
+Record Correlation Identifier
+M
+CS-AUD-FR-017
+Record Request Context
+M
+CS-AUD-FR-018
+Record Session Context
+S
+CS-AUD-FR-019
+Record Client Context
+M
+CS-AUD-FR-020
+Record Authentication Event
+M
+CS-AUD-FR-021
+Record Authorization Event
+M
+CS-AUD-FR-022
+Record Unauthorized Access Attempt
+M
+CS-AUD-FR-023
+Record User Account Administration Event
+M
+CS-AUD-FR-024
+Record Role and Permission Change
+M
+CS-AUD-FR-025
+Record Patient Record Access
+M
+CS-AUD-FR-026
+Record Sensitive Record Access
+M
+CS-AUD-FR-027
+Record Data Creation Event
+M
+CS-AUD-FR-028
+Record Data Update Event
+M
+CS-AUD-FR-029
+Record Data Deactivation Event
+M
+CS-AUD-FR-030
+Record Data Deletion Event
+M
+CS-AUD-FR-031
+Record Before-and-After Change Context
+M
+CS-AUD-FR-032
+Exclude Sensitive Values from Audit Data
+M
+CS-AUD-FR-033
+Record Clinical Workflow Audit Event
+M
+CS-AUD-FR-034
+Record Billing Audit Event
+M
+CS-AUD-FR-035
+Record Payment Audit Event
+M
+CS-AUD-FR-036
+Record Inventory Audit Event
+M
+CS-AUD-FR-037
+Record HR Audit Event
+M
+CS-AUD-FR-038
+Record Notification Audit Event
+M
+CS-AUD-FR-039
+Record Reporting Audit Event
+M
+CS-AUD-FR-040
+Record Administrative Configuration Event
+M
+CS-AUD-FR-041
+Record Integration Audit Event
+S
+CS-AUD-FR-042
+View Audit Event
+M
+CS-AUD-FR-043
+Search Audit Events
+M
+CS-AUD-FR-044
+Filter Audit Events
+M
+CS-AUD-FR-045
+Paginate Audit Events
+M
+CS-AUD-FR-046
+Sort Audit Events
+M
+CS-AUD-FR-047
+View Entity Audit Timeline
+M
+CS-AUD-FR-048
+View User Activity Timeline
+M
+CS-AUD-FR-049
+View Correlated Audit Events
+M
+CS-AUD-FR-050
+Export Eligible Audit Records
+S
+CS-AUD-FR-051
+Restrict Audit Access
+M
+CS-AUD-FR-052
+Apply Audit Data Scope
+M
+CS-AUD-FR-053
+Prevent Audit Event Modification
+M
+CS-AUD-FR-054
+Prevent Unauthorized Audit Deletion
+M
+CS-AUD-FR-055
+Detect Audit Write Failure
+M
+CS-AUD-FR-056
+Handle Audit Recording Failure
+M
+CS-AUD-FR-057
+Preserve Source Transaction Boundary
+M
+CS-AUD-FR-058
+Maintain Audit Event Integrity
+M
+CS-AUD-FR-059
+Support Audit Retention Policy
+M
+CS-AUD-FR-060
+Archive Eligible Audit Records
+S
+CS-AUD-FR-061
+Purge Eligible Audit Records
+S
+CS-AUD-FR-062
+Record Audit Retention Action
+M
+CS-AUD-FR-063
+Monitor Audit Processing
+M
+CS-AUD-FR-064
+Monitor Audit Storage Growth
+M
+CS-AUD-FR-065
+Detect Suspicious Activity Pattern
+S
+CS-AUD-FR-066
+Support Security Investigation
+M
+CS-AUD-FR-067
+Protect Audit Data from Sensitive Data Leakage
+M
+CS-AUD-FR-068
+Apply Audit Data Minimization
+M
+CS-AUD-FR-069
+Protect Authentication Secrets
+M
+CS-AUD-FR-070
+Protect Financial Sensitive Data
+M
+CS-AUD-FR-071
+Protect Clinical Sensitive Data
+M
+CS-AUD-FR-072
+Support Future Compliance Reporting
+S
+CS-AUD-FR-073
+Support Future SIEM Integration
+S
+CS-AUD-FR-074
+Support Future External Audit Storage
+S
+CS-AUD-FR-075
+Support Audit Event Version Evolution
+S
+CS-AUD-FR-076
+Support Audit Health Verification
+M
+
+5.801 CREATE AUDIT EVENT
+CS-AUD-FR-001 — Create Audit Event
+Description
+The system shall create an audit event when an approved auditable action or attempted action occurs.
+Main Flow
+ACTION OCCURS     │     ▼AUDIT POLICY     │     ▼AUDIT REQUIRED?   ┌─┴─┐   │   │  YES  NO   │   │   ▼   ▼BUILD   ENDCONTEXT   │   ▼SANITIZE   │   ▼CREATE AUDIT EVENT
+Example
+User performs:
+UPDATE PATIENT CONTACT INFORMATION
+Source module:
+PATIENT
+Audit event:
+EVENT CODEPATIENT_CONTACT_UPDATEDACTORUSR-000421TARGETPAT-000982RESULTSUCCESS
+Postconditions
+Audit event exists.
+Actor context is preserved where available.
+action context is preserved.
+target context is preserved where applicable.
+event time is preserved.
+result context is preserved.
+correlation context is preserved where available.
+
+5.802 AUDIT EVENT IDENTIFIER
+CS-AUD-FR-002 — Generate Audit Event Identifier
+The system shall generate a unique audit event identifier.
+Example:
+AUD-00000421
+The identifier may support:
+INVESTIGATIONSUPPORTCOMPLIANCE REVIEWSECURITY ANALYSISTRACEABILITY
+The internal PostgreSQL primary key may remain separate from the audit event reference.
+
+5.803 AUDIT EVENT CODE
+CS-AUD-FR-003 — Record Audit Event Code
+The system shall record an approved event code.
+Examples:
+AUTH_LOGIN_SUCCEEDEDAUTH_LOGIN_FAILEDAUTH_LOGOUT_COMPLETEDAUTH_ACCESS_DENIEDUSER_CREATEDUSER_DEACTIVATEDUSER_ROLE_ASSIGNEDPATIENT_CREATEDPATIENT_RECORD_VIEWEDPATIENT_RECORD_UPDATEDLAB_RESULT_VERIFIEDRADIOLOGY_REPORT_FINALIZEDPRESCRIPTION_DISPENSEDINVOICE_UPDATEDPAYMENT_RECEIVEDPAYMENT_REVERSEDINVENTORY_ADJUSTEDLEAVE_REQUEST_APPROVEDNOTIFICATION_RULE_UPDATEDREPORT_EXPORTED
+Event codes shall be machine-readable and stable where practical.
+React display labels shall not become authoritative event codes.
+
+5.804 AUDIT EVENT CATEGORY
+CS-AUD-FR-004 — Classify Audit Event Category
+The system shall classify audit events using approved categories.
+Potential categories include:
+AUTHENTICATIONAUTHORIZATIONSECURITYUSER_ADMINISTRATIONPATIENT_ACCESSCLINICALAPPOINTMENTADMISSIONLABORATORYRADIOLOGYPHARMACYBILLINGPAYMENTINSURANCEINVENTORYHRNOTIFICATIONREPORTINGCONFIGURATIONINTEGRATIONSYSTEM
+The final audit category vocabulary shall be defined during Domain and Security Architecture.
+
+5.805 AUDIT EVENT SEVERITY
+CS-AUD-FR-005 — Assign Audit Event Severity
+The system shall assign an approved severity to applicable audit events.
+Potential severity model:
+INFORMATIONALLOWMEDIUMHIGHCRITICAL
+Example:
+USER VIEWED OWN NOTIFICATIONINFORMATIONAL
+REPEATED FAILED LOGINMEDIUM
+UNAUTHORIZED CLINICAL RECORD ACCESS ATTEMPTHIGH
+AUDIT SYSTEM DISABLEDCRITICAL
+Important Requirement
+Audit severity shall be authoritative backend classification.
+Incorrect:
+if (badgeColor === "red") {  severity = "critical";}
+
+5.806 ACTOR TYPE
+CS-AUD-FR-006 — Record Actor Type
+The system shall identify the type of actor associated with an audit event.
+Potential actor types include:
+USERSYSTEMBACKGROUND_WORKEREXTERNAL_INTEGRATIONANONYMOUS
+Example:
+ACTOR TYPEUSER
+or:
+ACTOR TYPEBACKGROUND_WORKER
+Actor type shall remain separate from actor identifier.
+
+5.807 ACTOR REFERENCE
+CS-AUD-FR-007 — Record Actor Reference
+The system shall record the actor reference when an identifiable actor exists.
+Example:
+ACTOR TYPEUSERACTOR REFERENCEUSR-000731
+The audit record should reference the stable user identifier.
+It shall not depend only on:
+DISPLAY NAMEUzair Ahmad
+because names may change.
+Historical display context may optionally be preserved where approved.
+
+5.808 SYSTEM ACTOR
+CS-AUD-FR-008 — Record System Actor
+The system shall support audit events generated by automated system processes.
+Example:
+ACTOR TYPEBACKGROUND_WORKERACTOR REFERENCESCHEDULED_NOTIFICATION_WORKER
+Event:
+SCHEDULED_NOTIFICATION_GENERATED
+Another example:
+ACTOR TYPESYSTEMACTOR REFERENCESALARY_PROCESSOR
+The system shall not falsely assign automated actions to the last authenticated user.
+
+5.809 ANONYMOUS ACTOR CONTEXT
+CS-AUD-FR-009 — Record Anonymous Actor Context
+The system shall support audit events where no authenticated user exists.
+Example:
+LOGIN FAILED
+The actor may be:
+ANONYMOUS
+Eligible context may include:
+REQUEST IDCLIENT NETWORK CONTEXTUSER AGENT CONTEXTATTEMPTED LOGIN IDENTIFIER
+Sensitive authentication data shall not be stored.
+The system shall not record:
+PASSWORDPASSWORD HASH INPUTOTP VALUEACCESS TOKENREFRESH TOKEN
+
+5.810 AUDIT ACTION
+CS-AUD-FR-010 — Record Audit Action
+The system shall record the action represented by the audit event.
+Potential actions include:
+CREATEVIEWSEARCHUPDATEAPPROVEREJECTVERIFYFINALIZEDISPENSEREVERSECANCELDEACTIVATEDELETEEXPORTLOGINLOGOUTASSIGNREMOVERETRYACKNOWLEDGE
+Example:
+ACTIONUPDATE
+The action shall provide consistent traceability across modules.
+
+5.811 SOURCE MODULE
+CS-AUD-FR-011 — Record Source Module
+The system shall record the source CuraSphere module associated with the audit event.
+Example:
+SOURCE MODULEBILLING
+Potential module codes may include:
+IAMPATAPTOPDIPDEMRLABRADPHRBILINSINVHRMRPTNTFAUDSYS
+The final module code registry shall be defined during Domain Architecture.
+
+5.812 TARGET ENTITY TYPE
+CS-AUD-FR-012 — Record Target Entity Type
+The system shall record the target entity type where applicable.
+Example:
+TARGET ENTITY TYPEPATIENT
+Other examples:
+APPOINTMENTADMISSIONLAB_ORDERLAB_RESULTRADIOLOGY_REPORTPRESCRIPTIONINVOICEPAYMENTINVENTORY_ITEMEMPLOYEEUSER_ACCOUNTROLENOTIFICATION_RULE
+
+5.813 TARGET ENTITY REFERENCE
+CS-AUD-FR-013 — Record Target Entity Reference
+The system shall record the target entity reference where applicable.
+Example:
+TARGET ENTITY TYPEINVOICETARGET ENTITY REFERENCEINV-000421
+This supports:
+ENTITY TIMELINEINVESTIGATIONCHANGE TRACEABILITYSUPPORT
+The audit system shall not require a full copy of the target entity.
+
+5.814 AUDIT RESULT
+CS-AUD-FR-014 — Record Audit Result
+The system shall record the result of the audited action.
+Potential result model:
+SUCCESSFAILUREDENIEDPARTIAL
+Example:
+EVENTAUTH_ACCESS_DENIEDRESULTDENIED
+Another example:
+EVENTPAYMENT_RECEIVEDRESULTSUCCESS
+The final result vocabulary shall be standardized.
+
+5.815 AUDIT TIMESTAMP
+CS-AUD-FR-015 — Record Audit Timestamp
+The system shall record the authoritative audit event timestamp.
+Example:
+2026-07-14 15:42:18.421
+The timestamp shall be generated by an approved backend or infrastructure component.
+The system shall not trust a browser-provided audit timestamp as authoritative.
+Incorrect:
+const auditTime = new Date();
+sent by React and accepted as the official event time.
+Preferred:
+SERVER / APPROVED INFRASTRUCTURE TIME                 │                 ▼AUTHORITATIVE AUDIT TIMESTAMP
+Time zone and UTC storage strategy shall be defined during Data and Application Architecture.
+
+5.816 CORRELATION IDENTIFIER
+CS-AUD-FR-016 — Record Correlation Identifier
+The system shall support correlation identifiers.
+Example:
+CORRELATION IDCOR-8F72A1D9
+One request may generate:
+HTTP REQUEST     │     ▼PATIENT UPDATE     │     ├── PATIENT_UPDATED     ├── CONTACT_CHANGED     └── NOTIFICATION_CREATED
+All related events may share:
+COR-8F72A1D9
+Conceptually:
+CORRELATION ID      │      ├── AUD-000421      ├── AUD-000422      ├── AUD-000423      └── AUD-000424
+This supports end-to-end investigation.
+
+5.817 REQUEST CONTEXT
+CS-AUD-FR-017 — Record Request Context
+The system shall record eligible request traceability context.
+Potential context includes:
+REQUEST IDCORRELATION IDHTTP METHODROUTE TEMPLATEAPPLICATION COMPONENT
+Example:
+HTTP METHODPUTROUTE TEMPLATE/api/patients/{patientId}
+The audit system should avoid storing raw URLs containing sensitive query values where unnecessary.
+Example unsafe:
+/api/search?cnic=17301XXXXXXXX&diagnosis=...
+Preferred sanitized context:
+ROUTE/api/searchACTIONPATIENT_SEARCH
+
+5.818 SESSION CONTEXT
+CS-AUD-FR-018 — Record Session Context
+Priority
+Should Have
+The system should record approved session context.
+Potential information includes:
+SESSION REFERENCEAUTHENTICATION SESSION REFERENCELOGIN CONTEXT
+The audit system shall not store:
+SESSION COOKIE VALUEJWT TOKENREFRESH TOKEN
+Example:
+SESSION REFERENCESES-000421
+The session reference shall be non-secret.
+
+5.819 CLIENT CONTEXT
+CS-AUD-FR-019 — Record Client Context
+The system shall record eligible client context for approved audit events.
+Potential context includes:
+IP ADDRESS CONTEXTUSER AGENTDEVICE TYPEAPPLICATION CLIENT
+Example:
+APPLICATION CLIENTCURASPHERE_WEB
+Client context collection shall follow approved privacy and security requirements.
+The audit system shall not collect unlimited device fingerprinting data without approved purpose.
+
+5.820 AUTHENTICATION AUDIT EVENT
+CS-AUD-FR-020 — Record Authentication Event
+The system shall record significant authentication events.
+Potential events include:
+LOGIN_SUCCEEDEDLOGIN_FAILEDLOGOUT_COMPLETEDPASSWORD_CHANGEDPASSWORD_RESET_REQUESTEDPASSWORD_RESET_COMPLETEDMFA_CHALLENGE_STARTEDMFA_CHALLENGE_SUCCEEDEDMFA_CHALLENGE_FAILEDSESSION_REVOKED
+The final event catalog shall align with Identity and Access Management requirements.
+Example:
+EVENTAUTH_LOGIN_FAILEDACTOR TYPEANONYMOUSRESULTFAILURETIME2026-07-14 15:42:18
+Passwords and authentication secrets shall never be recorded.
+
+5.821 AUTHORIZATION AUDIT EVENT
+CS-AUD-FR-021 — Record Authorization Event
+The system shall record significant authorization events.
+Example:
+USERUSR-000421ACTIONVIEWTARGETPAT-000982AUTHORIZATION RESULTDENIED
+Potential event:
+AUTH_ACCESS_DENIED
+Routine successful authorization checks do not necessarily require individual audit events.
+The final audit policy shall define which successful and failed authorization actions are recorded.
+
+5.822 UNAUTHORIZED ACCESS ATTEMPT
+CS-AUD-FR-022 — Record Unauthorized Access Attempt
+The system shall record eligible unauthorized access attempts.
+Example request:
+GET /api/admin/users
+Actor:
+USR-000731
+Permission:
+USER_ADMIN_VIEW
+User does not possess permission.
+Audit event:
+EVENTAUTH_ACCESS_DENIEDACTORUSR-000731TARGETUSER_ADMINISTRATIONRESULTDENIED
+Critical Requirement
+The audit event shall not expose authorization secrets or internal security implementation details to the requesting user.
+User response:
+ACCESS DENIED
+Internal audit context may contain additional approved traceability information.
+
+5.823 USER ACCOUNT ADMINISTRATION AUDIT
+CS-AUD-FR-023 — Record User Account Administration Event
+The system shall record significant user account administration actions.
+Potential events include:
+USER_CREATEDUSER_ACTIVATEDUSER_DEACTIVATEDUSER_LOCKEDUSER_UNLOCKEDUSER_EMAIL_CHANGEDUSER_LOGIN_IDENTIFIER_CHANGEDUSER_SESSION_REVOKED
+Example:
+ACTORUSR-ADMIN-001ACTIONDEACTIVATETARGETUSR-000421RESULTSUCCESS
+
+5.824 ROLE AND PERMISSION CHANGE AUDIT
+CS-AUD-FR-024 — Record Role and Permission Change
+The system shall record role and permission administration events.
+Potential events include:
+ROLE_CREATEDROLE_UPDATEDROLE_DEACTIVATEDROLE_ASSIGNEDROLE_REMOVEDPERMISSION_GRANTEDPERMISSION_REMOVED
+Example:
+EVENTROLE_ASSIGNEDACTORUSR-ADMIN-001TARGET USERUSR-000421ROLEBILLING_OFFICERRESULTSUCCESS
+Critical Principle
+Role and permission changes are high-value audit events.
+The system shall preserve sufficient context to answer:
+WHO CHANGED ACCESS?WHOSE ACCESS CHANGED?WHAT ACCESS CHANGED?WHEN DID IT CHANGE?
+
+5.825 PATIENT RECORD ACCESS AUDIT
+CS-AUD-FR-025 — Record Patient Record Access
+The system shall record approved patient record access events.
+Example:
+EVENTPATIENT_RECORD_VIEWEDACTORUSR-000421TARGETPAT-000982RESULTSUCCESS
+Potential audited patient access may include:
+PATIENT PROFILE VIEWMEDICAL RECORD VIEWLAB RESULT VIEWRADIOLOGY REPORT VIEWPRESCRIPTION VIEWBILLING RECORD VIEW
+The exact patient access audit policy shall be defined during Security and Privacy Architecture.
+Important Principle
+VIEWING SENSITIVE DATA          │          ▼MAY BE AUDIT-WORTHY
+Audit requirements shall not be limited only to update and delete actions.
+
+5.826 SENSITIVE RECORD ACCESS
+CS-AUD-FR-026 — Record Sensitive Record Access
+The system shall support auditing of access to approved sensitive information.
+Potential examples include:
+CLINICAL RECORDLAB RESULTRADIOLOGY REPORTFINANCIAL RECORDEMPLOYEE CONFIDENTIAL RECORDSECURITY CONFIGURATION
+The system shall record the access event without copying the entire sensitive record into the audit event.
+Incorrect:
+AUDIT DETAILSDoctor viewed result:[COMPLETE LAB RESULT CONTENT]
+Preferred:
+EVENTLAB_RESULT_VIEWEDTARGETLAB-000421
+
+5.827 DATA CREATION AUDIT
+CS-AUD-FR-027 — Record Data Creation Event
+The system shall record approved data creation actions.
+Examples:
+PATIENT_CREATEDAPPOINTMENT_CREATEDLAB_ORDER_CREATEDPRESCRIPTION_CREATEDINVOICE_CREATEDEMPLOYEE_CREATED
+Example audit:
+EVENTPATIENT_CREATEDACTORUSR-000421TARGETPAT-000982RESULTSUCCESS
+
+5.828 DATA UPDATE AUDIT
+CS-AUD-FR-028 — Record Data Update Event
+The system shall record approved data update actions.
+Example:
+EVENTPATIENT_CONTACT_UPDATED
+Target:
+PAT-000982
+Changed fields:
+PHONE_NUMBEREMAIL_ADDRESS
+The audit system may preserve field-level change context where approved.
+
+5.829 DATA DEACTIVATION AUDIT
+CS-AUD-FR-029 — Record Data Deactivation Event
+The system shall record approved deactivation actions.
+Examples:
+USER_DEACTIVATEDEMPLOYEE_DEACTIVATEDNOTIFICATION_RULE_DEACTIVATEDTEMPLATE_DEACTIVATED
+Example:
+EVENTUSER_DEACTIVATEDACTORUSR-ADMIN-001TARGETUSR-000421RESULTSUCCESS
+
+5.830 DATA DELETION AUDIT
+CS-AUD-FR-030 — Record Data Deletion Event
+The system shall record approved deletion actions.
+Example:
+EVENTDOCUMENT_DELETED
+The audit event shall preserve sufficient target identification.
+Critical Requirement
+Deletion of the source record shall not automatically delete the related audit event.
+Conceptually:
+SOURCE ENTITY      │      ▼DELETED
+Audit history:
+AUDIT EVENT      │      ▼PRESERVED
+subject to approved audit retention rules.
+
+5.831 BEFORE-AND-AFTER CHANGE CONTEXT
+CS-AUD-FR-031 — Record Before-and-After Change Context
+The system shall support before-and-after context for approved auditable changes.
+Example:
+FIELDSTATUSOLD VALUEPENDINGNEW VALUEAPPROVED
+Conceptually:
+CHANGE SET    │    ├── FIELD A    │     ├── OLD VALUE    │     └── NEW VALUE    │    ├── FIELD B    │     ├── OLD VALUE    │     └── NEW VALUE    │    └── FIELD C          ├── OLD VALUE          └── NEW VALUE
+Not every field shall automatically be copied into audit history.
+Field-level audit rules shall be defined.
+
+5.832 SENSITIVE VALUE EXCLUSION
+CS-AUD-FR-032 — Exclude Sensitive Values from Audit Data
+The system shall exclude prohibited sensitive values from audit records.
+Prohibited examples include:
+PASSWORDPASSWORD HASHPASSWORD RESET TOKENACCESS TOKENREFRESH TOKENMFA SECRETOTP VALUEAPI KEYDATABASE PASSWORDPRIVATE KEYSESSION COOKIEFULL PAYMENT CARD DATA
+Example unsafe audit:
+FIELDpasswordOLD VALUEMyPassword123NEW VALUENewPassword456
+This shall never be allowed.
+Preferred:
+EVENTPASSWORD_CHANGEDRESULTSUCCESS
+No password value shall be recorded.
+
+5.833 CLINICAL WORKFLOW AUDIT
+CS-AUD-FR-033 — Record Clinical Workflow Audit Event
+The system shall record approved clinical workflow events.
+Potential examples include:
+CLINICAL_NOTE_CREATEDCLINICAL_NOTE_UPDATEDDIAGNOSIS_RECORDEDLAB_ORDER_CREATEDLAB_RESULT_VERIFIEDRADIOLOGY_REPORT_FINALIZEDPRESCRIPTION_CREATEDPRESCRIPTION_CANCELLEDPATIENT_ADMITTEDPATIENT_DISCHARGED
+Clinical audit events shall follow healthcare privacy and access requirements.
+The audit module shall not become a duplicate electronic medical record.
+
+5.834 BILLING AUDIT EVENT
+CS-AUD-FR-034 — Record Billing Audit Event
+The system shall record approved billing activity.
+Potential events include:
+INVOICE_CREATEDINVOICE_ITEM_ADDEDINVOICE_ITEM_REMOVEDDISCOUNT_APPLIEDDISCOUNT_REMOVEDINVOICE_FINALIZEDINVOICE_CANCELLEDINVOICE_ADJUSTED
+Example:
+EVENTDISCOUNT_APPLIEDACTORUSR-000421TARGETINV-000982RESULTSUCCESS
+Eligible change context may include:
+OLD DISCOUNT0NEW DISCOUNT500
+Financial values shall follow approved audit data policies.
+
+5.835 PAYMENT AUDIT EVENT
+CS-AUD-FR-035 — Record Payment Audit Event
+The system shall record approved payment activity.
+Potential events include:
+PAYMENT_RECEIVEDPAYMENT_ALLOCATEDPAYMENT_REVERSEDREFUND_REQUESTEDREFUND_APPROVEDREFUND_COMPLETED
+Example:
+EVENTPAYMENT_REVERSEDACTORUSR-000421TARGETPAY-000731RESULTSUCCESS
+Payment reversal events shall preserve sufficient traceability.
+The audit event shall not store prohibited payment credentials.
+
+5.836 INVENTORY AUDIT EVENT
+CS-AUD-FR-036 — Record Inventory Audit Event
+The system shall record approved inventory activity.
+Potential events include:
+INVENTORY_RECEIVEDINVENTORY_ISSUEDINVENTORY_ADJUSTEDINVENTORY_TRANSFERREDSTOCK_COUNT_RECORDEDEXPIRY_STATUS_CHANGED
+Example:
+EVENTINVENTORY_ADJUSTEDTARGETITM-000421OLD QUANTITY100NEW QUANTITY92ACTORUSR-000731
+The authoritative inventory balance remains owned by the Inventory module.
+
+5.837 HR AUDIT EVENT
+CS-AUD-FR-037 — Record HR Audit Event
+The system shall record approved workforce administration activity.
+Potential events include:
+EMPLOYEE_CREATEDEMPLOYEE_UPDATEDEMPLOYEE_DEACTIVATEDATTENDANCE_ADJUSTEDLEAVE_REQUEST_APPROVEDLEAVE_REQUEST_REJECTEDSALARY_ADJUSTMENT_CREATED
+Sensitive HR information shall not be copied unnecessarily into general audit details.
+Audit access shall follow HR data scope requirements.
+
+5.838 NOTIFICATION AUDIT EVENT
+CS-AUD-FR-038 — Record Notification Audit Event
+The system shall record approved notification administration and processing events.
+Potential events include:
+NOTIFICATION_CREATEDNOTIFICATION_DELIVERY_FAILEDNOTIFICATION_RETRY_SCHEDULEDALERT_ACKNOWLEDGEDNOTIFICATION_TEMPLATE_UPDATEDNOTIFICATION_RULE_UPDATEDNOTIFICATION_RULE_ACTIVATEDNOTIFICATION_RULE_DEACTIVATED
+Notification audit context shall align with Part 5.12 requirements.
+
+5.839 REPORTING AUDIT EVENT
+CS-AUD-FR-039 — Record Reporting Audit Event
+The system shall record approved reporting activity.
+Potential events include:
+REPORT_EXECUTEDREPORT_EXPORTEDSENSITIVE_REPORT_VIEWEDSCHEDULED_REPORT_CREATEDSCHEDULED_REPORT_CANCELLED
+Example:
+EVENTREPORT_EXPORTEDACTORUSR-000421REPORTPATIENT_BILLING_SUMMARYFORMATCSVRESULTSUCCESS
+The audit event shall not contain the full exported report.
+
+5.840 ADMINISTRATIVE CONFIGURATION AUDIT
+CS-AUD-FR-040 — Record Administrative Configuration Event
+The system shall record significant administrative configuration changes.
+Potential examples include:
+SYSTEM_SETTING_UPDATEDROLE_UPDATEDPERMISSION_UPDATEDNOTIFICATION_TEMPLATE_UPDATEDNOTIFICATION_RULE_UPDATEDREPORT_DEFINITION_UPDATEDINTEGRATION_CONFIGURATION_UPDATED
+Configuration audit events shall preserve approved before-and-after context.
+Secrets shall remain excluded.
+
+5.841 INTEGRATION AUDIT EVENT
+CS-AUD-FR-041 — Record Integration Audit Event
+Priority
+Should Have
+The system should record approved external integration activity.
+Potential events include:
+INTEGRATION_REQUEST_SENTINTEGRATION_RESPONSE_RECEIVEDINTEGRATION_AUTHENTICATION_FAILEDINTEGRATION_DELIVERY_FAILEDINTEGRATION_RETRY_COMPLETED
+The audit event shall not automatically store full external request and response payloads.
+Conceptually:
+EXTERNAL PAYLOAD       │       ▼CLASSIFY DATA       │       ▼EXTRACT TRACEABILITY CONTEXT       │       ▼SANITIZE       │       ▼AUDIT EVENT
+
+5.842 VIEW AUDIT EVENT
+CS-AUD-FR-042 — View Audit Event
+The system shall allow authorized users to view eligible audit events.
+Potential information includes:
+AUDIT EVENT IDEVENT CODECATEGORYSEVERITYACTORACTIONSOURCE MODULETARGET ENTITYRESULTTIMESTAMPCORRELATION IDSANITIZED CHANGE CONTEXT
+Sensitive audit fields shall remain subject to authorization.
+
+5.843 SEARCH AUDIT EVENTS
+CS-AUD-FR-043 — Search Audit Events
+The system shall allow authorized users to search eligible audit events.
+Potential search fields include:
+AUDIT EVENT IDEVENT CODEACTOR REFERENCETARGET ENTITY REFERENCECORRELATION ID
+Free-text search over unrestricted audit payloads shall not automatically be enabled.
+The final search model shall be defined during Data Architecture.
+
+5.844 FILTER AUDIT EVENTS
+CS-AUD-FR-044 — Filter Audit Events
+The system shall allow authorized users to filter eligible audit events.
+Potential filters include:
+DATE RANGEEVENT CATEGORYEVENT CODESEVERITYACTOR TYPEACTORACTIONSOURCE MODULETARGET ENTITY TYPERESULT
+Example:
+DATE14 JUL 2026CATEGORYSECURITYRESULTDENIED
+The backend shall enforce audit data scope.
+
+5.845 AUDIT PAGINATION
+CS-AUD-FR-045 — Paginate Audit Events
+The system shall paginate audit event results.
+Example:
+PAGE1PAGE SIZE50
+The React application shall not request the complete audit history.
+Incorrect:
+GET /api/audit/events?all=true
+returning:
+12,000,000 AUDIT EVENTS
+Pagination shall be mandatory for large audit collections.
+
+5.846 AUDIT SORTING
+CS-AUD-FR-046 — Sort Audit Events
+The system shall support approved audit event sorting.
+Potential sort fields include:
+TIMESTAMPSEVERITYEVENT CODE
+Default audit timeline sorting should normally be:
+TIMESTAMP DESCENDING
+The final API sorting contract shall be defined during API Design.
+
+5.847 ENTITY AUDIT TIMELINE
+CS-AUD-FR-047 — View Entity Audit Timeline
+The system shall allow authorized users to view eligible audit events associated with a specific entity.
+Example:
+PATIENTPAT-000982
+Timeline:
+10:00 PATIENT_CREATED10:12 PATIENT_RECORD_VIEWED10:25 PATIENT_CONTACT_UPDATED11:40 APPOINTMENT_CREATED
+Another example:
+INVOICEINV-000421
+Timeline:
+09:00 INVOICE_CREATED09:05 INVOICE_ITEM_ADDED09:12 DISCOUNT_APPLIED09:20 PAYMENT_RECEIVED
+The timeline shall only include events the requesting user is authorized to review.
+
+5.848 USER ACTIVITY TIMELINE
+CS-AUD-FR-048 — View User Activity Timeline
+The system shall allow authorized audit or security users to view eligible activity associated with a user.
+Example:
+USERUSR-000421
+Timeline:
+08:55 LOGIN_SUCCEEDED09:02 PATIENT_SEARCHED09:05 PATIENT_RECORD_VIEWED09:20 APPOINTMENT_CREATED09:42 REPORT_EXPORTED10:01 LOGOUT_COMPLETED
+Important Requirement
+This capability shall be highly restricted.
+It shall not become a general employee surveillance dashboard without approved governance.
+
+5.849 CORRELATED AUDIT EVENTS
+CS-AUD-FR-049 — View Correlated Audit Events
+The system shall allow authorized users to view audit events sharing an eligible correlation identifier.
+Example:
+CORRELATION IDCOR-8F72A1D9
+Events:
+PATIENT_UPDATE_REQUESTEDPATIENT_CONTACT_UPDATEDNOTIFICATION_CREATEDAUDIT_WRITE_COMPLETED
+Conceptually:
+ONE BUSINESS REQUEST         │         ▼CORRELATION ID         │   ┌─────┼─────┐   │     │     │   ▼     ▼     ▼EVENT A EVENT B EVENT C
+This supports distributed traceability as CuraSphere architecture evolves.
+
+5.850 AUDIT EXPORT
+CS-AUD-FR-050 — Export Eligible Audit Records
+Priority
+Should Have
+The system should allow authorized users to export eligible audit records.
+Potential formats may include:
+CSVPDF
+The final export formats shall be defined during Reporting and UI/UX Architecture.
+Audit export shall require explicit permission.
+Potential audit event:
+AUDIT_RECORDS_EXPORTED
+The export action itself shall be auditable.
+Critical Principle
+AUDIT DATA EXPORT        │        ▼CREATES AUDIT EVENT
+
+5.851 AUDIT ACCESS CONTROL
+CS-AUD-FR-051 — Restrict Audit Access
+The system shall restrict access to audit data.
+Potential authorized roles may include:
+AUDIT USERSECURITY ADMINISTRATORCOMPLIANCE USERAUTHORIZED SYSTEM ADMINISTRATOR
+A normal application user shall not automatically receive access to centralized audit history.
+Example:
+DOCTOR  │  ▼PATIENT CLINICAL ACCESS
+does not automatically mean:
+DOCTOR  │  ▼ALL SYSTEM AUDIT EVENTS
+
+5.852 AUDIT DATA SCOPE
+CS-AUD-FR-052 — Apply Audit Data Scope
+The system shall apply approved data scope to audit queries.
+Potential scopes include:
+OWN ACTIVITYDEPARTMENT ACTIVITYMODULE ACTIVITYSECURITY EVENTSHR EVENTSFINANCIAL EVENTSSYSTEM-WIDE AUDIT
+Example:
+HR AUDIT USER      │      ▼HR AUDIT EVENTS
+shall not automatically access:
+CLINICAL AUDIT EVENTS
+The final scope model shall align with Identity and Access Management architecture.
+
+5.853 AUDIT EVENT IMMUTABILITY
+CS-AUD-FR-053 — Prevent Audit Event Modification
+The system shall prevent normal application workflows from modifying existing audit events.
+Incorrect API:
+PUT /api/audit/events/AUD-000421
+with:
+CHANGE ACTORCHANGE EVENTCHANGE RESULT
+This shall not be supported as a normal business function.
+Conceptually:
+AUDIT EVENT CREATED        │        ▼IMMUTABLE APPLICATION RECORD
+If an audit correction mechanism is ever required:
+ORIGINAL AUDIT EVENT         │         ▼PRESERVED         │         ▼CORRECTION / ANNOTATION EVENT
+The original event shall not silently disappear.
+
+5.854 AUDIT DELETION PROTECTION
+CS-AUD-FR-054 — Prevent Unauthorized Audit Deletion
+The system shall prevent unauthorized deletion of audit events.
+Normal users shall not have:
+DELETE AUDIT EVENT
+permission.
+System administrators shall not automatically receive unrestricted manual audit deletion capability.
+Audit retention and purge shall occur through approved controlled processes.
+
+5.855 AUDIT WRITE FAILURE DETECTION
+CS-AUD-FR-055 — Detect Audit Write Failure
+The system shall detect failures when required audit events cannot be recorded.
+Potential causes include:
+DATABASE UNAVAILABLEAUDIT STORAGE FAILUREAUDIT PROCESSOR FAILURESERIALIZATION FAILUREINVALID AUDIT EVENTSTORAGE CAPACITY CONDITION
+The system shall generate technical observability signals for audit write failures.
+
+5.856 AUDIT RECORDING FAILURE HANDLING
+CS-AUD-FR-056 — Handle Audit Recording Failure
+The system shall define controlled behavior when audit recording fails.
+The behavior may depend on action criticality.
+Conceptually:
+BUSINESS ACTION      │      ▼AUDIT REQUIRED      │      ▼AUDIT WRITE FAILS      │      ▼AUDIT POLICY      │   ┌──┴──┐   │     │FAIL     CONTINUECLOSED   WITH ALERT
+Example high-risk action:
+ROLE PERMISSION CHANGE
+may require stricter audit failure handling.
+Example lower-risk event:
+NOTIFICATION VIEWED
+may use different failure handling.
+The final fail-open versus fail-closed audit policy shall be defined during Security and Application Architecture.
+
+5.857 SOURCE TRANSACTION BOUNDARY
+CS-AUD-FR-057 — Preserve Source Transaction Boundary
+The system shall preserve approved source transaction behavior when recording audit events.
+The architecture shall avoid uncontrolled situations where:
+PATIENT UPDATE SUCCESS        │        ▼AUDIT WRITE FAILURE        │        ▼UNKNOWN SYSTEM STATE
+The selected architecture shall define whether an audit event is:
+SAME TRANSACTION
+or:
+RELIABLE ASYNCHRONOUS PROCESS
+depending on event criticality and system architecture.
+Critical Requirement
+No single universal audit transaction strategy is selected by this SRS.
+The strategy shall be defined during Application and Event Architecture.
+
+5.858 AUDIT EVENT INTEGRITY
+CS-AUD-FR-058 — Maintain Audit Event Integrity
+The system shall protect audit event integrity.
+The architecture shall prevent unauthorized:
+MODIFICATIONDELETIONREORDERINGACTOR REPLACEMENTTIMESTAMP REPLACEMENT
+Potential future technical controls may include:
+DATABASE PERMISSION SEPARATIONAPPEND-ONLY STORAGEHASH VALIDATIONHASH CHAINSDIGITAL SIGNATURESEXTERNAL AUDIT STORAGE
+No specific cryptographic audit integrity model is selected by this SRS.
+
+5.859 AUDIT RETENTION POLICY
+CS-AUD-FR-059 — Support Audit Retention Policy
+The system shall support approved audit retention policies.
+Retention may vary by event category.
+Conceptually:
+SECURITY AUDIT      │      ▼RETENTION POLICY A
+CLINICAL ACCESS AUDIT      │      ▼RETENTION POLICY B
+TECHNICAL PROCESS AUDIT      │      ▼RETENTION POLICY C
+The final retention periods shall be defined through hospital governance, legal review, privacy requirements, and Data Architecture.
+
+5.860 AUDIT ARCHIVING
+CS-AUD-FR-060 — Archive Eligible Audit Records
+Priority
+Should Have
+The system should support controlled audit archiving.
+Conceptually:
+ACTIVE AUDIT STORAGE         │         ▼RETENTION / AGE POLICY         │         ▼ARCHIVE PROCESS         │         ▼AUDIT ARCHIVE
+Archived audit records shall remain subject to:
+ACCESS CONTROLINTEGRITY REQUIREMENTSRETENTION RULESAUDITABILITY
+No archive storage technology is selected by this SRS.
+
+5.861 AUDIT PURGE
+CS-AUD-FR-061 — Purge Eligible Audit Records
+Priority
+Should Have
+The system should support controlled purge of audit records only when permitted by approved retention policy.
+Conceptually:
+AUDIT RECORD      │      ▼RETENTION PERIOD COMPLETE      │      ▼LEGAL / GOVERNANCE HOLD?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼PRESERVE PURGE ELIGIBLE
+Manual arbitrary deletion shall not be considered audit purge.
+
+5.862 AUDIT RETENTION ACTION AUDIT
+CS-AUD-FR-062 — Record Audit Retention Action
+The system shall record approved audit retention operations.
+Potential events include:
+AUDIT_ARCHIVE_STARTEDAUDIT_ARCHIVE_COMPLETEDAUDIT_ARCHIVE_FAILEDAUDIT_PURGE_STARTEDAUDIT_PURGE_COMPLETEDAUDIT_PURGE_FAILED
+Conceptually:
+AUDIT SYSTEM      │      ▼AUDITS AUDIT RETENTION PROCESS
+Where technically practical, retention process activity shall remain traceable.
+
+5.863 AUDIT PROCESSING MONITORING
+CS-AUD-FR-063 — Monitor Audit Processing
+The system shall support technical monitoring of audit processing.
+Potential indicators include:
+AUDIT EVENTS CREATEDAUDIT WRITE FAILURE COUNTAUDIT PROCESSING LATENCYPENDING AUDIT EVENT COUNTOLDEST PENDING AUDIT EVENT AGEAUDIT STORAGE AVAILABILITY
+These are technical observability indicators.
+They are not hospital operational KPIs.
+
+5.864 AUDIT STORAGE GROWTH MONITORING
+CS-AUD-FR-064 — Monitor Audit Storage Growth
+The system shall support monitoring of audit storage growth.
+Potential indicators include:
+TOTAL AUDIT EVENT COUNTDAILY EVENT GROWTHMONTHLY EVENT GROWTHSTORAGE SIZEARCHIVE VOLUMERETENTION BACKLOG
+Example risk:
+1,000,000 EVENTS / DAY        │        ▼NO RETENTION STRATEGY        │        ▼UNCONTROLLED DATABASE GROWTH
+The final storage capacity model shall be defined during Data and DevOps Architecture.
+
+5.865 SUSPICIOUS ACTIVITY PATTERN
+CS-AUD-FR-065 — Detect Suspicious Activity Pattern
+Priority
+Should Have
+The system should support future detection of suspicious activity patterns.
+Potential patterns may include:
+REPEATED FAILED LOGINREPEATED ACCESS DENIALLARGE NUMBER OF PATIENT RECORD VIEWSUNUSUAL REPORT EXPORT ACTIVITYREPEATED ROLE CHANGESREPEATED PAYMENT REVERSALSHIGH-VOLUME RECORD ACCESS
+Example:
+USERUSR-000421PATIENT RECORD VIEWS1,500 IN 10 MINUTES
+This may require investigation.
+Important Requirement
+Suspicious activity detection shall not automatically prove malicious intent.
+Conceptually:
+PATTERN DETECTED       │       ▼SECURITY SIGNAL       │       ▼INVESTIGATION
+not:
+PATTERN DETECTED       │       ▼USER IS GUILTY
+
+5.866 SECURITY INVESTIGATION SUPPORT
+CS-AUD-FR-066 — Support Security Investigation
+The system shall support authorized security investigation workflows.
+Potential investigation questions include:
+WHICH USER ACCESSED THIS PATIENT?WHICH RECORDS DID THIS USER VIEW?WHICH DENIED ACTIONS OCCURRED?WHICH ROLE CHANGES OCCURRED?WHICH REQUESTS SHARE THIS CORRELATION ID?WHICH REPORTS WERE EXPORTED?WHICH PAYMENTS WERE REVERSED?
+The Audit module shall provide traceability information.
+It shall not become a complete Security Incident Response Management platform unless separately approved.
+
+5.867 AUDIT SENSITIVE DATA LEAKAGE PREVENTION
+CS-AUD-FR-067 — Protect Audit Data from Sensitive Data Leakage
+The system shall prevent uncontrolled sensitive data leakage into audit records.
+Example unsafe developer code:
+Audit.Log("Patient updated", patient);
+If:
+patient
+contains:
+FULL NAMECNICADDRESSMEDICAL HISTORYDIAGNOSESLAB RESULTSINSURANCE DATA
+the complete object may be serialized into audit storage.
+This shall be avoided.
+Preferred conceptual approach:
+SOURCE ENTITY      │      ▼AUDIT POLICY      │      ▼APPROVED AUDIT FIELDS      │      ▼SANITIZED AUDIT CONTEXT
+
+5.868 AUDIT DATA MINIMIZATION
+CS-AUD-FR-068 — Apply Audit Data Minimization
+The system shall store only audit information necessary for traceability, security, operational review, and approved compliance purposes.
+Conceptually:
+SOURCE OBJECT150 FIELDS     │     ▼AUDIT PURPOSE     │     ▼REQUIRED AUDIT FIELDS8 FIELDS     │     ▼AUDIT EVENT
+Business Rule
+CS-AUD-BR-001
+Audit data shall follow the minimum necessary principle.
+Audit storage shall not become an uncontrolled copy of the operational database.
+
+5.869 AUTHENTICATION SECRET PROTECTION
+CS-AUD-FR-069 — Protect Authentication Secrets
+The system shall prevent authentication secrets from being recorded in audit events.
+Prohibited values include:
+PASSWORDPASSWORD HASHOTPMFA SECRETACCESS TOKENREFRESH TOKENPASSWORD RESET TOKENSESSION COOKIE
+Example:
+LOGIN FAILED
+Allowed context may include:
+ATTEMPTED LOGIN IDENTIFIERTIMECLIENT CONTEXTRESULT
+Prohibited:
+PASSWORD ENTERED"password123"
+
+5.870 FINANCIAL SENSITIVE DATA PROTECTION
+CS-AUD-FR-070 — Protect Financial Sensitive Data
+The system shall protect financial sensitive data in audit records.
+The audit system may record:
+PAYMENT REFERENCEAMOUNTACTIONACTORRESULT
+subject to approved policies.
+It shall not record prohibited payment authentication information.
+Potential prohibited data includes:
+FULL CARD NUMBERCARD SECURITY CODEPAYMENT PROVIDER SECRETBANKING PASSWORDPRIVATE PAYMENT TOKEN
+The final payment data classification rules shall be defined during Security Architecture.
+
+5.871 CLINICAL SENSITIVE DATA PROTECTION
+CS-AUD-FR-071 — Protect Clinical Sensitive Data
+The system shall protect clinical information in audit records.
+Example:
+EVENTLAB_RESULT_VIEWEDTARGETLAB-000421
+Preferred.
+Unnecessary:
+EVENT DETAILSHemoglobin...Diagnosis...Doctor notes...Complete patient history...
+The audit event shall preserve traceability without duplicating full clinical content.
+
+5.872 FUTURE COMPLIANCE REPORTING
+CS-AUD-FR-072 — Support Future Compliance Reporting
+Priority
+Should Have
+The architecture should support future approved compliance reporting.
+Potential future reports may include:
+PATIENT RECORD ACCESS REPORTUSER ACCESS CHANGE REPORTROLE ASSIGNMENT HISTORYFAILED LOGIN REPORTUNAUTHORIZED ACCESS ATTEMPT REPORTFINANCIAL REVERSAL AUDIT REPORTAUDIT SYSTEM HEALTH REPORT
+No specific healthcare compliance framework is declared by this SRS section.
+Applicable legal and regulatory requirements shall require separate governance and legal validation.
+
+5.873 FUTURE SIEM INTEGRATION
+CS-AUD-FR-073 — Support Future SIEM Integration
+Priority
+Should Have
+The architecture should support future integration with an approved Security Information and Event Management platform.
+Conceptually:
+CURASPHERE SECURITY EVENTS            │            ▼SECURITY EVENT ADAPTER            │            ▼SIEM PLATFORM
+Potential integration may require:
+EVENT NORMALIZATIONSECURE TRANSPORTEVENT BUFFERINGRETRYDELIVERY MONITORINGDATA MINIMIZATION
+No SIEM product has been selected.
+
+5.874 FUTURE EXTERNAL AUDIT STORAGE
+CS-AUD-FR-074 — Support Future External Audit Storage
+Priority
+Should Have
+The architecture should support future approved external or dedicated audit storage.
+Conceptually:
+CURASPHERE APPLICATION          │          ▼AUDIT EVENT          │          ▼AUDIT PROCESSING BOUNDARY          │      ┌───┴───┐      │       │      ▼       ▼PRIMARY     EXTERNALAUDIT       AUDITSTORE       STORE            FUTURE
+No external audit storage technology has been selected.
+
+5.875 AUDIT EVENT VERSION EVOLUTION
+CS-AUD-FR-075 — Support Audit Event Version Evolution
+Priority
+Should Have
+The system should support evolution of audit event structures.
+Example:
+AUDIT EVENT VERSION1
+Future:
+AUDIT EVENT VERSION2
+This may be necessary when additional traceability context is introduced.
+The system should avoid assuming every historical audit event has the exact same payload structure forever.
+
+5.876 AUDIT HEALTH VERIFICATION
+CS-AUD-FR-076 — Support Audit Health Verification
+The system shall support verification that critical audit capabilities are operational.
+Potential health indicators include:
+AUDIT STORAGE AVAILABLEAUDIT WRITE PROCESS OPERATIONALAUDIT PROCESSING BACKLOG ACCEPTABLEAUDIT FAILURE RATE ACCEPTABLEAUDIT RETENTION PROCESS STATUS
+Conceptually:
+AUDIT HEALTH     │     ├── STORAGE     ├── WRITING     ├── PROCESSING     ├── RETENTION     └── MONITORING
+The final health-check implementation shall be defined during DevOps Architecture.
+
+5.877 AUDIT EVENT DATA FLOW MODEL
+REACT APPLICATION ────────────┐                              │ASP.NET CORE API ─────────────┤                              │BACKGROUND WORKERS ───────────┤                              │INTEGRATION ADAPTERS ─────────┤                              │                              ▼                      USER / SYSTEM ACTION                              │                              ▼                       SOURCE MODULE                              │                              ▼                        AUDIT POLICY                              │                              ▼                     AUDIT EVENT BUILDER                              │                 ┌────────────┼────────────┐                 │            │            │                 ▼            ▼            ▼               ACTOR        ACTION       TARGET                 │            │            │                 └────────────┼────────────┘                              ▼                       AUDIT SANITIZATION                              │                              ▼                        AUDIT EVENT                              │                              ▼                         AUDIT STORE                              │                 ┌────────────┼────────────┐                 │            │            │                 ▼            ▼            ▼               SEARCH       TIMELINE    INVESTIGATION                 │            │            │                 └────────────┼────────────┘                              ▼                         AUTHORIZED USER
+
+5.878 AUDIT EVENT CREATION MODEL
+ACTION REQUEST      │      ▼AUTHENTICATION      │      ▼AUTHORIZATION      │      ▼SOURCE BUSINESS OPERATION      │      ▼AUDIT POLICY EVALUATION      │      ▼AUDIT REQUIRED?   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼ACTOR    ENDCONTEXT   │   ▼ACTION CONTEXT   │   ▼TARGET CONTEXT   │   ▼RESULT CONTEXT   │   ▼CHANGE CONTEXT   │   ▼SANITIZATION   │   ▼AUDIT EVENT CREATION
+
+5.879 DATA CHANGE AUDIT MODEL
+UPDATE REQUEST      │      ▼LOAD CURRENT ENTITY      │      ▼AUTHORIZED?      │      ▼VALIDATE UPDATE      │      ▼DETERMINE CHANGED FIELDS      │      ▼APPLY AUDIT FIELD POLICY      │      ▼CAPTURE APPROVED OLD VALUES      │      ▼CAPTURE APPROVED NEW VALUES      │      ▼SANITIZE      │      ▼SAVE BUSINESS CHANGE      │      ▼RECORD AUDIT EVENT
+The exact transaction strategy shall be defined during Application Architecture.
+
+5.880 PATIENT ACCESS AUDIT MODEL
+USER REQUESTS PATIENT RECORD             │             ▼       AUTHENTICATED?             │             ▼        AUTHORIZED?         ┌───┴───┐         │       │        YES      NO         │       │         ▼       ▼LOAD ELIGIBLE   ACCESSPATIENT DATA    DENIED         │       │         ▼       ▼PATIENT ACCESS  SECURITY /AUDIT EVENT     AUTHORIZATION         │      AUDIT EVENT         ▼RETURN AUTHORIZED DATA
+Important Principle
+Both:
+SUCCESSFUL SENSITIVE ACCESS
+and:
+DENIED SENSITIVE ACCESS
+may require audit events.
+
+5.881 AUDIT SEARCH MODEL
+AUTHORIZED AUDIT USER          │          ▼AUDIT SEARCH REQUEST          │          ▼PERMISSION VALIDATION          │          ▼DATA SCOPE RESOLUTION          │          ▼FILTER VALIDATION          │          ▼PAGINATED QUERY          │          ▼ELIGIBLE AUDIT EVENTS          │          ▼REACT AUDIT VIEWER
+The React application shall not determine audit data scope.
+
+5.882 AUDIT CORRELATION MODEL
+CLIENT REQUEST      │      ▼CORRELATION ID      │      ▼API REQUEST      │      ├──────────────► AUTH EVENT      │      ├──────────────► BUSINESS EVENT      │      ├──────────────► AUDIT EVENT      │      └──────────────► NOTIFICATION EVENT                              │                              ▼                    SAME CORRELATION CONTEXT
+The final correlation propagation strategy shall be defined during Application and Observability Architecture.
+
+5.883 AUDIT SEQUENCE MODEL
+USER       API       DOMAIN SERVICE     AUDIT SERVICE     DATABASE │          │              │                  │               │ │ Request  │              │                  │               │ ├─────────►│              │                  │               │ │          │ Authorize    │                  │               │ │          │              │                  │               │ │          │ Execute      │                  │               │ │          ├─────────────►│                  │               │ │          │              │ Business Action  │               │ │          │              │                  │               │ │          │              │ Audit Context    │               │ │          │              ├─────────────────►│               │ │          │              │                  │ Sanitize      │ │          │              │                  │               │ │          │              │                  │ Write         │ │          │              │                  ├──────────────►│ │          │              │                  │               │ │          │ Result       │                  │               │ │          │◄─────────────┤                  │               │ │ Response │              │                  │               │ │◄─────────┤              │                  │               │
+This is a conceptual sequence model.
+Detailed transaction behavior shall be defined during Detailed Design.
+
+5.884 AUDIT RETENTION MODEL
+ACTIVE AUDIT EVENT        │        ▼RETENTION POLICY        │        ▼ACTIVE RETENTION PERIOD COMPLETE?      ┌─┴─┐      │   │     NO  YES      │   │      ▼   ▼PRESERVE ARCHIVE POLICY              │              ▼        ARCHIVE REQUIRED?          ┌───┴───┐          │       │         YES      NO          │       │          ▼       ▼       ARCHIVE   PURGE          │     ELIGIBILITY          ▼       │     ARCHIVE      ▼     RETENTION  GOVERNANCE                  CHECK                    │                    ▼              PURGE ELIGIBLE?                 ┌──┴──┐                 │     │                YES    NO                 │     │                 ▼     ▼               PURGE PRESERVE
+
+5.885 AUDIT EVENT STATE CONCEPT
+Audit events shall generally follow an append-only lifecycle.
+Conceptually:
+CREATED   │   ▼PRESERVED   │   ├──────────────► ARCHIVED   │   ▼RETENTION ACTIVE
+Where purge is approved:
+ARCHIVED / RETAINED          │          ▼PURGE ELIGIBLE          │          ▼PURGED
+An audit event shall not normally follow:
+DRAFT  │  ▼EDITED  │  ▼APPROVED
+because audit events represent recorded historical facts.
+
+5.886 AUDIT BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-AUD-BR-001
+Audit data shall follow the minimum necessary principle
+CS-AUD-BR-002
+Audit events shall remain separate from source business records
+CS-AUD-BR-003
+Application logs shall not be treated as audit events
+CS-AUD-BR-004
+Audit event timestamps shall be authoritative backend or infrastructure time
+CS-AUD-BR-005
+Automated actions shall identify an appropriate system actor
+CS-AUD-BR-006
+Authentication secrets shall never be stored in audit data
+CS-AUD-BR-007
+Sensitive clinical content shall not be unnecessarily duplicated into audit data
+CS-AUD-BR-008
+Sensitive financial credentials shall not be stored in audit data
+CS-AUD-BR-009
+Audit access shall require explicit authorization
+CS-AUD-BR-010
+Audit queries shall enforce data scope
+CS-AUD-BR-011
+Existing audit events shall not be modified through normal application workflows
+CS-AUD-BR-012
+Audit events shall not be arbitrarily deleted by normal users or administrators
+CS-AUD-BR-013
+Audit export shall itself be auditable
+CS-AUD-BR-014
+Audit retention shall be controlled by approved policy
+CS-AUD-BR-015
+Suspicious activity signals shall require investigation and shall not automatically prove malicious intent
+CS-AUD-BR-016
+Patient record view activity may require auditing even when no data is changed
+CS-AUD-BR-017
+Role and permission changes shall be treated as high-value audit events
+CS-AUD-BR-018
+Audit failure behavior shall depend on approved event criticality
+CS-AUD-BR-019
+Audit records shall preserve stable actor and target references where available
+CS-AUD-BR-020
+Audit storage shall not become an uncontrolled copy of operational databases
+
+5.887 AUDIT PERMISSION CONCEPT
+Potential permissions include:
+AUD_EVENT_VIEWAUD_EVENT_SEARCHAUD_EVENT_FILTERAUD_ENTITY_TIMELINE_VIEWAUD_USER_ACTIVITY_VIEWAUD_CORRELATION_VIEWAUD_EXPORTAUD_SECURITY_EVENT_VIEWAUD_CLINICAL_EVENT_VIEWAUD_FINANCIAL_EVENT_VIEWAUD_HR_EVENT_VIEWAUD_SYSTEM_EVENT_VIEWAUD_RETENTION_VIEWAUD_RETENTION_MANAGEAUD_ARCHIVE_MANAGEAUD_PURGE_MANAGEAUD_HEALTH_VIEWAUD_ADMIN
+Example Audit User
+AUDIT USER     │     ├── AUD_EVENT_VIEW     ├── AUD_EVENT_SEARCH     ├── AUD_EVENT_FILTER     ├── AUD_ENTITY_TIMELINE_VIEW     └── AUD_CORRELATION_VIEW
+with:
+DATA SCOPEAPPROVED AUDIT DOMAINS
+Example Security Administrator
+SECURITY ADMINISTRATOR          │          ├── AUD_EVENT_VIEW          ├── AUD_EVENT_SEARCH          ├── AUD_USER_ACTIVITY_VIEW          ├── AUD_CORRELATION_VIEW          └── AUD_SECURITY_EVENT_VIEW
+Example Compliance User
+COMPLIANCE USER       │       ├── AUD_EVENT_VIEW       ├── AUD_ENTITY_TIMELINE_VIEW       └── AUD_EXPORT
+with approved compliance data scope.
+Example Audit Retention Administrator
+AUDIT RETENTION ADMINISTRATOR             │             ├── AUD_RETENTION_VIEW             ├── AUD_RETENTION_MANAGE             ├── AUD_ARCHIVE_MANAGE             └── AUD_PURGE_MANAGE
+Critical Principle
+Permission:
+AUD_ADMIN
+shall not automatically grant:
+FULL PATIENT CLINICAL ACCESSFULL HR RECORD ACCESSFULL FINANCIAL RECORD ACCESS
+Audit access and source-domain access shall remain distinct.
+
+5.888 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Central audit event creation
+CS-AUD-FR-001 to 005
+Actor traceability
+CS-AUD-FR-006 to 009
+Action and source traceability
+CS-AUD-FR-010 to 019
+Authentication auditing
+CS-AUD-FR-020
+Authorization auditing
+CS-AUD-FR-021 to 022
+User administration auditing
+CS-AUD-FR-023 to 024
+Patient and sensitive data access auditing
+CS-AUD-FR-025 to 026
+Data change auditing
+CS-AUD-FR-027 to 032
+Clinical activity auditing
+CS-AUD-FR-033
+Billing and payment auditing
+CS-AUD-FR-034 to 035
+Inventory auditing
+CS-AUD-FR-036
+HR auditing
+CS-AUD-FR-037
+Notification auditing
+CS-AUD-FR-038
+Reporting auditing
+CS-AUD-FR-039
+Configuration auditing
+CS-AUD-FR-040
+Integration auditing
+CS-AUD-FR-041
+Audit review and investigation
+CS-AUD-FR-042 to 049
+Audit export
+CS-AUD-FR-050
+Audit authorization and scope
+CS-AUD-FR-051 to 052
+Audit immutability
+CS-AUD-FR-053 to 054
+Audit failure handling
+CS-AUD-FR-055 to 057
+Audit integrity
+CS-AUD-FR-058
+Audit retention
+CS-AUD-FR-059 to 062
+Audit observability
+CS-AUD-FR-063 to 064
+Suspicious activity and investigation
+CS-AUD-FR-065 to 066
+Audit privacy and data protection
+CS-AUD-FR-067 to 071
+Future compliance reporting
+CS-AUD-FR-072
+Future SIEM integration
+CS-AUD-FR-073
+Future external audit storage
+CS-AUD-FR-074
+Audit schema evolution
+CS-AUD-FR-075
+Audit health verification
+CS-AUD-FR-076
+
+5.889 AUDIT AND TRACEABILITY RISK ANALYSIS
+Risk 1 — Application Logs Are Used as Audit Logs
+Problem
+Developer writes:
+Patient updated successfully.
+Impact
+The system cannot answer:
+WHO UPDATED THE PATIENT?WHICH PATIENT?WHAT CHANGED?WHEN?WHICH REQUEST?
+Mitigation
+Maintain structured audit events separate from general application logs.
+
+Risk 2 — Audit Record Contains Password
+Problem
+Login request object is serialized into audit storage.
+Impact
+Authentication credentials may be exposed.
+Mitigation
+Apply strict authentication secret exclusion.
+
+Risk 3 — Complete Patient Object Stored in Audit
+Problem
+Developer writes:
+Audit.Log(patient);
+Impact
+Audit storage becomes a duplicate clinical database.
+Mitigation
+Use approved audit fields and data minimization.
+
+Risk 4 — Audit Events Can Be Edited
+Problem
+Administrator changes:
+ACTORUSR-000421
+to:
+ACTORUSR-000731
+Impact
+Historical traceability becomes unreliable.
+Mitigation
+Prevent normal audit event modification.
+
+Risk 5 — Audit Events Can Be Deleted by System Administrator
+Problem
+A system administrator removes security events after unauthorized activity.
+Impact
+Investigation evidence is lost.
+Mitigation
+Separate administrative capability from audit retention and purge controls.
+
+Risk 6 — No Patient View Audit
+Problem
+A user views:
+5,000 PATIENT RECORDS
+but makes no updates.
+No audit event exists.
+Impact
+Potential inappropriate data access cannot be investigated.
+Mitigation
+Audit approved sensitive record view activity.
+
+Risk 7 — Every Database Read Is Audited
+Problem
+The system records every internal SQL query.
+Impact
+MASSIVE STORAGE GROWTHNOISEPOOR INVESTIGATION QUALITYPERFORMANCE PRESSURE
+Mitigation
+Define business and security audit policies.
+
+Risk 8 — Browser Supplies Audit Actor
+Problem
+React sends:
+{  "actorId": "USR-ADMIN-001"}
+The API trusts it.
+Impact
+A user may falsify audit actor identity.
+Mitigation
+Resolve actor identity from authenticated backend context.
+
+Risk 9 — Browser Supplies Audit Timestamp
+Problem
+React sends:
+2025-01-01
+as the action time.
+Impact
+Audit chronology becomes unreliable.
+Mitigation
+Use authoritative backend or infrastructure timestamps.
+
+Risk 10 — Role Changes Are Not Audited
+Problem
+A user unexpectedly receives:
+AUD_ADMIN
+No history exists.
+Impact
+The organization cannot determine who changed access.
+Mitigation
+Audit role and permission changes.
+
+Risk 11 — Audit Search Exposes Clinical Activity
+Problem
+HR user searches:
+PATIENT_RECORD_VIEWED
+and sees all patient access history.
+Impact
+Unauthorized information exposure.
+Mitigation
+Apply audit data scope.
+
+Risk 12 — Audit Export Is Invisible
+Problem
+A user exports:
+500,000 AUDIT EVENTS
+No event records the export.
+Impact
+Large audit data extraction cannot be investigated.
+Mitigation
+Audit audit-data export actions.
+
+Risk 13 — Audit Failure Is Silent
+Problem
+Audit database stops accepting writes.
+The application continues for seven days.
+Impact
+Seven days of traceability are missing.
+Mitigation
+Detect audit write failures and monitor audit health.
+
+Risk 14 — Audit Failure Stops Entire Hospital System
+Problem
+Every low-risk action fails when audit storage is temporarily unavailable.
+Impact
+Hospital workflows become unavailable.
+Mitigation
+Define event-specific fail-open and fail-closed policies.
+
+Risk 15 — One Universal Audit Failure Policy
+Problem
+The system treats:
+VIEW NOTIFICATION
+and:
+GRANT SYSTEM ADMIN ROLE
+with identical audit failure behavior.
+Impact
+Security-critical actions may continue without traceability or low-risk actions may unnecessarily fail.
+Mitigation
+Classify audit criticality.
+
+Risk 16 — No Correlation Identifier
+Problem
+One patient update creates:
+PATIENT UPDATEDNOTIFICATION CREATEDEXTERNAL SYNC STARTED
+The events cannot be connected.
+Impact
+Investigation becomes difficult.
+Mitigation
+Propagate correlation identifiers.
+
+Risk 17 — Audit Database Grows Forever
+Problem
+No retention or archive strategy exists.
+Impact
+STORAGE EXHAUSTIONSLOW QUERIESHIGH BACKUP COSTOPERATIONAL FAILURE
+Mitigation
+Define retention, archiving, and controlled purge.
+
+Risk 18 — Audit Purge Is a Delete Button
+Problem
+UI contains:
+DELETE ALL AUDIT LOGS
+Impact
+Critical history may be destroyed.
+Mitigation
+Use policy-driven retention and purge workflows.
+
+Risk 19 — Suspicious Pattern Automatically Disables Doctor
+Problem
+Doctor accesses many patient records during an emergency.
+System assumes malicious behavior and automatically disables the account.
+Impact
+Clinical operations may be disrupted.
+Mitigation
+Treat suspicious patterns as investigation signals unless an approved automated security response exists.
+
+Risk 20 — IP Address Is Treated as User Identity
+Problem
+Multiple hospital computers use shared network infrastructure.
+System assumes:
+SAME IP=SAME PERSON
+Impact
+Incorrect investigation conclusions.
+Mitigation
+Use actor, session, request, and client context together.
+
+Risk 21 — Full HTTP Request Body Is Audited
+Problem
+Middleware records every request body.
+Potential content:
+PASSWORDSPATIENT DATACLINICAL NOTESPAYMENT INFORMATION
+Impact
+Massive sensitive data leakage.
+Mitigation
+Use event-specific structured audit context.
+
+Risk 22 — Audit Admin Automatically Sees Patient Record
+Problem
+Audit user clicks:
+PAT-000421
+and receives the complete medical record.
+Impact
+Audit permission bypasses clinical authorization.
+Mitigation
+Separate audit traceability access from source-domain data access.
+
+Risk 23 — Failed Actions Are Not Audited
+Problem
+Only successful actions are recorded.
+Repeated unauthorized attempts disappear.
+Impact
+Security investigation loses important signals.
+Mitigation
+Audit approved failed and denied actions.
+
+Risk 24 — Audit Event Uses Display Name Only
+Problem
+Audit says:
+John updated patient.
+Multiple users are named John.
+Impact
+Actor identification is ambiguous.
+Mitigation
+Preserve stable actor references.
+
+Risk 25 — Background Job Uses Administrator Actor
+Problem
+Scheduled process generates:
+ACTORSYSTEM ADMIN
+Impact
+Audit falsely attributes automated activity to a person.
+Mitigation
+Use explicit system and background worker actors.
+
+5.890 COMPLETE AUDIT CAPABILITY MODEL
+                   AUDIT & TRACEABILITY                            │          ┌─────────────────┼─────────────────┐          │                 │                 │          ▼                 ▼                 ▼        ACTOR             ACTION            TARGET          │                 │                 │          └─────────────────┼─────────────────┘                            ▼                       AUDIT EVENT                            │             ┌──────────────┼──────────────┐             │              │              │             ▼              ▼              ▼          CATEGORY        RESULT       CORRELATION             │              │              │             └──────────────┼──────────────┘                            ▼                      SANITIZED CONTEXT                            │                            ▼                        AUDIT STORE                            │          ┌─────────────────┼─────────────────┐          │                 │                 │          ▼                 ▼                 ▼        SEARCH            TIMELINE       INVESTIGATION          │                 │                 │          └─────────────────┼─────────────────┘                            ▼                       ACCESS CONTROL                            │                            ▼                      AUTHORIZED USER                            │             ┌──────────────┼──────────────┐             │              │              │             ▼              ▼              ▼          SECURITY       COMPLIANCE      AUDIT                            │                            ▼                  RETENTION + INTEGRITY
+
+5.891 AUDIT MODULE COMPLETION STATUS
+Module: Audit Logging, Activity Tracking and System Traceability SystemModule Code: AUD/TRCRequirement Range: CS-AUD-FR-001 to CS-AUD-FR-076Business Rule Range: CS-AUD-BR-001 to CS-AUD-BR-020
+Audit Domain Boundary: DefinedAudit vs Source Business Record Boundary: DefinedApplication Log vs Audit Event Boundary: DefinedSecurity Event Boundary: DefinedBusiness Event Boundary: DefinedData Change History Boundary: DefinedRequest Trace Boundary: DefinedSystem Metric Boundary: DefinedAudit Event Concept: DefinedAudit Actors: DefinedAudit Event Creation: DefinedAudit Event Identifier: DefinedAudit Event Code: DefinedAudit Event Category: DefinedAudit Event Severity: DefinedActor Type: DefinedActor Reference: DefinedSystem Actor: DefinedBackground Worker Actor: DefinedAnonymous Actor Context: DefinedAudit Action: DefinedSource Module: DefinedTarget Entity Type: DefinedTarget Entity Reference: DefinedAudit Result: DefinedAudit Timestamp: DefinedCorrelation Identifier: DefinedRequest Context: DefinedSession Context: DefinedClient Context: DefinedAuthentication Audit Events: DefinedAuthorization Audit Events: DefinedUnauthorized Access Audit: DefinedUser Account Administration Audit: DefinedRole and Permission Change Audit: DefinedPatient Record Access Audit: DefinedSensitive Record Access Audit: DefinedData Creation Audit: DefinedData Update Audit: DefinedData Deactivation Audit: DefinedData Deletion Audit: DefinedBefore-and-After Change Context: DefinedSensitive Value Exclusion: DefinedClinical Workflow Audit: DefinedBilling Audit: DefinedPayment Audit: DefinedInventory Audit: DefinedHR Audit: DefinedNotification Audit: DefinedReporting Audit: DefinedAdministrative Configuration Audit: DefinedIntegration Audit Boundary: DefinedAudit Event View: DefinedAudit Search: DefinedAudit Filtering: DefinedAudit Pagination: DefinedAudit Sorting: DefinedEntity Audit Timeline: DefinedUser Activity Timeline: DefinedCorrelated Audit Events: DefinedAudit Export: DefinedAudit Access Control: DefinedAudit Data Scope: DefinedAudit Event Immutability: DefinedAudit Deletion Protection: DefinedAudit Write Failure Detection: DefinedAudit Recording Failure Handling: DefinedSource Transaction Boundary: DefinedAudit Event Integrity: DefinedAudit Retention Policy: DefinedAudit Archiving: DefinedAudit Purge Boundary: DefinedAudit Retention Action Audit: DefinedAudit Processing Monitoring: DefinedAudit Storage Growth Monitoring: DefinedSuspicious Activity Pattern Boundary: DefinedSecurity Investigation Support: DefinedAudit Sensitive Data Leakage Prevention: DefinedAudit Data Minimization: DefinedAuthentication Secret Protection: DefinedFinancial Sensitive Data Protection: DefinedClinical Sensitive Data Protection: DefinedFuture Compliance Reporting Boundary: DefinedFuture SIEM Integration Boundary: DefinedFuture External Audit Storage Boundary: DefinedAudit Event Version Evolution: DefinedAudit Health Verification: DefinedAudit Event Data Flow Model: DefinedAudit Event Creation Model: DefinedData Change Audit Model: DefinedPatient Access Audit Model: DefinedAudit Search Model: DefinedAudit Correlation Model: DefinedAudit Sequence Model: DefinedAudit Retention Model: DefinedAudit Event State Concept: DefinedAudit Permission Concept: DefinedRequirement Traceability: EstablishedAudit Risk Analysis: Defined
+Status: Functional Requirements Draft Completed
+The Audit Logging, Activity Tracking and System Traceability requirements establish the accountability and historical traceability foundation of CuraSphere.
+These requirements shall later be transformed into:
+View Audit Event use case;
+Search Audit Events use case;
+Filter Audit Events use case;
+View Entity Audit Timeline use case;
+View User Activity Timeline use case;
+View Correlated Audit Events use case;
+Export Audit Records use case;
+Archive Audit Records use case;
+Purge Eligible Audit Records use case;
+Investigate Security Activity use case;
+audit event creation activity diagram;
+audit policy evaluation activity diagram;
+audit sanitization activity diagram;
+patient record access audit activity diagram;
+data change audit activity diagram;
+audit search activity diagram;
+audit export activity diagram;
+audit retention activity diagram;
+audit archive activity diagram;
+audit purge activity diagram;
+suspicious activity investigation activity diagram;
+audit event lifecycle model;
+audit retention lifecycle model;
+Create Audit Event sequence diagram;
+Record Data Change Audit sequence diagram;
+Record Patient Access Audit sequence diagram;
+Search Audit Events sequence diagram;
+View Correlated Events sequence diagram;
+Export Audit Records sequence diagram;
+Archive Audit Records sequence diagram;
+Purge Audit Records sequence diagram;
+audit domain model;
+Audit Event domain model;
+Audit Actor domain model;
+Audit Change Set domain model;
+Audit Change Field domain model;
+Audit Retention Policy domain model;
+Audit Archive domain model;
+PostgreSQL audit schema;
+audit table partitioning strategy;
+audit indexing strategy;
+audit event code registry;
+audit category registry;
+audit severity strategy;
+audit criticality strategy;
+audit policy strategy;
+audit event builder architecture;
+audit sanitization architecture;
+audit field classification strategy;
+audit data minimization strategy;
+audit transaction strategy;
+audit failure strategy;
+audit fail-open strategy;
+audit fail-closed strategy;
+audit event integrity strategy;
+append-only audit strategy;
+audit hash validation strategy;
+correlation ID propagation strategy;
+request ID strategy;
+session reference strategy;
+client context strategy;
+patient access audit strategy;
+clinical audit strategy;
+financial audit strategy;
+HR audit strategy;
+security audit strategy;
+audit retention strategy;
+audit archive strategy;
+audit purge strategy;
+legal hold strategy;
+audit storage capacity model;
+audit observability strategy;
+suspicious activity detection strategy;
+future SIEM adapter architecture;
+future external audit store architecture;
+React Audit Dashboard requirements;
+React Audit Event Viewer requirements;
+React Audit Search requirements;
+React Audit Filter requirements;
+React Entity Timeline requirements;
+React User Activity Timeline requirements;
+React Correlation Viewer requirements;
+React Audit Export requirements;
+React Audit Health requirements;
+React audit loading states;
+React audit empty states;
+React audit error states;
+React audit permission-denied states;
+ASP.NET Core Audit API;
+ASP.NET Core Audit Query Service;
+ASP.NET Core Audit Event Service;
+ASP.NET Core Audit Policy Service;
+ASP.NET Core Audit Context Builder;
+ASP.NET Core Audit Sanitizer;
+ASP.NET Core Correlation Middleware;
+ASP.NET Core Patient Access Audit Handler;
+ASP.NET Core Data Change Audit Handler;
+ASP.NET Core Audit Retention Worker;
+ASP.NET Core Audit Archive Worker;
+ASP.NET Core Audit Purge Worker;
+audit authorization policies;
+audit data scope policies;
+audit event creation tests;
+audit actor resolution tests;
+system actor tests;
+anonymous actor tests;
+audit timestamp tests;
+correlation ID tests;
+authentication audit tests;
+authorization audit tests;
+unauthorized access audit tests;
+patient access audit tests;
+clinical audit tests;
+billing audit tests;
+payment audit tests;
+inventory audit tests;
+HR audit tests;
+notification audit tests;
+reporting audit tests;
+role assignment audit tests;
+permission change audit tests;
+before-and-after change tests;
+password exclusion tests;
+token exclusion tests;
+clinical data minimization tests;
+financial data protection tests;
+audit immutability tests;
+audit deletion protection tests;
+audit access tests;
+audit data scope tests;
+audit export audit tests;
+audit write failure tests;
+audit fail-open tests;
+audit fail-closed tests;
+audit retention tests;
+audit archive tests;
+audit purge tests;
+audit health tests;
+audit storage growth tests;
+suspicious activity detection tests;
+audit search performance tests;
+audit timeline performance tests;
+high-volume audit ingestion tests.
+No SIEM platform, Splunk deployment, Microsoft Sentinel deployment, Elastic Security deployment, IBM QRadar deployment, external audit database, immutable ledger, blockchain audit model, cryptographic hash chain, digital signature model, WORM storage, PostgreSQL partitioning interval, audit table partition key, audit archive provider, object storage provider, Amazon S3 deployment, Azure Blob Storage deployment, Google Cloud Storage deployment, audit retention period, clinical audit retention period, financial audit retention period, HR audit retention period, security audit retention period, legal hold process, purge approval workflow, audit event schema format, JSON audit payload standard, audit event version format, suspicious activity threshold, failed login threshold, patient access volume threshold, automatic account suspension rule, IP geolocation strategy, device fingerprinting strategy, SIEM event format, CEF format, LEEF format, syslog integration, OpenTelemetry audit integration, message broker, audit event queue, Kafka deployment, RabbitMQ deployment, Azure Service Bus deployment, audit database separation, dedicated audit microservice, append-only database mechanism, database trigger strategy, Entity Framework Core interceptor strategy, ASP.NET Core action filter strategy, middleware-only audit strategy, domain-event audit strategy, transactional outbox strategy, change data capture strategy, Debezium deployment, audit encryption key strategy, or external compliance framework has been finalized by this SRS section.
+Those decisions shall be made during Security Architecture, Privacy Architecture, Identity and Access Architecture, Domain Architecture, Application Architecture, Event Architecture, Data Architecture, Integration Architecture, Observability Architecture, DevOps Architecture, Detailed Design, hospital governance, legal review, and approved compliance assessment.
+

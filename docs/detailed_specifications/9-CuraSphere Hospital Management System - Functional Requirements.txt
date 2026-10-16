@@ -1,0 +1,1690 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.4 — OPD AND ELECTRONIC MEDICAL RECORD MANAGEMENT
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Codes: OPD, EMRModule Names: Outpatient Clinical Encounter Management, Electronic Medical Record ManagementProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.103 MODULE GROUP PURPOSE
+The OPD and Electronic Medical Record modules shall manage the clinical care information generated when an eligible healthcare professional evaluates and treats a patient.
+The modules shall establish a controlled clinical workflow from patient consultation entry to longitudinal medical record availability.
+The primary relationship is:
+PATIENT   │   ▼APPOINTMENT / WALK-IN   │   ▼CHECK-IN   │   ▼QUEUE   │   ▼CLINICAL ENCOUNTER   │   ├── Chief Complaint   ├── Clinical History   ├── Vital Signs   ├── Examination   ├── Clinical Notes   ├── Diagnosis   ├── Orders   ├── Prescription   └── Follow-Up Plan   │   ▼FINALIZED CLINICAL RECORD   │   ▼ELECTRONIC MEDICAL RECORD
+The OPD module shall primarily manage the active outpatient consultation workflow.
+The EMR module shall provide the authorized longitudinal clinical record of the patient.
+The conceptual boundary is:
+OPD │ ▼WHAT IS HAPPENINGIN THIS CONSULTATION?
+Compared with:
+EMR │ ▼WHAT CLINICAL INFORMATIONHAS BEEN RECORDED ACROSSTHE PATIENT'S CARE HISTORY?
+
+5.104 CRITICAL CLINICAL ARCHITECTURE CONCEPT
+CuraSphere shall distinguish the following concepts:
+PATIENT
+APPOINTMENT
+QUEUE ENTRY
+CLINICAL ENCOUNTER
+MEDICAL RECORD
+These concepts shall not be treated as identical.
+Conceptually:
+PATIENT   │   ▼Long-Term Person IdentityAPPOINTMENT   │   ▼Scheduled ReservationQUEUE ENTRY   │   ▼Operational Waiting StateCLINICAL ENCOUNTER   │   ▼Specific Care InteractionEMR   │   ▼Longitudinal Clinical Record
+Example:
+PATIENTMRN: MRN-000102Name: Patient A        │        ├──────────────────────────────┐        │                              │        ▼                              ▼ENCOUNTER 1                    ENCOUNTER 214 JUL 2026                   20 AUG 2026Cardiology                    General MedicineChest Pain                    Fever
+The patient has one longitudinal identity.
+The patient may have many clinical encounters.
+Therefore:
+ONE PATIENT     │     ▼MANY ENCOUNTERS
+The Electronic Medical Record shall provide authorized access to clinical information associated with those encounters.
+
+5.105 OPD — OUTPATIENT CLINICAL ENCOUNTER MANAGEMENT
+5.105.1 Module Purpose
+The OPD module shall manage the active outpatient consultation workflow.
+The module shall support:
+consultation initiation;
+patient clinical context retrieval;
+encounter creation;
+encounter ownership;
+chief complaint recording;
+history recording;
+vital sign association;
+physical examination recording;
+clinical note recording;
+diagnosis recording;
+clinical order initiation;
+prescription workflow integration;
+follow-up planning;
+encounter status management;
+encounter finalization;
+clinical addendum workflow;
+consultation history.
+The OPD module shall not independently replace specialized modules such as:
+Laboratory Management;
+Radiology Management;
+Pharmacy Management;
+Inpatient Management;
+Billing Management.
+Instead, the OPD module shall integrate with those domains.
+
+5.105.2 OPD Actors
+Actor
+Responsibility
+Doctor
+Performs and documents clinical consultation
+Nurse
+Records permitted clinical information
+Clinical Assistant
+Performs permitted clinical support activities
+Hospital Administrator
+Configures permitted administrative context
+Medical Records Officer
+Performs approved record administration
+CuraSphere System
+Enforces workflow and validation
+Laboratory Module
+Receives applicable laboratory orders
+Radiology Module
+Receives applicable imaging orders
+Pharmacy Module
+Receives applicable prescription information
+EMR Module
+Provides longitudinal clinical record context
+
+5.105.3 OPD Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-OPD-FR-001
+Start Clinical Consultation
+M
+CS-OPD-FR-002
+Create Clinical Encounter
+M
+CS-OPD-FR-003
+Generate Encounter Identifier
+M
+CS-OPD-FR-004
+Validate Encounter Eligibility
+M
+CS-OPD-FR-005
+Open Patient Clinical Context
+M
+CS-OPD-FR-006
+View Patient Clinical Summary
+M
+CS-OPD-FR-007
+Record Chief Complaint
+M
+CS-OPD-FR-008
+Update Chief Complaint
+M
+CS-OPD-FR-009
+Record Present Illness History
+M
+CS-OPD-FR-010
+Record Clinical History
+M
+CS-OPD-FR-011
+View Known Allergies
+M
+CS-OPD-FR-012
+Record Allergy Information
+M
+CS-OPD-FR-013
+Update Allergy Information
+M
+CS-OPD-FR-014
+View Vital Signs
+M
+CS-OPD-FR-015
+Associate Vital Signs with Encounter
+M
+CS-OPD-FR-016
+Record Physical Examination
+M
+CS-OPD-FR-017
+Record Clinical Notes
+M
+CS-OPD-FR-018
+Update Draft Clinical Notes
+M
+CS-OPD-FR-019
+Record Diagnosis
+M
+CS-OPD-FR-020
+Record Multiple Diagnoses
+M
+CS-OPD-FR-021
+Identify Primary Diagnosis
+M
+CS-OPD-FR-022
+Remove Draft Diagnosis
+M
+CS-OPD-FR-023
+Create Clinical Order Request
+M
+CS-OPD-FR-024
+Create Laboratory Order
+M
+CS-OPD-FR-025
+Create Radiology Order
+M
+CS-OPD-FR-026
+Initiate Prescription Workflow
+M
+CS-OPD-FR-027
+Record Treatment Plan
+M
+CS-OPD-FR-028
+Record Follow-Up Plan
+M
+CS-OPD-FR-029
+Create Follow-Up Recommendation
+M
+CS-OPD-FR-030
+Save Encounter Draft
+M
+CS-OPD-FR-031
+Resume Draft Encounter
+M
+CS-OPD-FR-032
+Finalize Clinical Encounter
+M
+CS-OPD-FR-033
+Validate Encounter Finalization
+M
+CS-OPD-FR-034
+Prevent Unauthorized Finalization
+M
+CS-OPD-FR-035
+Create Clinical Addendum
+M
+CS-OPD-FR-036
+View Encounter History
+M
+CS-OPD-FR-037
+View Encounter Detail
+M
+CS-OPD-FR-038
+Record Encounter Events
+M
+CS-OPD-FR-039
+Prevent Invalid Encounter State Transition
+M
+CS-OPD-FR-040
+Close Consultation Workflow
+M
+
+5.106 CLINICAL CONSULTATION START
+CS-OPD-FR-001 — Start Clinical Consultation
+Requirement Name
+Start Clinical Consultation
+Module
+OPD — Outpatient Clinical Encounter Management
+Description
+The system shall allow an authorized clinical user to begin a consultation for an eligible patient.
+Primary Actor
+Doctor
+Priority
+Must Have
+Preconditions
+The clinical user is authenticated.
+The user has consultation initiation permission.
+The patient exists.
+The patient is eligible for the applicable consultation.
+The applicable operational context exists.
+The patient identity is available.
+Trigger
+The doctor initiates consultation from the applicable worklist.
+Main Flow
+DOCTOR WORKLIST       │       ▼SELECT PATIENT       │       ▼VALIDATE QUEUE / CONSULTATION CONTEXT       │       ▼VERIFY PATIENT IDENTITY CONTEXT       │       ▼VALIDATE DOCTOR AUTHORITY       │       ▼CREATE OR OPEN ENCOUNTER       │       ▼MARK CONSULTATION ACTIVE       │       ▼OPEN CLINICAL WORKSPACE
+Main Requirements
+The system shall:
+identify the selected patient;
+validate the applicable consultation context;
+validate the clinical user’s authority;
+create or retrieve the eligible encounter;
+establish the consultation state;
+present the permitted clinical workspace.
+Business Rules
+CS-OPD-BR-001
+A consultation shall reference an identifiable patient.
+CS-OPD-BR-002
+An active outpatient consultation shall reference an eligible clinical encounter.
+CS-OPD-BR-003
+The clinical user initiating the consultation shall have appropriate authorization.
+CS-OPD-BR-004
+The system shall prevent an invalid patient context switch during an active clinical workflow.
+Critical Patient Safety Requirement
+The system shall maintain visible patient identity context within the clinical workspace.
+The clinical UI shall later consider persistent display of appropriate patient identifiers.
+Conceptually:
+┌──────────────────────────────────────────────────────────────┐│ PATIENT: Ahmad Khan    MRN: MRN-000102    DOB: 12 APR 1980 │├──────────────────────────────────────────────────────────────┤│                                                              ││                    CLINICAL WORKSPACE                        ││                                                              │└──────────────────────────────────────────────────────────────┘
+The exact UI shall be designed later.
+Acceptance Criteria
+Given an authorized doctor and eligible patient consultation context, the doctor shall be able to begin the consultation and access the correct patient’s clinical workspace.
+
+5.107 CLINICAL ENCOUNTER CREATION
+CS-OPD-FR-002 — Create Clinical Encounter
+Description
+The system shall create a clinical encounter representing a specific healthcare interaction between a patient and an eligible healthcare service or provider.
+Priority
+Must Have
+Conceptual Encounter
+CLINICAL ENCOUNTEREncounter IDPatientEncounter TypeResponsible ProviderDepartmentStart Date and TimeStatusClinical Context
+Example
+Encounter IDENC-20260714-00182PatientMRN-000102Encounter TypeOUTPATIENTDepartmentCARDIOLOGYResponsible DoctorDOC-0082Started At14 JUL 2026 10:15
+Important Architecture Principle
+An encounter shall not be identified only by:
+patient_id + date
+Why?
+A patient may have multiple care interactions on the same date.
+Example:
+14 JUL 202609:00Cardiology Consultation14:00Emergency Visit
+Therefore, the encounter requires its own identity.
+Business Rules
+CS-OPD-BR-005
+Each clinical encounter shall have a unique internal identifier.
+CS-OPD-BR-006
+An encounter shall reference an identifiable patient.
+CS-OPD-BR-007
+An encounter shall identify its applicable encounter type.
+CS-OPD-BR-008
+Encounter creation shall record the applicable clinical and operational context.
+
+CS-OPD-FR-003 — Generate Encounter Identifier
+Description
+The system shall generate a unique internal identifier for each clinical encounter.
+Priority
+Must Have
+Example
+ENC-000000182
+The final identifier format shall be defined during Data Architecture.
+Rule
+Encounter identifiers shall not be reused for unrelated clinical encounters.
+
+CS-OPD-FR-004 — Validate Encounter Eligibility
+Description
+The system shall validate whether a clinical encounter may be created or activated.
+Priority
+Must Have
+Validation May Include
+patient existence;
+patient record status;
+doctor eligibility;
+department context;
+queue context;
+appointment context;
+encounter duplication;
+encounter state.
+Duplicate Encounter Example
+PATIENT AAppointment:APT-1004Active Encounter:ENC-5001
+The system shall not normally create:
+ENC-5002
+for the same active consultation merely because the doctor clicks the Start Consultation button twice.
+Business Rule
+CS-OPD-BR-009
+Invalid duplicate active encounters for the same consultation context shall be prevented.
+
+5.108 PATIENT CLINICAL CONTEXT
+CS-OPD-FR-005 — Open Patient Clinical Context
+Description
+The system shall open the permitted clinical context of the selected patient within an eligible consultation.
+Priority
+Must Have
+Clinical Context May Include
+PATIENT IDENTITY SUMMARYKnown AllergiesRecent EncountersActive Clinical ProblemsRecent DiagnosesCurrent Medication ContextRecent Laboratory ResultsRecent Radiology ResultsRelevant Vital Signs
+The exact information displayed shall depend on:
+authorization;
+availability;
+clinical relevance;
+module integration.
+Important Requirement
+The system shall not display another patient’s clinical context because of stale frontend state.
+Conceptual safety validation:
+UI SELECTED PATIENT        │        ▼PATIENT ID = MRN-100API REQUEST        │        ▼ENCOUNTER ID = ENC-500SERVER        │        ▼ENC-500 BELONGS TO MRN-100?        │     ┌──┴──┐     │     │    NO    YES     │     │     ▼     ▼  REJECT  CONTINUE
+React state shall not be the final authority for clinical patient relationships.
+
+CS-OPD-FR-006 — View Patient Clinical Summary
+Description
+The system shall allow an authorized clinical user to review a summarized view of relevant patient clinical information.
+Priority
+Must Have
+Example Concept
+PATIENT CLINICAL SUMMARYPatientAhmad KhanMRNMRN-000102Known AllergiesPenicillinRecent DiagnosisHypertensionCurrent Medication ContextAvailableLast Encounter20 JUN 2026Recent Blood Pressure150/95 mmHg
+Important Requirement
+The clinical summary is a read-oriented representation.
+It does not mean all summary information shall be stored in a single table.
+Conceptually:
+PATIENT ────────────┐                    │ALLERGY ────────────┤                    │ENCOUNTER ──────────┤                    │DIAGNOSIS ──────────┼──► CLINICAL SUMMARY                    │MEDICATION ─────────┤                    │LAB RESULT ─────────┤                    │VITAL SIGNS ────────┘
+
+5.109 CHIEF COMPLAINT MANAGEMENT
+CS-OPD-FR-007 — Record Chief Complaint
+Requirement Name
+Record Chief Complaint
+Description
+The system shall allow an authorized clinical user to record the patient’s chief complaint for an active eligible encounter.
+Priority
+Must Have
+Definition
+The chief complaint represents the primary reason or concern that brought the patient for the current clinical consultation.
+Examples
+Chest pain for 2 hoursFever for 3 daysPersistent headacheShortness of breathAbdominal pain
+Main Flow
+Doctor opens an active encounter.
+Doctor accesses the chief complaint section.
+Doctor enters the complaint information.
+System validates the encounter state.
+System records the complaint in the encounter context.
+System maintains applicable authorship information.
+Business Rules
+CS-OPD-BR-010
+Chief complaint information shall belong to an identifiable encounter.
+CS-OPD-BR-011
+Only authorized clinical users shall create or modify clinical complaint information.
+CS-OPD-BR-012
+Finalized encounter information shall follow clinical correction rules.
+Important Design Concept
+The chief complaint shall not be stored directly as the permanent patient’s only complaint.
+Weak design:
+PATIENT TABLEpatient_idnamechief_complaint
+Why is this wrong?
+Because:
+14 JULChest Pain20 AUGFever02 SEPBack Pain
+The complaint belongs to the clinical encounter.
+Conceptually:
+PATIENT   │   ▼ENCOUNTER   │   ▼CHIEF COMPLAINT
+
+CS-OPD-FR-008 — Update Chief Complaint
+Description
+The system shall allow an authorized clinical user to update chief complaint information while the applicable encounter remains editable.
+Priority
+Must Have
+Rule
+After encounter finalization, changes shall follow approved correction or addendum workflows.
+
+5.110 HISTORY OF PRESENT ILLNESS
+CS-OPD-FR-009 — Record Present Illness History
+Description
+The system shall allow an authorized clinical user to document the history of the patient’s present illness for the active encounter.
+Priority
+Must Have
+Information May Include
+onset;
+duration;
+severity;
+progression;
+associated symptoms;
+aggravating factors;
+relieving factors.
+Example Concept
+CHIEF COMPLAINTChest Pain        │        ▼HISTORY OF PRESENT ILLNESSOnset:2 hours agoCharacter:Pressure-likeSeverity:7/10Associated Symptoms:Shortness of breathAggravating Factor:Physical activity
+The final clinical documentation UI shall be designed with clinical stakeholders.
+
+5.111 CLINICAL HISTORY
+CS-OPD-FR-010 — Record Clinical History
+Description
+The system shall allow authorized clinical users to record permitted clinical history information.
+Priority
+Must Have
+Clinical History May Include
+PAST MEDICAL HISTORYPAST SURGICAL HISTORYFAMILY HISTORYSOCIAL HISTORYRELEVANT MEDICATION HISTORY
+Important Architecture Question
+Some clinical information belongs primarily to:
+CURRENT ENCOUNTER
+while other information may represent:
+LONGITUDINAL PATIENT CLINICAL INFORMATION
+Example:
+Current Encounter FindingPatient reports fever for 3 days.
+Compared with:
+Longitudinal Medical HistoryKnown history of hypertension.
+The detailed domain model shall distinguish encounter-specific documentation from longitudinal clinical information.
+
+5.112 ALLERGY MANAGEMENT
+CS-OPD-FR-011 — View Known Allergies
+Description
+The system shall prominently make permitted known allergy information available to authorized clinical users.
+Priority
+Must Have
+Clinical Safety Requirement
+Known allergy information should be visible in clinically relevant workflows.
+Conceptually:
+┌────────────────────────────────────────────────────┐│ PATIENT: Ahmad Khan                                ││ MRN: MRN-000102                                    ││                                                    ││ ⚠ KNOWN ALLERGY: PENICILLIN                        │└────────────────────────────────────────────────────┘
+The final visual alert design shall be determined during UI/UX Architecture.
+Important Requirement
+The absence of recorded allergy information shall not automatically mean:
+NO ALLERGIES
+The system should distinguish applicable clinical states.
+Conceptually:
+KNOWN ALLERGYNO KNOWN ALLERGYALLERGY STATUS UNKNOWN
+These states are clinically different.
+Example
+UNKNOWN
+means:
+CuraSphere does not currently have sufficient recorded information.
+It does not mean:
+The patient has no allergies.
+
+CS-OPD-FR-012 — Record Allergy Information
+Description
+The system shall allow an authorized clinical user to record permitted patient allergy information.
+Priority
+Must Have
+Allergy Information May Include
+allergen;
+reaction;
+severity;
+clinical status;
+recorded by;
+recorded date.
+Conceptual Model
+PATIENT   │   ▼ALLERGY RECORD   │   ├── Allergen   ├── Reaction   ├── Severity   ├── Status   └── Clinical Provenance
+Example
+AllergenPenicillinReactionRashSeverityModerateStatusActive
+Business Rules
+CS-OPD-BR-013
+Allergy records shall reference an identifiable patient.
+CS-OPD-BR-014
+Clinical allergy information shall maintain appropriate authorship or provenance.
+CS-OPD-BR-015
+Allergy status shall not be inferred solely from the absence of allergy records.
+
+CS-OPD-FR-013 — Update Allergy Information
+Description
+The system shall allow authorized clinical users to update allergy information according to approved clinical record rules.
+Priority
+Must Have
+Important Requirement
+The system shall avoid uncontrolled deletion of clinically significant allergy history.
+Example:
+OLDPenicillin AllergyActive        │        ▼CLINICAL REVIEW        │        ▼NEWPenicillin AllergyEntered in Error
+This is different from:
+DELETE ROW
+The detailed clinical data lifecycle shall be defined in EMR Data Governance.
+
+5.113 VITAL SIGNS INTEGRATION
+CS-OPD-FR-014 — View Vital Signs
+Description
+The system shall allow authorized clinical users to view relevant recorded vital signs.
+Priority
+Must Have
+Vital Signs May Include
+TemperatureBlood PressureHeart Rate / PulseRespiratory RateOxygen SaturationWeightHeightBody Mass Index
+The exact vital sign catalog shall be finalized with clinical requirements.
+Example
+VITAL SIGNSTemperature      38.2 °CBlood Pressure   150/95 mmHgPulse            102 bpmRespiratory Rate 22 breaths/minSpO₂             94%
+Important Engineering Concept
+Vital signs may later be managed by a dedicated clinical observation model.
+Therefore:
+ENCOUNTER TABLEtemperatureblood_pressurepulsespo2heightweight
+may become difficult to scale.
+A more flexible conceptual model is:
+ENCOUNTER    │    ▼CLINICAL OBSERVATIONS    │    ├── Temperature    ├── Blood Pressure    ├── Pulse    ├── SpO₂    └── Weight
+The final database design shall be documented during Data Architecture.
+
+CS-OPD-FR-015 — Associate Vital Signs with Encounter
+Description
+The system shall associate applicable clinical observations with the relevant patient and encounter context.
+Priority
+Must Have
+Safety Rule
+The system shall validate the patient relationship before displaying or associating vital signs with an encounter.
+Conceptually:
+VITAL SIGN RECORDPatient = MRN-100Encounter = ENC-500        │        ▼ENC-500 Patient = MRN-100?        │     ┌──┴──┐     │     │    NO    YES     │     │     ▼     ▼ REJECT   VALID
+
+5.114 PHYSICAL EXAMINATION
+CS-OPD-FR-016 — Record Physical Examination
+Description
+The system shall allow an authorized clinical user to document physical examination findings for an active encounter.
+Priority
+Must Have
+Examination Information May Include
+general examination;
+cardiovascular examination;
+respiratory examination;
+neurological examination;
+abdominal examination;
+other relevant findings.
+Conceptual Structure
+PHYSICAL EXAMINATIONGeneral   │   ▼Patient alert and orientedCardiovascular   │   ▼Clinical findingsRespiratory   │   ▼Clinical findings
+The exact structured versus narrative documentation approach shall be finalized during Clinical UX Design.
+
+5.115 CLINICAL NOTES
+CS-OPD-FR-017 — Record Clinical Notes
+Description
+The system shall allow an authorized clinical user to record clinical notes within an eligible clinical encounter.
+Priority
+Must Have
+Clinical Note Information Shall Maintain
+encounter relationship;
+patient relationship through the encounter;
+author;
+creation time;
+note status;
+applicable clinical content.
+Conceptual Model
+ENCOUNTER    │    ▼CLINICAL NOTE    │    ├── Author    ├── Created At    ├── Status    └── Clinical Content
+Business Rules
+CS-OPD-BR-016
+A clinical note shall belong to an identifiable encounter.
+CS-OPD-BR-017
+Clinical note authorship shall be identifiable.
+CS-OPD-BR-018
+Clinical note modification shall follow encounter and note state rules.
+Important Clinical Record Principle
+A finalized clinical note shall not be treated like a social media post.
+Weak design:
+Doctor opens old note.Changes text.Clicks Save.Old text disappears forever.
+This creates serious record integrity problems.
+The system shall support appropriate finalization and correction workflows.
+
+CS-OPD-FR-018 — Update Draft Clinical Notes
+Description
+The system shall allow an authorized clinical user to modify an eligible draft clinical note.
+Priority
+Must Have
+Rule
+Draft notes and finalized notes shall have different modification rules.
+Conceptually:
+DRAFT NOTE    │    ▼EDITABLE
+Compared with:
+FINALIZED NOTE      │      ▼CONTROLLED CORRECTION / ADDENDUM
+
+5.116 DIAGNOSIS MANAGEMENT
+CS-OPD-FR-019 — Record Diagnosis
+Description
+The system shall allow an authorized clinical user to record a diagnosis for an eligible clinical encounter.
+Priority
+Must Have
+Diagnosis Information May Include
+diagnosis code;
+diagnosis description;
+diagnosis type;
+clinical status;
+primary indicator.
+Conceptual Model
+ENCOUNTER    │    ▼DIAGNOSIS    │    ├── Code    ├── Description    ├── Type    ├── Status    └── Primary Indicator
+Controlled Clinical Terminology
+The system architecture should support controlled diagnosis terminology.
+Potential standards may include:
+ICD
+or other approved coding systems.
+The exact coding standard and version shall be finalized according to hospital and regulatory requirements.
+Important Requirement
+The SRS shall not assume that diagnosis is only unrestricted text.
+Weak design:
+diagnosis = "heart problem"
+A more structured conceptual model is:
+DIAGNOSIS CODE        +CLINICAL DESCRIPTION        +ENCOUNTER CONTEXT
+Business Rules
+CS-OPD-BR-019
+A diagnosis shall reference an identifiable clinical encounter.
+CS-OPD-BR-020
+Only authorized clinical users shall record clinical diagnoses.
+CS-OPD-BR-021
+Controlled diagnosis terminology shall be supported where configured.
+
+CS-OPD-FR-020 — Record Multiple Diagnoses
+Description
+The system shall support multiple diagnoses for an eligible clinical encounter.
+Priority
+Must Have
+Example
+ENCOUNTER ENC-5001        │        ├── Hypertension        │        ├── Type 2 Diabetes Mellitus        │        └── Hyperlipidemia
+Therefore:
+one encounter = one diagnosis
+shall not be assumed.
+The conceptual relationship is:
+ONE ENCOUNTER      │      ▼MANY DIAGNOSES
+
+CS-OPD-FR-021 — Identify Primary Diagnosis
+Description
+The system shall allow an authorized clinical user to identify the applicable primary diagnosis for an encounter.
+Priority
+Must Have
+Example
+PRIMARYHypertensionSECONDARYType 2 Diabetes MellitusHyperlipidemia
+Business Rule
+The system shall enforce the approved primary diagnosis rules.
+
+CS-OPD-FR-022 — Remove Draft Diagnosis
+Description
+The system shall allow an authorized clinical user to remove an eligible diagnosis before encounter finalization.
+Priority
+Must Have
+Finalized Diagnosis Rule
+After encounter finalization, diagnosis corrections shall follow approved clinical correction procedures.
+
+5.117 CLINICAL ORDER MANAGEMENT
+CS-OPD-FR-023 — Create Clinical Order Request
+Description
+The system shall allow an authorized clinical user to initiate an eligible clinical order from an active encounter.
+Priority
+Must Have
+Conceptual Order Types
+LABORATORY ORDERRADIOLOGY ORDERMEDICATION / PRESCRIPTIONPROCEDURE REQUESTOTHER APPROVED CLINICAL ORDER
+Architecture Boundary
+The OPD module initiates the clinical request.
+The specialized module manages the specialized execution workflow.
+Conceptually:
+DOCTOR   │   ▼OPD ENCOUNTER   │   ▼CREATE ORDER   │   ├────────► LAB   │   ├────────► RADIOLOGY   │   └────────► PHARMACY
+This means OPD shall not become:
+Laboratory Management System+Radiology Management System+Pharmacy Management System
+
+CS-OPD-FR-024 — Create Laboratory Order
+Description
+The system shall allow an authorized clinical user to create an eligible laboratory order from an active encounter.
+Priority
+Must Have
+Example
+ENCOUNTERENC-5001        │        ▼LAB ORDERComplete Blood CountLiver Function TestBlood Glucose
+Main Flow
+ACTIVE ENCOUNTER      │      ▼DOCTOR SELECTS LAB ORDER      │      ▼SEARCH / SELECT TESTS      │      ▼ENTER APPLICABLE CLINICAL INFORMATION      │      ▼VALIDATE ORDER      │      ▼CREATE LAB ORDER      │      ▼SEND TO LAB WORKFLOW
+Detailed laboratory order requirements shall be documented in the Laboratory module.
+
+CS-OPD-FR-025 — Create Radiology Order
+Description
+The system shall allow an authorized clinical user to create an eligible radiology or imaging order from an active encounter.
+Priority
+Must Have
+Examples
+X-RayCTMRIUltrasound
+The exact imaging catalog shall be maintained by the Radiology domain.
+Boundary
+OPDDoctor requests imaging
+RADIOLOGYSchedules / Performs / Reports imaging
+
+CS-OPD-FR-026 — Initiate Prescription Workflow
+Description
+The system shall allow an authorized prescriber to initiate a prescription workflow from an eligible clinical encounter.
+Priority
+Must Have
+Conceptual Flow
+ENCOUNTER    │    ▼DOCTOR SELECTS MEDICATION    │    ▼PRESCRIPTION INFORMATION    │    ├── Medication    ├── Dose    ├── Route    ├── Frequency    ├── Duration    └── Instructions    │    ▼VALIDATION    │    ▼PRESCRIPTION    │    ▼PHARMACY WORKFLOW
+Detailed medication and prescription requirements shall be documented in the Pharmacy module.
+Clinical Safety Consideration
+The architecture shall later consider:
+allergy awareness;
+duplicate medication awareness;
+medication interaction support;
+dose validation support.
+These capabilities shall not be falsely assumed to exist until formally specified and implemented.
+
+5.118 TREATMENT PLAN
+CS-OPD-FR-027 — Record Treatment Plan
+Description
+The system shall allow an authorized clinical user to record the applicable treatment or management plan for an active encounter.
+Priority
+Must Have
+Treatment Plan May Include
+treatment recommendation;
+medication plan;
+diagnostic investigation plan;
+lifestyle recommendation;
+procedure recommendation;
+referral recommendation.
+Example
+ASSESSMENTHypertension        │        ▼PLANStart prescribed medicationMonitor blood pressureReduce dietary sodiumLaboratory investigationsFollow-up in 2 weeks
+
+5.119 FOLLOW-UP MANAGEMENT
+CS-OPD-FR-028 — Record Follow-Up Plan
+Description
+The system shall allow an authorized clinical user to document a follow-up plan for the patient.
+Priority
+Must Have
+Follow-Up Information May Include
+follow-up required;
+recommended time period;
+follow-up department;
+follow-up doctor;
+clinical instructions.
+Example
+FOLLOW-UP REQUIREDYESFOLLOW-UP PERIOD2 WeeksDEPARTMENTCardiologyDOCTORDr. AhmadINSTRUCTIONSBring blood pressure record
+
+CS-OPD-FR-029 — Create Follow-Up Recommendation
+Description
+The system shall create an identifiable follow-up recommendation where an authorized clinical user specifies future clinical review.
+Priority
+Must Have
+Important Boundary
+A follow-up recommendation is not automatically the same as a confirmed appointment.
+FOLLOW-UP RECOMMENDATIONReturn in 2 weeks
+does not necessarily mean:
+CONFIRMED APPOINTMENT28 JUL 202610:00
+The relationship is:
+CLINICAL FOLLOW-UP RECOMMENDATION              │              ▼APPOINTMENT WORKFLOW              │              ▼CONFIRMED APPOINTMENT
+This distinction prevents clinical documentation from bypassing appointment scheduling rules.
+
+5.120 ENCOUNTER DRAFT MANAGEMENT
+CS-OPD-FR-030 — Save Encounter Draft
+Description
+The system shall allow eligible clinical encounter documentation to remain in a draft state before finalization.
+Priority
+Must Have
+Purpose
+Doctors may need to document a consultation progressively.
+Example:
+10:15Consultation Started10:18Chief Complaint Recorded10:22Examination Recorded10:25Lab Order Created10:28Diagnosis Recorded10:30Treatment Plan Recorded10:32Encounter Finalized
+The system shall support this workflow without requiring finalization after every field.
+Draft Concept
+ACTIVE ENCOUNTER       │       ▼DRAFT CLINICAL CONTENT       │       ├── Editable       ├── Incomplete       └── Not Finalized
+Important Requirement
+Draft clinical content shall be distinguishable from finalized clinical documentation.
+
+CS-OPD-FR-031 — Resume Draft Encounter
+Description
+The system shall allow an authorized eligible clinical user to resume an applicable draft encounter.
+Priority
+Must Have
+Validation
+The system shall validate:
+encounter status;
+user authority;
+patient relationship;
+applicable encounter ownership or clinical access.
+
+5.121 ENCOUNTER FINALIZATION
+CS-OPD-FR-032 — Finalize Clinical Encounter
+Requirement Name
+Finalize Clinical Encounter
+Description
+The system shall allow an authorized clinical user to finalize an eligible clinical encounter.
+Primary Actor
+Doctor
+Priority
+Must Have
+Preconditions
+The encounter exists.
+The encounter is in an eligible state.
+The clinical user is authorized.
+Required encounter validation has passed.
+Main Flow
+ACTIVE ENCOUNTER       │       ▼DOCTOR SELECTS FINALIZE       │       ▼VALIDATE ENCOUNTER STATE       │       ▼VALIDATE REQUIRED CLINICAL DATA       │       ▼VALIDATE CLINICAL USER AUTHORITY       │       ▼VALIDATE PENDING WORKFLOW RULES       │       ▼FINALIZATION CONFIRMATION       │       ▼ENCOUNTER = FINALIZED       │       ▼CLINICAL RECORD PROTECTED       │       ▼EMR TIMELINE UPDATED       │       ▼AUDIT EVENT
+Business Rules
+CS-OPD-BR-022
+Only eligible encounters may be finalized.
+CS-OPD-BR-023
+Encounter finalization shall require appropriate clinical authorization.
+CS-OPD-BR-024
+Finalized clinical content shall not be freely overwritten.
+CS-OPD-BR-025
+Encounter finalization shall be auditable.
+Acceptance Criteria
+AC-001
+An authorized doctor shall be able to finalize an eligible encounter after required validation passes.
+AC-002
+An unauthorized user shall not finalize the encounter.
+AC-003
+A finalized encounter shall not remain freely editable as a normal draft.
+AC-004
+The finalization event shall be traceable.
+
+CS-OPD-FR-033 — Validate Encounter Finalization
+Description
+The system shall validate an encounter before allowing finalization.
+Priority
+Must Have
+Validation May Include
+PATIENT PRESENT?ENCOUNTER VALID?RESPONSIBLE CLINICIAN IDENTIFIED?REQUIRED DOCUMENTATION PRESENT?DIAGNOSIS REQUIREMENT SATISFIED?PENDING CLINICAL WORKFLOW RULES SATISFIED?ENCOUNTER STATE ELIGIBLE?
+The exact mandatory clinical fields shall be finalized with clinical stakeholders.
+Important SRS Principle
+The SRS shall not invent clinical policy.
+For example:
+Every consultation must have exactly one diagnosis.
+may not be universally valid.
+The final rule shall be approved by hospital clinical governance.
+
+CS-OPD-FR-034 — Prevent Unauthorized Finalization
+Description
+The system shall prevent unauthorized users from finalizing clinical encounters.
+Priority
+Must Have
+Example
+RECEPTIONIST     │     ▼POST /encounters/500/finalize     │     ▼SERVER AUTHORIZATION     │     ▼OPD_ENCOUNTER_FINALIZE?     │   ┌─┴─┐   │   │  NO  YES   │   │   ▼   ▼403   CONTINUE
+Hiding the Finalize button in React shall not be considered sufficient authorization.
+
+5.122 CLINICAL ADDENDUM
+CS-OPD-FR-035 — Create Clinical Addendum
+Description
+The system shall allow an authorized clinical user to add an approved addendum to eligible finalized clinical documentation.
+Priority
+Must Have
+Definition
+An addendum is additional clinical information attached to previously finalized documentation without silently replacing the original finalized content.
+Conceptual Model
+ORIGINAL FINALIZED NOTEPatient reports chest pain for 2 hours.Finalized:14 JUL 2026 10:32        │        ▼ADDENDUMAdditional history reviewed:Patient also reported nausea.Added:14 JUL 2026 11:05Author:Dr. Ahmad
+Weak Design
+UPDATE clinical_notesSET text = 'new completely changed text'WHERE note_id = 100;
+with no record of the previous finalized content.
+Better Clinical Record Concept
+ORIGINAL FINALIZED RECORD          │          ▼REMAINS TRACEABLE          │          +          ▼ADDENDUM
+Business Rules
+CS-OPD-BR-026
+An addendum shall reference the applicable finalized clinical documentation.
+CS-OPD-BR-027
+The addendum author shall be identifiable.
+CS-OPD-BR-028
+The addendum creation time shall be recorded.
+CS-OPD-BR-029
+An addendum shall not silently erase the original finalized clinical content.
+
+5.123 ENCOUNTER HISTORY
+CS-OPD-FR-036 — View Encounter History
+Description
+The system shall allow authorized clinical users to view permitted patient encounter history.
+Priority
+Must Have
+Example
+PATIENT TIMELINE14 JUL 2026CardiologyDr. AhmadChest Pain20 JUN 2026General MedicineDr. SaraHypertension Follow-Up04 MAR 2026EmergencyEmergency DepartmentFever
+Important Requirement
+Access to historical clinical information shall follow clinical authorization and privacy requirements.
+
+CS-OPD-FR-037 — View Encounter Detail
+Description
+The system shall allow authorized clinical users to view permitted clinical information associated with a selected encounter.
+Priority
+Must Have
+Encounter Detail May Include
+Encounter SummaryChief ComplaintHistory of Present IllnessClinical HistoryVital SignsPhysical ExaminationClinical NotesDiagnosesLaboratory OrdersRadiology OrdersPrescriptionsTreatment PlanFollow-Up PlanAddenda
+
+5.124 ENCOUNTER EVENT RECORDING
+CS-OPD-FR-038 — Record Encounter Events
+Description
+The system shall record appropriate events for significant clinical encounter activities.
+Priority
+Must Have
+Events May Include
+encounter created;
+consultation started;
+clinical note created;
+diagnosis recorded;
+clinical order created;
+encounter finalized;
+addendum created.
+Example
+EVENTENCOUNTER_FINALIZEDTARGETENC-000182PATIENT CONTEXTMRN-000102ACTORDOC-0082TIME2026-07-14 10:32RESULTSUCCESS
+The exact audit event content shall follow privacy and audit architecture requirements.
+
+5.125 ENCOUNTER STATE MANAGEMENT
+CS-OPD-FR-039 — Prevent Invalid Encounter State Transition
+Description
+The system shall enforce approved clinical encounter state transitions.
+Priority
+Must Have
+Conceptual Encounter State Model
+                   ENCOUNTER CREATED                           │                           ▼                         DRAFT                           │                           ▼                         ACTIVE                           │              ┌────────────┼────────────┐              │                         │              ▼                         ▼          FINALIZED                  CANCELLED              │              ▼         ADDENDUM ADDED
+Alternative conceptual path:
+CREATED   │   ▼ACTIVE   │   ├────────► CANCELLED   │   ▼FINALIZED   │   ▼ADDENDUM
+The exact state vocabulary shall be finalized during Domain Design.
+Invalid Transition Example
+FINALIZED    │    ▼DRAFT
+This shall not occur as an ordinary edit action.
+Another Invalid Example
+CANCELLED    │    ▼FINALIZED
+without an approved recovery workflow.
+Business Rules
+CS-OPD-BR-030
+Encounter state changes shall follow approved transitions.
+CS-OPD-BR-031
+Finalized encounters shall not return to ordinary draft editing.
+CS-OPD-BR-032
+Invalid client-requested state transitions shall be rejected by the trusted backend.
+
+5.126 CLOSE CONSULTATION WORKFLOW
+CS-OPD-FR-040 — Close Consultation Workflow
+Description
+The system shall conclude the applicable outpatient consultation workflow after eligible clinical processing.
+Priority
+Must Have
+Conceptual Flow
+CONSULTATION ACTIVE        │        ▼CLINICAL DOCUMENTATION        │        ▼DIAGNOSIS / ASSESSMENT        │        ▼ORDERS / PRESCRIPTION        │        ▼TREATMENT PLAN        │        ▼FOLLOW-UP PLAN        │        ▼FINALIZE ENCOUNTER        │        ▼CLOSE CONSULTATION        │        ▼QUEUE WORKFLOW COMPLETED        │        ▼EMR UPDATED
+Important Cross-Module Rule
+Closing the clinical consultation shall coordinate with the Queue module.
+Conceptually:
+OPDEncounter Finalized       │       ▼Consultation Closed       │       ▼QUEQueue Entry Completed
+The detailed cross-module transaction and event strategy shall be defined during Architecture Design.
+
+5.127 EMR — ELECTRONIC MEDICAL RECORD MANAGEMENT
+5.127.1 Module Purpose
+The Electronic Medical Record module shall provide authorized access to the patient’s longitudinal clinical information recorded through CuraSphere and approved integrated clinical systems.
+The EMR module shall support:
+longitudinal patient clinical timeline;
+encounter history;
+diagnosis history;
+allergy information;
+clinical note access;
+vital sign history;
+laboratory result history;
+radiology result history;
+medication and prescription history;
+clinical document history;
+clinical record provenance;
+controlled clinical corrections;
+clinical record access auditing.
+The EMR shall not be treated as one database table.
+The EMR is a clinical information capability composed from multiple clinical domains.
+Conceptually:
+                    PATIENT                       │                       ▼                       EMR                       │        ┌──────────────┼───────────────┐        │              │               │        ▼              ▼               ▼   ENCOUNTERS      DIAGNOSES        ALLERGIES        │              │               │        ▼              ▼               ▼ CLINICAL NOTES    LAB RESULTS     MEDICATIONS        │              │               │        ▼              ▼               ▼  VITAL SIGNS    RADIOLOGY       CLINICAL DOCS
+
+5.127.2 EMR Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-EMR-FR-001
+Open Patient Electronic Medical Record
+M
+CS-EMR-FR-002
+Validate EMR Access
+M
+CS-EMR-FR-003
+View Clinical Timeline
+M
+CS-EMR-FR-004
+View Encounter History
+M
+CS-EMR-FR-005
+View Diagnosis History
+M
+CS-EMR-FR-006
+View Allergy History
+M
+CS-EMR-FR-007
+View Clinical Note History
+M
+CS-EMR-FR-008
+View Vital Sign History
+M
+CS-EMR-FR-009
+View Laboratory Result History
+M
+CS-EMR-FR-010
+View Radiology Result History
+M
+CS-EMR-FR-011
+View Medication History
+M
+CS-EMR-FR-012
+View Clinical Document History
+S
+CS-EMR-FR-013
+View Clinical Record Provenance
+M
+CS-EMR-FR-014
+Identify Corrected Clinical Record
+M
+CS-EMR-FR-015
+Identify Addendum
+M
+CS-EMR-FR-016
+Search Patient Clinical History
+S
+CS-EMR-FR-017
+Filter Clinical Timeline
+S
+CS-EMR-FR-018
+Record EMR Access Event
+M
+CS-EMR-FR-019
+Prevent Unauthorized Clinical Record Access
+M
+CS-EMR-FR-020
+Maintain Patient Record Continuity
+M
+
+5.128 OPEN ELECTRONIC MEDICAL RECORD
+CS-EMR-FR-001 — Open Patient Electronic Medical Record
+Requirement Name
+Open Patient Electronic Medical Record
+Description
+The system shall allow an authorized user to open the permitted electronic medical record of an identifiable patient.
+Priority
+Must Have
+Main Flow
+AUTHORIZED CLINICAL USER        │        ▼SELECT PATIENT        │        ▼VALIDATE PATIENT        │        ▼VALIDATE EMR ACCESS        │        ▼ESTABLISH PATIENT CONTEXT        │        ▼LOAD CLINICAL SUMMARY        │        ▼LOAD TIMELINE        │        ▼DISPLAY PERMITTED EMR        │        ▼RECORD ACCESS EVENT
+Business Rules
+CS-EMR-BR-001
+An EMR shall be accessed in the context of an identifiable patient.
+CS-EMR-BR-002
+Clinical record access shall require appropriate authorization.
+CS-EMR-BR-003
+EMR access shall be auditable according to approved policy.
+Acceptance Criteria
+An authorized user shall be able to access the permitted clinical record of the selected patient.
+An unauthorized user shall be denied access.
+
+5.129 EMR ACCESS VALIDATION
+CS-EMR-FR-002 — Validate EMR Access
+Description
+The system shall validate whether the requesting user is authorized to access the selected patient’s clinical information.
+Priority
+Must Have
+Conceptual Validation
+USER │ ▼AUTHENTICATED? │ ├── NO ──► REJECT │ ▼YES │ ▼EMR PERMISSION? │ ├── NO ──► REJECT │ ▼YES │ ▼CLINICAL ACCESS CONTEXT VALID? │ ├── NO ──► REJECT / CONTROLLED WORKFLOW │ ▼YES │ ▼ALLOW PERMITTED ACCESS
+Important Security Principle
+The following is insufficient:
+if (user.role === "Doctor"){    showAllPatientRecords();}
+Real healthcare authorization may require more context.
+Conceptually:
+WHO IS THE USER?WHAT PERMISSION DO THEY HAVE?WHY ARE THEY ACCESSING THIS RECORD?WHAT PATIENT CONTEXT APPLIES?WHAT INFORMATION ARE THEY REQUESTING?
+The exact advanced clinical access policy shall be defined during Security Architecture.
+
+5.130 CLINICAL TIMELINE
+CS-EMR-FR-003 — View Clinical Timeline
+Description
+The system shall allow authorized users to view permitted clinical events in a longitudinal patient timeline.
+Priority
+Must Have
+Example Timeline
+AHMAD KHANMRN-000102────────────────────────────────────────────14 JUL 2026CARDIOLOGY ENCOUNTERChief Complaint:Chest PainDiagnosis:HypertensionOrders:CBCECGPrescription:Medication Information Available────────────────────────────────────────────20 JUN 2026GENERAL MEDICINEReason:Blood Pressure Follow-UpBlood Pressure:150/95 mmHg────────────────────────────────────────────04 MAR 2026EMERGENCYReason:FeverLaboratory:CBC Result Available────────────────────────────────────────────
+Timeline Sources
+ENCOUNTERS ─────────┐                    │DIAGNOSES ──────────┤                    │LAB RESULTS ────────┤                    │RADIOLOGY ──────────┼──► CLINICAL TIMELINE                    │PRESCRIPTIONS ──────┤                    │CLINICAL NOTES ─────┤                    │ADDENDA ────────────┘
+Important Architecture Concept
+The timeline is a composed clinical read model.
+It shall not necessarily require:
+clinical_timeline_table
+containing duplicated copies of all clinical information.
+The final implementation may use:
+optimized queries;
+database views;
+materialized read models;
+application query handlers;
+event projections.
+The technical decision shall be made during Architecture Design.
+
+5.131 ENCOUNTER HISTORY
+CS-EMR-FR-004 — View Encounter History
+Description
+The system shall allow authorized users to review permitted historical clinical encounters associated with the patient.
+Priority
+Must Have
+Encounter History May Display
+encounter date;
+encounter type;
+department;
+responsible clinician;
+encounter status;
+clinical summary.
+
+5.132 DIAGNOSIS HISTORY
+CS-EMR-FR-005 — View Diagnosis History
+Description
+The system shall allow authorized users to review permitted diagnosis history associated with the patient.
+Priority
+Must Have
+Example
+DIAGNOSIS HISTORYHypertensionFirst Recorded:20 JUN 2026Recent Encounter:14 JUL 2026Status:Active Clinical Context────────────────────Type 2 Diabetes MellitusRecorded:04 JAN 2026
+Important Domain Question
+An encounter diagnosis and a longitudinal problem list may be different concepts.
+Example:
+ENCOUNTER DIAGNOSISViral Fever
+may be specific to one encounter.
+Compared with:
+LONGITUDINAL CLINICAL PROBLEMHypertension
+which may remain clinically relevant over time.
+The Problem List domain shall be finalized during detailed Clinical Domain Design.
+
+5.133 ALLERGY HISTORY
+CS-EMR-FR-006 — View Allergy History
+Description
+The system shall allow authorized users to review permitted allergy information and applicable allergy history.
+Priority
+Must Have
+Information May Include
+allergen;
+reaction;
+severity;
+current status;
+recorded date;
+recorded by;
+applicable clinical updates.
+Clinical Safety Principle
+Current clinically relevant allergy information should be distinguishable from historical or entered-in-error records.
+
+5.134 CLINICAL NOTE HISTORY
+CS-EMR-FR-007 — View Clinical Note History
+Description
+The system shall allow authorized users to view permitted clinical note history.
+Priority
+Must Have
+Clinical Note View Shall Maintain Context
+NOTE CONTENT        +AUTHOR        +ENCOUNTER        +DATE / TIME        +NOTE STATUS
+A note without clinical provenance is a weak clinical record.
+
+5.135 VITAL SIGN HISTORY
+CS-EMR-FR-008 — View Vital Sign History
+Description
+The system shall allow authorized users to review permitted historical vital signs.
+Priority
+Must Have
+Example
+BLOOD PRESSURE HISTORY14 JUL 2026    150/95 mmHg20 JUN 2026    145/90 mmHg10 MAY 2026    138/88 mmHg04 MAR 2026    140/92 mmHg
+Future UI Opportunity
+The UI Architecture may later support:
+Blood Pressure Trend GraphTemperature Trend GraphWeight Trend GraphBlood Glucose Trend Graph
+Graph requirements shall be formally specified before implementation.
+
+5.136 LABORATORY RESULT HISTORY
+CS-EMR-FR-009 — View Laboratory Result History
+Description
+The system shall allow authorized clinical users to review permitted finalized laboratory results associated with the patient.
+Priority
+Must Have
+Boundary
+The EMR displays permitted laboratory result information.
+The Laboratory module owns the laboratory operational workflow.
+LAB MODULEOrderSampleProcessingResultVerification        │        ▼EMRAuthorized Longitudinal Result View
+
+5.137 RADIOLOGY RESULT HISTORY
+CS-EMR-FR-010 — View Radiology Result History
+Description
+The system shall allow authorized clinical users to review permitted radiology results and reports associated with the patient.
+Priority
+Must Have
+Boundary
+RADIOLOGYImaging WorkflowReport Finalization        │        ▼EMRClinical Record Access
+The EMR shall not independently own radiology machine workflow.
+
+5.138 MEDICATION HISTORY
+CS-EMR-FR-011 — View Medication History
+Description
+The system shall allow authorized clinical users to review permitted medication and prescription history.
+Priority
+Must Have
+Medication History May Include
+medication;
+dose;
+route;
+frequency;
+duration;
+prescribing clinician;
+prescribing encounter;
+prescription date.
+Important Domain Distinction
+The following may be different:
+PRESCRIBED MEDICATION
+DISPENSED MEDICATION
+CURRENTLY TAKEN MEDICATION
+Example:
+Doctor PrescribedMedication A        │        ▼Patient Never Collected It
+Therefore:
+PRESCRIBED = CURRENTLY TAKING
+shall not automatically be assumed.
+The Pharmacy and Medication domains shall define the detailed model.
+
+5.139 CLINICAL DOCUMENT HISTORY
+CS-EMR-FR-012 — View Clinical Document History
+Description
+The system should allow authorized users to access permitted clinical documents associated with the patient.
+Priority
+Should Have
+Potential Clinical Documents
+referral letters;
+discharge summaries;
+clinical reports;
+uploaded external medical documents;
+consent-related clinical documents.
+The Document Management Architecture shall define storage, metadata, security, and retention requirements.
+
+5.140 CLINICAL RECORD PROVENANCE
+CS-EMR-FR-013 — View Clinical Record Provenance
+Description
+The system shall maintain and make available appropriate provenance information for clinical records.
+Priority
+Must Have
+Provenance Answers
+WHO RECORDED THIS?WHEN WAS IT RECORDED?WHICH ENCOUNTER DID IT BELONG TO?WHAT IS ITS CURRENT STATUS?WAS IT CORRECTED?WAS AN ADDENDUM ADDED?
+Example
+CLINICAL NOTEAuthor:Dr. Ahmad KhanEncounter:ENC-000182Created:14 JUL 2026 10:20Finalized:14 JUL 2026 10:32Status:FINALIZEDAddendum:1
+Business Rules
+CS-EMR-BR-004
+Clinically significant records shall maintain appropriate provenance.
+CS-EMR-BR-005
+Clinical provenance shall not rely only on frontend display information.
+
+5.141 CORRECTED CLINICAL RECORD IDENTIFICATION
+CS-EMR-FR-014 — Identify Corrected Clinical Record
+Description
+The system shall allow authorized users to identify clinical records that have been corrected according to an approved correction workflow.
+Priority
+Must Have
+Conceptual Example
+ORIGINAL RECORDDiagnosis:Hypertension        │        ▼CLINICAL CORRECTIONOriginal Entry:Retained / TraceableCorrection:Entered in ErrorCorrected Record:Alternative Approved DiagnosisCorrected By:Dr. AhmadCorrected At:14 JUL 2026 11:15
+The exact correction workflow shall be defined with clinical governance.
+
+5.142 ADDENDUM IDENTIFICATION
+CS-EMR-FR-015 — Identify Addendum
+Description
+The system shall clearly identify an addendum associated with finalized clinical documentation.
+Priority
+Must Have
+UI Concept
+CLINICAL NOTEFinalized 10:32────────────────────────ADDENDUMAdded 11:05 by Dr. AhmadAdditional clinical information...
+The addendum shall not visually appear as if it were part of the original documentation created at 10:32.
+
+5.143 SEARCH CLINICAL HISTORY
+CS-EMR-FR-016 — Search Patient Clinical History
+Description
+The system should allow authorized users to search permitted patient clinical history.
+Priority
+Should Have
+Potential Search Criteria
+diagnosis;
+department;
+doctor;
+encounter type;
+clinical date;
+order type.
+Security Requirement
+Search results shall remain subject to clinical record authorization.
+
+5.144 FILTER CLINICAL TIMELINE
+CS-EMR-FR-017 — Filter Clinical Timeline
+Description
+The system should allow authorized users to filter the patient clinical timeline.
+Priority
+Should Have
+Example Filters
+ALL EVENTSENCOUNTERSDIAGNOSESLAB RESULTSRADIOLOGYPRESCRIPTIONSCLINICAL NOTES
+Example UI Concept
+[ All ] [ Encounters ] [ Lab ] [ Radiology ] [ Medication ]─────────────────────────────────────────────────────────14 JUL 2026Cardiology Encounter20 JUN 2026Laboratory Result10 JUN 2026Prescription
+The exact UI shall be designed during UI/UX Architecture.
+
+5.145 EMR ACCESS AUDITING
+CS-EMR-FR-018 — Record EMR Access Event
+Description
+The system shall record appropriate patient clinical record access events according to approved audit policy.
+Priority
+Must Have
+Example
+EVENTEMR_VIEWEDACTORDOC-0082PATIENTMRN-000102TIME2026-07-14 10:14SOURCECLINICAL_WORKSPACE
+Important Privacy Principle
+Healthcare systems may need to answer:
+WHO ACCESSED THIS PATIENT'S RECORD?
+The architecture shall support this requirement.
+
+CS-EMR-FR-019 — Prevent Unauthorized Clinical Record Access
+Description
+The system shall prevent unauthorized access to protected clinical information.
+Priority
+Must Have
+Security Layers
+REACT UI   │   ▼UI VISIBILITY CONTROL   │   ▼ASP.NET CORE API   │   ▼AUTHENTICATION   │   ▼AUTHORIZATION   │   ▼CLINICAL ACCESS POLICY   │   ▼APPLICATION USE CASE   │   ▼DATA ACCESS CONTROL   │   ▼POSTGRESQL
+The React application shall not be considered a security boundary.
+Example Attack
+A receptionist cannot see the EMR button.
+The receptionist manually sends:
+GET /api/patients/MRN-100/emr
+Expected system behavior:
+SERVER AUTHORIZATION        │        ▼EMR_VIEW permission?        │     ┌──┴──┐     │     │    NO    YES     │     │     ▼     ▼   DENY   CONTINUE
+
+5.146 PATIENT RECORD CONTINUITY
+CS-EMR-FR-020 — Maintain Patient Record Continuity
+Description
+The system shall maintain the appropriate relationship between longitudinal clinical information and the patient’s surviving identity.
+Priority
+Must Have
+Patient Merge Example
+Before merge:
+PATIENT AMRN-1003 Encounters2 DiagnosesPATIENT BMRN-2002 Encounters1 Diagnosis
+Clinical review determines:
+PATIENT AANDPATIENT BARE THE SAME PERSON
+After approved merge:
+SURVIVING PATIENTMRN-100        │        ├── Encounter 1        ├── Encounter 2        ├── Encounter 3        ├── Encounter 4        └── Encounter 5
+The EMR shall maintain clinical record continuity according to approved patient merge rules.
+Critical Requirement
+Patient merging shall not mean:
+DELETE ALL PATIENT B CLINICAL RECORDS
+Clinical relationships shall remain traceable.
+Business Rules
+CS-EMR-BR-006
+Clinical records shall remain associated with the appropriate surviving patient identity after an approved merge.
+CS-EMR-BR-007
+Patient identity consolidation shall preserve required clinical traceability.
+
+5.147 CLINICAL INFORMATION OWNERSHIP MODEL
+PATOWNSPatient IdentityMRNDemographicsPatient Administrative Status
+DOCOWNSDoctor Operational ContextAvailabilityDepartment Assignment
+APTOWNSScheduled Consultation Reservation
+QUEOWNSCurrent Waiting Workflow
+OPDOWNS / MANAGESActive Outpatient Encounter WorkflowChief ComplaintEncounter Clinical DocumentationAssessment ContextTreatment PlanFollow-Up Plan
+LABOWNSLaboratory Operational WorkflowLaboratory Results
+RADOWNSRadiology Operational WorkflowRadiology Reports
+PHAOWNSMedication Dispensing WorkflowPharmacy Operations
+EMRPROVIDESAuthorized Longitudinal Clinical Record Capability
+The EMR may compose information from multiple clinical domains.
+
+5.148 CLINICAL RECORD RELATIONSHIP MODEL
+                         PATIENT                            │                            │              ┌─────────────┼─────────────┐              │             │             │              ▼             ▼             ▼          ALLERGIES     PROBLEM LIST   DOCUMENTS              │             │             │              │             │             │              └─────────────┼─────────────┘                            │                            ▼                       LONGITUDINAL                      CLINICAL RECORD                            │                            │                            ▼                       ENCOUNTERS                            │             ┌──────────────┼──────────────┐             │              │              │             ▼              ▼              ▼       CHIEF COMPLAINT   DIAGNOSES    CLINICAL NOTES             │              │              │             ▼              ▼              ▼          HISTORY        ORDERS       EXAMINATION             │              │              │             ▼              ▼              ▼       VITAL SIGNS     PRESCRIPTION   TREATMENT PLAN                            │                            ▼                       FOLLOW-UP PLAN
+This is a conceptual domain relationship model.
+It is not yet the PostgreSQL ERD.
+
+5.149 QUEUE TO EMR END-TO-END FLOW
+PATIENT CHECKED IN        │        ▼QUEUE ENTRY CREATED        │        ▼TOKEN GENERATED        │        ▼PATIENT WAITING        │        ▼DOCTOR CALLS PATIENT        │        ▼QUEUE STATUS = CALLED        │        ▼DOCTOR STARTS CONSULTATION        │        ▼PATIENT CONTEXT VALIDATED        │        ▼CLINICAL ENCOUNTER CREATED        │        ▼QUEUE = IN_CONSULTATION        │        ▼CHIEF COMPLAINT        │        ▼CLINICAL HISTORY        │        ▼VITAL SIGNS REVIEW        │        ▼PHYSICAL EXAMINATION        │        ▼CLINICAL NOTES        │        ▼DIAGNOSIS        │        ▼CLINICAL ORDERS        │        ├────► LAB        │        ├────► RADIOLOGY        │        └────► PHARMACY        │        ▼TREATMENT PLAN        │        ▼FOLLOW-UP PLAN        │        ▼FINALIZE ENCOUNTER        │        ▼CLOSE CONSULTATION        │        ▼QUEUE COMPLETED        │        ▼EMR TIMELINE UPDATED
+
+5.150 CLINICAL ENCOUNTER SEQUENCE MODEL
+DOCTOR       QUE        OPD        EMR       LAB/RAD/PHA   │          │          │          │             │   │ Worklist │          │          │             │   │◄─────────┤          │          │             │   │          │          │          │             │   │ Call     │          │          │             │   ├─────────►│          │          │             │   │          │          │          │             │   │ Start Consultation  │          │             │   ├────────────────────►│          │             │   │          │          │ Validate │             │   │          │          │ Patient  │             │   │          │          │          │             │   │          │          │ Load EMR │             │   │          │          ├─────────►│             │   │          │          │◄─────────┤             │   │          │          │          │             │   │ Clinical Workspace  │          │             │   │◄────────────────────┤          │             │   │          │          │          │             │   │ Document Encounter  │          │             │   ├────────────────────►│          │             │   │          │          │          │             │   │ Create Order        │          │             │   ├────────────────────►│          │             │   │          │          ├───────────────────────►│   │          │          │          │             │   │ Finalize Encounter  │          │             │   ├────────────────────►│          │             │   │          │          │ Update   │             │   │          │          │ Record   │             │   │          │          ├─────────►│             │   │          │ Complete │          │             │   │          │ Queue    │          │             │   │          │◄─────────┤          │             │
+This is a conceptual interaction model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.151 OPD BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-OPD-BR-001
+Consultation shall reference an identifiable patient
+CS-OPD-BR-002
+Active consultation shall reference an eligible clinical encounter
+CS-OPD-BR-003
+Consultation initiation requires clinical authorization
+CS-OPD-BR-004
+Invalid patient context switching shall be prevented
+CS-OPD-BR-005
+Each encounter shall have a unique identifier
+CS-OPD-BR-006
+Encounter shall reference an identifiable patient
+CS-OPD-BR-007
+Encounter shall identify its encounter type
+CS-OPD-BR-008
+Encounter shall record applicable clinical context
+CS-OPD-BR-009
+Invalid duplicate active encounters shall be prevented
+CS-OPD-BR-010
+Chief complaint shall belong to an encounter
+CS-OPD-BR-011
+Clinical complaint modification requires authorization
+CS-OPD-BR-012
+Finalized complaint information follows correction rules
+CS-OPD-BR-013
+Allergy records shall reference an identifiable patient
+CS-OPD-BR-014
+Allergy information shall maintain clinical provenance
+CS-OPD-BR-015
+Absence of allergy records shall not automatically mean no allergies
+CS-OPD-BR-016
+Clinical notes shall belong to an encounter
+CS-OPD-BR-017
+Clinical note authorship shall be identifiable
+CS-OPD-BR-018
+Note modification shall follow state rules
+CS-OPD-BR-019
+Diagnosis shall reference an encounter
+CS-OPD-BR-020
+Diagnosis recording requires clinical authorization
+CS-OPD-BR-021
+Controlled diagnosis terminology shall be supported where configured
+CS-OPD-BR-022
+Only eligible encounters may be finalized
+CS-OPD-BR-023
+Finalization requires clinical authorization
+CS-OPD-BR-024
+Finalized clinical content shall not be freely overwritten
+CS-OPD-BR-025
+Finalization shall be auditable
+CS-OPD-BR-026
+Addendum shall reference finalized documentation
+CS-OPD-BR-027
+Addendum author shall be identifiable
+CS-OPD-BR-028
+Addendum creation time shall be recorded
+CS-OPD-BR-029
+Addendum shall not erase original content
+CS-OPD-BR-030
+Encounter states shall follow approved transitions
+CS-OPD-BR-031
+Finalized encounters shall not return to ordinary draft editing
+CS-OPD-BR-032
+Backend shall reject invalid state transitions
+
+5.152 EMR BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-EMR-BR-001
+EMR access shall use an identifiable patient context
+CS-EMR-BR-002
+Clinical record access requires authorization
+CS-EMR-BR-003
+EMR access shall be auditable according to policy
+CS-EMR-BR-004
+Clinically significant records shall maintain provenance
+CS-EMR-BR-005
+Clinical provenance shall not rely only on frontend information
+CS-EMR-BR-006
+Clinical records shall follow the surviving patient identity after approved merge
+CS-EMR-BR-007
+Patient identity consolidation shall preserve clinical traceability
+
+5.153 CLINICAL PERMISSION CONCEPT
+Potential OPD permissions include:
+OPD_ENCOUNTER_VIEWOPD_ENCOUNTER_CREATEOPD_CONSULTATION_STARTOPD_CHIEF_COMPLAINT_WRITEOPD_HISTORY_WRITEOPD_EXAMINATION_WRITEOPD_CLINICAL_NOTE_WRITEOPD_DIAGNOSIS_WRITEOPD_ORDER_CREATEOPD_TREATMENT_PLAN_WRITEOPD_FOLLOW_UP_WRITEOPD_ENCOUNTER_FINALIZEOPD_ADDENDUM_CREATE
+Potential EMR permissions include:
+EMR_VIEWEMR_TIMELINE_VIEWEMR_ENCOUNTER_HISTORY_VIEWEMR_DIAGNOSIS_VIEWEMR_ALLERGY_VIEWEMR_LAB_RESULT_VIEWEMR_RADIOLOGY_RESULT_VIEWEMR_MEDICATION_HISTORY_VIEWEMR_CLINICAL_NOTE_VIEW
+Example Doctor Permission Concept
+DOCTOR   │   ├── OPD_ENCOUNTER_VIEW   ├── OPD_CONSULTATION_START   ├── OPD_CHIEF_COMPLAINT_WRITE   ├── OPD_HISTORY_WRITE   ├── OPD_EXAMINATION_WRITE   ├── OPD_CLINICAL_NOTE_WRITE   ├── OPD_DIAGNOSIS_WRITE   ├── OPD_ORDER_CREATE   ├── OPD_TREATMENT_PLAN_WRITE   ├── OPD_FOLLOW_UP_WRITE   ├── OPD_ENCOUNTER_FINALIZE   ├── OPD_ADDENDUM_CREATE   ├── EMR_VIEW   └── EMR_TIMELINE_VIEW
+Compared with:
+RECEPTIONIST     │     ├── PATIENT_SEARCH     ├── APPOINTMENT_VIEW     └── APPOINTMENT_CHECK_IN     ✕ OPD_DIAGNOSIS_WRITE     ✕ OPD_CLINICAL_NOTE_WRITE     ✕ OPD_ENCOUNTER_FINALIZE
+The final authorization matrix shall be created during Security Design.
+
+5.154 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Start patient consultation
+CS-OPD-FR-001
+Create clinical encounter
+CS-OPD-FR-002 to 004
+Open patient clinical context
+CS-OPD-FR-005 to 006
+Chief complaint documentation
+CS-OPD-FR-007 to 008
+Present illness history
+CS-OPD-FR-009
+Clinical history
+CS-OPD-FR-010
+Allergy management
+CS-OPD-FR-011 to 013
+Vital sign integration
+CS-OPD-FR-014 to 015
+Physical examination
+CS-OPD-FR-016
+Clinical notes
+CS-OPD-FR-017 to 018
+Diagnosis management
+CS-OPD-FR-019 to 022
+Clinical orders
+CS-OPD-FR-023 to 026
+Treatment plan
+CS-OPD-FR-027
+Follow-up management
+CS-OPD-FR-028 to 029
+Draft encounter workflow
+CS-OPD-FR-030 to 031
+Encounter finalization
+CS-OPD-FR-032 to 034
+Clinical addendum
+CS-OPD-FR-035
+Encounter history
+CS-OPD-FR-036 to 037
+Encounter auditing
+CS-OPD-FR-038
+Encounter state integrity
+CS-OPD-FR-039
+Consultation closure
+CS-OPD-FR-040
+Open patient EMR
+CS-EMR-FR-001 to 002
+Clinical timeline
+CS-EMR-FR-003
+Encounter history
+CS-EMR-FR-004
+Diagnosis history
+CS-EMR-FR-005
+Allergy history
+CS-EMR-FR-006
+Clinical note history
+CS-EMR-FR-007
+Vital sign history
+CS-EMR-FR-008
+Laboratory history
+CS-EMR-FR-009
+Radiology history
+CS-EMR-FR-010
+Medication history
+CS-EMR-FR-011
+Clinical documents
+CS-EMR-FR-012
+Clinical provenance
+CS-EMR-FR-013
+Clinical corrections
+CS-EMR-FR-014
+Addendum identification
+CS-EMR-FR-015
+Clinical search and filtering
+CS-EMR-FR-016 to 017
+EMR access auditing
+CS-EMR-FR-018
+Clinical record security
+CS-EMR-FR-019
+Patient record continuity
+CS-EMR-FR-020
+
+5.155 CLINICAL MODULE RISK ANALYSIS
+Risk 1 — Wrong Patient Clinical Documentation
+Problem
+A doctor opens Patient A.
+The React state changes incorrectly.
+Clinical documentation is submitted against Patient B.
+Impact
+Severe patient safety and clinical record integrity risk.
+Mitigation
+The backend shall validate:
+ENCOUNTER    │    ▼PATIENT RELATIONSHIP
+for protected clinical operations.
+Persistent patient context shall be considered in Clinical UI Design.
+
+Risk 2 — Finalized Notes Silently Overwritten
+Problem
+A finalized clinical note can be freely edited.
+Impact
+The historical clinical record becomes unreliable.
+Mitigation
+Use:
+DRAFT EDITING        +FINALIZATION        +CONTROLLED ADDENDUM / CORRECTION
+
+Risk 3 — Unknown Allergy Treated as No Allergy
+Problem
+The database contains no allergy records.
+The UI displays:
+NO ALLERGIES
+Impact
+Clinical staff may incorrectly assume the patient’s allergy status was verified.
+Mitigation
+Distinguish:
+KNOWN ALLERGYNO KNOWN ALLERGYUNKNOWN
+
+Risk 4 — Appointment Used as Medical Record
+Problem
+Developers store diagnosis and clinical notes directly in the appointment record.
+Impact
+Clinical and administrative domains become tightly coupled.
+Mitigation
+Use:
+APPOINTMENT     │     ▼ENCOUNTER     │     ▼CLINICAL RECORD
+
+Risk 5 — One Diagnosis Column
+Problem
+The encounter table contains:
+diagnosis varchar(500)
+Impact
+Multiple diagnoses, diagnosis coding, primary diagnosis, and diagnosis history become difficult.
+Mitigation
+Model diagnosis as a clinical entity related to the encounter.
+
+Risk 6 — EMR as One Giant Table
+Problem
+Developers create:
+medical_recordpatient_namedoctor_namecomplainttemperatureblood_pressurediagnosismedicinelab_testxraynote
+Impact
+The system becomes difficult to normalize, query, audit, and extend.
+Mitigation
+The EMR shall be treated as a longitudinal clinical capability composed from clinical domains.
+
+Risk 7 — React Hides Button but API Allows Action
+Problem
+React hides Finalize Encounter from a receptionist.
+The API still accepts the finalization request.
+Mitigation
+ASP.NET Core authorization shall protect the use case.
+
+Risk 8 — Clinical History Lost During Patient Merge
+Problem
+Duplicate patient records are merged incorrectly.
+Historical encounters are deleted.
+Mitigation
+Patient merge workflows shall preserve clinical relationships and traceability.
+
+Risk 9 — Clinical Orders Mixed with Specialized Workflow
+Problem
+OPD directly stores laboratory processing and radiology reporting logic.
+Impact
+OPD becomes a giant tightly coupled module.
+Mitigation
+Use explicit module boundaries:
+OPD │ ▼ORDER REQUEST │ ├──► LAB ├──► RAD └──► PHA
+
+Risk 10 — No Clinical Provenance
+Problem
+The system stores:
+Diagnosis: Hypertension
+but cannot answer:
+Who recorded it?When?During which encounter?Was it later corrected?
+Mitigation
+Clinically significant information shall maintain appropriate provenance.
+
+5.156 COMPLETE CLINICAL CAPABILITY MODEL
+                              PATIENT                                 │                                 ▼                         CLINICAL IDENTITY                                 │                                 ▼                          DOCTOR WORKLIST                                 │                                 ▼                         START CONSULTATION                                 │                                 ▼                       CLINICAL ENCOUNTER                                 │              ┌──────────────────┼──────────────────┐              │                  │                  │              ▼                  ▼                  ▼       CHIEF COMPLAINT        HISTORY          VITAL SIGNS              │                  │                  │              └──────────────────┼──────────────────┘                                 │                                 ▼                         PHYSICAL EXAMINATION                                 │                                 ▼                           CLINICAL NOTES                                 │                                 ▼                             DIAGNOSIS                                 │                   ┌─────────────┼─────────────┐                   │             │             │                   ▼             ▼             ▼                  LAB         RADIOLOGY    PRESCRIPTION                   │             │             │                   └─────────────┼─────────────┘                                 │                                 ▼                          TREATMENT PLAN                                 │                                 ▼                           FOLLOW-UP PLAN                                 │                                 ▼                        ENCOUNTER FINALIZATION                                 │                                 ▼                         CONSULTATION CLOSED                                 │                                 ▼                         QUEUE COMPLETED                                 │                                 ▼                              EMR                                 │          ┌──────────────────────┼──────────────────────┐          │                      │                      │          ▼                      ▼                      ▼    CLINICAL TIMELINE      HISTORY VIEWS          PROVENANCE          │                      │                      │          ▼                      ▼                      ▼      CONTINUITY            PATIENT CARE          AUDITABILITY
+
+5.157 OPD AND EMR MODULE COMPLETION STATUS
+Module: Outpatient Clinical Encounter ManagementModule Code: OPDRequirement Range: CS-OPD-FR-001 to CS-OPD-FR-040Business Rule Range: CS-OPD-BR-001 to CS-OPD-BR-032
+Module: Electronic Medical Record ManagementModule Code: EMRRequirement Range: CS-EMR-FR-001 to CS-EMR-FR-020Business Rule Range: CS-EMR-BR-001 to CS-EMR-BR-007
+Clinical Encounter Concept: DefinedPatient Clinical Context: DefinedChief Complaint Workflow: DefinedPresent Illness History: DefinedClinical History Concept: DefinedAllergy Status Model: DefinedVital Sign Integration: DefinedPhysical Examination Concept: DefinedClinical Note Model: DefinedDiagnosis Model: DefinedMultiple Diagnosis Relationship: DefinedClinical Order Boundary: DefinedLaboratory Order Handoff: DefinedRadiology Order Handoff: DefinedPrescription Handoff: DefinedTreatment Plan: DefinedFollow-Up Plan: DefinedDraft Encounter Workflow: DefinedEncounter Finalization: DefinedClinical Addendum: DefinedEncounter State Model: DefinedClinical Timeline: DefinedEMR Access Concept: DefinedClinical Provenance: DefinedClinical Record Continuity: DefinedQueue-to-EMR Flow: DefinedConceptual Sequence Model: DefinedClinical Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The OPD and EMR requirements establish the clinical core of CuraSphere.
+These requirements shall later be transformed into:
+OPD use case specification;
+EMR use case specification;
+Start Consultation use case;
+Finalize Encounter use case;
+Clinical Addendum use case;
+clinical encounter activity diagram;
+encounter finalization activity diagram;
+clinical order activity diagram;
+EMR access activity diagram;
+clinical encounter state transition specification;
+clinical note state transition specification;
+diagnosis lifecycle specification;
+allergy lifecycle specification;
+Start Consultation sequence diagram;
+Finalize Encounter sequence diagram;
+EMR retrieval sequence diagram;
+clinical order sequence diagram;
+clinical addendum sequence diagram;
+Clinical Encounter domain model;
+Clinical Note domain model;
+Diagnosis domain model;
+Allergy domain model;
+Clinical Observation domain model;
+EMR read model;
+PostgreSQL clinical schema;
+clinical record versioning strategy;
+clinical audit architecture;
+patient-context safety controls;
+React Clinical Workspace requirements;
+React Patient Header requirements;
+React Clinical Timeline requirements;
+React Clinical Note Editor requirements;
+ASP.NET Core Encounter API;
+ASP.NET Core EMR Query API;
+authorization policies;
+clinical integration tests;
+patient-context tests;
+encounter state tests;
+clinical record integrity tests.
+No React clinical editor library, ASP.NET Core entity structure, PostgreSQL table structure, ICD integration library, FHIR implementation, HL7 integration, clinical decision support engine, medication interaction engine, or event-driven architecture has been finalized by this SRS section.
+Those decisions shall be made during Architecture and Detailed Design.
+

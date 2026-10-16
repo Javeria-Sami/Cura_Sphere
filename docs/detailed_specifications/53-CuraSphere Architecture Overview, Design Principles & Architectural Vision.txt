@@ -1,0 +1,314 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 7 - System Architecture
+Part 7.1 - Architecture Overview, Design Principles & Architectural Vision
+
+7.1 System Architecture
+7.1.1 Introduction
+The System Architecture defines the overall structural design of the CuraSphere Hospital Management System (HMS). It provides the architectural foundation that governs how all software components, services, databases, external integrations, infrastructure resources, and users interact to deliver a secure, scalable, reliable, maintainable, and high-performance healthcare information system.
+Unlike small software applications, a hospital management system must simultaneously support thousands of users, multiple hospitals, different departments, external healthcare organizations, laboratories, pharmacies, insurance companies, payment gateways, government health authorities, and diagnostic equipment while maintaining strict security, patient privacy, and regulatory compliance.
+Therefore, CuraSphere adopts a Layered Enterprise Architecture combined with Modular Service-Oriented Design, allowing independent development, testing, deployment, maintenance, and scalability of each subsystem while ensuring seamless communication across the platform.
+The architecture has been designed to support future expansion without requiring significant redesign. New hospitals, departments, services, medical devices, and third-party integrations can be incorporated through standardized APIs and modular components.
+
+7.1.2 Purpose
+The purpose of the System Architecture is to:
+Define the structural organization of the software.
+Establish communication between system components.
+Ensure scalability and maintainability.
+Support enterprise-level deployment.
+Enable modular development.
+Improve security and data protection.
+Simplify integration with external systems.
+Facilitate high availability and disaster recovery.
+Reduce system complexity.
+Provide a blueprint for implementation and future enhancements.
+
+7.1.3 Objectives
+The architectural design of CuraSphere aims to achieve the following objectives:
+Business Objectives
+Improve hospital operational efficiency.
+Reduce manual processes.
+Support digital healthcare transformation.
+Improve patient safety.
+Enhance decision-making through centralized data.
+Enable multi-hospital management.
+Technical Objectives
+High scalability
+High availability
+Fault tolerance
+Security by design
+Modular architecture
+Easy maintenance
+Cloud readiness
+API-first integration
+Cross-platform accessibility
+Performance optimization
+
+7.1.4 Scope
+The architecture encompasses all major components of the CuraSphere Hospital Management System, including:
+Patient Registration
+Appointment Management
+OPD
+IPD
+Emergency Department
+Laboratory Information System (LIS)
+Radiology Information System (RIS)
+Pharmacy Management
+Billing & Finance
+Human Resources
+Inventory Management
+Medical Records (EMR/EHR)
+Notifications
+Authentication & Authorization
+Reporting & Business Intelligence
+Administration
+Audit & Logging
+API Gateway
+External Healthcare Integrations
+
+7.1.5 Architectural Vision
+The architectural vision for CuraSphere is based on five fundamental goals:
+Goal 1 – Enterprise Scalability
+The architecture shall support:
+Multiple hospitals
+Multiple branches
+Multiple departments
+Thousands of concurrent users
+Millions of patient records
+Future feature expansion
+
+Goal 2 – Security First
+Security shall be integrated into every architectural layer.
+Security includes:
+Encryption
+Authentication
+Authorization
+Audit Logging
+Secure APIs
+Database Security
+Infrastructure Security
+
+Goal 3 – High Availability
+Healthcare services must remain operational 24×7.
+The architecture shall support:
+Load Balancing
+Server Clustering
+Database Replication
+Automatic Failover
+Disaster Recovery
+
+Goal 4 – Modularity
+Every functional module shall operate independently while communicating through standardized interfaces.
+Examples include:
+Patient Module
+Laboratory Module
+Pharmacy Module
+Billing Module
+HR Module
+Each module can evolve independently without affecting the others, provided interface contracts are maintained.
+
+Goal 5 – Future Readiness
+The architecture shall support future integration with:
+AI-assisted diagnosis
+Machine Learning analytics
+IoT medical devices
+Wearable health devices
+National health information exchanges
+Telemedicine platforms
+Mobile applications
+Patient self-service portals
+
+7.1.6 Architecture Principles
+The design of CuraSphere follows the following architectural principles.
+
+Principle 1 — Separation of Concerns
+Each architectural layer shall have a clearly defined responsibility.
+Layer
+Responsibility
+Presentation
+User Interface
+Business
+Business Logic
+Application
+Workflow Coordination
+Integration
+External Communication
+Data Access
+Database Operations
+Infrastructure
+Technical Services
+
+Principle 2 — Loose Coupling
+Modules shall communicate using well-defined interfaces rather than direct dependencies.
+Benefits:
+Easier maintenance
+Independent deployment
+Better scalability
+Simplified testing
+
+Principle 3 — High Cohesion
+Each module shall focus on one specific business responsibility.
+Example:
+The Laboratory Module manages:
+Test Orders
+Sample Collection
+Test Processing
+Result Verification
+It shall not directly implement pharmacy or billing logic.
+
+Principle 4 — Single Source of Truth
+Each business entity shall have one authoritative data source.
+Examples:
+Entity
+Authoritative Module
+Patient
+Patient Registration
+Doctor
+Human Resources
+Medicine
+Pharmacy
+Inventory Item
+Inventory Management
+Invoice
+Billing
+
+Principle 5 — Security by Design
+Security controls shall be embedded throughout the architecture rather than added after implementation.
+This includes:
+Authentication
+Authorization
+Encryption
+Audit Trails
+Secure APIs
+Secure Storage
+Secure Communications
+
+Principle 6 — API First
+All services shall expose standardized APIs to facilitate interoperability and future integrations.
+Benefits include:
+Mobile app support
+Third-party integrations
+Government reporting
+External laboratory connectivity
+Insurance connectivity
+
+Principle 7 — Configurability
+Business rules shall be configurable wherever practical without modifying source code.
+Examples:
+Tax rates
+Working hours
+Appointment durations
+Notification templates
+Billing rules
+Hospital branding
+
+Principle 8 — Resilience
+The architecture shall continue operating despite component failures whenever possible.
+Mechanisms include:
+Retry policies
+Circuit breakers
+Failover
+Redundancy
+Health monitoring
+
+7.1.7 High-Level Enterprise Architecture
+                              Users
+                                │
+      ┌─────────────────────────┼─────────────────────────┐
+      │                         │                         │
+ Patients                 Doctors & Staff           Administrators
+      │                         │                         │
+      └─────────────────────────┼─────────────────────────┘
+                                │
+                                ▼
+                     Presentation Layer
+         (React Web Portal / Mobile Applications)
+                                │
+                                ▼
+                     Authentication Gateway
+                    (JWT + MFA + RBAC + SSO)
+                                │
+                                ▼
+                         API Gateway Layer
+                                │
+ ┌─────────────────────────────────────────────────────────────┐
+ │                     Business Service Layer                  │
+ ├─────────────────────────────────────────────────────────────┤
+ │ Patient Service                                             │
+ │ Appointment Service                                         │
+ │ OPD Service                                                 │
+ │ Emergency Service                                           │
+ │ IPD Service                                                 │
+ │ Laboratory Service                                          │
+ │ Radiology Service                                           │
+ │ Pharmacy Service                                            │
+ │ Billing Service                                             │
+ │ HR Service                                                  │
+ │ Inventory Service                                           │
+ │ Reporting Service                                           │
+ │ Notification Service                                        │
+ │ Administration Service                                      │
+ └─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+                    Integration & API Layer
+        (FHIR, HL7, DICOM, Payment, SMS, Email, Insurance)
+                                │
+                                ▼
+                       Data Access Layer
+                                │
+                                ▼
+                   PostgreSQL Database Cluster
+                                │
+                                ▼
+              Backup, Monitoring & Disaster Recovery
+
+7.1.8 Architectural Constraints
+The architecture shall comply with the following constraints:
+Constraint
+Description
+Database
+PostgreSQL
+Frontend
+React.js + TypeScript
+Backend
+ASP.NET (C#) + Java Services
+API Style
+RESTful APIs
+Authentication
+JWT + MFA + RBAC
+Containerization
+Docker
+Orchestration
+Kubernetes
+Version Control
+Git + GitHub
+CI/CD
+GitHub Actions
+Monitoring
+Centralized Monitoring
+Deployment
+Cloud & On-Premises
+
+7.1.9 Architectural Assumptions
+The architecture assumes that:
+Hospitals have stable network connectivity.
+Infrastructure meets minimum hardware requirements.
+PostgreSQL clustering is available for production deployments.
+Secure TLS communication is enforced.
+Identity management services are available.
+Regular backups are configured.
+Monitoring infrastructure is operational.
+Hospital staff receive appropriate system training.
+
+7.1.10 Acceptance Criteria
+The architectural overview shall be considered complete when:
+All architectural principles are documented.
+High-level architecture is defined.
+Architectural objectives align with business requirements.
+Constraints and assumptions are documented.
+Major components and their responsibilities are identified.
+The architecture supports scalability, maintainability, interoperability, and security.
+
+
+

@@ -1,0 +1,2078 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.9 — INVENTORY, PROCUREMENT AND HOSPITAL SUPPLY CHAIN MANAGEMENT SYSTEM
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: INV/PRCModule Name: Inventory, Procurement and Hospital Supply Chain Management SystemProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.412 MODULE PURPOSE
+The Inventory, Procurement and Hospital Supply Chain Management System shall manage the controlled acquisition, receipt, storage, movement, issuance, consumption, return, adjustment, and traceability of eligible hospital inventory items.
+The module shall support:
+item master management;
+item categorization;
+unit of measure management;
+storage location management;
+warehouse management;
+department stock locations;
+supplier management;
+purchase requisitions;
+requisition approval;
+purchase orders;
+purchase order approval;
+goods receipt;
+partial goods receipt;
+excess receipt prevention;
+rejected receipt quantities;
+batch and lot tracking;
+expiry tracking;
+stock availability;
+stock movement;
+stock transfer;
+department stock issue;
+department stock receipt;
+stock consumption;
+stock return;
+supplier return;
+stock adjustment;
+stock count;
+stock reconciliation;
+stock reservation architecture;
+low-stock monitoring;
+reorder configuration;
+expiry monitoring;
+inventory audit trail;
+supply chain reporting.
+The high-level supply chain workflow shall be:
+ITEM REQUIREMENT      │      ▼PURCHASE REQUISITION      │      ▼APPROVAL WORKFLOW      │      ▼PURCHASE ORDER      │      ▼SUPPLIER      │      ▼GOODS DELIVERY      │      ▼GOODS RECEIPT      │      ▼QUALITY / RECEIPT VALIDATION      │      ▼BATCH / LOT REGISTRATION      │      ▼WAREHOUSE STOCK      │      ▼STOCK MOVEMENT      │      ├───────────────┐      │               │      ▼               ▼STOCK TRANSFER   DEPARTMENT ISSUE      │               │      ▼               ▼OTHER LOCATION   DEPARTMENT STOCK                      │                      ▼                  CONSUMPTION                      │               ┌──────┴──────┐               │             │               ▼             ▼             RETURN       FINAL USAGE               │               ▼         STOCK MOVEMENT
+The module shall preserve traceability for:
+ITEM  │  ▼PROCUREMENT SOURCE  │  ▼SUPPLIER  │  ▼PURCHASE ORDER  │  ▼GOODS RECEIPT  │  ▼BATCH / LOT  │  ▼STORAGE LOCATION  │  ▼STOCK MOVEMENT  │  ▼ISSUE / TRANSFER / CONSUMPTION
+
+5.413 INVENTORY DOMAIN BOUNDARY
+The Inventory and Procurement module shall own hospital supply chain and physical stock control.
+It shall not own:
+clinical diagnosis;
+medication prescribing;
+laboratory result interpretation;
+radiology reporting;
+patient billing;
+general ledger accounting;
+employee payroll.
+Conceptually:
+PROCUREMENT     │     ▼ACQUIRE ITEMS     │     ▼INVENTORY     │     ▼CONTROL PHYSICAL STOCK     │     ├────────────► PHARMACY     │     ├────────────► LABORATORY     │     ├────────────► RADIOLOGY     │     ├────────────► OPERATION THEATRE     │     ├────────────► WARDS     │     ├────────────► EMERGENCY     │     └────────────► OTHER DEPARTMENTS
+The Pharmacy module may answer:
+Which medicine was dispensed to the patient?
+The Inventory module answers:
+Which physical stock quantity and batch moved because of that dispensing event?
+The Laboratory module may answer:
+Which laboratory test was performed?
+The Inventory module answers:
+Which reagent or consumable stock was used?
+The Billing module may answer:
+What amount was charged?
+The Inventory module answers:
+What physical item quantity exists and why did it change?
+Therefore:
+CLINICAL EVENT      ≠STOCK MOVEMENT      ≠FINANCIAL CHARGE
+
+5.414 CRITICAL INVENTORY ARCHITECTURE CONCEPT
+CuraSphere shall distinguish:
+ITEM DEFINITION
+SUPPLIER
+PURCHASE REQUISITION
+PURCHASE ORDER
+GOODS RECEIPT
+BATCH / LOT
+STOCK LOCATION
+STOCK BALANCE
+STOCK MOVEMENT
+STOCK ISSUE
+STOCK CONSUMPTION
+STOCK RETURN
+STOCK ADJUSTMENT
+These concepts shall not be collapsed into one inventory table.
+Weak architecture:
+inventoryitem_namesupplierquantitypurchase_priceexpiry_datedepartment
+This design cannot properly explain:
+WHICH PURCHASE ORDER?WHICH GOODS RECEIPT?WHICH BATCH?WHICH LOCATION?WHICH MOVEMENT?WHICH ISSUE?WHICH RETURN?WHY DID QUANTITY CHANGE?
+A stronger conceptual architecture is:
+ITEM MASTER     │     ▼PROCUREMENT     │     ▼GOODS RECEIPT     │     ▼BATCH / LOT     │     ▼STOCK LOCATION     │     ▼STOCK MOVEMENT LEDGER     │     ▼CURRENT STOCK PROJECTION
+
+5.415 INVENTORY ACTORS
+Actor
+Responsibility
+Inventory Officer
+Manages eligible inventory operations
+Storekeeper
+Receives, stores, issues, and transfers stock
+Procurement Officer
+Manages procurement workflow
+Procurement Supervisor
+Reviews and approves eligible procurement activities
+Department Requester
+Creates eligible stock or procurement requests
+Department Approver
+Approves eligible departmental requests
+Pharmacist
+Uses permitted pharmacy inventory workflows
+Laboratory User
+Uses permitted laboratory supply workflows
+Radiology User
+Uses permitted radiology supply workflows
+Nurse
+Requests or consumes permitted departmental stock
+Operation Theatre User
+Uses eligible surgical supply workflows
+Finance Officer
+Views approved procurement financial information
+Hospital Administrator
+Manages approved inventory configuration
+Supplier
+External provider of goods
+Pharmacy Module
+Generates eligible stock movement events
+Laboratory Module
+Generates eligible stock consumption events
+Radiology Module
+Generates eligible supply events
+Billing Module
+Receives eligible cost or charge integration context
+CuraSphere System
+Enforces state, quantity, authorization, and traceability
+
+5.416 INVENTORY FUNCTIONAL REQUIREMENT REGISTRY
+Requirement ID
+Requirement Name
+Priority
+CS-INV-FR-001
+Maintain Item Master
+M
+CS-INV-FR-002
+Create Inventory Item
+M
+CS-INV-FR-003
+Update Inventory Item
+M
+CS-INV-FR-004
+Activate or Deactivate Item
+M
+CS-INV-FR-005
+Search Inventory Items
+M
+CS-INV-FR-006
+Maintain Item Category
+M
+CS-INV-FR-007
+Maintain Unit of Measure
+M
+CS-INV-FR-008
+Maintain Item Unit Configuration
+M
+CS-INV-FR-009
+Maintain Storage Location
+M
+CS-INV-FR-010
+Maintain Warehouse
+M
+CS-INV-FR-011
+Maintain Department Stock Location
+M
+CS-INV-FR-012
+Maintain Supplier
+M
+CS-INV-FR-013
+Create Supplier
+M
+CS-INV-FR-014
+Update Supplier
+M
+CS-INV-FR-015
+Activate or Deactivate Supplier
+M
+CS-INV-FR-016
+Search Suppliers
+M
+CS-PRC-FR-001
+Create Purchase Requisition
+M
+CS-PRC-FR-002
+Generate Requisition Identifier
+M
+CS-PRC-FR-003
+Add Requisition Item
+M
+CS-PRC-FR-004
+Submit Purchase Requisition
+M
+CS-PRC-FR-005
+Review Purchase Requisition
+M
+CS-PRC-FR-006
+Approve Purchase Requisition
+M
+CS-PRC-FR-007
+Reject Purchase Requisition
+M
+CS-PRC-FR-008
+Record Requisition Decision Reason
+M
+CS-PRC-FR-009
+Track Requisition Status
+M
+CS-PRC-FR-010
+Create Purchase Order
+M
+CS-PRC-FR-011
+Generate Purchase Order Identifier
+M
+CS-PRC-FR-012
+Associate Supplier With Purchase Order
+M
+CS-PRC-FR-013
+Add Purchase Order Item
+M
+CS-PRC-FR-014
+Record Ordered Quantity
+M
+CS-PRC-FR-015
+Record Procurement Unit Price
+M
+CS-PRC-FR-016
+Calculate Purchase Order Amount
+M
+CS-PRC-FR-017
+Submit Purchase Order for Approval
+M
+CS-PRC-FR-018
+Approve Purchase Order
+M
+CS-PRC-FR-019
+Reject Purchase Order
+M
+CS-PRC-FR-020
+Issue Purchase Order
+M
+CS-PRC-FR-021
+Track Purchase Order Status
+M
+CS-INV-FR-017
+Create Goods Receipt
+M
+CS-INV-FR-018
+Generate Goods Receipt Identifier
+M
+CS-INV-FR-019
+Link Goods Receipt to Purchase Order
+M
+CS-INV-FR-020
+Record Received Item
+M
+CS-INV-FR-021
+Record Received Quantity
+M
+CS-INV-FR-022
+Support Partial Goods Receipt
+M
+CS-INV-FR-023
+Prevent Invalid Excess Receipt
+M
+CS-INV-FR-024
+Record Accepted Quantity
+M
+CS-INV-FR-025
+Record Rejected Quantity
+M
+CS-INV-FR-026
+Record Receipt Rejection Reason
+M
+CS-INV-FR-027
+Complete Goods Receipt
+M
+CS-INV-FR-028
+Create Batch or Lot
+M
+CS-INV-FR-029
+Record Batch or Lot Number
+M
+CS-INV-FR-030
+Record Manufacturing Date
+S
+CS-INV-FR-031
+Record Expiry Date
+M
+CS-INV-FR-032
+Validate Expiry Information
+M
+CS-INV-FR-033
+Associate Batch With Goods Receipt
+M
+CS-INV-FR-034
+Record Stock Entry Movement
+M
+CS-INV-FR-035
+Generate Stock Movement Identifier
+M
+CS-INV-FR-036
+Maintain Stock Movement Ledger
+M
+CS-INV-FR-037
+Calculate Stock Availability
+M
+CS-INV-FR-038
+View Stock by Location
+M
+CS-INV-FR-039
+View Stock by Batch
+M
+CS-INV-FR-040
+Prevent Invalid Negative Stock
+M
+CS-INV-FR-041
+Create Stock Transfer
+M
+CS-INV-FR-042
+Generate Stock Transfer Identifier
+M
+CS-INV-FR-043
+Record Source Location
+M
+CS-INV-FR-044
+Record Destination Location
+M
+CS-INV-FR-045
+Add Stock Transfer Item
+M
+CS-INV-FR-046
+Validate Transfer Quantity
+M
+CS-INV-FR-047
+Dispatch Stock Transfer
+M
+CS-INV-FR-048
+Receive Stock Transfer
+M
+CS-INV-FR-049
+Track Stock Transfer Status
+M
+CS-INV-FR-050
+Create Department Stock Issue
+M
+CS-INV-FR-051
+Generate Stock Issue Identifier
+M
+CS-INV-FR-052
+Add Stock Issue Item
+M
+CS-INV-FR-053
+Validate Stock Issue Quantity
+M
+CS-INV-FR-054
+Complete Stock Issue
+M
+CS-INV-FR-055
+Record Stock Consumption
+M
+CS-INV-FR-056
+Link Consumption to Source Event
+M
+CS-INV-FR-057
+Prevent Duplicate Consumption
+M
+CS-INV-FR-058
+Create Stock Return
+M
+CS-INV-FR-059
+Validate Stock Return
+M
+CS-INV-FR-060
+Complete Stock Return
+M
+CS-INV-FR-061
+Create Supplier Return
+M
+CS-INV-FR-062
+Complete Supplier Return
+M
+CS-INV-FR-063
+Create Stock Adjustment
+M
+CS-INV-FR-064
+Record Adjustment Reason
+M
+CS-INV-FR-065
+Record Adjustment Authorization
+M
+CS-INV-FR-066
+Complete Stock Adjustment
+M
+CS-INV-FR-067
+Create Stock Count
+M
+CS-INV-FR-068
+Record Physical Count Quantity
+M
+CS-INV-FR-069
+Compare System and Physical Quantity
+M
+CS-INV-FR-070
+Reconcile Stock Count Variance
+M
+CS-INV-FR-071
+Maintain Reorder Configuration
+M
+CS-INV-FR-072
+Identify Low Stock
+M
+CS-INV-FR-073
+Generate Reorder Recommendation
+S
+CS-INV-FR-074
+Identify Near-Expiry Stock
+M
+CS-INV-FR-075
+Identify Expired Stock
+M
+CS-INV-FR-076
+Prevent Invalid Expired Stock Usage
+M
+CS-INV-FR-077
+Support FEFO Stock Selection
+M
+CS-INV-FR-078
+Support Stock Reservation Architecture
+S
+CS-INV-FR-079
+Search Inventory Transactions
+M
+CS-INV-FR-080
+Record Inventory Audit Events
+M
+CS-INV-FR-081
+Prevent Invalid Inventory State Transition
+M
+CS-INV-FR-082
+Support Barcode Architecture
+S
+CS-INV-FR-083
+Support Procurement Financial Integration
+S
+CS-INV-FR-084
+Support Inventory Reporting Read Models
+M
+
+5.417 ITEM MASTER
+CS-INV-FR-001 — Maintain Item Master
+Description
+The system shall maintain a controlled master catalog of inventory items.
+Priority
+Must Have
+Conceptual Item Model
+ITEM │ ├── Item ID ├── Item Code ├── Item Name ├── Item Category ├── Base Unit ├── Batch Tracked ├── Expiry Tracked ├── Stock Controlled ├── Reorder Controlled └── Active Status
+Example Items
+ITEM CODEMED-PARA-500
+ITEM NAMEParacetamol 500 mg Tablet
+Another:
+ITEM CODELAB-EDTA-3ML
+ITEM NAMEEDTA Blood Collection Tube 3 mL
+Another:
+ITEM CODESURG-GLOVE-M
+ITEM NAMESurgical Gloves Medium
+Business Rules
+CS-INV-BR-001
+Each inventory item shall have a unique internal identity.
+CS-INV-BR-002
+Item codes shall be unique within the applicable inventory scope.
+CS-INV-BR-003
+Inactive items shall not normally be available for new stock transactions.
+
+CS-INV-FR-002 — Create Inventory Item
+The system shall allow authorized users to create an eligible inventory item.
+Main Flow
+AUTHORIZED USER      │      ▼OPEN ITEM MASTER      │      ▼CREATE ITEM      │      ▼ENTER ITEM INFORMATION      │      ▼SELECT CATEGORY      │      ▼SELECT UNIT CONFIGURATION      │      ▼CONFIGURE TRACKING RULES      │      ▼VALIDATE ITEM CODE      │      ▼SAVE ITEM      │      ▼AUDIT EVENT
+
+CS-INV-FR-003 — Update Inventory Item
+The system shall allow authorized users to update eligible item master information.
+Historical inventory transactions shall preserve applicable historical context.
+A current item name change shall not destroy:
+GOODS RECEIPT HISTORYSTOCK MOVEMENT HISTORYISSUE HISTORYCONSUMPTION HISTORY
+
+CS-INV-FR-004 — Activate or Deactivate Item
+The system shall allow authorized users to activate or deactivate eligible inventory items.
+ACTIVE  │  ▼ELIGIBLE FOR APPROVEDNEW INVENTORY WORKFLOW
+INACTIVE  │  ▼NOT NORMALLY AVAILABLEFOR NEW TRANSACTIONS  │  ▼HISTORICAL RECORDS REMAIN
+Physical deletion shall not be required for ordinary item deactivation.
+
+CS-INV-FR-005 — Search Inventory Items
+Authorized users shall be able to search eligible inventory items using applicable criteria.
+Search criteria may include:
+item code;
+item name;
+item category;
+base unit;
+batch tracking status;
+expiry tracking status;
+active status.
+
+5.418 ITEM CATEGORY
+CS-INV-FR-006 — Maintain Item Category
+The system shall maintain controlled inventory item categories.
+Potential categories may include:
+MEDICATIONLABORATORY REAGENTLABORATORY CONSUMABLESURGICAL SUPPLYMEDICAL CONSUMABLERADIOLOGY SUPPLYOFFICE SUPPLYHOUSEKEEPING SUPPLYEQUIPMENT ACCESSORYOTHER APPROVED CATEGORY
+The exact category hierarchy shall be configurable.
+Important Principle
+Do not hardcode item category logic separately across React pages.
+Conceptually:
+ITEM CATEGORY CONFIGURATION          │          ▼APPLICATION RULES          │          ▼REACT DISPLAY
+
+5.419 UNIT OF MEASURE
+CS-INV-FR-007 — Maintain Unit of Measure
+The system shall maintain controlled units of measure.
+Examples:
+TABLETCAPSULEVIALAMPOULEBOTTLEBOXPACKPIECEPAIRLITERMILLILITERGRAMKILOGRAM
+Each unit shall have a unique identity and applicable code.
+
+5.420 ITEM UNIT CONFIGURATION
+CS-INV-FR-008 — Maintain Item Unit Configuration
+The system shall support applicable item unit configurations.
+Example
+ITEMParacetamol 500 mg
+Possible units:
+1 BOX   │   ▼10 STRIPS   │   ▼100 TABLETS
+Another:
+1 CARTON   │   ▼20 BOXES
+Critical Architecture Problem
+A beginner may store:
+quantity = 10
+But what does 10 mean?
+10 TABLETS?10 STRIPS?10 BOXES?10 CARTONS?
+The system shall maintain quantity together with applicable unit context.
+The final unit conversion model shall be defined during Inventory Domain Architecture.
+
+5.421 STORAGE LOCATION MANAGEMENT
+CS-INV-FR-009 — Maintain Storage Location
+The system shall maintain controlled physical or logical inventory storage locations.
+Conceptual Model
+STOCK LOCATION      │      ├── Location ID      ├── Location Code      ├── Location Name      ├── Location Type      ├── Department Context      ├── Parent Location      └── Active Status
+Potential location hierarchy:
+MAIN WAREHOUSE      │      ├── ROOM A      │     │      │     ├── RACK A1      │     └── RACK A2      │      └── ROOM B            │            └── RACK B1
+Another:
+PHARMACY STORE      │      ├── SHELF P1      ├── SHELF P2      └── COLD STORAGE
+The final granularity shall be determined during operational workflow design.
+
+5.422 WAREHOUSE MANAGEMENT
+CS-INV-FR-010 — Maintain Warehouse
+The system shall support controlled warehouse definitions.
+A warehouse may contain one or more eligible stock locations.
+Conceptually:
+WAREHOUSE    │    ▼STOCK LOCATIONS    │    ├── LOCATION A    ├── LOCATION B    └── LOCATION C
+Potential warehouses may include:
+CENTRAL MEDICAL STOREPHARMACY WAREHOUSELABORATORY STOREGENERAL SUPPLY STORE
+The final warehouse structure shall depend on hospital operations.
+
+5.423 DEPARTMENT STOCK LOCATION
+CS-INV-FR-011 — Maintain Department Stock Location
+The system shall support stock locations associated with eligible hospital departments.
+Example:
+DEPARTMENTEmergency
+STOCK LOCATIONEmergency Supply Room
+Another:
+DEPARTMENTOperation Theatre
+STOCK LOCATIONOT Sterile Store
+This allows CuraSphere to answer:
+HOW MUCH STOCK EXISTSIN CENTRAL STORE?
+and separately:
+HOW MUCH STOCK EXISTSIN EMERGENCY?
+
+5.424 SUPPLIER MANAGEMENT
+CS-INV-FR-012 — Maintain Supplier
+The system shall maintain eligible supplier information.
+Conceptual Supplier Model
+SUPPLIER   │   ├── Supplier ID   ├── Supplier Code   ├── Supplier Name   ├── Contact Information   ├── Address Context   ├── Registration Information   ├── Tax Context   ├── Active Status   └── Approval Context
+Sensitive or regulated supplier information shall be managed according to applicable governance requirements.
+
+CS-INV-FR-013 — Create Supplier
+The system shall allow authorized users to create an eligible supplier.
+Validation May Include
+SUPPLIER NAME VALID?SUPPLIER CODE UNIQUE?REQUIRED CONTACT INFORMATION?REQUIRED REGISTRATION INFORMATION?USER AUTHORIZED?
+
+CS-INV-FR-014 — Update Supplier
+The system shall allow authorized users to update eligible supplier information.
+Historical purchase orders and goods receipts shall preserve supplier traceability.
+
+CS-INV-FR-015 — Activate or Deactivate Supplier
+The system shall support supplier activation and deactivation.
+Inactive suppliers shall not normally be selectable for new purchase orders.
+Historical procurement records shall remain accessible.
+
+CS-INV-FR-016 — Search Suppliers
+Authorized users shall be able to search suppliers using applicable criteria.
+Search criteria may include:
+supplier code;
+supplier name;
+contact information;
+registration information;
+active status.
+
+5.425 PURCHASE REQUISITION
+CS-PRC-FR-001 — Create Purchase Requisition
+Requirement Name
+Create Purchase Requisition
+Description
+The system shall allow an authorized user to create a purchase requisition for eligible hospital inventory requirements.
+Priority
+Must Have
+Conceptual Model
+PURCHASE REQUISITION          │          ├── Requisition ID          ├── Requesting Department          ├── Requested By          ├── Requested Date          ├── Required Date          ├── Priority          ├── Justification          └── Status
+Workflow
+DEPARTMENT REQUIREMENT         │         ▼CREATE REQUISITION         │         ▼ADD REQUIRED ITEMS         │         ▼ENTER QUANTITIES         │         ▼ENTER JUSTIFICATION         │         ▼SAVE DRAFT         │         ▼SUBMIT
+Business Rule
+CS-INV-BR-004
+A purchase requisition represents an internal request for procurement and shall not itself be treated as a supplier purchase order.
+
+CS-PRC-FR-002 — Generate Requisition Identifier
+The system shall generate a unique purchase requisition identifier.
+Example:
+PR-00000421
+
+5.426 PURCHASE REQUISITION ITEM
+CS-PRC-FR-003 — Add Requisition Item
+The system shall allow eligible items to be added to a purchase requisition.
+Conceptual Relationship
+PURCHASE REQUISITION          │          ├── REQUISITION ITEM 1          ├── REQUISITION ITEM 2          ├── REQUISITION ITEM 3          └── REQUISITION ITEM N
+A requisition item may include:
+item;
+requested quantity;
+requested unit;
+required date;
+item justification;
+estimated information where applicable.
+Do not design:
+purchase_requisitionitem1qty1item2qty2item3qty3
+A separate requisition item concept shall be used.
+
+5.427 SUBMIT PURCHASE REQUISITION
+CS-PRC-FR-004 — Submit Purchase Requisition
+The system shall allow an authorized user to submit an eligible draft requisition.
+Preconditions
+Requisition exists.
+Requesting department is valid.
+At least one eligible requisition item exists.
+Requested quantities are valid.
+Required information is complete.
+User is authorized.
+Main Flow
+DRAFT  │  ▼VALIDATE REQUISITION  │  ▼VALIDATE ITEMS  │  ▼VALIDATE QUANTITIES  │  ▼SUBMIT  │  ▼PENDING APPROVAL  │  ▼AUDIT EVENT
+
+5.428 PURCHASE REQUISITION REVIEW
+CS-PRC-FR-005 — Review Purchase Requisition
+Authorized users shall be able to review submitted purchase requisitions.
+The review view may include:
+REQUISITION IDREQUESTING DEPARTMENTREQUESTED BYREQUESTED DATEREQUIRED DATEPRIORITYJUSTIFICATIONITEMSREQUESTED QUANTITYCURRENT STOCK CONTEXTPENDING PROCUREMENT CONTEXT
+Current stock context may be provided as decision support.
+It shall not automatically replace procurement approval policy.
+
+5.429 APPROVE PURCHASE REQUISITION
+CS-PRC-FR-006 — Approve Purchase Requisition
+The system shall allow an authorized approver to approve an eligible purchase requisition.
+Main Flow
+PENDING APPROVAL       │       ▼AUTHORIZED APPROVER       │       ▼REVIEW REQUIREMENT       │       ▼REVIEW STOCK CONTEXT       │       ▼APPROVE       │       ▼APPROVED       │       ▼PROCUREMENT ELIGIBLE
+Business Rule
+CS-INV-BR-005
+Requisition approval authority shall be enforced by the backend.
+A hidden React approval button is not an authorization mechanism.
+
+5.430 REJECT PURCHASE REQUISITION
+CS-PRC-FR-007 — Reject Purchase Requisition
+The system shall allow an authorized approver to reject an eligible purchase requisition.
+Rejected requisitions shall preserve:
+WHO REJECTED?WHEN?WHY?WHAT WAS REQUESTED?
+
+CS-PRC-FR-008 — Record Requisition Decision Reason
+The system shall record applicable approval or rejection reason information where required by procurement policy.
+Example:
+REJECTION REASONCurrent central warehouse stock is sufficientfor the requested department quantity.
+Weak reason:
+No
+The system should encourage meaningful decision context.
+
+5.431 PURCHASE REQUISITION STATUS
+CS-PRC-FR-009 — Track Requisition Status
+The system shall track purchase requisition status.
+Conceptual State Model
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼PROCUREMENT_IN_PROGRESS  │  ▼FULFILLED
+Alternative state:
+CANCELLED
+The final state vocabulary shall be defined during Procurement Domain Architecture.
+
+5.432 PURCHASE ORDER CREATION
+CS-PRC-FR-010 — Create Purchase Order
+Requirement Name
+Create Purchase Order
+Description
+The system shall allow authorized procurement users to create a purchase order for an eligible supplier.
+Priority
+Must Have
+Critical Distinction
+PURCHASE REQUISITION
+answers:
+What does the hospital or department need?
+PURCHASE ORDER
+answers:
+What has the hospital formally ordered from a supplier?
+Therefore:
+PURCHASE REQUISITION          ≠PURCHASE ORDER
+Conceptual Purchase Order
+PURCHASE ORDER       │       ├── Purchase Order ID       ├── Supplier       ├── Order Date       ├── Expected Delivery Date       ├── Currency       ├── Procurement Context       ├── Total Amount       └── Status
+Main Flow
+APPROVED REQUIREMENT        │        ▼SELECT SUPPLIER        │        ▼CREATE PURCHASE ORDER        │        ▼ADD ORDER ITEMS        │        ▼ENTER QUANTITIES        │        ▼ENTER UNIT PRICES        │        ▼CALCULATE TOTAL        │        ▼SUBMIT FOR APPROVAL
+
+CS-PRC-FR-011 — Generate Purchase Order Identifier
+The system shall generate a unique purchase order identifier.
+Example:
+PO-00000291
+
+CS-PRC-FR-012 — Associate Supplier With Purchase Order
+Each eligible purchase order shall reference an approved supplier.
+Business Rule
+CS-INV-BR-006
+An inactive or ineligible supplier shall not normally be selected for a new purchase order.
+
+5.433 PURCHASE ORDER ITEMS
+CS-PRC-FR-013 — Add Purchase Order Item
+The system shall allow eligible items to be added to a purchase order.
+Conceptually:
+PURCHASE ORDER       │       ├── PO ITEM 1       ├── PO ITEM 2       ├── PO ITEM 3       └── PO ITEM N
+A purchase order item may include:
+inventory item;
+ordered quantity;
+procurement unit;
+unit price;
+line amount;
+requisition reference;
+expected delivery context.
+
+CS-PRC-FR-014 — Record Ordered Quantity
+The system shall record the quantity ordered from the supplier.
+Example:
+ITEMSurgical Gloves MediumORDERED QUANTITY500UNITPAIR
+
+CS-PRC-FR-015 — Record Procurement Unit Price
+The system shall record the applicable supplier procurement unit price.
+Example:
+UNIT PRICEPKR 150.00
+Financial values shall use approved decimal monetary precision.
+
+5.434 PURCHASE ORDER CALCULATION
+CS-PRC-FR-016 — Calculate Purchase Order Amount
+The system shall calculate purchase order line and total amounts according to approved procurement calculation rules.
+Conceptually:
+LINE AMOUNT     =ORDERED QUANTITY     ×UNIT PRICE
+Example:
+500 × 150    │    ▼75,000 PKR
+Purchase order total:
+SUM OF ELIGIBLEPURCHASE ORDER LINES
+Authoritative procurement calculations shall occur in trusted backend logic.
+
+5.435 PURCHASE ORDER APPROVAL
+CS-PRC-FR-017 — Submit Purchase Order for Approval
+The system shall allow an eligible draft purchase order to be submitted for approval.
+DRAFT  │  ▼VALIDATE SUPPLIER  │  ▼VALIDATE ITEMS  │  ▼VALIDATE QUANTITIES  │  ▼VALIDATE PRICES  │  ▼CALCULATE TOTAL  │  ▼SUBMIT  │  ▼PENDING APPROVAL
+
+CS-PRC-FR-018 — Approve Purchase Order
+The system shall allow an authorized approver to approve an eligible purchase order.
+The system shall maintain:
+APPROVED BYAPPROVED ATAPPROVAL CONTEXT
+Approval thresholds may depend on procurement value or hospital policy.
+The detailed approval matrix shall be defined during Security and Procurement Architecture.
+
+CS-PRC-FR-019 — Reject Purchase Order
+The system shall allow an authorized approver to reject an eligible purchase order.
+The rejection reason shall be recorded.
+
+5.436 ISSUE PURCHASE ORDER
+CS-PRC-FR-020 — Issue Purchase Order
+The system shall allow an approved purchase order to enter an issued state.
+Conceptually:
+APPROVED   │   ▼ISSUED   │   ▼SUPPLIER FULFILLMENT EXPECTED
+The actual supplier communication mechanism may include future:
+PDF DOCUMENTEMAILSUPPLIER PORTALPROCUREMENT INTEGRATION
+No supplier communication technology is finalized by this SRS.
+
+5.437 PURCHASE ORDER STATUS
+CS-PRC-FR-021 — Track Purchase Order Status
+The system shall track purchase order status.
+Conceptual State Model
+DRAFT  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼ISSUED  │  ▼PARTIALLY_RECEIVED  │  ▼FULLY_RECEIVED  │  ▼CLOSED
+Alternative paths may include:
+CANCELLED
+The final state model shall be defined during Procurement Domain Architecture.
+
+5.438 GOODS RECEIPT
+CS-INV-FR-017 — Create Goods Receipt
+Requirement Name
+Create Goods Receipt
+Description
+The system shall allow authorized users to record eligible goods physically received from a supplier.
+Priority
+Must Have
+Critical Distinction
+Purchase order:
+ORDERED1,000 gloves
+Supplier delivers:
+DELIVERED700 gloves
+Therefore:
+ORDERED QUANTITY       ≠RECEIVED QUANTITY
+The system shall record actual receipt.
+Conceptual Goods Receipt
+GOODS RECEIPT      │      ├── Goods Receipt ID      ├── Supplier      ├── Purchase Order      ├── Supplier Delivery Reference      ├── Receipt Date      ├── Received By      ├── Destination Location      └── Status
+Main Flow
+SUPPLIER DELIVERY       │       ▼SELECT PURCHASE ORDER       │       ▼CREATE GOODS RECEIPT       │       ▼RECORD RECEIVED ITEMS       │       ▼RECORD RECEIVED QUANTITIES       │       ▼RECORD ACCEPTED / REJECTED QUANTITY       │       ▼RECORD BATCH / LOT       │       ▼RECORD EXPIRY       │       ▼VALIDATE RECEIPT       │       ▼COMPLETE GOODS RECEIPT       │       ▼CREATE STOCK ENTRY MOVEMENTS
+
+CS-INV-FR-018 — Generate Goods Receipt Identifier
+The system shall generate a unique goods receipt identifier.
+Example:
+GRN-00000721
+The identifier may be referred to operationally as a Goods Receipt Note number.
+
+CS-INV-FR-019 — Link Goods Receipt to Purchase Order
+The system shall maintain applicable traceability between a goods receipt and purchase order.
+Conceptually:
+PURCHASE ORDERPO-291   │   ▼GOODS RECEIPTGRN-721
+A purchase order may have:
+GRN-721GRN-735GRN-750
+where partial deliveries occur.
+Therefore:
+ONE PURCHASE ORDER        │        ▼ONE OR MORE GOODS RECEIPTS
+may be supported.
+
+5.439 GOODS RECEIPT ITEM
+CS-INV-FR-020 — Record Received Item
+The system shall record each eligible item received.
+Conceptually:
+GOODS RECEIPT      │      ├── RECEIPT ITEM 1      ├── RECEIPT ITEM 2      └── RECEIPT ITEM N
+Each receipt item may reference:
+purchase order item;
+inventory item;
+received quantity;
+accepted quantity;
+rejected quantity;
+receipt unit;
+batch context.
+
+CS-INV-FR-021 — Record Received Quantity
+The system shall record actual received quantity.
+Example:
+ORDERED1,000
+Actual delivery:
+RECEIVED700
+The system records:
+700
+not:
+1,000
+merely because 1,000 was ordered.
+
+5.440 PARTIAL GOODS RECEIPT
+CS-INV-FR-022 — Support Partial Goods Receipt
+The system shall support partial receipt of eligible purchase order items.
+Example:
+ORDERED1,000 VIALS
+First delivery:
+400 VIALS
+Purchase order status:
+PARTIALLY_RECEIVED
+Remaining:
+600 VIALS
+Second delivery:
+600 VIALS
+Total valid receipt:
+1,000 VIALS
+Purchase order may become:
+FULLY_RECEIVED
+according to applicable workflow.
+
+5.441 EXCESS RECEIPT PREVENTION
+CS-INV-FR-023 — Prevent Invalid Excess Receipt
+The system shall prevent receipt quantities from exceeding approved procurement quantities unless an explicitly authorized over-receipt policy exists.
+Example:
+ORDERED1,000
+Previously received:
+700
+Remaining:
+300
+New receipt request:
+500
+Validation:
+500 > 300   │   ▼REJECT
+unless approved over-receipt rules permit otherwise.
+Business Rule
+CS-INV-BR-007
+Cumulative eligible receipt quantity shall not exceed the applicable purchase order quantity without an approved exception.
+
+5.442 ACCEPTED AND REJECTED RECEIPT QUANTITY
+CS-INV-FR-024 — Record Accepted Quantity
+The system shall record the quantity accepted into usable inventory.
+Example:
+RECEIVED100
+Inspection result:
+ACCEPTED90
+
+CS-INV-FR-025 — Record Rejected Quantity
+The system shall record rejected receipt quantity.
+Example:
+RECEIVED100
+ACCEPTED90
+REJECTED10
+Validation:
+ACCEPTED + REJECTED          =RECEIVED
+subject to approved receipt rules.
+
+CS-INV-FR-026 — Record Receipt Rejection Reason
+The system shall record the applicable reason for rejected goods.
+Potential reasons may include:
+DAMAGEDEXPIREDNEAR EXPIRYWRONG ITEMWRONG SPECIFICATIONTEMPERATURE CONDITION FAILUREPACKAGING FAILUREQUANTITY DISCREPANCYOTHER APPROVED REASON
+The exact reason catalog shall be configurable.
+
+5.443 COMPLETE GOODS RECEIPT
+CS-INV-FR-027 — Complete Goods Receipt
+The system shall allow an authorized user to complete an eligible goods receipt.
+Preconditions
+Goods receipt exists.
+Supplier context is valid.
+Purchase order context is valid where required.
+Receipt items exist.
+Received quantities are valid.
+Accepted and rejected quantities are valid.
+Required batch information is available.
+Required expiry information is available.
+Destination stock location is valid.
+User is authorized.
+Main Flow
+GOODS RECEIPT DRAFT        │        ▼VALIDATE PURCHASE ORDER        │        ▼VALIDATE RECEIPT ITEMS        │        ▼VALIDATE QUANTITIES        │        ▼VALIDATE BATCH DATA        │        ▼VALIDATE EXPIRY DATA        │        ▼BEGIN TRANSACTION        │        ▼COMPLETE GOODS RECEIPT        │        ▼CREATE / ASSOCIATE BATCHES        │        ▼CREATE STOCK ENTRY MOVEMENTS        │        ▼UPDATE STOCK PROJECTION        │        ▼UPDATE PURCHASE ORDER RECEIPT STATE        │        ▼COMMIT        │        ▼AUDIT EVENT
+Transaction Requirement
+Goods receipt completion and stock entry shall use an appropriate consistency boundary.
+Weak sequence:
+COMPLETE GRN
+Server fails before:
+ADD STOCK
+Result:
+GOODS RECEIPT SAYSITEMS WERE RECEIVEDBUTSTOCK DOES NOT EXIST
+Another weak sequence:
+ADD STOCK
+then goods receipt completion fails.
+Result:
+STOCK EXISTSBUTNO RECEIPT EXPLAINSWHERE IT CAME FROM
+The architecture shall prevent inconsistent partial completion where possible.
+
+5.444 BATCH AND LOT MANAGEMENT
+CS-INV-FR-028 — Create Batch or Lot
+The system shall create or register eligible batch or lot information for batch-controlled inventory items.
+Priority
+Must Have
+Conceptual Batch Model
+BATCH / LOT     │     ├── Batch ID     ├── Item     ├── Manufacturer Batch Number     ├── Manufacturing Date     ├── Expiry Date     ├── Supplier Context     ├── Receipt Context     └── Batch Status
+Critical Principle
+The following is insufficient:
+ITEMParacetamol
+QUANTITY5,000
+A real system may need:
+BATCH A2,000 tabletsExpiry: 2026-12-31
+and:
+BATCH B3,000 tabletsExpiry: 2027-06-30
+Therefore:
+ITEM STOCK    │    ▼BATCH-SPECIFIC STOCK
+shall be supported where applicable.
+
+CS-INV-FR-029 — Record Batch or Lot Number
+The system shall record the manufacturer or supplier batch or lot number where applicable.
+Example:
+BATCH NUMBERPCM-26-0712-A
+The batch number shall maintain item context.
+The final uniqueness rule shall be defined during Inventory Data Architecture.
+
+CS-INV-FR-030 — Record Manufacturing Date
+The system should support recording manufacturing date where applicable.
+Example:
+MANUFACTURED2026-06-01
+
+CS-INV-FR-031 — Record Expiry Date
+The system shall record expiry date for applicable expiry-controlled inventory.
+Example:
+EXPIRY DATE2027-05-31
+
+5.445 EXPIRY VALIDATION
+CS-INV-FR-032 — Validate Expiry Information
+The system shall validate expiry information according to approved inventory rules.
+Validation may include:
+EXPIRY REQUIRED?EXPIRY DATE VALID?MANUFACTURING DATE VALID?EXPIRY AFTER MANUFACTURING DATE?ITEM EXPIRY TRACKED?BATCH INFORMATION COMPLETE?
+Example invalid context:
+MANUFACTURING DATE2026-07-01EXPIRY DATE2026-06-01
+Validation:
+EXPIRY < MANUFACTURING        │        ▼REJECT
+
+CS-INV-FR-033 — Associate Batch With Goods Receipt
+The system shall maintain applicable batch-to-receipt traceability.
+Conceptually:
+GOODS RECEIPTGRN-721   │   ▼RECEIPT ITEM   │   ▼BATCHPCM-26-0712-A
+This allows CuraSphere to answer:
+WHICH DELIVERY BROUGHTTHIS BATCH INTO THE HOSPITAL?
+
+5.446 STOCK ENTRY MOVEMENT
+CS-INV-FR-034 — Record Stock Entry Movement
+The system shall create appropriate stock movement records when accepted inventory enters a stock location.
+Conceptual Movement
+STOCK MOVEMENTTYPEGOODS_RECEIPT_ENTRYITEMParacetamol 500 mgBATCHPCM-26-0712-ALOCATIONMain WarehouseQUANTITY+2,000
+Critical Principle
+Do not only execute:
+stock.quantity += 2000
+without recording why.
+The system shall maintain the event that explains the quantity change.
+
+CS-INV-FR-035 — Generate Stock Movement Identifier
+The system shall generate a unique stock movement identifier.
+Example:
+MOV-00009211
+
+5.447 STOCK MOVEMENT LEDGER
+CS-INV-FR-036 — Maintain Stock Movement Ledger
+Description
+The system shall maintain traceable inventory movement records.
+Priority
+Must Have
+Conceptual Ledger
+STOCK MOVEMENT LEDGER+2,000  GOODS RECEIPT-  500  STOCK TRANSFER OUT+  500  STOCK TRANSFER IN-  100  DEPARTMENT ISSUE-   20  CONSUMPTION+    5  RETURN-    2  DAMAGE ADJUSTMENT
+Each movement may include:
+MOVEMENT IDITEMBATCHSOURCE LOCATIONDESTINATION LOCATIONMOVEMENT TYPEQUANTITYSOURCE EVENT TYPESOURCE EVENT IDACTORTIMESTAMP
+Business Rule
+CS-INV-BR-008
+Each authoritative stock quantity change shall be explainable by an eligible inventory movement or approved inventory event.
+
+5.448 STOCK AVAILABILITY
+CS-INV-FR-037 — Calculate Stock Availability
+The system shall calculate or derive eligible stock availability.
+Conceptually:
+PHYSICAL / ON-HAND STOCK          │          ▼LESS APPLICABLE RESERVATIONS          │          ▼AVAILABLE STOCK
+Simplified concept:
+AVAILABLE    =ON HAND    -RESERVED
+where reservation architecture is enabled.
+Without reservation:
+AVAILABLE    =ELIGIBLE ON-HAND STOCK
+The exact calculation shall be defined during Inventory Domain Architecture.
+Important Requirement
+Stock availability may depend on:
+LOCATIONBATCH STATUSEXPIRY STATUSQUARANTINE STATUSRESERVATION STATUS
+Therefore:
+SELECT SUM(quantity)FROM inventory;
+may not represent usable stock.
+
+5.449 VIEW STOCK BY LOCATION
+CS-INV-FR-038 — View Stock by Location
+Authorized users shall be able to view eligible stock by location.
+Example:
+ITEMSurgical Gloves Medium────────────────────────────CENTRAL STORE1,000 pairsEMERGENCY150 pairsOPERATION THEATRE300 pairsWARD A75 pairs────────────────────────────TOTAL ON-HAND1,525 pairs
+The view shall clearly distinguish location-specific stock.
+
+5.450 VIEW STOCK BY BATCH
+CS-INV-FR-039 — View Stock by Batch
+Authorized users shall be able to view eligible batch-level stock.
+Example:
+ITEMParacetamol 500 mg────────────────────────────────BATCHPCM-AEXPIRY31 DEC 2026QUANTITY1,000────────────────────────────────BATCHPCM-BEXPIRY30 JUN 2027QUANTITY3,000
+This supports expiry control and FEFO selection.
+
+5.451 NEGATIVE STOCK PREVENTION
+CS-INV-FR-040 — Prevent Invalid Negative Stock
+The system shall prevent stock operations that create invalid negative stock where negative inventory is prohibited.
+Example:
+AVAILABLE100
+Issue request:
+150
+Validation:
+150 > 100    │    ▼REJECT
+Concurrency Requirement
+The following race condition shall be considered:
+AVAILABLE STOCK100
+User A requests:
+80
+User B requests:
+50
+Both read:
+100 AVAILABLE
+Both succeed.
+Result:
+-30
+The inventory architecture shall use appropriate concurrency control.
+The exact strategy may include:
+DATABASE TRANSACTIONROW-LEVEL LOCKINGOPTIMISTIC CONCURRENCYATOMIC QUANTITY VALIDATION
+The final strategy shall be defined during PostgreSQL and .NET Architecture.
+
+5.452 STOCK TRANSFER
+CS-INV-FR-041 — Create Stock Transfer
+Description
+The system shall allow authorized users to create an eligible stock transfer between stock locations.
+Priority
+Must Have
+Conceptual Model
+STOCK TRANSFER      │      ├── Transfer ID      ├── Source Location      ├── Destination Location      ├── Requested By      ├── Dispatched By      ├── Received By      └── Status
+Workflow
+SOURCE LOCATION      │      ▼CREATE TRANSFER      │      ▼ADD ITEMS / BATCHES      │      ▼VALIDATE STOCK      │      ▼DISPATCH      │      ▼IN TRANSIT      │      ▼DESTINATION RECEIVES      │      ▼COMPLETE TRANSFER
+
+CS-INV-FR-042 — Generate Stock Transfer Identifier
+The system shall generate a unique stock transfer identifier.
+Example:
+TRF-00000381
+
+CS-INV-FR-043 — Record Source Location
+Each stock transfer shall reference a valid source stock location.
+
+CS-INV-FR-044 — Record Destination Location
+Each stock transfer shall reference a valid destination stock location.
+Business Rule
+CS-INV-BR-009
+The source and destination location shall not be identical for an ordinary stock transfer.
+
+5.453 STOCK TRANSFER ITEM
+CS-INV-FR-045 — Add Stock Transfer Item
+The system shall allow eligible stock items and batches to be added to a stock transfer.
+A transfer item may include:
+ITEMBATCHQUANTITYUNIT
+
+CS-INV-FR-046 — Validate Transfer Quantity
+The system shall validate requested transfer quantities against eligible source stock.
+Validation may include:
+ITEM EXISTS?BATCH EXISTS?SOURCE LOCATION HAS BATCH?QUANTITY > 0?SUFFICIENT AVAILABLE STOCK?BATCH USABLE?USER AUTHORIZED?
+
+5.454 DISPATCH STOCK TRANSFER
+CS-INV-FR-047 — Dispatch Stock Transfer
+The system shall allow an authorized user to dispatch an eligible stock transfer.
+Conceptually:
+SOURCE STOCK-100
+Stock may enter:
+IN TRANSIT
+The final in-transit stock representation shall be defined during Inventory Domain Architecture.
+Important Problem
+Weak implementation:
+source.quantity -= 100;destination.quantity += 100;
+at dispatch time.
+Operationally, the destination may not yet have received the stock.
+A stronger concept is:
+SOURCE  │  ▼DISPATCH  │  ▼IN TRANSIT  │  ▼RECEIVE  │  ▼DESTINATION
+
+5.455 RECEIVE STOCK TRANSFER
+CS-INV-FR-048 — Receive Stock Transfer
+The system shall allow an authorized destination user to receive an eligible dispatched stock transfer.
+Main Flow
+IN TRANSIT TRANSFER        │        ▼DESTINATION USER        │        ▼REVIEW ITEMS        │        ▼CONFIRM RECEIPT        │        ▼BEGIN TRANSACTION        │        ▼COMPLETE TRANSFER        │        ▼CREATE DESTINATION STOCK MOVEMENT        │        ▼UPDATE STOCK PROJECTION        │        ▼COMMIT
+The final discrepancy handling workflow shall be defined during Detailed Design.
+
+5.456 STOCK TRANSFER STATUS
+CS-INV-FR-049 — Track Stock Transfer Status
+The system shall track stock transfer status.
+Conceptual State Model
+DRAFT  │  ▼READY_FOR_DISPATCH  │  ▼DISPATCHED  │  ▼IN_TRANSIT  │  ▼RECEIVED  │  ▼COMPLETED
+Alternative states may include:
+CANCELLEDREJECTEDDISCREPANCY_REVIEW
+The final state model shall be defined during Inventory Domain Architecture.
+
+5.457 DEPARTMENT STOCK ISSUE
+CS-INV-FR-050 — Create Department Stock Issue
+The system shall allow authorized users to issue eligible stock to a hospital department or approved departmental stock location.
+Conceptual Workflow
+CENTRAL STORE      │      ▼DEPARTMENT REQUIREMENT      │      ▼CREATE STOCK ISSUE      │      ▼ADD ITEMS      │      ▼VALIDATE STOCK      │      ▼COMPLETE ISSUE      │      ▼DEPARTMENT STOCK
+Critical Distinction
+STOCK TRANSFER
+may represent movement between managed stock locations.
+DEPARTMENT ISSUE
+may represent controlled issuance to a department according to hospital operational policy.
+The final distinction shall be formalized during Inventory Domain Architecture.
+
+CS-INV-FR-051 — Generate Stock Issue Identifier
+The system shall generate a unique stock issue identifier.
+Example:
+ISS-00000621
+
+CS-INV-FR-052 — Add Stock Issue Item
+The system shall allow eligible inventory items and batches to be added to a stock issue.
+
+CS-INV-FR-053 — Validate Stock Issue Quantity
+The system shall validate issue quantity against eligible available stock.
+Expired or otherwise unusable stock shall not be counted as available for ordinary issue.
+
+5.458 COMPLETE STOCK ISSUE
+CS-INV-FR-054 — Complete Stock Issue
+The system shall allow authorized users to complete an eligible department stock issue.
+Main Flow
+STOCK ISSUE DRAFT       │       ▼VALIDATE DEPARTMENT       │       ▼VALIDATE ITEMS       │       ▼VALIDATE BATCHES       │       ▼VALIDATE QUANTITIES       │       ▼BEGIN TRANSACTION       │       ▼COMPLETE ISSUE       │       ▼CREATE STOCK MOVEMENTS       │       ▼UPDATE STOCK PROJECTION       │       ▼COMMIT       │       ▼AUDIT EVENT
+
+5.459 STOCK CONSUMPTION
+CS-INV-FR-055 — Record Stock Consumption
+Description
+The system shall record eligible consumption of inventory stock.
+Priority
+Must Have
+Examples:
+LAB TEST PERFORMED       │       ▼REAGENT CONSUMPTION
+SURGERY PERFORMED       │       ▼SURGICAL SUPPLY CONSUMPTION
+PHARMACY DISPENSING       │       ▼MEDICATION STOCK CONSUMPTION
+WARD PROCEDURE       │       ▼CONSUMABLE USAGE
+Conceptual Movement
+MOVEMENT TYPECONSUMPTIONQUANTITY-5
+
+5.460 CONSUMPTION SOURCE TRACEABILITY
+CS-INV-FR-056 — Link Consumption to Source Event
+The system shall maintain applicable traceability between stock consumption and the business event that caused it.
+Example:
+STOCK CONSUMPTIONCON-501   │   ▼SOURCE DOMAINLABORATORY   │   ▼SOURCE TYPELAB_TEST_EXECUTION   │   ▼SOURCE IDLAB-TEST-921
+Another:
+CONSUMPTION   │   ▼SOURCE DOMAINPHARMACY   │   ▼SOURCE TYPEDISPENSING   │   ▼SOURCE IDDSP-721
+The system shall be able to explain:
+WHY DID STOCK DECREASE?
+
+5.461 DUPLICATE CONSUMPTION PREVENTION
+CS-INV-FR-057 — Prevent Duplicate Consumption
+The system shall prevent unintended duplicate stock consumption for a source event where the applicable rule permits one consumption event.
+Example:
+DSP-721
+consumes:
+20 TABLETS
+The integration request is retried.
+Weak result:
+-20-20
+Total:
+-40
+Correct requirement:
+SOURCE EVENT      │      ▼CONSUMPTION ALREADY RECORDED?      │   ┌──┴──┐   │     │  YES    NO   │     │   ▼     ▼IDEMPOTENT CREATERESPONSE
+Business Rule
+CS-INV-BR-010
+Source-generated inventory consumption shall support appropriate duplicate prevention.
+
+5.462 STOCK RETURN
+CS-INV-FR-058 — Create Stock Return
+The system shall allow eligible stock to be returned according to approved inventory workflow.
+Potential return contexts include:
+DEPARTMENT TO STORELOCATION TO SOURCE LOCATIONUNUSED STOCK RETURN
+A return shall preserve:
+ITEMBATCHQUANTITYSOURCE LOCATIONDESTINATION LOCATIONRETURN REASONORIGINAL ISSUE / TRANSFER CONTEXT
+where applicable.
+
+CS-INV-FR-059 — Validate Stock Return
+The system shall validate stock return eligibility.
+Validation may include:
+ORIGINAL ISSUE EXISTS?ITEM MATCHES?BATCH MATCHES?RETURN QUANTITY VALID?RETURNABLE QUANTITY EXISTS?ITEM CONDITION ACCEPTABLE?USER AUTHORIZED?
+Example:
+Original issue:
+100
+Already returned:
+30
+Remaining potentially returnable:
+70
+New return request:
+90
+Validation:
+90 > 70   │   ▼REJECT
+
+CS-INV-FR-060 — Complete Stock Return
+The system shall allow authorized users to complete an eligible stock return.
+Completion shall create appropriate stock movement effects.
+
+5.463 SUPPLIER RETURN
+CS-INV-FR-061 — Create Supplier Return
+The system shall support controlled return of eligible stock to a supplier.
+Potential reasons may include:
+DAMAGED GOODSWRONG ITEMQUALITY FAILURERECALLEXPIRED OR NEAR-EXPIRY DISPUTESUPPLIER AGREEMENTOTHER APPROVED REASON
+Conceptual Model
+SUPPLIER RETURN       │       ├── Return ID       ├── Supplier       ├── Goods Receipt Context       ├── Item       ├── Batch       ├── Quantity       ├── Reason       └── Status
+
+CS-INV-FR-062 — Complete Supplier Return
+The system shall allow authorized users to complete an eligible supplier return.
+Completion shall:
+VALIDATE STOCK      │      ▼VALIDATE SUPPLIER CONTEXT      │      ▼VALIDATE RETURN QUANTITY      │      ▼CREATE STOCK OUT MOVEMENT      │      ▼COMPLETE SUPPLIER RETURN      │      ▼AUDIT EVENT
+Financial credit or supplier settlement shall be handled through an approved procurement-financial integration workflow.
+
+5.464 STOCK ADJUSTMENT
+CS-INV-FR-063 — Create Stock Adjustment
+Description
+The system shall support controlled stock adjustments.
+Priority
+Must Have
+Potential contexts:
+DAMAGEBREAKAGESPILLAGECOUNT VARIANCEDOCUMENTED LOSSDATA CORRECTIONOTHER APPROVED REASON
+Weak Design
+stock.quantity = 500;
+No explanation.
+Required Concept
+CURRENT STOCK550
+Physical or approved correction context:
+500
+Adjustment:
+-50
+with:
+REASONDocumented damaged stock
+Conceptual Model
+STOCK ADJUSTMENT       │       ├── Adjustment ID       ├── Item       ├── Batch       ├── Location       ├── Adjustment Quantity       ├── Direction       ├── Reason       ├── Authorized By       ├── Performed By       └── Timestamp
+
+CS-INV-FR-064 — Record Adjustment Reason
+The system shall record a meaningful reason for stock adjustment.
+Weak reason:
+Fix
+Stronger reason:
+Physical count identified five damagedvials in cold storage. Damage verifiedduring supervised stock inspection.
+
+CS-INV-FR-065 — Record Adjustment Authorization
+The system shall maintain applicable authorization context for controlled stock adjustments.
+High-value or sensitive stock adjustments may require additional approval.
+The exact approval threshold shall be defined by hospital inventory policy.
+
+CS-INV-FR-066 — Complete Stock Adjustment
+The system shall allow authorized users to complete eligible stock adjustments.
+Main Flow
+ADJUSTMENT DRAFT       │       ▼VALIDATE ITEM       │       ▼VALIDATE BATCH       │       ▼VALIDATE LOCATION       │       ▼VALIDATE QUANTITY       │       ▼VALIDATE REASON       │       ▼VALIDATE AUTHORIZATION       │       ▼BEGIN TRANSACTION       │       ▼COMPLETE ADJUSTMENT       │       ▼CREATE STOCK MOVEMENT       │       ▼UPDATE STOCK PROJECTION       │       ▼COMMIT       │       ▼AUDIT EVENT
+
+5.465 STOCK COUNT
+CS-INV-FR-067 — Create Stock Count
+The system shall allow authorized users to create an inventory stock count process.
+Conceptual Model
+STOCK COUNT     │     ├── Count ID     ├── Location     ├── Count Date     ├── Count Type     ├── Created By     ├── Counted By     ├── Reviewed By     └── Status
+Potential count types may include:
+FULL COUNTCYCLE COUNTCATEGORY COUNTBATCH COUNTITEM-SPECIFIC COUNT
+
+CS-INV-FR-068 — Record Physical Count Quantity
+The system shall allow authorized users to record physically counted stock quantities.
+Example:
+SYSTEM QUANTITY1,000
+Physical count:
+985
+The physical count shall be recorded as:
+985
+The system shall not silently overwrite the system quantity during count entry.
+
+5.466 STOCK COUNT VARIANCE
+CS-INV-FR-069 — Compare System and Physical Quantity
+The system shall calculate stock count variance.
+Conceptually:
+VARIANCE    =PHYSICAL COUNT    -SYSTEM QUANTITY
+Example:
+PHYSICAL985SYSTEM1,000VARIANCE-15
+Another:
+PHYSICAL1,020SYSTEM1,000VARIANCE+20
+
+CS-INV-FR-070 — Reconcile Stock Count Variance
+The system shall support controlled reconciliation of eligible stock count variances.
+Important Principle
+A stock count variance shall not automatically execute:
+stock.quantity = physical_count;
+without approved reconciliation.
+Conceptually:
+STOCK COUNT     │     ▼VARIANCE     │     ▼REVIEW     │     ▼APPROVAL REQUIRED?     │  ┌──┴──┐  │     │ YES    NO  │     │  ▼     ▼APPROVE PROCESS  │  ▼PROCESS     │     ▼STOCK ADJUSTMENT     │     ▼RECONCILED
+
+5.467 REORDER CONFIGURATION
+CS-INV-FR-071 — Maintain Reorder Configuration
+The system shall support reorder configuration for eligible inventory items and locations.
+Potential configuration may include:
+REORDER LEVELMINIMUM STOCKMAXIMUM STOCKREORDER QUANTITYSAFETY STOCKLEAD TIME
+The final inventory planning model shall be defined during Supply Chain Architecture.
+Example
+ITEMSurgical Gloves MediumLOCATIONCentral StoreREORDER LEVEL1,000REORDER QUANTITY5,000
+
+5.468 LOW-STOCK IDENTIFICATION
+CS-INV-FR-072 — Identify Low Stock
+The system shall identify eligible inventory stock that meets approved low-stock conditions.
+Conceptually:
+AVAILABLE STOCK       │       ▼COMPARE WITH REORDER LEVEL       │    ┌──┴──┐    │     │  ABOVE  AT / BELOW    │     │    ▼     ▼ NORMAL  LOW STOCK
+Example:
+AVAILABLE800REORDER LEVEL1,000
+Result:
+LOW STOCK
+Important Requirement
+Low-stock logic may be location-specific.
+CENTRAL STORE5,000
+does not necessarily mean:
+EMERGENCY STOCKSUFFICIENT
+Emergency may have:
+10
+Therefore stock monitoring shall consider applicable location context.
+
+5.469 REORDER RECOMMENDATION
+CS-INV-FR-073 — Generate Reorder Recommendation
+The system should support generating procurement recommendations for eligible low-stock items.
+Priority
+Should Have
+Conceptually:
+LOW STOCK    │    ▼REORDER CONFIGURATION    │    ▼PENDING PURCHASE ORDERS    │    ▼PENDING RECEIPTS    │    ▼USAGE CONTEXT    │    ▼REORDER RECOMMENDATION
+The system shall not automatically assume:
+LOW STOCK    =CREATE PURCHASE ORDER
+without approved procurement workflow.
+A recommendation is not a purchase order.
+
+5.470 NEAR-EXPIRY STOCK
+CS-INV-FR-074 — Identify Near-Expiry Stock
+The system shall identify eligible stock approaching expiry according to configured monitoring rules.
+Example:
+CURRENT DATE14 JUL 2026BATCH EXPIRY31 JUL 2026
+Configured near-expiry window:
+30 DAYS
+Result:
+NEAR EXPIRY
+Potential monitoring periods may include:
+30 DAYS60 DAYS90 DAYS180 DAYS
+The actual policy shall be configurable.
+
+5.471 EXPIRED STOCK
+CS-INV-FR-075 — Identify Expired Stock
+The system shall identify expired stock.
+Conceptually:
+CURRENT DATE     │     ▼COMPARE WITH EXPIRY DATE     │     ▼CURRENT DATE > EXPIRY DATE?     │   ┌─┴─┐   │   │  YES  NO   │   │   ▼   ▼EXPIRED VALID BY EXPIRY RULE
+The exact expiry boundary and time-zone handling shall be defined during Detailed Design.
+
+5.472 PREVENT EXPIRED STOCK USAGE
+CS-INV-FR-076 — Prevent Invalid Expired Stock Usage
+The system shall prevent expired stock from ordinary eligible issue, transfer for use, dispensing, or consumption where such use is prohibited.
+Example:
+BATCHPCM-ASTATUSEXPIRED
+Issue request:
+20 TABLETS
+Result:
+REJECT
+Business Rule
+CS-INV-BR-011
+Expired inventory shall not be treated as ordinary usable stock.
+The final quarantine, disposal, and exceptional regulatory workflow shall be documented separately.
+
+5.473 FEFO STOCK SELECTION
+CS-INV-FR-077 — Support FEFO Stock Selection
+The system shall support First-Expire, First-Out stock selection for applicable expiry-controlled inventory.
+Priority
+Must Have
+Example:
+BATCH AEXPIRY31 DEC 2026QUANTITY500
+BATCH BEXPIRY30 JUN 2027QUANTITY1,000
+Issue request:
+200
+FEFO recommendation:
+BATCH A
+because:
+31 DEC 2026     <30 JUN 2027
+Critical Principle
+FEFO is:
+FIRST EXPIREFIRST OUT
+It is not automatically the same as:
+FIFOFIRST INFIRST OUT
+For expiry-sensitive hospital inventory, FEFO may be operationally required.
+The system shall support the applicable selection strategy.
+
+5.474 STOCK RESERVATION ARCHITECTURE
+CS-INV-FR-078 — Support Stock Reservation Architecture
+The system should support future stock reservation workflows.
+Priority
+Should Have
+Potential use cases:
+SURGERY SCHEDULED      │      ▼SURGICAL KIT REQUIREMENT      │      ▼RESERVE STOCK
+Another:
+APPROVED DEPARTMENT REQUEST      │      ▼RESERVE STOCK FOR ISSUE
+Conceptually:
+ON HAND100
+Reserved:
+30
+Available:
+70
+The final reservation architecture shall define:
+reservation source;
+reserved quantity;
+expiration;
+release;
+fulfillment;
+cancellation.
+
+5.475 SEARCH INVENTORY TRANSACTIONS
+CS-INV-FR-079 — Search Inventory Transactions
+Authorized users shall be able to search eligible inventory transactions.
+Search criteria may include:
+ITEM CODEITEM NAMEBATCH NUMBERMOVEMENT IDPURCHASE ORDER IDGOODS RECEIPT IDTRANSFER IDISSUE IDSUPPLIERSOURCE LOCATIONDESTINATION LOCATIONMOVEMENT TYPEDATE RANGEACTOR
+Search results shall preserve transaction type context.
+The interface shall not display every inventory event simply as:
+TRANSACTION
+without explaining whether it was:
+GOODS RECEIPTTRANSFERISSUECONSUMPTIONRETURNSUPPLIER RETURNADJUSTMENT
+
+5.476 INVENTORY AUDIT EVENTS
+CS-INV-FR-080 — Record Inventory Audit Events
+The system shall record appropriate audit events for significant inventory and procurement operations.
+Potential events include:
+ITEM_CREATEDITEM_UPDATEDITEM_DEACTIVATEDSUPPLIER_CREATEDSUPPLIER_UPDATEDSUPPLIER_DEACTIVATEDPURCHASE_REQUISITION_CREATEDPURCHASE_REQUISITION_SUBMITTEDPURCHASE_REQUISITION_APPROVEDPURCHASE_REQUISITION_REJECTEDPURCHASE_ORDER_CREATEDPURCHASE_ORDER_SUBMITTEDPURCHASE_ORDER_APPROVEDPURCHASE_ORDER_REJECTEDPURCHASE_ORDER_ISSUEDGOODS_RECEIPT_CREATEDGOODS_RECEIPT_COMPLETEDBATCH_CREATEDSTOCK_ENTRY_CREATEDSTOCK_TRANSFER_CREATEDSTOCK_TRANSFER_DISPATCHEDSTOCK_TRANSFER_RECEIVEDSTOCK_ISSUE_CREATEDSTOCK_ISSUE_COMPLETEDSTOCK_CONSUMPTION_RECORDEDSTOCK_RETURN_CREATEDSTOCK_RETURN_COMPLETEDSUPPLIER_RETURN_CREATEDSUPPLIER_RETURN_COMPLETEDSTOCK_ADJUSTMENT_CREATEDSTOCK_ADJUSTMENT_AUTHORIZEDSTOCK_ADJUSTMENT_COMPLETEDSTOCK_COUNT_CREATEDSTOCK_COUNT_COMPLETEDSTOCK_VARIANCE_RECONCILED
+Example
+EVENTSTOCK_ADJUSTMENT_COMPLETEDTARGETADJ-000192ITEMMED-PARA-500BATCHPCM-ALOCATIONMAIN-WH-A1QUANTITY EFFECT-50ACTORUSR-INV-021TIME2026-07-14 18:30RESULTSUCCESS
+
+5.477 INVENTORY STATE TRANSITION VALIDATION
+CS-INV-FR-081 — Prevent Invalid Inventory State Transition
+The system shall enforce approved inventory and procurement state transitions.
+Purchase Requisition Example
+Valid:
+DRAFT  │  ▼SUBMITTED  │  ▼APPROVED
+Invalid:
+DRAFT  │  ▼FULFILLED
+without applicable procurement workflow.
+Purchase Order Example
+Valid:
+APPROVED   │   ▼ISSUED   │   ▼PARTIALLY_RECEIVED
+Invalid:
+REJECTED   │   ▼FULLY_RECEIVED
+through ordinary receipt workflow.
+Stock Transfer Example
+Valid:
+DRAFT  │  ▼DISPATCHED  │  ▼IN_TRANSIT  │  ▼RECEIVED
+Invalid:
+DRAFT  │  ▼RECEIVED
+without dispatch.
+Business Rules
+CS-INV-BR-012
+Inventory states shall follow approved transitions.
+CS-INV-BR-013
+The ASP.NET Core backend shall reject invalid inventory state transitions.
+CS-INV-BR-014
+React shall not be the authoritative inventory state engine.
+
+5.478 BARCODE ARCHITECTURE
+CS-INV-FR-082 — Support Barcode Architecture
+The CuraSphere architecture should permit barcode-based inventory identification and workflow.
+Priority
+Should Have
+Potential workflow:
+SCAN BARCODE      │      ▼RESOLVE ITEM / BATCH      │      ▼VALIDATE WORKFLOW CONTEXT      │      ▼RECORD INVENTORY ACTION
+Potential uses include:
+GOODS RECEIPTSTOCK COUNTSTOCK TRANSFERDEPARTMENT ISSUEPHARMACY STOCK HANDLINGBATCH IDENTIFICATION
+Scope Statement
+This SRS does not finalize:
+barcode symbology;
+barcode printer;
+scanner model;
+GS1 implementation;
+QR code strategy;
+manufacturer barcode compatibility.
+These shall be evaluated during Integration and Hardware Architecture.
+
+5.479 PROCUREMENT FINANCIAL INTEGRATION
+CS-INV-FR-083 — Support Procurement Financial Integration
+The system should permit integration between procurement and approved financial or accounting systems.
+Priority
+Should Have
+Conceptually:
+PURCHASE ORDER      │      ▼GOODS RECEIPT      │      ▼SUPPLIER INVOICE CONTEXT      │      ▼FINANCIAL VALIDATION      │      ▼ACCOUNTING / PAYABLE SYSTEM
+A future three-way matching concept may include:
+PURCHASE ORDER      │      ├───────────────┐      │               │      ▼               ▼GOODS RECEIPT   SUPPLIER INVOICE      │               │      └───────┬───────┘              ▼         THREE-WAY MATCH
+Questions may include:
+WHAT WAS ORDERED?WHAT WAS RECEIVED?WHAT WAS INVOICED BY THE SUPPLIER?
+The detailed Accounts Payable and General Ledger architecture shall be documented separately.
+
+5.480 INVENTORY REPORTING READ MODELS
+CS-INV-FR-084 — Support Inventory Reporting Read Models
+The system shall support authorized inventory and procurement reporting read models.
+Potential reports include:
+CURRENT STOCK SUMMARYSTOCK BY LOCATIONSTOCK BY BATCHLOW-STOCK REPORTOUT-OF-STOCK REPORTNEAR-EXPIRY REPORTEXPIRED STOCK REPORTSTOCK MOVEMENT REPORTSTOCK CONSUMPTION REPORTDEPARTMENT ISSUE REPORTSTOCK RETURN REPORTSTOCK ADJUSTMENT REPORTSTOCK COUNT VARIANCE REPORTSUPPLIER PROCUREMENT REPORTPURCHASE REQUISITION SUMMARYPURCHASE ORDER SUMMARYPENDING DELIVERY REPORTGOODS RECEIPT REPORTITEM USAGE SUMMARY
+Conceptually:
+INVENTORY TRANSACTION DATA            │            ▼REPORTING PROJECTION / READ MODEL            │            ▼INVENTORY DASHBOARD
+Complex dashboard queries shall not automatically execute uncontrolled aggregation across every operational table.
+The detailed read model architecture shall be defined during System Architecture.
+
+5.481 INVENTORY ENTITY RELATIONSHIP CONCEPT
+The following is a conceptual domain relationship.
+It is not the final PostgreSQL ERD.
+ITEM │ ├────────────► ITEM CATEGORY │ ├────────────► UNIT CONFIGURATION │ └────────────► REORDER CONFIGURATION
+Procurement:
+PURCHASE REQUISITION          │          ▼REQUISITION ITEM          │          ▼ITEM
+SUPPLIER    │    ▼PURCHASE ORDER    │    ▼PURCHASE ORDER ITEM    │    ▼ITEM
+Receipt:
+PURCHASE ORDER       │       ▼GOODS RECEIPT       │       ▼GOODS RECEIPT ITEM       │       ▼BATCH / LOT       │       ▼STOCK MOVEMENT
+Inventory:
+ITEM │ ▼BATCH │ ▼STOCK LOCATION │ ▼STOCK MOVEMENT │ ▼STOCK PROJECTION
+
+5.482 PROCUREMENT RELATIONSHIP MODEL
+DEPARTMENT     │     ▼PURCHASE REQUISITION     │     ▼REQUISITION ITEMS     │     ▼APPROVAL     │     ▼PURCHASE ORDER     │     ▼PURCHASE ORDER ITEMS     │     ▼SUPPLIER
+Important:
+REQUISITION ITEM       ≠PURCHASE ORDER ITEM
+A requisition may request:
+1,000 gloves
+Procurement may decide:
+PO A → Supplier A → 600 glovesPO B → Supplier B → 400 gloves
+Therefore the final architecture shall permit appropriate requirement-to-procurement traceability.
+
+5.483 GOODS RECEIPT RELATIONSHIP MODEL
+PURCHASE ORDER      │      ▼PURCHASE ORDER ITEM      │      ▼GOODS RECEIPT ITEM      │      ▼BATCH / LOT      │      ▼STOCK ENTRY MOVEMENT      │      ▼STOCK LOCATION
+This allows CuraSphere to trace:
+ITEM ↓BATCH ↓GOODS RECEIPT ↓PURCHASE ORDER ↓SUPPLIER
+
+5.484 STOCK MOVEMENT RELATIONSHIP MODEL
+                     STOCK MOVEMENT                           │       ┌───────────────────┼────────────────────┐       │                   │                    │       ▼                   ▼                    ▼      ITEM               BATCH              LOCATION                                                │                                      ┌─────────┴─────────┐                                      │                   │                                      ▼                   ▼                               SOURCE LOCATION     DESTINATION LOCATION
+Movement source:
+STOCK MOVEMENT      │      ▼SOURCE EVENT      │      ├── GOODS RECEIPT      ├── STOCK TRANSFER      ├── STOCK ISSUE      ├── CONSUMPTION      ├── STOCK RETURN      ├── SUPPLIER RETURN      └── STOCK ADJUSTMENT
+
+5.485 INVENTORY QUANTITY MODEL
+The inventory quantity model shall conceptually distinguish:
+ON-HAND QUANTITY
+RESERVED QUANTITY
+AVAILABLE QUANTITY
+IN-TRANSIT QUANTITY
+QUARANTINED QUANTITY
+where applicable.
+Conceptually:
+TOTAL PHYSICAL CONTEXT          │          ├── USABLE ON-HAND          ├── RESERVED          ├── IN TRANSIT          ├── QUARANTINED          └── EXPIRED / NON-USABLE
+The final stock projection model shall be defined during Inventory Domain Architecture.
+
+5.486 COMPLETE PROCUREMENT WORKFLOW MODEL
+DEPARTMENT IDENTIFIES REQUIREMENT                 │                 ▼        CREATE REQUISITION                 │                 ▼         ADD REQUIRED ITEMS                 │                 ▼          SUBMIT REQUISITION                 │                 ▼            APPROVAL REVIEW                 │          ┌──────┴──────┐          │             │          ▼             ▼       REJECT         APPROVE          │             │          ▼             ▼         END      PROCUREMENT REVIEW                        │                        ▼                 SELECT SUPPLIER                        │                        ▼               CREATE PURCHASE ORDER                        │                        ▼                 ADD ORDER ITEMS                        │                        ▼                CALCULATE PO TOTAL                        │                        ▼                 SUBMIT FOR APPROVAL                        │                 ┌──────┴──────┐                 │             │                 ▼             ▼              REJECT         APPROVE                 │             │                 ▼             ▼                END           ISSUE PO                                │                                ▼                         SUPPLIER DELIVERY                                │                                ▼                         CREATE GOODS RECEIPT                                │                                ▼                        RECORD ACTUAL QUANTITY                                │                                ▼                      ACCEPT / REJECT QUANTITIES                                │                                ▼                         RECORD BATCH / LOT                                │                                ▼                           RECORD EXPIRY                                │                                ▼                       COMPLETE GOODS RECEIPT                                │                                ▼                         CREATE STOCK ENTRY                                │                                ▼                         INVENTORY AVAILABLE
+
+5.487 COMPLETE INVENTORY MOVEMENT MODEL
+                         STOCK ENTRY                              │                              ▼                       CENTRAL WAREHOUSE                              │             ┌────────────────┼────────────────┐             │                │                │             ▼                ▼                ▼       STOCK TRANSFER   DEPARTMENT ISSUE   SUPPLIER RETURN             │                │                │             ▼                ▼                ▼      OTHER LOCATION    DEPARTMENT STOCK    STOCK OUT             │                │             │                ▼             │           CONSUMPTION             │                │             │         ┌──────┴──────┐             │         │             │             │         ▼             ▼             │      USED          RETURNABLE             │                         │             │                         ▼             │                    STOCK RETURN             │                         │             └─────────────┬───────────┘                           ▼                    STOCK MOVEMENT LEDGER                           │                           ▼                    STOCK PROJECTION
+
+5.488 INVENTORY SEQUENCE MODEL
+REQUESTER  PROCUREMENT  INVENTORY API  DATABASE  STOREKEEPER  REPORTING    │           │             │            │          │           │    │ Create PR │             │            │          │           │    ├──────────►│             │            │          │           │    │           │ Save PR     │            │          │           │    │           ├────────────►│            │          │           │    │           │             ├───────────►│          │           │    │           │             │            │          │           │    │           │ Create PO   │            │          │           │    │           ├────────────►│            │          │           │    │           │             ├───────────►│          │           │    │           │             │            │          │           │    │           │             │◄──────────────────────┤ Receive   │    │           │             │            │          │ Goods     │    │           │             │ Validate PO│          │           │    │           │             ├───────────►│          │           │    │           │             │            │          │           │    │           │             │ Complete GRN          │           │    │           │             ├───────────►│          │           │    │           │             │            │          │           │    │           │             │ Stock Entry│          │           │    │           │             ├───────────►│          │           │    │           │             │            │          │           │    │           │             │ Inventory Projection              │    │           │             ├──────────────────────────────────►│
+This is a conceptual sequence model.
+Detailed UML sequence diagrams shall be created during Detailed Design.
+
+5.489 INVENTORY STATE MODELS
+Purchase Requisition State
+DRAFT  │  ▼SUBMITTED  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼PROCUREMENT_IN_PROGRESS  │  ▼FULFILLED
+
+Purchase Order State
+DRAFT  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼ISSUED  │  ▼PARTIALLY_RECEIVED  │  ▼FULLY_RECEIVED  │  ▼CLOSED
+
+Goods Receipt State
+DRAFT  │  ▼IN_REVIEW  │  ▼VALIDATED  │  ▼COMPLETED
+Alternative:
+CANCELLED
+
+Stock Transfer State
+DRAFT  │  ▼READY_FOR_DISPATCH  │  ▼DISPATCHED  │  ▼IN_TRANSIT  │  ▼RECEIVED  │  ▼COMPLETED
+
+Stock Adjustment State
+DRAFT  │  ▼PENDING_APPROVAL  │  ├────────► REJECTED  │  ▼APPROVED  │  ▼COMPLETED
+
+Stock Count State
+DRAFT  │  ▼COUNTING  │  ▼COUNT_COMPLETED  │  ▼VARIANCE_REVIEW  │  ▼RECONCILED  │  ▼CLOSED
+The final state vocabularies shall be defined during Inventory and Procurement Domain Architecture.
+
+5.490 INVENTORY BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-INV-BR-001
+Each inventory item shall have a unique identity
+CS-INV-BR-002
+Item codes shall be unique within applicable scope
+CS-INV-BR-003
+Inactive items shall not normally support new stock transactions
+CS-INV-BR-004
+Purchase requisition shall not be treated as a purchase order
+CS-INV-BR-005
+Requisition approval authority shall be backend enforced
+CS-INV-BR-006
+Ineligible suppliers shall not normally support new purchase orders
+CS-INV-BR-007
+Receipt quantity shall not exceed approved order quantity without approved exception
+CS-INV-BR-008
+Authoritative stock changes shall maintain movement traceability
+CS-INV-BR-009
+Ordinary stock transfers shall use different source and destination locations
+CS-INV-BR-010
+Source-generated consumption shall support duplicate prevention
+CS-INV-BR-011
+Expired stock shall not be treated as ordinary usable inventory
+CS-INV-BR-012
+Inventory states shall follow approved transitions
+CS-INV-BR-013
+Backend shall reject invalid inventory state transitions
+CS-INV-BR-014
+React shall not be the authoritative inventory state engine
+
+5.491 INVENTORY PERMISSION CONCEPT
+Potential inventory and procurement permissions include:
+INV_ITEM_VIEWINV_ITEM_CREATEINV_ITEM_UPDATEINV_ITEM_ACTIVATEINV_CATEGORY_MANAGEINV_UOM_MANAGEINV_LOCATION_VIEWINV_LOCATION_MANAGEINV_STOCK_VIEWINV_BATCH_VIEWINV_SUPPLIER_VIEWINV_SUPPLIER_CREATEINV_SUPPLIER_UPDATEPRC_REQUISITION_VIEWPRC_REQUISITION_CREATEPRC_REQUISITION_SUBMITPRC_REQUISITION_APPROVEPRC_REQUISITION_REJECTPRC_PO_VIEWPRC_PO_CREATEPRC_PO_UPDATEPRC_PO_SUBMITPRC_PO_APPROVEPRC_PO_REJECTPRC_PO_ISSUEINV_GRN_VIEWINV_GRN_CREATEINV_GRN_COMPLETEINV_TRANSFER_VIEWINV_TRANSFER_CREATEINV_TRANSFER_DISPATCHINV_TRANSFER_RECEIVEINV_ISSUE_VIEWINV_ISSUE_CREATEINV_ISSUE_COMPLETEINV_CONSUMPTION_VIEWINV_CONSUMPTION_CREATEINV_RETURN_VIEWINV_RETURN_CREATEINV_RETURN_COMPLETEINV_SUPPLIER_RETURN_VIEWINV_SUPPLIER_RETURN_CREATEINV_SUPPLIER_RETURN_COMPLETEINV_ADJUSTMENT_VIEWINV_ADJUSTMENT_CREATEINV_ADJUSTMENT_APPROVEINV_ADJUSTMENT_COMPLETEINV_STOCK_COUNT_VIEWINV_STOCK_COUNT_CREATEINV_STOCK_COUNT_RECORDINV_STOCK_COUNT_RECONCILEINV_REPORT_VIEW
+Example Storekeeper Concept
+STOREKEEPER    │    ├── INV_ITEM_VIEW    ├── INV_LOCATION_VIEW    ├── INV_STOCK_VIEW    ├── INV_BATCH_VIEW    ├── INV_GRN_VIEW    ├── INV_GRN_CREATE    ├── INV_GRN_COMPLETE    ├── INV_TRANSFER_VIEW    ├── INV_TRANSFER_CREATE    ├── INV_TRANSFER_DISPATCH    ├── INV_TRANSFER_RECEIVE    ├── INV_ISSUE_VIEW    ├── INV_ISSUE_CREATE    ├── INV_ISSUE_COMPLETE    ├── INV_RETURN_VIEW    └── INV_RETURN_COMPLETE
+The storekeeper shall not automatically receive:
+PRC_PO_APPROVEINV_ADJUSTMENT_APPROVE
+Example Procurement Officer Concept
+PROCUREMENT OFFICER        │        ├── INV_ITEM_VIEW        ├── INV_SUPPLIER_VIEW        ├── PRC_REQUISITION_VIEW        ├── PRC_PO_VIEW        ├── PRC_PO_CREATE        ├── PRC_PO_UPDATE        ├── PRC_PO_SUBMIT        └── PRC_PO_ISSUE
+Approval permissions shall remain separately controlled.
+
+5.492 REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Need
+Functional Requirement Group
+Manage inventory items
+CS-INV-FR-001 to 005
+Manage item categories and units
+CS-INV-FR-006 to 008
+Manage stock locations
+CS-INV-FR-009 to 011
+Manage suppliers
+CS-INV-FR-012 to 016
+Create purchase requisitions
+CS-PRC-FR-001 to 004
+Review and approve requisitions
+CS-PRC-FR-005 to 009
+Create purchase orders
+CS-PRC-FR-010 to 016
+Approve and issue purchase orders
+CS-PRC-FR-017 to 021
+Receive supplier goods
+CS-INV-FR-017 to 027
+Track batches and expiry
+CS-INV-FR-028 to 033
+Record stock entry
+CS-INV-FR-034 to 036
+Calculate stock availability
+CS-INV-FR-037
+View location and batch stock
+CS-INV-FR-038 to 039
+Prevent negative stock
+CS-INV-FR-040
+Transfer stock
+CS-INV-FR-041 to 049
+Issue departmental stock
+CS-INV-FR-050 to 054
+Record stock consumption
+CS-INV-FR-055 to 057
+Process stock returns
+CS-INV-FR-058 to 060
+Process supplier returns
+CS-INV-FR-061 to 062
+Adjust stock
+CS-INV-FR-063 to 066
+Perform stock counts
+CS-INV-FR-067 to 070
+Monitor reorder levels
+CS-INV-FR-071 to 073
+Monitor expiry
+CS-INV-FR-074 to 076
+Support FEFO
+CS-INV-FR-077
+Support stock reservation
+CS-INV-FR-078
+Search inventory transactions
+CS-INV-FR-079
+Inventory auditing
+CS-INV-FR-080
+Inventory state integrity
+CS-INV-FR-081
+Barcode architecture
+CS-INV-FR-082
+Procurement financial integration
+CS-INV-FR-083
+Inventory reporting
+CS-INV-FR-084
+
+5.493 INVENTORY AND PROCUREMENT RISK ANALYSIS
+Risk 1 — One Inventory Table Stores Everything
+Problem
+itemsupplierquantityexpirydepartment
+are stored in one record.
+Impact
+Procurement, batch, location, and movement traceability become unreliable.
+Mitigation
+Separate item, procurement, receipt, batch, location, and movement concepts.
+
+Risk 2 — Quantity Changes Without Movement History
+Problem
+stock.quantity -= 20;
+Impact
+The system cannot explain why stock decreased.
+Mitigation
+Maintain stock movement provenance.
+
+Risk 3 — Ordered Quantity Treated as Received Quantity
+Problem
+Purchase order contains 1,000 units.
+Supplier delivers 700.
+System adds 1,000 to stock.
+Impact
+Stock is overstated by 300.
+Mitigation
+Record actual goods receipt quantities.
+
+Risk 4 — No Partial Goods Receipt
+Problem
+The system assumes one purchase order equals one delivery.
+Impact
+Real supplier delivery workflows cannot be represented.
+Mitigation
+Support one or more goods receipts against eligible purchase orders.
+
+Risk 5 — Excess Receipt Is Not Validated
+Problem
+Ordered:
+1,000
+Received:
+1,500
+System accepts automatically.
+Impact
+Procurement and stock inconsistency.
+Mitigation
+Validate cumulative receipt quantity.
+
+Risk 6 — No Batch Tracking
+Problem
+All medication stock is stored as:
+Paracetamol = 5,000
+Impact
+Expiry and recall traceability become impossible.
+Mitigation
+Maintain applicable batch or lot identity.
+
+Risk 7 — Current Stock Includes Expired Batches
+Problem
+Dashboard displays:
+AVAILABLE = 5,000
+but:
+3,000
+are expired.
+Impact
+Users believe usable stock is available.
+Mitigation
+Separate usable and non-usable stock context.
+
+Risk 8 — FIFO Used Where FEFO Is Required
+Problem
+Oldest received batch is issued first even though another batch expires sooner.
+Impact
+Avoidable expiry and waste.
+Mitigation
+Support FEFO selection for applicable items.
+
+Risk 9 — Negative Stock Race Condition
+Problem
+Two users simultaneously issue the same stock.
+Impact
+Stock becomes negative.
+Mitigation
+Use database-level concurrency control and transactional validation.
+
+Risk 10 — Transfer Immediately Adds Destination Stock
+Problem
+Stock is dispatched but not physically received.
+Destination already sees stock as available.
+Impact
+The destination may issue stock it does not possess.
+Mitigation
+Represent transfer and in-transit workflow.
+
+Risk 11 — Stock Consumption Duplicated by Integration Retry
+Problem
+Pharmacy sends the same dispensing event twice.
+Impact
+Stock decreases twice.
+Mitigation
+Use source event identity and idempotency.
+
+Risk 12 — Stock Return Exceeds Original Issue
+Problem
+Issued:
+100
+Returned:
+150
+Impact
+Stock is artificially increased.
+Mitigation
+Validate returnable quantity.
+
+Risk 13 — Direct Stock Adjustment
+Problem
+User directly changes:
+quantity = 500
+Impact
+Inventory history disappears.
+Mitigation
+Use controlled stock adjustment events.
+
+Risk 14 — Physical Count Automatically Overwrites Stock
+Problem
+A counting mistake immediately changes authoritative stock.
+Impact
+Inventory becomes incorrect.
+Mitigation
+Separate count, variance review, and reconciliation.
+
+Risk 15 — Approval Controlled Only by React
+Problem
+Approval button is hidden from ordinary users.
+A user directly calls:
+POST /api/purchase-orders/291/approve
+Impact
+Unauthorized procurement approval.
+Mitigation
+ASP.NET Core backend authorization policies.
+
+Risk 16 — Requisition and Purchase Order Are the Same
+Problem
+Department requests automatically become supplier orders.
+Impact
+Procurement control is bypassed.
+Mitigation
+Separate internal requirement from external procurement commitment.
+
+Risk 17 — No Supplier Historical Traceability
+Problem
+Supplier record is overwritten or deleted.
+Impact
+Historical purchase orders lose procurement provenance.
+Mitigation
+Preserve supplier identity and historical relationships.
+
+Risk 18 — Low Stock Uses Hospital-Wide Total Only
+Problem
+Central warehouse has sufficient stock.
+Emergency department has zero stock.
+Dashboard reports:
+STOCK SUFFICIENT
+Impact
+Operational shortages are hidden.
+Mitigation
+Support location-specific reorder and stock monitoring.
+
+5.494 COMPLETE INVENTORY CAPABILITY MODEL
+              INVENTORY AND PROCUREMENT                         │        ┌────────────────┼────────────────┐        │                │                │        ▼                ▼                ▼    ITEM MASTER      PROCUREMENT      STOCK CONTROL        │                │                │        ├── Item          ├── PR           ├── Location        ├── Category      ├── Approval     ├── Batch        ├── Unit          ├── PO           ├── Movement        └── Tracking      └── Supplier     └── Balance                              │                              ▼                         GOODS RECEIPT                              │                    ┌─────────┼─────────┐                    │         │         │                    ▼         ▼         ▼                 RECEIVED  ACCEPTED  REJECTED                              │                              ▼                           BATCH / LOT                              │                              ▼                         STOCK ENTRY                              │             ┌────────────────┼─────────────────┐             │                │                 │             ▼                ▼                 ▼         TRANSFER           ISSUE          SUPPLIER RETURN             │                │             ▼                ▼         LOCATION       DEPARTMENT STOCK                              │                              ▼                         CONSUMPTION                              │                     ┌────────┴────────┐                     │                 │                     ▼                 ▼                   USED              RETURN                                         │                                         ▼                                 STOCK MOVEMENT LEDGER                                         │                                         ▼                                  STOCK PROJECTION                                         │                    ┌────────────────────┼───────────────────┐                    │                    │                   │                    ▼                    ▼                   ▼                LOW STOCK           NEAR EXPIRY       STOCK COUNT                    │                    │                   │                    ▼                    ▼                   ▼                 REORDER            EXPIRY ACTION        VARIANCE                                                              │                                                              ▼                                                        RECONCILIATION
+
+5.495 INVENTORY MODULE COMPLETION STATUS
+Module: Inventory, Procurement and Hospital Supply Chain Management SystemModule Code: INV/PRCInventory Requirement Range: CS-INV-FR-001 to CS-INV-FR-084Procurement Requirement Range: CS-PRC-FR-001 to CS-PRC-FR-021Business Rule Range: CS-INV-BR-001 to CS-INV-BR-014
+Inventory Domain Boundary: DefinedProcurement Domain Boundary: DefinedItem Master: DefinedItem Identity: DefinedItem Category: DefinedUnit of Measure: DefinedItem Unit Configuration: DefinedStorage Location: DefinedWarehouse: DefinedDepartment Stock Location: DefinedSupplier Management: DefinedSupplier Identity: DefinedSupplier Activation: DefinedPurchase Requisition: DefinedRequisition Identity: DefinedRequisition Item: DefinedRequisition Submission: DefinedRequisition Review: DefinedRequisition Approval: DefinedRequisition Rejection: DefinedRequisition Decision Reason: DefinedRequisition State Model: DefinedPurchase Order: DefinedPurchase Order Identity: DefinedSupplier-to-PO Relationship: DefinedPurchase Order Item: DefinedOrdered Quantity: DefinedProcurement Unit Price: DefinedPurchase Order Calculation: DefinedPurchase Order Approval: DefinedPurchase Order Rejection: DefinedPurchase Order Issue: DefinedPurchase Order State Model: DefinedGoods Receipt: DefinedGoods Receipt Identity: DefinedPO-to-Goods Receipt Relationship: DefinedReceived Item: DefinedReceived Quantity: DefinedPartial Goods Receipt: DefinedExcess Receipt Prevention: DefinedAccepted Quantity: DefinedRejected Quantity: DefinedReceipt Rejection Reason: DefinedGoods Receipt Completion: DefinedGoods Receipt Transaction Boundary: DefinedBatch and Lot Management: DefinedBatch Number: DefinedManufacturing Date: DefinedExpiry Date: DefinedExpiry Validation: DefinedBatch-to-Receipt Traceability: DefinedStock Entry Movement: DefinedStock Movement Identity: DefinedStock Movement Ledger: DefinedStock Availability: DefinedStock by Location: DefinedStock by Batch: DefinedNegative Stock Prevention: DefinedInventory Concurrency Risk: DefinedStock Transfer: DefinedTransfer Identity: DefinedSource Location: DefinedDestination Location: DefinedTransfer Item: DefinedTransfer Quantity Validation: DefinedTransfer Dispatch: DefinedIn-Transit Concept: DefinedTransfer Receipt: DefinedTransfer State Model: DefinedDepartment Stock Issue: DefinedStock Issue Identity: DefinedStock Issue Item: DefinedStock Issue Quantity Validation: DefinedStock Issue Completion: DefinedStock Consumption: DefinedConsumption Source Traceability: DefinedDuplicate Consumption Prevention: DefinedStock Return: DefinedStock Return Validation: DefinedStock Return Completion: DefinedSupplier Return: DefinedSupplier Return Completion: DefinedStock Adjustment: DefinedAdjustment Reason: DefinedAdjustment Authorization: DefinedStock Adjustment Completion: DefinedStock Count: DefinedPhysical Count: DefinedStock Variance: DefinedStock Reconciliation: DefinedReorder Configuration: DefinedLow-Stock Identification: DefinedReorder Recommendation: DefinedNear-Expiry Identification: DefinedExpired Stock Identification: DefinedExpired Stock Usage Prevention: DefinedFEFO Stock Selection: DefinedStock Reservation Boundary: DefinedInventory Search: DefinedInventory Audit Events: DefinedInventory State Integrity: DefinedBarcode Integration Boundary: DefinedProcurement Financial Integration Boundary: DefinedInventory Reporting Read Models: DefinedInventory Risk Analysis: DefinedRequirement Traceability: Established
+Status: Functional Requirements Draft Completed
+The Inventory, Procurement and Hospital Supply Chain Management requirements establish the physical supply and stock control workflow of CuraSphere.
+These requirements shall later be transformed into:
+Inventory use case specification;
+Procurement use case specification;
+Item Master use case;
+Supplier Management use case;
+Purchase Requisition use case;
+Requisition Approval use case;
+Purchase Order use case;
+Purchase Order Approval use case;
+Goods Receipt use case;
+Batch Registration use case;
+Stock Transfer use case;
+Department Stock Issue use case;
+Stock Consumption use case;
+Stock Return use case;
+Supplier Return use case;
+Stock Adjustment use case;
+Stock Count use case;
+Stock Reconciliation use case;
+Reorder Monitoring use case;
+Expiry Monitoring use case;
+purchase requisition activity diagram;
+purchase order activity diagram;
+goods receipt activity diagram;
+stock transfer activity diagram;
+stock issue activity diagram;
+stock consumption activity diagram;
+stock return activity diagram;
+stock adjustment activity diagram;
+stock count activity diagram;
+Purchase Requisition state machine;
+Purchase Order state machine;
+Goods Receipt state machine;
+Stock Transfer state machine;
+Stock Adjustment state machine;
+Stock Count state machine;
+Create Purchase Requisition sequence diagram;
+Approve Purchase Requisition sequence diagram;
+Create Purchase Order sequence diagram;
+Approve Purchase Order sequence diagram;
+Complete Goods Receipt sequence diagram;
+Dispatch Stock Transfer sequence diagram;
+Receive Stock Transfer sequence diagram;
+Complete Stock Issue sequence diagram;
+Record Stock Consumption sequence diagram;
+Complete Stock Adjustment sequence diagram;
+Reconcile Stock Count sequence diagram;
+Item Master domain model;
+Item Category domain model;
+Unit of Measure domain model;
+Item Unit Conversion domain model;
+Storage Location domain model;
+Warehouse domain model;
+Supplier domain model;
+Purchase Requisition domain model;
+Requisition Item domain model;
+Purchase Order domain model;
+Purchase Order Item domain model;
+Goods Receipt domain model;
+Goods Receipt Item domain model;
+Batch and Lot domain model;
+Stock Movement domain model;
+Stock Projection domain model;
+Stock Transfer domain model;
+Stock Issue domain model;
+Stock Consumption domain model;
+Stock Return domain model;
+Supplier Return domain model;
+Stock Adjustment domain model;
+Stock Count domain model;
+Reorder Configuration domain model;
+PostgreSQL inventory schema;
+PostgreSQL procurement schema;
+stock movement ledger strategy;
+stock projection strategy;
+quantity precision strategy;
+unit conversion strategy;
+batch uniqueness strategy;
+expiry calculation strategy;
+FEFO query strategy;
+negative stock concurrency strategy;
+PostgreSQL locking strategy;
+inventory idempotency strategy;
+stock transfer in-transit strategy;
+goods receipt transaction boundary;
+stock issue transaction boundary;
+stock adjustment transaction boundary;
+stock count reconciliation strategy;
+barcode adapter architecture;
+procurement financial integration architecture;
+React Item Master requirements;
+React Supplier Workspace requirements;
+React Purchase Requisition requirements;
+React Procurement Approval Queue requirements;
+React Purchase Order requirements;
+React Goods Receipt Workspace requirements;
+React Stock Overview requirements;
+React Batch and Expiry requirements;
+React Stock Transfer requirements;
+React Department Issue requirements;
+React Stock Adjustment requirements;
+React Stock Count requirements;
+React Inventory Dashboard requirements;
+ASP.NET Core Item API;
+ASP.NET Core Supplier API;
+ASP.NET Core Purchase Requisition API;
+ASP.NET Core Purchase Order API;
+ASP.NET Core Goods Receipt API;
+ASP.NET Core Batch API;
+ASP.NET Core Stock API;
+ASP.NET Core Stock Movement API;
+ASP.NET Core Stock Transfer API;
+ASP.NET Core Stock Issue API;
+ASP.NET Core Stock Consumption API;
+ASP.NET Core Stock Return API;
+ASP.NET Core Supplier Return API;
+ASP.NET Core Stock Adjustment API;
+ASP.NET Core Stock Count API;
+inventory authorization policies;
+item master tests;
+purchase requisition workflow tests;
+procurement approval tests;
+purchase order calculation tests;
+partial goods receipt tests;
+excess receipt prevention tests;
+batch tracking tests;
+expiry validation tests;
+stock entry transaction tests;
+negative stock tests;
+inventory concurrency tests;
+stock transfer tests;
+in-transit stock tests;
+stock issue tests;
+duplicate consumption tests;
+stock return quantity tests;
+supplier return tests;
+stock adjustment authorization tests;
+stock count variance tests;
+stock reconciliation tests;
+FEFO selection tests;
+low-stock monitoring tests;
+near-expiry tests.
+No final warehouse layout, hospital store structure, item coding standard, unit conversion policy, pharmaceutical batch regulation implementation, supplier approval policy, procurement approval threshold, purchase order legal format, tendering workflow, government procurement rule, tax rule, barcode standard, barcode scanner, barcode printer, GS1 implementation, RFID system, IoT stock sensor, automated dispensing cabinet, inventory costing method, FIFO financial valuation method, weighted average costing method, supplier payment workflow, Accounts Payable architecture, ERP system, PostgreSQL inventory table structure, Entity Framework Core inventory entity structure, stock reservation algorithm, stock forecasting model, or AI-based demand forecasting model has been finalized by this SRS section.
+Those decisions shall be made during Architecture, Procurement Governance, Inventory Domain Design, Security Architecture, Financial Architecture, Integration Architecture, and Detailed Design.
+

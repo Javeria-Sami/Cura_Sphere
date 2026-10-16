@@ -1,0 +1,212 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.17 - Maintainability, Portability & Compatibility Requirements (NFR-08, NFR-09 & NFR-10)
+
+6.17 Maintainability, Portability & Compatibility Requirements
+6.17.1 Introduction
+The Maintainability, Portability, and Compatibility Requirements define how the CuraSphere Hospital Management System shall be designed to support efficient maintenance, future enhancements, deployment across different environments, and interoperability with supported operating systems, browsers, and hardware platforms.
+Healthcare software operates for many years and requires regular updates, bug fixes, security patches, and new feature development. Therefore, CuraSphere shall follow modular design principles, coding standards, and deployment practices that reduce maintenance effort while ensuring compatibility across supported environments.
+
+6.17.2 Objectives
+The Maintainability, Portability, and Compatibility Requirements shall ensure that the system:
+Supports long-term maintenance.
+Simplifies software upgrades.
+Encourages reusable components.
+Enables deployment in different environments.
+Supports multiple operating systems and browsers.
+Minimizes downtime during updates.
+Supports configuration-based customization.
+Maintains compatibility with modern technologies.
+
+6.17.3 Maintainability Architecture
+                Source Code
+                     │
+                     ▼
+           Modular Architecture
+                     │
+        ┌────────────┼────────────┐
+        ▼            ▼            ▼
+ Documentation   Testing     Version Control
+        │            │            │
+        └────────────┼────────────┘
+                     ▼
+             Software Maintenance
+
+6.17.4 Maintainability Requirements
+The system shall be designed to simplify maintenance throughout its lifecycle.
+Maintainability Principles
+Modular architecture
+Loose coupling
+High cohesion
+Reusable components
+Standardized coding practices
+Clear documentation
+Automated testing
+Version control
+
+Business Rules
+NFR-MNT-001
+Each major module shall be independently maintainable without requiring modifications to unrelated modules.
+NFR-MNT-002
+Changes to configuration values should not require recompilation of the application whenever feasible.
+
+6.17.5 Coding Standards
+The development team shall adopt consistent coding standards.
+Standards
+Meaningful class and method names
+Consistent naming conventions
+Layered architecture
+SOLID principles
+DRY (Don't Repeat Yourself)
+KISS (Keep It Simple)
+Proper exception handling
+Inline comments only where necessary
+Comprehensive API documentation
+
+6.17.6 Documentation Standards
+The project shall maintain technical documentation for:
+System Architecture
+API Documentation
+Database Design
+Deployment Guide
+User Manual
+Administrator Guide
+Configuration Guide
+Release Notes
+Change Log
+
+6.17.7 Configuration Management
+The application shall separate configuration from application logic.
+Configurable Items
+Database Connections
+Email Server
+SMS Gateway
+Payment Gateway
+File Storage
+Backup Schedule
+Authentication Settings
+Logging Levels
+Feature Flags
+
+Configuration Workflow
+Configuration File
+        │
+        ▼
+Application Startup
+        │
+        ▼
+Load Configuration
+        │
+        ▼
+Initialize Services
+
+6.17.8 Portability Requirements
+The system shall support deployment across multiple computing environments.
+Supported Deployment Environments
+Development
+Testing
+Staging
+Production
+Supported Infrastructure
+On-Premises Servers
+Virtual Machines
+Docker Containers
+Kubernetes Clusters
+Cloud Platforms
+
+6.17.9 Browser Compatibility
+The web application shall support current stable versions of major browsers.
+Browser
+Support
+Google Chrome
+Full
+Microsoft Edge
+Full
+Mozilla Firefox
+Full
+Safari
+Full (latest stable versions)
+
+6.17.10 Operating System Compatibility
+Platform
+Support
+Windows Server
+Full
+Windows 11
+Full
+Ubuntu Server (LTS)
+Full
+Other Linux Distributions
+Supported where compatible with deployment requirements
+
+6.17.11 Upgrade & Migration Requirements
+The system shall support controlled upgrades with minimal disruption.
+Upgrade Principles
+Database schema versioning
+Backward-compatible APIs where practical
+Rollback procedures
+Automated migration scripts
+Backup before upgrade
+Post-upgrade verification
+
+Upgrade Workflow
+Backup System
+      │
+      ▼
+Deploy Update
+      │
+      ▼
+Run Migration
+      │
+      ▼
+Verify System
+      │
+      ▼
+Resume Operations
+
+6.17.12 Maintainability & Compatibility Testing
+Testing shall include:
+Code Quality Reviews
+Static Code Analysis
+Cross-Browser Testing
+Cross-Platform Testing
+Upgrade Testing
+Regression Testing
+Configuration Validation
+
+6.17.13 Acceptance Criteria
+The system shall be accepted when:
+Modules can be updated independently where designed.
+Supported browsers provide consistent functionality.
+Supported operating systems execute the application successfully.
+Configuration changes can be applied without unnecessary code modifications.
+Upgrade procedures complete successfully with validated rollback capability.
+Documentation is maintained and synchronized with the implemented system.
+
+6.17.14 Maintainability, Portability & Compatibility Traceability Matrix
+Requirement ID
+Functional Area
+NFR-MNT-001
+Maintainability
+NFR-MNT-002
+Coding Standards
+NFR-MNT-003
+Documentation
+NFR-MNT-004
+Configuration Management
+NFR-MNT-005
+Portability
+NFR-MNT-006
+Browser Compatibility
+NFR-MNT-007
+Operating System Compatibility
+NFR-MNT-008
+Upgrade & Migration
+NFR-MNT-009
+Testing
+NFR-MNT-010
+Acceptance Criteria
+
+
+

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CuraSphere.Api/CuraSphere.Api.csproj" />
+  <Project Path="CuraSphere.Application/CuraSphere.Application.csproj" />
+  <Project Path="CuraSphere.Domain/CuraSphere.Domain.csproj" />
+  <Project Path="CuraSphere.Infrastructure/CuraSphere.Infrastructure.csproj" />
+</Solution>

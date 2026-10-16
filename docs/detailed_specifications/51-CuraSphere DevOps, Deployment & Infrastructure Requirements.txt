@@ -1,0 +1,419 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.20 - DevOps, Deployment & Infrastructure Requirements (NFR-13)
+
+6.20 DevOps, Deployment & Infrastructure Requirements
+
+6.20.1 Introduction
+The DevOps, Deployment, and Infrastructure Requirements define how the CuraSphere Hospital Management System shall be developed, tested, deployed, monitored, maintained, and continuously delivered throughout its software lifecycle.
+Healthcare systems require high availability, rapid deployment of security updates, minimal downtime, automated testing, infrastructure consistency, and reliable rollback mechanisms. Therefore, CuraSphere shall implement modern DevOps practices to ensure faster software delivery, improved software quality, operational stability, and secure deployments.
+The DevOps strategy shall support both On-Premises and Cloud environments while maintaining consistent deployment processes across Development, Testing, Staging, and Production environments.
+
+6.20.2 Purpose
+The purpose of this section is to define the infrastructure architecture, deployment strategy, DevOps processes, CI/CD pipeline, environment management, containerization, orchestration, monitoring, and operational procedures required for enterprise deployment.
+
+6.20.3 Objectives
+The DevOps and Infrastructure framework shall:
+Automate software delivery.
+Reduce deployment risks.
+Support continuous integration.
+Support continuous deployment.
+Improve software quality.
+Enable rapid rollback.
+Maintain environment consistency.
+Improve operational monitoring.
+Reduce manual intervention.
+Ensure secure deployments.
+
+6.20.4 Scope
+These requirements apply to:
+Source Code Management
+Build Pipeline
+CI/CD Pipeline
+Infrastructure
+Container Platform
+Application Servers
+Database Servers
+Cloud Services
+Monitoring Infrastructure
+Logging Infrastructure
+Disaster Recovery Infrastructure
+
+6.20.5 Enterprise DevOps Architecture
+                    Developers
+                         │
+                         ▼
+                  GitHub Repository
+                         │
+                         ▼
+                 Pull Request Review
+                         │
+                         ▼
+                Continuous Integration
+                         │
+         ┌───────────────┼──────────────┐
+         ▼               ▼              ▼
+ Static Code      Unit Testing     Security Scan
+    Analysis
+         │
+         ▼
+     Build Artifact
+         │
+         ▼
+ Continuous Deployment Pipeline
+         │
+ ┌───────┼───────────────┬───────────────┐
+ ▼       ▼               ▼               ▼
+Dev    Testing        Staging      Production
+
+6.20.6 Environment Strategy
+The application shall be deployed using separate environments to ensure software quality and deployment safety.
+Environment
+Purpose
+Development
+Feature Development
+QA / Testing
+Functional Testing
+UAT
+User Acceptance Testing
+Staging
+Pre-Production Validation
+Production
+Live Hospital Operations
+Disaster Recovery
+Emergency Operations
+
+6.20.7 Source Code Management
+Source code shall be maintained using Git.
+Repository Structure
+Main Branch
+     │
+ ├── Development
+ │
+ ├── Feature/*
+ │
+ ├── Release/*
+ │
+ └── Hotfix/*
+
+Branch Protection Rules
+Mandatory Pull Requests
+Code Reviews
+Automated Testing
+Security Scanning
+Build Verification
+Signed Commits (Optional)
+
+6.20.8 Continuous Integration (CI)
+Every source code commit shall automatically trigger CI activities.
+
+CI Pipeline
+Developer Commit
+        │
+        ▼
+GitHub Repository
+        │
+        ▼
+CI Trigger
+        │
+ ┌──────┼────────────┐
+ ▼      ▼            ▼
+Build  Unit Test  Security Scan
+        │
+        ▼
+Quality Gate
+        │
+        ▼
+Build Artifact
+
+CI Activities
+Source Code Checkout
+Dependency Installation
+Compilation
+Unit Testing
+Static Code Analysis
+Security Scan
+Code Coverage
+Artifact Packaging
+
+6.20.9 Continuous Deployment (CD)
+The deployment pipeline shall automate application releases.
+
+Deployment Workflow
+Approved Build
+       │
+       ▼
+Deploy to Testing
+       │
+       ▼
+Automated Validation
+       │
+       ▼
+Deploy to Staging
+       │
+       ▼
+User Approval
+       │
+       ▼
+Production Deployment
+
+Deployment Features
+Automated Deployment
+Blue-Green Deployment (optional)
+Rolling Updates
+Canary Deployment (optional)
+Zero-Downtime Deployment
+Rollback Support
+
+6.20.10 Containerization
+The application shall support containerized deployment.
+
+Containers
+Frontend Container
+Backend API Container
+Java Integration Services
+Notification Service
+Monitoring Services
+
+Container Architecture
+Docker Host
+     │
+ ┌───┼────────────────────────┐
+ ▼   ▼        ▼              ▼
+React API Java Services Monitoring
+        │
+        ▼
+ PostgreSQL Database
+
+6.20.11 Container Orchestration
+Where required, Kubernetes shall manage container deployment.
+
+Kubernetes Responsibilities
+Scheduling
+Auto-Healing
+Scaling
+Rolling Updates
+Load Balancing
+Service Discovery
+
+Kubernetes Architecture
+Kubernetes Cluster
+         │
+ ┌───────┼───────────┐
+ ▼       ▼           ▼
+Pod 1   Pod 2      Pod N
+         │
+         ▼
+Load Balancer
+         │
+         ▼
+Database Cluster
+
+6.20.12 Infrastructure Requirements
+The infrastructure shall support enterprise hospital operations.
+
+Infrastructure Components
+Load Balancer
+Web Server
+Application Server
+API Gateway
+Database Cluster
+File Storage
+Backup Server
+Monitoring Server
+Logging Server
+Identity Provider
+
+Infrastructure Architecture
+Users
+   │
+   ▼
+Firewall
+   │
+   ▼
+Load Balancer
+   │
+   ▼
+Application Cluster
+   │
+   ▼
+API Services
+   │
+   ▼
+PostgreSQL Cluster
+
+6.20.13 Cloud Deployment
+The system shall support deployment to:
+Microsoft Azure
+Amazon Web Services (AWS)
+Google Cloud Platform (GCP)
+Private Cloud
+Hybrid Cloud
+
+Cloud Services
+Virtual Machines
+Managed Kubernetes
+Object Storage
+Load Balancers
+Database Services
+Backup Services
+Monitoring Services
+
+6.20.14 Configuration Management
+Application configuration shall be environment-specific.
+
+Configurable Parameters
+Database Connection
+SMTP Configuration
+SMS Gateway
+Authentication Provider
+Storage Location
+API URLs
+Logging Levels
+Feature Flags
+Backup Settings
+
+6.20.15 Infrastructure Security
+Infrastructure security shall include:
+Firewalls
+Network Segmentation
+VPN Access
+TLS Encryption
+Secret Management
+Certificate Management
+Vulnerability Scanning
+Security Monitoring
+
+6.20.16 Release Management
+Every production release shall include:
+Release Notes
+Change Log
+Rollback Plan
+Backup Verification
+Deployment Checklist
+Post-Deployment Validation
+
+Release Workflow
+Approved Release
+        │
+        ▼
+Backup Current Version
+        │
+        ▼
+Deploy New Version
+        │
+        ▼
+Smoke Testing
+        │
+        ▼
+Production Validation
+
+6.20.17 Rollback Strategy
+If deployment fails:
+Stop deployment.
+Restore previous application version.
+Restore database (if required).
+Verify application health.
+Notify stakeholders.
+Investigate root cause.
+
+Rollback Flow
+Deployment Failure
+        │
+        ▼
+Stop Deployment
+        │
+        ▼
+Restore Previous Release
+        │
+        ▼
+Validate Services
+        │
+        ▼
+Resume Operations
+
+6.20.18 DevOps Metrics
+The following Key Performance Indicators (KPIs) shall be monitored:
+Metric
+Target
+Deployment Success Rate
+≥ 99%
+Build Success Rate
+≥ 98%
+Mean Time to Recovery (MTTR)
+≤ 1 Hour
+Deployment Frequency
+Configurable
+Change Failure Rate
+< 5%
+Average Build Time
+≤ 15 Minutes
+Rollback Time
+≤ 15 Minutes
+
+6.20.19 Business Rules
+Rule ID
+Rule
+NFR-DEV-001
+Every deployment shall be traceable.
+NFR-DEV-002
+Production deployments require authorization.
+NFR-DEV-003
+CI/CD pipelines shall execute automated testing before deployment.
+NFR-DEV-004
+Infrastructure configurations shall be version controlled.
+NFR-DEV-005
+Rollback procedures shall be documented and tested.
+NFR-DEV-006
+Secrets shall never be stored in source code repositories.
+NFR-DEV-007
+Infrastructure changes shall be auditable.
+
+6.20.20 Acceptance Criteria
+The DevOps and deployment solution shall be accepted when:
+CI/CD pipelines execute successfully.
+Automated quality gates are enforced.
+Infrastructure provisioning is repeatable and consistent.
+Rollback procedures function correctly.
+Deployments complete without critical service interruption.
+Production environments remain secure and monitored.
+Infrastructure complies with defined operational standards.
+
+6.20.21 Requirement Traceability Matrix
+Requirement ID
+Description
+NFR-DEV-001
+Environment Strategy
+NFR-DEV-002
+Source Code Management
+NFR-DEV-003
+Continuous Integration
+NFR-DEV-004
+Continuous Deployment
+NFR-DEV-005
+Containerization
+NFR-DEV-006
+Kubernetes Orchestration
+NFR-DEV-007
+Infrastructure
+NFR-DEV-008
+Cloud Deployment
+NFR-DEV-009
+Configuration Management
+NFR-DEV-010
+Infrastructure Security
+NFR-DEV-011
+Release Management
+NFR-DEV-012
+Rollback Strategy
+NFR-DEV-013
+DevOps Metrics
+NFR-DEV-014
+Acceptance Criteria
+
+6.20.22 Section Summary
+The DevOps, Deployment, and Infrastructure framework establishes a secure, automated, and scalable software delivery lifecycle for CuraSphere. Through source control, CI/CD pipelines, containerization, orchestration, infrastructure management, and controlled release processes, the system supports reliable deployments, operational resilience, and continuous improvement while minimizing deployment risks and downtime.
+
+
+

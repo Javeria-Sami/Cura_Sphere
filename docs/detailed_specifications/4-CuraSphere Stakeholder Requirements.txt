@@ -1,0 +1,930 @@
+﻿CURASPHERE
+Hospital Management System
+Software Requirements Specification
+SECTION 3 — STAKEHOLDER REQUIREMENTS
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-003Project: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+3. STAKEHOLDER REQUIREMENTS
+3.1 Purpose
+The purpose of this section is to identify the stakeholders of CuraSphere and formally document their high-level needs, expectations, responsibilities, and system requirements.
+A stakeholder is any person, group, department, or organization that:
+uses CuraSphere;
+receives information from CuraSphere;
+provides information to CuraSphere;
+manages CuraSphere;
+maintains CuraSphere;
+is affected by CuraSphere;
+makes decisions based on CuraSphere information.
+Stakeholder requirements describe what stakeholders need from the system.
+They do not yet describe the detailed internal implementation of the software.
+The requirements engineering relationship is:
+STAKEHOLDER     │     ▼PROBLEM / NEED     │     ▼STAKEHOLDER REQUIREMENT     │     ▼SYSTEM REQUIREMENT     │     ▼FUNCTIONAL REQUIREMENT     │     ▼USE CASE     │     ▼USER STORY     │     ▼UI / API / DATA DESIGN     │     ▼IMPLEMENTATION     │     ▼TEST CASE
+For example:
+Stakeholder:ReceptionistProblem:Patient registration takes too much time.Need:A fast digital patient registration process.Stakeholder Requirement:CS-REC-SR-001System Requirement:The system shall support digital patient registration.Functional Requirement:The system shall allow an authorized receptionistto create a patient record.Use Case:UC-PAT-001 Register PatientUI:Patient Registration FormAPI:Patient registration operationData:Patient administrative recordTest:Verify successful patient registration.
+This traceability model shall be maintained throughout CuraSphere development.
+
+3.2 Stakeholder Identification
+The primary CuraSphere stakeholders are:
+Hospital Owner or Governing Authority
+Hospital Management
+Hospital Administrator
+System Administrator
+Doctor
+Nurse
+Receptionist
+Patient
+Pharmacist
+Laboratory Staff
+Pathologist or Laboratory Approver
+Radiology Staff
+Radiologist
+Billing Officer or Accountant
+Insurance Staff
+Human Resource Staff
+Inventory Staff
+IT Support Team
+Software Development Team
+Quality Assurance Team
+DevOps and Operations Team
+Security and Compliance Stakeholders
+
+3.3 Stakeholder Classification
+CuraSphere stakeholders shall be classified into four major categories.
+                         CURASPHERE STAKEHOLDERS                                   │          ┌────────────────────────┼────────────────────────┐          │                        │                        │          ▼                        ▼                        ▼       BUSINESS                 OPERATIONAL              TECHNICAL          │                        │                        │          │                        │                        │          ├── Hospital Owner       ├── Doctor               ├── Developers          ├── Management           ├── Nurse                ├── QA          ├── Administrator        ├── Receptionist         ├── DevOps          └── Compliance           ├── Pharmacist           ├── IT Support                                   ├── Laboratory           └── Security                                   ├── Radiology                                   ├── Billing                                   ├── HR                                   └── Inventory                                   │                                   ▼                              SERVICE RECIPIENT                                   │                                PATIENT
+
+3.4 Stakeholder Requirement Priority Model
+Each stakeholder requirement shall be assigned a priority.
+The MoSCoW model shall be used.
+Priority
+Meaning
+Must Have
+Required for system operation or critical business workflow
+Should Have
+Important but the system may initially operate without the capability
+Could Have
+Valuable enhancement
+Won’t Have Now
+Explicitly excluded from the current release
+Priority codes are:
+Code
+Priority
+M
+Must Have
+S
+Should Have
+C
+Could Have
+W
+Won’t Have Now
+Example:
+Requirement ID: CS-REC-SR-001Priority: M
+This indicates a mandatory stakeholder requirement.
+
+3.5 Stakeholder Requirement Status Model
+Stakeholder requirements shall use the following status lifecycle:
+PROPOSED    │    ▼UNDER REVIEW    │    ▼APPROVED    │    ▼BASELINED    │    ▼IMPLEMENTED    │    ▼VERIFIED
+A requirement may also enter:
+REJECTEDDEFERREDCHANGEDOBSOLETE
+A baselined requirement shall not be silently modified.
+Approved changes shall follow the requirements change control process.
+
+3.6 Hospital Owner or Governing Authority Requirements
+Stakeholder Description
+The Hospital Owner or Governing Authority is responsible for the strategic direction and sustainability of the healthcare organization.
+Primary Problems
+limited visibility into hospital performance;
+delayed management reports;
+weak financial transparency;
+difficulty measuring operational efficiency;
+limited understanding of resource utilization.
+Primary Needs
+The stakeholder needs reliable, summarized, and authorized hospital information for strategic decision-making.
+
+CS-OWN-SR-001 — Hospital Performance Visibility
+Priority: Must Have
+The hospital owner shall be able to access authorized high-level hospital performance information.
+The information should include summarized indicators relating to:
+patient activity;
+hospital service utilization;
+admissions;
+hospital occupancy;
+financial activity;
+operational trends.
+
+CS-OWN-SR-002 — Management Reporting
+Priority: Must Have
+The hospital owner shall be able to access approved management reports without requiring manual report compilation from multiple hospital departments.
+
+CS-OWN-SR-003 — Financial Visibility
+Priority: Must Have
+The hospital owner shall be able to review authorized financial summaries generated from recorded hospital financial activities.
+
+CS-OWN-SR-004 — Operational Trend Analysis
+Priority: Should Have
+The hospital owner should be able to review operational trends across defined periods.
+
+CS-OWN-SR-005 — Controlled Information Access
+Priority: Must Have
+Strategic access shall not automatically provide permission to modify clinical information.
+
+3.7 Hospital Management Requirements
+Stakeholder Description
+Hospital Management is responsible for operational oversight and management decision-making.
+Primary Problems
+reports are delayed;
+department information is fragmented;
+bed occupancy is difficult to monitor;
+operational bottlenecks are identified late;
+department performance is difficult to compare.
+
+CS-MGT-SR-001 — Operational Dashboard
+Priority: Must Have
+Hospital management shall be able to review a centralized operational dashboard.
+
+CS-MGT-SR-002 — Patient Activity Monitoring
+Priority: Must Have
+Hospital management shall be able to review summarized patient activity information.
+The system should provide information concerning:
+patient registrations;
+appointments;
+OPD activity;
+admissions;
+discharges;
+emergency activity.
+
+CS-MGT-SR-003 — Bed Occupancy Visibility
+Priority: Must Have
+Hospital management shall be able to review current bed occupancy information.
+
+CS-MGT-SR-004 — Department Performance Information
+Priority: Should Have
+Hospital management should be able to review authorized department-level operational information.
+
+CS-MGT-SR-005 — Financial Summary
+Priority: Must Have
+Hospital management shall be able to review authorized financial summaries.
+
+CS-MGT-SR-006 — Operational Alerts
+Priority: Should Have
+Hospital management should receive important operational alerts according to configured rules.
+
+CS-MGT-SR-007 — Report Export
+Priority: Should Have
+Hospital management should be able to export approved reports in supported formats.
+
+3.8 Hospital Administrator Requirements
+Stakeholder Description
+The Hospital Administrator manages hospital organizational and administrative configuration.
+Primary Needs
+department management;
+hospital service configuration;
+staff visibility;
+operational configuration;
+administrative reporting.
+
+CS-HAD-SR-001 — Department Management
+Priority: Must Have
+The Hospital Administrator shall be able to manage hospital departments according to assigned permissions.
+
+CS-HAD-SR-002 — Hospital Service Management
+Priority: Must Have
+The Hospital Administrator shall be able to manage approved hospital service information.
+
+CS-HAD-SR-003 — Hospital Resource Visibility
+Priority: Must Have
+The Hospital Administrator shall be able to review hospital resource information.
+
+CS-HAD-SR-004 — Administrative Reports
+Priority: Must Have
+The Hospital Administrator shall be able to access authorized administrative reports.
+
+CS-HAD-SR-005 — Operational Configuration
+Priority: Should Have
+The Hospital Administrator should be able to manage approved operational configuration.
+
+3.9 System Administrator Requirements
+Stakeholder Description
+The System Administrator manages CuraSphere user access and technical application configuration.
+Primary Problems
+uncontrolled user access;
+unclear permission assignment;
+difficulty identifying inactive accounts;
+weak access traceability.
+
+CS-SAD-SR-001 — User Account Management
+Priority: Must Have
+The System Administrator shall be able to create and manage system user accounts.
+
+CS-SAD-SR-002 — Role Management
+Priority: Must Have
+The System Administrator shall be able to manage system roles according to authorized administrative policies.
+
+CS-SAD-SR-003 — Permission Management
+Priority: Must Have
+The System Administrator shall be able to assign and manage system permissions.
+
+CS-SAD-SR-004 — Account Activation and Deactivation
+Priority: Must Have
+The System Administrator shall be able to activate and deactivate user accounts.
+
+CS-SAD-SR-005 — Access Audit Review
+Priority: Must Have
+The System Administrator shall be able to review authorized access-related audit information.
+
+CS-SAD-SR-006 — Password Administration
+Priority: Must Have
+The System Administrator shall be able to initiate approved account recovery or password reset processes.
+The System Administrator must not be able to view a user’s existing plaintext password.
+
+CS-SAD-SR-007 — Principle of Least Privilege
+Priority: Must Have
+System administration capabilities shall support the principle of least privilege.
+
+3.10 Doctor Requirements
+Stakeholder Description
+Doctors provide clinical consultation, diagnosis, treatment planning, and patient care.
+Primary Problems
+patient records are difficult to retrieve;
+previous medical information may be incomplete;
+laboratory results may be delayed or disconnected;
+prescriptions may be handwritten;
+consultation history may be fragmented.
+Primary Needs
+Doctors require fast, secure, and organized access to relevant clinical information.
+
+CS-DOC-SR-001 — Assigned Patient Visibility
+Priority: Must Have
+A doctor shall be able to review patients and appointments relevant to the doctor’s authorized workflow.
+
+CS-DOC-SR-002 — Patient Clinical History
+Priority: Must Have
+A doctor shall be able to review authorized patient clinical history.
+
+CS-DOC-SR-003 — Consultation Recording
+Priority: Must Have
+A doctor shall be able to record patient consultation information.
+
+CS-DOC-SR-004 — Diagnosis Recording
+Priority: Must Have
+A doctor shall be able to record patient diagnoses according to the clinical workflow.
+
+CS-DOC-SR-005 — Prescription Creation
+Priority: Must Have
+A doctor shall be able to create a patient prescription.
+
+CS-DOC-SR-006 — Laboratory Test Request
+Priority: Must Have
+A doctor shall be able to request approved laboratory tests for a patient.
+
+CS-DOC-SR-007 — Radiology Request
+Priority: Must Have
+A doctor shall be able to request approved radiology examinations.
+
+CS-DOC-SR-008 — Laboratory Result Review
+Priority: Must Have
+A doctor shall be able to review authorized and available laboratory results.
+
+CS-DOC-SR-009 — Radiology Report Review
+Priority: Must Have
+A doctor shall be able to review authorized and released radiology reports.
+
+CS-DOC-SR-010 — Follow-Up Recommendation
+Priority: Must Have
+A doctor shall be able to record follow-up recommendations.
+
+CS-DOC-SR-011 — Patient Allergy Visibility
+Priority: Must Have
+Important recorded patient allergy information shall be clearly available to authorized doctors.
+
+CS-DOC-SR-012 — Clinical Record Protection
+Priority: Must Have
+Doctors shall only modify clinical information according to authorized clinical workflows.
+
+Doctor Stakeholder Flow
+                        DOCTOR                           │                           ▼                   VIEW WORKLIST                           │                           ▼                    SELECT PATIENT                           │                           ▼                 REVIEW CLINICAL DATA                           │            ┌──────────────┼──────────────┐            │              │              │            ▼              ▼              ▼         HISTORY        ALLERGIES      LAB / RADIOLOGY            │              │              │            └──────────────┼──────────────┘                           │                           ▼                      CONSULTATION                           │             ┌─────────────┼─────────────┐             │             │             │             ▼             ▼             ▼          DIAGNOSIS    PRESCRIPTION    TEST REQUEST             │             │             │             └─────────────┼─────────────┘                           │                           ▼                      FOLLOW-UP
+
+3.11 Nurse Requirements
+Stakeholder Description
+Nurses provide direct patient care and support inpatient and clinical workflows.
+Primary Problems
+patient monitoring records may be paper based;
+vital signs may be difficult to track;
+nursing notes may not be centralized;
+patient assignments may be unclear.
+
+CS-NUR-SR-001 — Assigned Patient Visibility
+Priority: Must Have
+A nurse shall be able to review patients assigned to the nurse’s authorized care context.
+
+CS-NUR-SR-002 — Vital Sign Recording
+Priority: Must Have
+A nurse shall be able to record patient vital signs.
+
+CS-NUR-SR-003 — Vital Sign History
+Priority: Must Have
+A nurse shall be able to review authorized patient vital sign history.
+
+CS-NUR-SR-004 — Nursing Notes
+Priority: Must Have
+A nurse shall be able to create nursing notes.
+
+CS-NUR-SR-005 — Patient Care Information
+Priority: Must Have
+A nurse shall be able to review patient care information required for assigned responsibilities.
+
+CS-NUR-SR-006 — Clinical Access Restriction
+Priority: Must Have
+A nurse must not modify doctor-only clinical decisions unless specifically authorized by an approved workflow.
+
+CS-NUR-SR-007 — Patient Monitoring
+Priority: Should Have
+The system should help nurses identify patients requiring scheduled monitoring activities.
+
+3.12 Receptionist Requirements
+Stakeholder Description
+The Receptionist manages patient entry into the hospital’s administrative workflow.
+Primary Problems
+slow patient registration;
+duplicate patient records;
+difficult patient search;
+appointment conflicts;
+manual appointment records.
+
+CS-REC-SR-001 — Patient Search
+Priority: Must Have
+A receptionist shall be able to search for existing patients.
+
+CS-REC-SR-002 — Patient Registration
+Priority: Must Have
+A receptionist shall be able to register a new patient.
+
+CS-REC-SR-003 — Duplicate Patient Warning
+Priority: Must Have
+The system shall assist the receptionist in identifying probable duplicate patient records.
+
+CS-REC-SR-004 — Patient Demographic Update
+Priority: Must Have
+A receptionist shall be able to update permitted patient administrative information.
+
+CS-REC-SR-005 — Appointment Booking
+Priority: Must Have
+A receptionist shall be able to book a patient appointment.
+
+CS-REC-SR-006 — Doctor Availability Review
+Priority: Must Have
+A receptionist shall be able to review relevant doctor availability before appointment booking.
+
+CS-REC-SR-007 — Appointment Rescheduling
+Priority: Must Have
+A receptionist shall be able to reschedule eligible appointments.
+
+CS-REC-SR-008 — Appointment Cancellation
+Priority: Must Have
+A receptionist shall be able to cancel eligible appointments.
+
+CS-REC-SR-009 — Patient Check-In
+Priority: Must Have
+A receptionist shall be able to check in an eligible patient.
+
+CS-REC-SR-010 — Clinical Data Restriction
+Priority: Must Have
+A receptionist must not modify protected clinical information.
+
+Receptionist Workflow
+                    PATIENT ARRIVES                           │                           ▼                     SEARCH PATIENT                           │                  ┌────────┴────────┐                  │                 │                  ▼                 ▼                FOUND           NOT FOUND                  │                 │                  │                 ▼                  │          REGISTER PATIENT                  │                 │                  └────────┬────────┘                           │                           ▼                   SELECT SERVICE                           │                           ▼                 REVIEW AVAILABILITY                           │                           ▼                    BOOK APPOINTMENT                           │                           ▼                       CHECK-IN
+
+3.13 Patient Requirements
+Stakeholder Description
+The Patient is the primary recipient of hospital healthcare services.
+The initial internal hospital application may not provide full direct patient system access.
+However, patient needs shall influence CuraSphere requirements.
+Primary Problems
+long registration time;
+repeated information requests;
+long waiting periods;
+lost medical history;
+difficulty obtaining reports;
+unclear billing information.
+
+CS-PAT-SR-001 — Unique Patient Record
+Priority: Must Have
+A patient shall be represented by a controlled patient record within CuraSphere.
+
+CS-PAT-SR-002 — Medical Record Continuity
+Priority: Must Have
+Authorized hospital users shall be able to maintain the continuity of a patient’s recorded medical history.
+
+CS-PAT-SR-003 — Reduced Duplicate Data Collection
+Priority: Should Have
+The system should reduce unnecessary repeated collection of existing patient information.
+
+CS-PAT-SR-004 — Appointment Information
+Priority: Must Have
+The hospital workflow shall maintain accurate patient appointment information.
+
+CS-PAT-SR-005 — Billing Transparency
+Priority: Must Have
+Patient billing information shall clearly represent recorded charges and payments.
+
+CS-PAT-SR-006 — Patient Information Privacy
+Priority: Must Have
+Patient information shall only be accessible according to approved authorization requirements.
+
+CS-PAT-SR-007 — Patient Portal
+Priority: Could Have
+A future patient portal may provide controlled direct patient access to approved information.
+
+3.14 Pharmacist Requirements
+Stakeholder Description
+The Pharmacist manages prescription review, medicine dispensing, and pharmacy stock operations.
+
+CS-PHA-SR-001 — Prescription Queue
+Priority: Must Have
+A pharmacist shall be able to review prescriptions awaiting pharmacy processing.
+
+CS-PHA-SR-002 — Prescription Details
+Priority: Must Have
+A pharmacist shall be able to review authorized prescription details.
+
+CS-PHA-SR-003 — Medicine Availability
+Priority: Must Have
+A pharmacist shall be able to review medicine stock availability.
+
+CS-PHA-SR-004 — Medicine Dispensing
+Priority: Must Have
+A pharmacist shall be able to record medicine dispensing.
+
+CS-PHA-SR-005 — Stock Movement
+Priority: Must Have
+Medicine dispensing shall update relevant pharmacy stock information according to approved business rules.
+
+CS-PHA-SR-006 — Low Stock Visibility
+Priority: Must Have
+A pharmacist shall be able to identify medicines with low stock levels.
+
+CS-PHA-SR-007 — Expiry Visibility
+Priority: Must Have
+A pharmacist shall be able to identify medicine batches approaching or exceeding expiry.
+
+CS-PHA-SR-008 — Prescription Protection
+Priority: Must Have
+A pharmacist must not silently modify a doctor’s clinical prescription.
+Approved clarification or correction workflows shall be traceable.
+
+Pharmacy Stakeholder Flow
+                   PRESCRIPTION RECEIVED                            │                            ▼                    PHARMACY WORKLIST                            │                            ▼                  REVIEW PRESCRIPTION                            │                            ▼                  CHECK AVAILABILITY                            │                ┌───────────┴───────────┐                │                       │                ▼                       ▼             AVAILABLE              UNAVAILABLE                │                       │                ▼                       ▼             DISPENSE              RECORD STATUS                │                ▼          UPDATE STOCK MOVEMENT                │                ▼         RECORD DISPENSING HISTORY
+
+3.15 Laboratory Staff Requirements
+Stakeholder Description
+Laboratory Staff manage laboratory requests, samples, and test processing.
+
+CS-LAB-SR-001 — Laboratory Request Worklist
+Priority: Must Have
+Laboratory staff shall be able to review laboratory test requests relevant to their authorized work.
+
+CS-LAB-SR-002 — Sample Collection
+Priority: Must Have
+Laboratory staff shall be able to record sample collection information.
+
+CS-LAB-SR-003 — Sample Status
+Priority: Must Have
+Laboratory staff shall be able to update sample status according to the laboratory workflow.
+
+CS-LAB-SR-004 — Test Processing Status
+Priority: Must Have
+Laboratory staff shall be able to update laboratory test processing status.
+
+CS-LAB-SR-005 — Result Recording
+Priority: Must Have
+Authorized laboratory staff shall be able to record test results.
+
+CS-LAB-SR-006 — Result Verification Separation
+Priority: Must Have
+Where verification is required, recording a laboratory result and formally releasing the result shall be controlled according to laboratory authorization rules.
+
+CS-LAB-SR-007 — Laboratory History
+Priority: Must Have
+Authorized laboratory users shall be able to review relevant laboratory processing history.
+
+3.16 Pathologist or Laboratory Approver Requirements
+CS-PTH-SR-001 — Pending Result Review
+Priority: Must Have
+An authorized laboratory approver shall be able to review results awaiting verification.
+
+CS-PTH-SR-002 — Result Approval
+Priority: Must Have
+An authorized approver shall be able to approve an eligible laboratory result.
+
+CS-PTH-SR-003 — Result Rejection
+Priority: Must Have
+An authorized approver shall be able to reject a result requiring correction.
+
+CS-PTH-SR-004 — Verification Traceability
+Priority: Must Have
+The system shall maintain the identity and time associated with laboratory result verification.
+
+3.17 Radiology Staff Requirements
+CS-RAD-SR-001 — Radiology Request Worklist
+Priority: Must Have
+Radiology staff shall be able to review relevant radiology requests.
+
+CS-RAD-SR-002 — Examination Scheduling
+Priority: Must Have
+Authorized radiology staff shall be able to schedule eligible radiology examinations.
+
+CS-RAD-SR-003 — Examination Status
+Priority: Must Have
+Radiology staff shall be able to update examination status according to the radiology workflow.
+
+CS-RAD-SR-004 — Examination Information
+Priority: Must Have
+Radiology staff shall be able to record permitted examination information.
+
+3.18 Radiologist Requirements
+CS-RLG-SR-001 — Examination Review
+Priority: Must Have
+A radiologist shall be able to review authorized examination information.
+
+CS-RLG-SR-002 — Radiology Report Creation
+Priority: Must Have
+A radiologist shall be able to create a radiology report.
+
+CS-RLG-SR-003 — Report Verification
+Priority: Must Have
+An authorized radiologist shall be able to verify an eligible radiology report.
+
+CS-RLG-SR-004 — Report Release
+Priority: Must Have
+Verified radiology reports shall be made available according to authorized clinical workflows.
+
+3.19 Billing Officer or Accountant Requirements
+Stakeholder Description
+The Billing Officer manages hospital charges, invoices, payments, and approved financial adjustments.
+Primary Problems
+manual bill calculation;
+missing charges;
+unclear payment history;
+untracked discounts;
+difficult refund investigation.
+
+CS-BIL-SR-001 — Patient Charge Visibility
+Priority: Must Have
+The Billing Officer shall be able to review recorded patient charges.
+
+CS-BIL-SR-002 — Invoice Generation
+Priority: Must Have
+The Billing Officer shall be able to generate an invoice from eligible recorded charges.
+
+CS-BIL-SR-003 — Payment Recording
+Priority: Must Have
+The Billing Officer shall be able to record patient payments.
+
+CS-BIL-SR-004 — Payment Status
+Priority: Must Have
+The Billing Officer shall be able to review invoice payment status.
+
+CS-BIL-SR-005 — Discount Control
+Priority: Must Have
+Discount operations shall require appropriate permissions.
+
+CS-BIL-SR-006 — Refund Control
+Priority: Must Have
+Refund operations shall require authorized workflows and audit information.
+
+CS-BIL-SR-007 — Financial History
+Priority: Must Have
+Authorized billing users shall be able to review patient billing history.
+
+CS-BIL-SR-008 — Financial Reports
+Priority: Must Have
+Authorized financial users shall be able to access approved billing and payment reports.
+
+3.20 Insurance Staff Requirements
+CS-INS-SR-001 — Insurance Provider Information
+Priority: Must Have
+Authorized insurance staff shall be able to manage approved insurance provider information.
+
+CS-INS-SR-002 — Patient Insurance Information
+Priority: Must Have
+Authorized users shall be able to maintain patient insurance information.
+
+CS-INS-SR-003 — Coverage Information
+Priority: Should Have
+Authorized users should be able to maintain relevant patient coverage information.
+
+CS-INS-SR-004 — Claim Status Tracking
+Priority: Should Have
+The system should support basic insurance claim status tracking.
+
+3.21 Human Resource Staff Requirements
+CS-HR-SR-001 — Employee Records
+Priority: Must Have
+HR staff shall be able to manage authorized employee records.
+
+CS-HR-SR-002 — Department Assignment
+Priority: Must Have
+HR staff shall be able to manage employee department assignments according to approved policies.
+
+CS-HR-SR-003 — Designation Management
+Priority: Must Have
+Authorized HR staff shall be able to manage employee designation information.
+
+CS-HR-SR-004 — Employment Status
+Priority: Must Have
+HR staff shall be able to maintain employee status.
+
+CS-HR-SR-005 — Attendance Information
+Priority: Should Have
+HR staff should be able to manage approved attendance information.
+
+CS-HR-SR-006 — Leave Information
+Priority: Should Have
+HR staff should be able to manage approved employee leave information.
+
+3.22 Inventory Staff Requirements
+CS-INV-SR-001 — Inventory Item Management
+Priority: Must Have
+Inventory staff shall be able to manage approved inventory items.
+
+CS-INV-SR-002 — Stock Receipt
+Priority: Must Have
+Inventory staff shall be able to record authorized stock receipts.
+
+CS-INV-SR-003 — Stock Issue
+Priority: Must Have
+Inventory staff shall be able to record authorized stock issues.
+
+CS-INV-SR-004 — Stock Availability
+Priority: Must Have
+Inventory staff shall be able to review current stock information.
+
+CS-INV-SR-005 — Low Stock Identification
+Priority: Must Have
+Inventory staff shall be able to identify items below defined stock levels.
+
+CS-INV-SR-006 — Stock Adjustment
+Priority: Must Have
+Stock adjustments shall require authorized access and shall be auditable.
+
+3.23 IT Support Requirements
+CS-ITS-SR-001 — Technical Status Visibility
+Priority: Must Have
+Authorized IT Support users shall be able to review approved technical system status information.
+
+CS-ITS-SR-002 — User Support
+Priority: Must Have
+IT Support shall have approved tools or procedures for assisting users with technical problems.
+
+CS-ITS-SR-003 — Technical Log Access
+Priority: Must Have
+IT Support shall be able to review technical logs according to access permissions.
+
+CS-ITS-SR-004 — Patient Privacy Restriction
+Priority: Must Have
+Technical support access shall not automatically provide unrestricted access to patient clinical information.
+
+CS-ITS-SR-005 — Issue Investigation
+Priority: Must Have
+The system shall provide sufficient technical information to support authorized issue investigation.
+
+3.24 Software Development Team Requirements
+CS-DEV-SR-001 — Modular Codebase
+Priority: Must Have
+The development team requires a codebase with clear module and architectural boundaries.
+
+CS-DEV-SR-002 — Development Environment
+Priority: Must Have
+The project shall provide documented development environment setup procedures.
+
+CS-DEV-SR-003 — Version Control
+Priority: Must Have
+All application source code shall be maintained through approved Git-based version control.
+
+CS-DEV-SR-004 — Coding Standards
+Priority: Must Have
+The development team shall maintain documented coding conventions.
+
+CS-DEV-SR-005 — API Documentation
+Priority: Must Have
+Backend APIs shall be documented for authorized development use.
+
+CS-DEV-SR-006 — Database Change Management
+Priority: Must Have
+Database structure changes shall be controlled and reproducible.
+
+CS-DEV-SR-007 — Local Development
+Priority: Must Have
+Developers shall have a documented method for running required CuraSphere components in an approved development environment.
+
+3.25 Quality Assurance Team Requirements
+CS-QA-SR-001 — Testable Requirements
+Priority: Must Have
+Requirements shall be written in a manner that supports verification.
+
+CS-QA-SR-002 — Test Environment
+Priority: Must Have
+The QA team shall have access to an approved non-production testing environment.
+
+CS-QA-SR-003 — Requirement Traceability
+Priority: Must Have
+The QA team shall be able to trace test cases to approved requirements.
+
+CS-QA-SR-004 — Defect Reproduction
+Priority: Must Have
+The system and development process shall provide sufficient information to support defect reproduction.
+
+CS-QA-SR-005 — Test Data
+Priority: Must Have
+Testing shall use approved test data.
+Production patient information must not be casually copied into uncontrolled testing environments.
+
+3.26 DevOps and Operations Team Requirements
+CS-OPS-SR-001 — Automated Build
+Priority: Must Have
+The operations process shall support repeatable application builds.
+
+CS-OPS-SR-002 — Environment Configuration
+Priority: Must Have
+Environment-specific configuration shall be managed separately from application source logic.
+
+CS-OPS-SR-003 — Deployment Repeatability
+Priority: Must Have
+Application deployment shall follow a documented and repeatable process.
+
+CS-OPS-SR-004 — Application Logging
+Priority: Must Have
+The deployed application shall provide operational logging.
+
+CS-OPS-SR-005 — Monitoring
+Priority: Must Have
+Production services shall support monitoring of critical system health indicators.
+
+CS-OPS-SR-006 — Backup
+Priority: Must Have
+Production data shall be included in an approved backup process.
+
+CS-OPS-SR-007 — Recovery
+Priority: Must Have
+The operations team shall have documented recovery procedures.
+
+CS-OPS-SR-008 — Secret Protection
+Priority: Must Have
+Deployment secrets shall be protected from unauthorized exposure.
+
+3.27 Security and Compliance Stakeholder Requirements
+CS-SEC-SR-001 — Access Control
+Priority: Must Have
+Access to CuraSphere information shall be controlled.
+
+CS-SEC-SR-002 — Least Privilege
+Priority: Must Have
+Users shall receive only the permissions required for authorized responsibilities.
+
+CS-SEC-SR-003 — Security Auditability
+Priority: Must Have
+Security-sensitive activities shall be auditable.
+
+CS-SEC-SR-004 — Sensitive Data Protection
+Priority: Must Have
+Sensitive hospital and patient information shall be protected according to applicable requirements.
+
+CS-SEC-SR-005 — Authentication Security
+Priority: Must Have
+Protected system access shall require secure authentication.
+
+CS-SEC-SR-006 — Security Event Investigation
+Priority: Must Have
+The system shall maintain sufficient authorized information to support investigation of important security events.
+
+CS-SEC-SR-007 — Regulatory Assessment
+Priority: Must Have
+Applicable regulatory obligations shall be identified according to the hospital and deployment jurisdiction before production release.
+
+3.28 Stakeholder Influence and Interest Model
+Stakeholders have different levels of influence and interest.
+                         HIGH INFLUENCE                              │                              │        MANAGE CLOSELY        │        KEEP SATISFIED                              │     Hospital Management      │     Hospital Owner     Product Owner            │     Governing Authority     Software Architect       │     Compliance Authority     Clinical Leadership      │                              │HIGH INTEREST ────────────────┼──────────────────────── LOW INTEREST                              │       KEEP INFORMED          │         MONITOR                              │     Doctors                  │     Future Partners     Nurses                   │     External Vendors     Receptionists            │     Optional Integrations     Pharmacists              │     Lab Staff                │     Billing Staff            │     Development Team         │     QA Team                  │                              │                         LOW INFLUENCE
+The exact stakeholder position may change according to the hospital organization.
+
+3.29 Stakeholder Communication Model
+                    HOSPITAL OWNER / GOVERNANCE                               │                               ▼                      HOSPITAL MANAGEMENT                               │              ┌────────────────┼────────────────┐              │                │                │              ▼                ▼                ▼       CLINICAL LEADS    ADMINISTRATIVE     TECHNICAL LEADS              │              LEADS               │              │                │                 │        ┌─────┼─────┐    ┌─────┼─────┐    ┌────┼────┐        │     │     │    │     │     │    │    │    │        ▼     ▼     ▼    ▼     ▼     ▼    ▼    ▼    ▼      Doctor Nurse Lab  Reception HR Billing Dev  QA DevOps
+Stakeholder communication shall support requirement validation.
+Developers shall not independently invent clinical workflow rules without appropriate stakeholder validation.
+
+3.30 Stakeholder Conflict Model
+Stakeholder requirements may conflict.
+Example:
+DOCTOR NEEDFast access to patient information                VSSECURITY NEEDRestrict sensitive information access
+Another example:
+RECEPTIONIST NEEDQuick patient registration                VSDATA QUALITY NEEDAccurate and complete patient information
+Another example:
+MANAGEMENT NEEDDetailed operational reports                VSPRIVACY NEEDLimit unnecessary patient information exposure
+CuraSphere shall resolve stakeholder conflicts using:
+patient safety;
+applicable legal and regulatory requirements;
+security and privacy;
+hospital business policy;
+clinical workflow requirements;
+operational efficiency;
+usability;
+technical feasibility.
+The conflict resolution model is:
+                 STAKEHOLDER CONFLICT                          │                          ▼                  IDENTIFY CONFLICT                          │                          ▼                 IDENTIFY RISK LEVEL                          │                          ▼           CLINICAL / LEGAL / SECURITY REVIEW                          │                          ▼                 BUSINESS REVIEW                          │                          ▼                TECHNICAL FEASIBILITY                          │                          ▼                 APPROVED DECISION                          │                          ▼                 UPDATE REQUIREMENT                          │                          ▼                    TRACE CHANGE
+
+3.31 Stakeholder-to-Module Mapping
+Stakeholder
+Primary CuraSphere Modules
+Hospital Owner
+Dashboard, Reports, Finance
+Hospital Management
+Dashboard, Reports, Bed Management
+Hospital Administrator
+Departments, Services, Administration
+System Administrator
+Users, Roles, Permissions, Audit
+Doctor
+Patient, EMR, OPD, IPD, Lab, Radiology, Prescription
+Nurse
+Patient, IPD, Vitals, Nursing Records
+Receptionist
+Patient, Appointment, Check-In
+Patient
+Patient Services, Future Patient Portal
+Pharmacist
+Pharmacy, Prescription, Stock
+Laboratory Staff
+Laboratory
+Pathologist
+Laboratory Verification
+Radiology Staff
+Radiology
+Radiologist
+Radiology Reporting
+Billing Officer
+Billing, Payments, Refunds
+Insurance Staff
+Insurance
+HR Staff
+HR
+Inventory Staff
+Inventory
+IT Support
+Technical Operations
+Development Team
+Development Platform
+QA Team
+Testing and Traceability
+DevOps Team
+Build, Deployment, Monitoring
+Security Stakeholders
+Authentication, Authorization, Audit
+
+3.32 Stakeholder Requirement Relationship Model
+                         PATIENT                            │                            ▼                     PATIENT MANAGEMENT                            │             ┌──────────────┼──────────────┐             │              │              │             ▼              ▼              ▼       RECEPTIONIST       DOCTOR          NURSE             │              │              │             ▼              ▼              ▼       APPOINTMENT     CLINICAL CARE    MONITORING                            │               ┌────────────┼────────────┐               │            │            │               ▼            ▼            ▼             LAB         RADIOLOGY     PHARMACY               │            │            │               └────────────┼────────────┘                            │                            ▼                         BILLING                            │                            ▼                         PAYMENT                            │                            ▼                        MANAGEMENTSYSTEM ADMIN ─────► ACCESS CONTROL ─────► ALL MODULESAUDIT ─────────────────────────────────► CONTROLLED ACTIVITIESDEVOPS ────────────────────────────────► SYSTEM OPERATIONQA ────────────────────────────────────► REQUIREMENT VERIFICATION
+
+3.33 Stakeholder Requirement Summary
+The stakeholder analysis identifies several core themes.
+Theme 1 — Centralized Information
+Hospital stakeholders require a shared information platform.
+Theme 2 — Controlled Access
+Different users require different levels of information access and operational authority.
+Theme 3 — Clinical Continuity
+Doctors and nurses require accurate patient history and care information.
+Theme 4 — Workflow Efficiency
+Reception, laboratory, radiology, pharmacy, and billing require organized digital worklists and workflows.
+Theme 5 — Accountability
+Sensitive actions require traceability and auditability.
+Theme 6 — Management Visibility
+Hospital leadership requires reliable operational and financial information.
+Theme 7 — Technical Sustainability
+Developers, QA engineers, IT Support, and DevOps require a maintainable, testable, observable, and deployable system.
+The overall stakeholder requirement model is:
+                     STAKEHOLDER NEEDS                            │         ┌──────────────────┼──────────────────┐         │                  │                  │         ▼                  ▼                  ▼   PATIENT CARE       HOSPITAL OPERATION   SYSTEM CONTROL         │                  │                  │         ▼                  ▼                  ▼   CLINICAL DATA       DIGITAL WORKFLOW      SECURITY   CARE CONTINUITY     REPORTING             AUDIT   FAST ACCESS         RESOURCE CONTROL      RELIABILITY         │                  │                  │         └──────────────────┼──────────────────┘                            │                            ▼                        CURASPHERE
+
+SECTION 3 STATUS
+Section: Stakeholder RequirementsSection ID: CS-SRS-SEC-003Project: CuraSphereDocument: CS-SRS-001Version: 1.0 DraftStatus: Completed
+The following stakeholder groups have been formally identified and documented:
+hospital ownership;
+hospital management;
+hospital administration;
+system administration;
+doctors;
+nurses;
+receptionists;
+patients;
+pharmacists;
+laboratory staff;
+laboratory approvers;
+radiology staff;
+radiologists;
+billing staff;
+insurance staff;
+HR staff;
+inventory staff;
+IT Support;
+software developers;
+quality assurance engineers;
+DevOps and operations engineers;
+security and compliance stakeholders.
+Stakeholder needs, formal stakeholder requirement IDs, priorities, access concerns, relationships, conflicts, and module mappings have been established.
+These stakeholder requirements shall act as inputs to the detailed CuraSphere system module and functional requirement specifications.
+

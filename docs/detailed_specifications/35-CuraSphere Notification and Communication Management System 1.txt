@@ -1,0 +1,314 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.13 - Notification and Communication Management System (NCM)
+
+5.13.1 Introduction
+The Notification and Communication Management System (NCM) is responsible for delivering timely, secure, and reliable communication between the CuraSphere Hospital Management System, patients, healthcare professionals, administrators, and external communication services.
+The module provides automated notifications, reminders, alerts, announcements, and messaging to improve patient care, reduce missed appointments, increase operational efficiency, and ensure that critical information reaches the appropriate users.
+The Notification System supports both real-time and scheduled communication through multiple delivery channels.
+
+Notification Module Scope
+The Notification Management System shall manage:
+Appointment Reminders
+Registration Notifications
+Patient Admission Notifications
+Discharge Notifications
+Laboratory Result Notifications
+Radiology Result Notifications
+Pharmacy Notifications
+Prescription Ready Notifications
+Billing Notifications
+Payment Confirmations
+Invoice Notifications
+Emergency Alerts
+Staff Announcements
+Internal Messaging
+Email Notifications
+SMS Notifications
+Push Notifications
+Mobile App Notifications
+System Alerts
+Critical Clinical Alerts
+Scheduled Notifications
+Notification Templates
+Notification Preferences
+Notification History
+
+High-Level Notification Workflow
+Hospital Event
+       │
+       ▼
+Notification Engine
+       │
+       ▼
+Template Engine
+       │
+       ▼
+Recipient Identification
+       │
+       ▼
+Channel Selection
+       │
+ ┌─────┼────────────┬────────────┐
+ ▼     ▼            ▼            ▼
+SMS   Email     Mobile App   Internal Portal
+       │
+       ▼
+Delivery Status
+       │
+       ▼
+Audit Log
+
+5.13.2 Objectives
+The Notification System shall:
+Deliver automated notifications.
+Reduce missed appointments.
+Improve communication.
+Notify patients about laboratory results.
+Notify patients about prescriptions.
+Notify staff about emergencies.
+Deliver financial notifications.
+Support multiple communication channels.
+Support scheduled reminders.
+Maintain notification history.
+Improve patient engagement.
+Support configurable templates.
+Maintain delivery logs.
+Support multilingual communication.
+Maintain communication security.
+
+5.13.3 Actors
+Actor
+Description
+Patient
+Receives notifications
+Doctor
+Receives clinical alerts
+Nurse
+Receives patient alerts
+Pharmacist
+Receives prescription alerts
+Laboratory Staff
+Receives laboratory notifications
+Finance Officer
+Receives billing notifications
+Hospital Administrator
+Creates announcements
+HR Manager
+Staff communication
+CuraSphere System
+Generates automatic notifications
+External SMS Gateway
+Sends SMS
+Email Server
+Sends Email
+Push Notification Service
+Mobile notifications
+
+5.13.4 High-Level Notification Architecture
+Hospital Modules
+       │
+       ▼
+ Notification Engine
+       │
+ ┌─────┼───────────────┐
+ ▼     ▼               ▼
+Template Queue     Scheduler
+       │
+       ▼
+Channel Manager
+       │
+ ┌─────┼────────────┬────────────┐
+ ▼     ▼            ▼            ▼
+SMS   Email   Push Notification Portal
+       │
+       ▼
+Delivery Tracking
+       │
+       ▼
+Notification History
+
+5.13.5 Functional Requirement NCM-FR-001
+Notification Template Management
+
+Requirement ID
+NCM-FR-001
+Requirement Name
+Notification Template Management
+
+Description
+The system shall maintain configurable notification templates for all communication channels.
+Templates shall support:
+SMS
+Email
+Push Notifications
+Internal Messages
+
+Actors
+Administrator
+Hospital Management
+
+Workflow
+Create Template
+      │
+      ▼
+Define Variables
+      │
+      ▼
+Preview
+      │
+      ▼
+Save Template
+      │
+      ▼
+Available for Use
+
+Supported Variables
+Patient Name
+Doctor Name
+Appointment Date
+Department
+Invoice Number
+Payment Amount
+Prescription Number
+Laboratory Number
+
+Business Rules
+Templates shall support multiple languages.
+
+Acceptance Criteria
+Templates reusable throughout the system.
+
+5.13.6 Functional Requirement NCM-FR-002
+Appointment Reminder Notifications
+
+Requirement ID
+NCM-FR-002
+
+Description
+The system shall automatically send appointment reminders before scheduled appointments.
+
+Reminder Schedule
+7 Days Before (Optional)
+3 Days Before
+24 Hours Before
+2 Hours Before
+
+Workflow
+Appointment Scheduled
+        │
+        ▼
+Scheduler
+        │
+        ▼
+Generate Reminder
+        │
+        ▼
+SMS / Email / App
+        │
+        ▼
+Delivery Confirmation
+
+Business Rules
+Cancelled appointments shall not generate reminders.
+
+Acceptance Criteria
+Appointment reminders delivered automatically.
+
+5.13.7 Functional Requirement NCM-FR-003
+Clinical Notifications
+
+Requirement ID
+NCM-FR-003
+
+Description
+The system shall notify healthcare professionals about clinical events.
+
+Clinical Alerts
+Critical Laboratory Result
+Emergency Admission
+Surgery Scheduled
+ICU Transfer
+Blood Availability
+Medication Ready
+Allergy Alert
+Drug Interaction Alert
+
+Workflow
+Clinical Event
+      │
+      ▼
+Alert Generated
+      │
+      ▼
+Assigned Staff
+      │
+      ▼
+Notification Delivered
+
+Business Rules
+Critical alerts shall receive highest priority.
+
+Acceptance Criteria
+Clinical alerts delivered immediately.
+
+5.13.8 Functional Requirement NCM-FR-004
+Laboratory & Radiology Result Notifications
+
+Requirement ID
+NCM-FR-004
+
+Description
+Patients shall receive notifications when laboratory or radiology reports become available.
+
+Workflow
+Report Approved
+      │
+      ▼
+Patient Identified
+      │
+      ▼
+Notification Sent
+      │
+      ▼
+Patient Portal Updated
+
+Business Rules
+Notification shall not disclose confidential medical details through insecure channels.
+
+Acceptance Criteria
+Patients notified after report approval.
+
+5.13.9 Functional Requirement NCM-FR-005
+Billing & Payment Notifications
+
+Requirement ID
+NCM-FR-005
+
+Description
+The system shall notify patients regarding financial activities.
+
+Notifications
+Invoice Generated
+Payment Received
+Outstanding Balance
+Refund Processed
+Insurance Approval
+
+Workflow
+Billing Event
+      │
+      ▼
+Notification Engine
+      │
+      ▼
+Patient Notification
+
+Business Rules
+Financial notifications shall not expose sensitive payment information unnecessarily.
+
+Acceptance Criteria
+Billing notifications delivered successfully.
+
+

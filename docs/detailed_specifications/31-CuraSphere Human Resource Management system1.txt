@@ -1,0 +1,370 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.11 - Human Resource Management System (HRM)
+
+5.11.1 Introduction
+The Human Resource Management System (HRM) is responsible for managing the complete employee lifecycle within the CuraSphere Hospital Management System. It centralizes all human resource operations, including recruitment, employee records, credentialing, attendance, scheduling, payroll integration, leave management, performance evaluation, training, and employee separation.
+A hospital relies heavily on qualified medical and non-medical staff. Therefore, the HRM module ensures that every employee is properly recruited, verified, scheduled, monitored, evaluated, and compensated while complying with healthcare regulations and labor laws.
+The HRM module integrates with:
+Employee Portal
+Authentication & Identity Management
+Payroll System
+Finance System
+Appointment Management
+Duty Roster
+Nursing Management
+Operation Theatre
+Laboratory
+Pharmacy
+Security & Access Control
+Audit Management
+Notification System
+
+HRM Module Scope
+The Human Resource Management System shall manage:
+Employee Master Records
+Recruitment
+Employee Onboarding
+Credential & License Management
+Department Assignment
+Job Positions
+Attendance Management
+Shift Scheduling
+Duty Rosters
+Leave Management
+Overtime Management
+Payroll Integration
+Performance Evaluation
+Employee Training
+Certifications
+Promotions
+Transfers
+Resignation
+Retirement
+Employee Separation
+HR Reports
+HR Audit Logs
+
+HR Workflow Overview
+Recruitment
+      │
+      ▼
+Employee Hiring
+      │
+      ▼
+Employee Record Created
+      │
+      ▼
+Department Assignment
+      │
+      ▼
+Attendance & Scheduling
+      │
+      ▼
+Leave & Performance
+      │
+      ▼
+Payroll Processing
+      │
+      ▼
+Audit & Reporting
+
+5.11.2 Objectives
+The HRM module shall:
+Maintain centralized employee records.
+Support recruitment and hiring.
+Manage staff attendance.
+Manage work schedules and shifts.
+Process leave requests.
+Integrate with payroll.
+Monitor employee performance.
+Track employee training.
+Maintain professional licenses and certifications.
+Improve workforce planning.
+Reduce manual HR work.
+Maintain complete employee history.
+Generate HR reports.
+Support regulatory compliance.
+Maintain complete audit trails.
+
+5.11.3 Actors
+Actor
+Description
+HR Officer
+Manages employee records
+HR Manager
+Supervises HR operations
+Department Manager
+Manages departmental staff
+Employee
+Uses employee portal
+Payroll Officer
+Processes salaries
+Hospital Administrator
+Configures HR policies
+System Administrator
+Manages user accounts
+Finance Officer
+Payroll verification
+CuraSphere System
+Automated HR processes
+
+5.11.4 High-Level HR Architecture
+             Recruitment
+                  │
+                  ▼
+          Employee Master
+                  │
+      ┌───────────┼───────────┐
+      ▼           ▼           ▼
+ Attendance    Scheduling   Leave
+      │           │           │
+      └───────────┼───────────┘
+                  ▼
+          Payroll Integration
+                  │
+      ┌───────────┼───────────┐
+      ▼           ▼           ▼
+ Performance   Training   Reports
+                  │
+                  ▼
+             Audit System
+
+5.11.5 Functional Requirement HRM-FR-001
+Employee Master Management
+
+Requirement ID
+HRM-FR-001
+Requirement Name
+Employee Master Record Management
+
+Description
+The system shall maintain a centralized employee database containing all hospital personnel.
+The Employee Master shall serve as the primary source of employee information across all CuraSphere modules.
+
+Actors
+HR Officer
+HR Manager
+System Administrator
+
+Preconditions
+User must have HR management permissions.
+
+Trigger
+A new employee is hired or an existing employee's information is updated.
+
+Main Workflow
+Employee Hired
+      │
+      ▼
+Create Employee Record
+      │
+      ▼
+Assign Employee ID
+      │
+      ▼
+Validate Information
+      │
+      ▼
+Save Record
+      │
+      ▼
+Audit Log Created
+
+Employee Information
+The Employee Master shall maintain:
+Employee ID
+National ID / Passport
+Full Name
+Gender
+Date of Birth
+Contact Number
+Email Address
+Residential Address
+Emergency Contact
+Department
+Designation
+Employment Type
+Date of Joining
+Employment Status
+Reporting Manager
+Qualifications
+Professional License Number (where applicable)
+
+Business Rules
+HRM-BR-001
+Each employee shall have a unique Employee ID.
+HRM-BR-002
+Employee records shall not be permanently deleted.
+HRM-BR-003
+Only authorized HR personnel may modify employee information.
+
+Acceptance Criteria
+Employee records created successfully.
+Duplicate Employee IDs prevented.
+Audit logs generated.
+
+5.11.6 Functional Requirement HRM-FR-002
+Recruitment Management
+
+Requirement ID
+HRM-FR-002
+Requirement Name
+Recruitment and Hiring Management
+
+Description
+The system shall support the complete recruitment lifecycle from job requisition to employee onboarding.
+
+Recruitment Workflow
+Job Vacancy
+      │
+      ▼
+Applications Received
+      │
+      ▼
+Screening
+      │
+      ▼
+Interview
+      │
+      ▼
+Selection
+      │
+      ▼
+Offer Letter
+      │
+      ▼
+Employee Onboarding
+
+Business Rules
+Approved vacancies only.
+Selection requires HR approval.
+Employee record created after acceptance.
+
+Acceptance Criteria
+Complete recruitment process managed electronically.
+
+5.11.7 Functional Requirement HRM-FR-003
+Employee Credential and License Management
+
+Requirement ID
+HRM-FR-003
+
+Description
+The system shall maintain professional licenses, certifications, and mandatory credentials for healthcare professionals.
+Examples include:
+Medical License
+Nursing License
+Pharmacy License
+Laboratory Certification
+Radiology Certification
+CPR Certification
+ACLS Certification
+Infection Control Training
+
+Workflow
+Credential Added
+      │
+      ▼
+Expiry Recorded
+      │
+      ▼
+Automatic Reminder
+      │
+      ▼
+Renewal
+
+Business Rules
+Expired licenses shall generate alerts.
+
+Acceptance Criteria
+Credential expiry reminders generated automatically.
+
+5.11.8 Functional Requirement HRM-FR-004
+Attendance Management
+
+Requirement ID
+HRM-FR-004
+
+Description
+The system shall record daily employee attendance.
+Attendance methods may include:
+Biometric
+RFID Card
+QR Code
+Mobile Application
+Manual Entry (Authorized)
+
+Workflow
+Employee Check-In
+        │
+        ▼
+Attendance Recorded
+        │
+        ▼
+Working Hours Calculated
+        │
+        ▼
+Attendance Report Updated
+
+Business Rules
+Late arrivals and absences shall be calculated according to hospital attendance policies.
+
+Acceptance Criteria
+Attendance recorded accurately.
+
+5.11.9 Functional Requirement HRM-FR-005
+Shift and Duty Roster Management
+
+Requirement ID
+HRM-FR-005
+
+Description
+The system shall manage employee work schedules, shifts, and duty rosters.
+
+Shift Types
+Morning
+Evening
+Night
+On-Call
+Emergency
+Weekend
+Holiday
+
+Workflow
+Create Shift
+      │
+      ▼
+Assign Employee
+      │
+      ▼
+Publish Roster
+      │
+      ▼
+Employee Notification
+
+Business Rules
+Shift conflicts shall be prevented.
+
+Acceptance Criteria
+Employees receive updated duty schedules.
+
+5.11 Progress
+Human Resource Management
+
+✔ Introduction
+✔ Objectives
+✔ Actors
+✔ Architecture
+✔ Employee Master
+✔ Recruitment
+✔ Credential Management
+✔ Attendance
+✔ Shift Management
+
+Completed: ~30%
+
+
+
+

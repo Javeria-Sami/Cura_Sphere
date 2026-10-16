@@ -1,0 +1,433 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 6 - Non-Functional Requirements (NFR)
+Part 6.21 - Compliance, Standards & Quality Attributes (NFR-14)
+
+6.21 Compliance, Standards & Quality Attributes
+
+6.21.1 Introduction
+The Compliance, Standards, and Quality Attributes Requirements define the regulatory, legal, ethical, technical, and operational standards that govern the design, development, deployment, operation, and maintenance of the CuraSphere Hospital Management System.
+Healthcare information systems manage highly confidential patient information, financial records, laboratory results, prescriptions, diagnostic images, and operational data. Consequently, the system shall comply with internationally recognized healthcare standards, software engineering standards, cybersecurity frameworks, accessibility guidelines, and applicable legal regulations while maintaining high levels of software quality throughout its lifecycle.
+These requirements establish the baseline for ensuring that CuraSphere is reliable, secure, interoperable, maintainable, auditable, and suitable for deployment in hospitals of varying sizes.
+
+6.21.2 Purpose
+The purpose of this section is to define:
+Regulatory Compliance
+Healthcare Standards
+Information Security Standards
+Software Engineering Standards
+Quality Management Principles
+Risk Management
+Governance
+Documentation Standards
+Software Quality Attributes
+Continuous Quality Improvement
+
+6.21.3 Objectives
+The compliance and quality framework shall:
+Protect patient privacy.
+Ensure legal compliance.
+Improve software quality.
+Standardize development practices.
+Reduce operational risks.
+Improve interoperability.
+Maintain regulatory readiness.
+Support internal and external audits.
+Promote continuous improvement.
+Enhance patient safety.
+
+6.21.4 Scope
+These requirements apply to:
+Entire Software Platform
+Mobile Interfaces
+APIs
+Databases
+Medical Records
+Billing System
+Authentication Services
+Infrastructure
+Cloud Services
+Third-Party Integrations
+Medical Devices
+Administrative Operations
+
+6.21.5 Compliance Framework
+                 Regulatory Requirements
+                         │
+         ┌───────────────┼────────────────┐
+         ▼               ▼                ▼
+ Healthcare       Information        Software
+ Standards          Security         Standards
+         │               │                │
+         └───────────────┼────────────────┘
+                         ▼
+                CuraSphere HMS
+                         │
+         ┌───────────────┼────────────────┐
+         ▼               ▼                ▼
+ Governance       Risk Management     Quality Assurance
+
+6.21.6 Healthcare Standards
+The system shall be designed to support internationally recognized healthcare interoperability standards where applicable.
+Standard
+Purpose
+HL7
+Healthcare information exchange
+HL7 FHIR
+REST-based healthcare interoperability
+DICOM
+Medical imaging interoperability
+ICD-10
+Disease classification
+LOINC
+Laboratory observations
+SNOMED CT
+Clinical terminology (where licensed and applicable)
+
+6.21.7 Information Security Standards
+The information security program shall align with recognized security frameworks.
+Standard
+Scope
+ISO/IEC 27001
+Information Security Management
+ISO/IEC 27002
+Security Controls
+OWASP ASVS
+Application Security Verification
+OWASP Top 10
+Web Application Security
+NIST Cybersecurity Framework
+Risk Management
+CIS Controls
+Security Best Practices
+
+6.21.8 Software Engineering Standards
+Development activities shall follow recognized software engineering practices.
+Standard
+Application
+IEEE 29148
+Software Requirements Specification
+IEEE 1016
+Software Design Description
+IEEE 730
+Software Quality Assurance
+IEEE 828
+Configuration Management
+ISO/IEC 25010
+Software Product Quality Model
+Semantic Versioning
+Software Release Versioning
+
+6.21.9 Documentation Standards
+Project documentation shall include:
+Vision Document
+Business Requirements
+Software Requirements Specification
+Architecture Documentation
+Database Design
+API Documentation
+UI Design Specifications
+Test Plans
+User Manuals
+Administrator Guides
+Deployment Guides
+Maintenance Guides
+Release Notes
+Change Logs
+
+6.21.10 Governance Framework
+Project governance shall include:
+Steering Committee
+Project Sponsor
+Product Owner
+Technical Architect
+Development Team
+QA Team
+DevOps Team
+Database Administrator
+Information Security Officer
+Hospital Administration
+
+Governance Workflow
+Business Objectives
+        │
+        ▼
+Project Governance
+        │
+        ▼
+Technical Decisions
+        │
+        ▼
+Development
+        │
+        ▼
+Quality Assurance
+        │
+        ▼
+Production Release
+
+6.21.11 Risk Management
+The project shall implement continuous risk management.
+
+Risk Categories
+Technical Risks
+Security Risks
+Regulatory Risks
+Infrastructure Risks
+Operational Risks
+Financial Risks
+Vendor Risks
+Data Privacy Risks
+
+Risk Assessment Matrix
+Risk
+Probability
+Impact
+Priority
+Data Breach
+Medium
+Critical
+High
+Server Failure
+Medium
+High
+High
+Database Corruption
+Low
+Critical
+High
+Cyber Attack
+Medium
+Critical
+High
+Human Error
+High
+Medium
+Medium
+Third-Party API Failure
+Medium
+Medium
+Medium
+
+6.21.12 Software Quality Attributes
+The system shall satisfy the quality characteristics defined in ISO/IEC 25010.
+
+Functional Suitability
+Functional Completeness
+Functional Correctness
+Functional Appropriateness
+
+Reliability
+Availability
+Fault Tolerance
+Recoverability
+Maturity
+
+Performance Efficiency
+Response Time
+Resource Utilization
+Capacity
+
+Security
+Confidentiality
+Integrity
+Authentication
+Authorization
+Accountability
+Non-Repudiation
+
+Maintainability
+Modularity
+Reusability
+Testability
+Analysability
+Modifiability
+
+Portability
+Installability
+Replaceability
+Adaptability
+
+Compatibility
+Interoperability
+Coexistence
+
+Usability
+Learnability
+Accessibility
+Operability
+User Error Protection
+
+6.21.13 Quality Assurance Process
+Requirements
+      │
+      ▼
+Design Review
+      │
+      ▼
+Development
+      │
+      ▼
+Testing
+      │
+      ▼
+Code Review
+      │
+      ▼
+Acceptance Testing
+      │
+      ▼
+Production Deployment
+
+6.21.14 Continuous Improvement
+The organization shall continuously improve the system through:
+User Feedback
+Incident Reviews
+Performance Reviews
+Security Assessments
+Penetration Testing
+Infrastructure Optimization
+Software Updates
+Technology Modernization
+
+6.21.15 Compliance Monitoring
+Compliance shall be monitored through:
+Internal Audits
+External Audits
+Vulnerability Assessments
+Security Reviews
+Configuration Reviews
+Documentation Reviews
+Change Management Reviews
+
+6.21.16 Business Rules
+Rule ID
+Rule
+NFR-COMP-001
+All regulatory requirements shall be documented.
+NFR-COMP-002
+Software changes shall follow change management procedures.
+NFR-COMP-003
+Security standards shall be reviewed periodically.
+NFR-COMP-004
+Compliance evidence shall be retained according to organizational policy.
+NFR-COMP-005
+Quality assurance activities shall be documented before production deployment.
+NFR-COMP-006
+Risk assessments shall be reviewed at planned intervals.
+NFR-COMP-007
+Compliance gaps shall be tracked until resolution.
+
+6.21.17 Acceptance Criteria
+The compliance and quality management program shall be accepted when:
+Required standards have been identified and mapped.
+Compliance controls are implemented and documented.
+Quality assurance activities are completed before production releases.
+Governance processes are operational.
+Risk management activities are documented and reviewed.
+Continuous improvement processes are established.
+
+6.21.18 Requirement Traceability Matrix
+Requirement ID
+Description
+NFR-COMP-001
+Healthcare Standards
+NFR-COMP-002
+Security Standards
+NFR-COMP-003
+Software Standards
+NFR-COMP-004
+Documentation
+NFR-COMP-005
+Governance
+NFR-COMP-006
+Risk Management
+NFR-COMP-007
+Quality Attributes
+NFR-COMP-008
+Continuous Improvement
+NFR-COMP-009
+Compliance Monitoring
+NFR-COMP-010
+Acceptance Criteria
+
+6.21.19 Section Summary
+The Compliance, Standards, and Quality Attributes framework establishes the policies and controls required to ensure that CuraSphere is developed and operated according to recognized healthcare, information security, and software engineering practices. By integrating governance, risk management, quality assurance, and continuous improvement into the software lifecycle, the system is designed to support secure, reliable, and maintainable healthcare operations while remaining adaptable to evolving regulatory and organizational requirements.
+
+6.22 Complete Non-Functional Requirements Traceability Matrix
+6.22.1 Introduction
+This matrix provides a consolidated mapping of all Non-Functional Requirement (NFR) categories defined in Section 6. It supports verification, validation, testing, and future maintenance by ensuring that each NFR category can be traced to implementation and quality assurance activities.
+NFR Category
+Requirement ID Prefix
+Related Section
+Performance
+NFR-PERF
+6.12
+Scalability
+NFR-SCAL
+6.13
+Availability & Reliability
+NFR-AVL
+6.14
+Security
+NFR-SEC
+6.15
+Usability & Accessibility
+NFR-USA
+6.16
+Maintainability
+NFR-MNT
+6.17
+Backup & Disaster Recovery
+NFR-BCP
+6.18
+Logging & Monitoring
+NFR-MON
+6.19
+DevOps & Deployment
+NFR-DEV
+6.20
+Compliance & Quality
+NFR-COMP
+6.21
+
+6.22.2 Verification Methods
+Verification Method
+Applicable Categories
+Code Review
+Security, Maintainability
+Unit Testing
+Performance, Reliability
+Integration Testing
+Compatibility, APIs
+System Testing
+Functional & NFR Validation
+Load Testing
+Performance, Scalability
+Penetration Testing
+Security
+Disaster Recovery Drill
+Backup & BCP
+Accessibility Testing
+Usability
+Compliance Audit
+Compliance & Governance
+
+6.23 Section 6 Final Summary
+Section 6 defines the complete Non-Functional Requirements for the CuraSphere Hospital Management System. These requirements complement the functional capabilities described in Section 5 by specifying the quality attributes, operational expectations, and technical constraints necessary for a secure, reliable, scalable, and maintainable enterprise healthcare platform.
+The completed non-functional requirements include:
+Performance Requirements
+Scalability Requirements
+Availability & Reliability
+Security Requirements
+Usability & Accessibility
+Maintainability, Portability & Compatibility
+Backup, Disaster Recovery & Business Continuity
+Logging, Monitoring & Auditability
+DevOps, Deployment & Infrastructure
+Compliance, Standards & Quality Attributes
+Consolidated Traceability Matrix
+Together, these requirements establish measurable criteria for system quality, operational resilience, regulatory readiness, and long-term maintainability. They also provide the foundation for the subsequent architectural design, database design, implementation, testing, deployment, and operational support activities described in later sections of the SRS.
+
+
+

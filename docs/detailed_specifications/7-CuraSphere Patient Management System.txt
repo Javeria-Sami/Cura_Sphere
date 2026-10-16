@@ -1,0 +1,1208 @@
+﻿CURASPHERE
+Hospital Management System
+SOFTWARE REQUIREMENTS SPECIFICATION
+SECTION 5 — FUNCTIONAL REQUIREMENTS
+PART 5.2 — PATIENT MANAGEMENT
+Document ID: CS-SRS-001Section ID: CS-SRS-SEC-005Module Code: PATModule Name: Patient ManagementProject: CuraSphereVersion: 1.0Status: DraftDevelopment Model: Rapid Application Development (RAD)
+
+5.24 PAT — PATIENT MANAGEMENT
+5.24.1 Module Purpose
+The Patient Management module shall manage the administrative identity of patients receiving healthcare services through CuraSphere.
+The PAT module shall provide the controlled patient identity foundation required by clinical, diagnostic, pharmacy, admission, billing, and reporting workflows.
+The module shall support:
+patient registration;
+patient identification;
+Medical Record Number management;
+patient search;
+patient demographic management;
+patient contact information;
+address information;
+emergency contacts;
+patient status;
+duplicate patient detection;
+patient identity review;
+patient record merge governance;
+patient administrative history.
+The Patient Management module shall primarily manage the administrative identity of a patient.
+It shall not become the owner of the complete clinical medical record.
+The fundamental boundary is:
+PAT MODULE    │    ▼WHO IS THE PATIENT?EMR MODULE    │    ▼WHAT CLINICAL CARE HAS THE PATIENT RECEIVED?
+For example:
+PAT OWNSPatient IdentifierMRNNameDate of BirthAdministrative Sex / Gender DataContact InformationAddressEmergency ContactPatient Status
+Compared with:
+EMR OWNSClinical EncountersMedical HistoryClinical NotesAllergiesDiagnosesClinical Summaries
+This separation shall be maintained throughout CuraSphere design.
+
+5.24.2 Why Patient Identity Is a Critical Domain
+A patient record is referenced by multiple CuraSphere modules.
+                            PATIENT                               │         ┌─────────────────────┼─────────────────────┐         │                     │                     │         ▼                     ▼                     ▼     APPOINTMENT              OPD                   IPD         │                     │                     │         └─────────────────────┼─────────────────────┘                               │                               ▼                              EMR                               │             ┌─────────────────┼─────────────────┐             │                 │                 │             ▼                 ▼                 ▼            LAB               RAD               PRE                                                   │                                                   ▼                                                  PHAPATIENT ──────────────────────► BILPATIENT ──────────────────────► PAYPATIENT ──────────────────────► INS
+An incorrect patient identity may create serious downstream problems.
+Example:
+WRONG PATIENT SELECTED         │         ▼WRONG CLINICAL ENCOUNTER         │         ▼WRONG LAB REQUEST         │         ▼RESULT ATTACHED TO WRONG RECORD         │         ▼CLINICAL DECISION RISK
+Another example:
+DUPLICATE PATIENT CREATEDPatient Record AMRN: MRN-10021Patient Record BMRN: MRN-20541Both represent the same real person.
+This can divide the patient’s history.
+PATIENT HISTORY      │      ├────► RECORD A      │        ├── OPD Visit      │        └── Allergy      │      └────► RECORD B               ├── Lab Result               └── Prescription
+Therefore, patient registration, search, duplicate detection, and identity correction shall be treated as controlled business workflows.
+
+5.24.3 PAT Module Actors
+Actor
+Responsibility
+Receptionist
+Searches and registers patients
+Hospital Administrator
+Reviews authorized patient administrative information
+Doctor
+Reviews permitted patient identity information
+Nurse
+Reviews permitted patient identity information
+Emergency Staff
+Performs rapid patient identification
+Billing Officer
+Uses patient identity for billing workflows
+Insurance Staff
+Uses patient identity for insurance workflows
+Authorized Data Steward
+Reviews identity and duplicate record issues
+CuraSphere System
+Generates identifiers and validates patient data
+The term Data Steward represents an authorized user responsible for controlled data quality operations.
+The exact hospital role performing this responsibility shall be defined by organizational policy.
+
+5.24.4 PAT Functional Requirement Registry
+Requirement ID
+Requirement Name
+Priority
+CS-PAT-FR-001
+Search Patient
+M
+CS-PAT-FR-002
+Register Patient
+M
+CS-PAT-FR-003
+Generate Patient Internal Identifier
+M
+CS-PAT-FR-004
+Generate Medical Record Number
+M
+CS-PAT-FR-005
+Validate Patient Registration Data
+M
+CS-PAT-FR-006
+Detect Probable Duplicate Patient
+M
+CS-PAT-FR-007
+Confirm Registration After Duplicate Warning
+M
+CS-PAT-FR-008
+View Patient Profile
+M
+CS-PAT-FR-009
+Update Patient Demographics
+M
+CS-PAT-FR-010
+Manage Patient Contact Information
+M
+CS-PAT-FR-011
+Manage Patient Address
+M
+CS-PAT-FR-012
+Manage Emergency Contact
+M
+CS-PAT-FR-013
+View Patient Administrative History
+S
+CS-PAT-FR-014
+Change Patient Status
+M
+CS-PAT-FR-015
+Record Patient Identity Correction
+M
+CS-PAT-FR-016
+Flag Potential Duplicate Records
+M
+CS-PAT-FR-017
+Review Duplicate Patient Records
+M
+CS-PAT-FR-018
+Merge Duplicate Patient Records
+S
+CS-PAT-FR-019
+Prevent Uncontrolled Patient Deletion
+M
+CS-PAT-FR-020
+Search Patient by MRN
+M
+CS-PAT-FR-021
+Search Patient by Name
+M
+CS-PAT-FR-022
+Search Patient by Contact Information
+M
+CS-PAT-FR-023
+Search Patient by National Identifier
+S
+CS-PAT-FR-024
+Filter Patient Search Results
+S
+CS-PAT-FR-025
+View Patient Identity Summary
+M
+CS-PAT-FR-026
+Record Patient Registration Source
+S
+CS-PAT-FR-027
+Support Temporary Patient Identity
+M
+CS-PAT-FR-028
+Convert Temporary Patient to Identified Patient
+M
+CS-PAT-FR-029
+Link Patient to Insurance Information
+S
+CS-PAT-FR-030
+Record Patient Administrative Audit Events
+M
+
+5.25 PATIENT SEARCH REQUIREMENTS
+CS-PAT-FR-001 — Search Patient
+Requirement Name
+Search Patient
+Module
+PAT — Patient Management
+Requirement Type
+Functional Requirement
+Description
+The system shall allow an authorized user to search for an existing patient before creating a new patient record or performing a patient-related workflow.
+Source
+CS-REC-SR-001 — Patient Search
+Primary Actor
+Receptionist
+Secondary Actors
+Doctor
+Nurse
+Billing Officer
+Authorized Hospital User
+Priority
+Must Have
+Preconditions
+The user is authenticated.
+The user has patient search permission.
+The Patient Management module is available.
+Trigger
+The user initiates a patient search.
+Main Requirement
+The system shall accept approved patient search criteria and return matching patient records that the requesting user is authorized to view.
+Main Flow
+1. User opens patient search.2. CuraSphere presents the patient search interface.3. User enters one or more search criteria.4. CuraSphere validates the search criteria.5. CuraSphere applies applicable search rules.6. CuraSphere searches patient records.7. CuraSphere applies authorization and information visibility rules.8. CuraSphere returns matching patient records.9. User reviews the results.10. User selects an eligible patient record.
+Search Criteria May Include
+Medical Record Number;
+patient name;
+phone number;
+national identifier where configured;
+date of birth;
+patient internal identifier where appropriate.
+Alternate Flow A — No Patient Found
+If no matching patient is found:
+The system shall display a controlled no-result state.
+The system may allow an authorized user to initiate patient registration.
+The search criteria may be reused where appropriate.
+Alternate Flow B — Multiple Patients Found
+If multiple patient records match:
+The system shall display permitted identifying information.
+The user shall review the results.
+The system shall not automatically select a patient solely because the first result matched.
+Exception Flow — Invalid Search
+If the search request is invalid:
+The system shall reject the invalid search request.
+The system shall provide appropriate validation feedback.
+Business Rules
+CS-PAT-BR-001
+Authorized users should search for an existing patient before registering a new patient.
+CS-PAT-BR-002
+Search results shall only expose patient information permitted for the requesting user.
+CS-PAT-BR-003
+The system shall not assume that two patients are the same solely because their names match.
+Inputs
+One or more approved patient search criteria.
+Outputs
+A list of permitted patient search results.
+Postconditions
+No patient information is modified by a normal search operation.
+Security Considerations
+Patient search is a protected operation.
+The ability to search patients shall not automatically provide unrestricted access to the patient’s clinical record.
+Acceptance Criteria
+AC-001
+Given an authorized user and a valid existing MRN, when the user searches using the MRN, then the matching permitted patient record shall be returned.
+AC-002
+Given a valid search with no matching patient, when the search completes, then the system shall show a no-result state.
+AC-003
+Given an unauthorized user, when the user attempts patient search, then the protected operation shall be denied.
+AC-004
+Given multiple matching patients, the system shall return permitted matching results without automatically treating them as the same person.
+Dependencies
+IAM — Identity and Access Management
+Traceability
+CS-REC-SR-001
+CS-PAT-SR-001
+Future Use Case: UC-PAT-001
+Status
+Proposed
+
+CS-PAT-FR-020 — Search Patient by MRN
+Description
+The system shall allow an authorized user to search for a patient using the Medical Record Number.
+Priority
+Must Have
+Main Requirement
+When a valid MRN is provided, the system shall attempt to identify the corresponding patient record.
+Business Rule
+An MRN shall uniquely identify a patient record within its configured MRN scope.
+Example
+INPUTMRN-2026-001245        │        ▼PATIENT SEARCH        │        ▼MATCH FOUND        │        ▼PATIENT IDENTITY SUMMARY
+Acceptance Criteria
+Given a valid existing MRN, the corresponding permitted patient record shall be returned.
+
+CS-PAT-FR-021 — Search Patient by Name
+Description
+The system shall allow an authorized user to search patient records using approved patient name criteria.
+Priority
+Must Have
+Search Considerations
+The search design should consider:
+full name;
+partial name;
+name normalization;
+configurable case handling.
+The exact search algorithm shall be defined during technical design.
+Important Rule
+A name match is not proof of patient identity.
+Example:
+Search:Muhammad AhmadResults:1. Muhammad Ahmad   DOB: 1998-04-12   Phone: ***2212. Muhammad Ahmad   DOB: 1985-11-09   Phone: ***8243. Muhammad Ahmad   DOB: 2001-07-18   Phone: ***115
+The user shall verify the correct patient using approved identity information.
+
+CS-PAT-FR-022 — Search Patient by Contact Information
+Description
+The system shall allow an authorized user to search patients using approved contact information.
+Priority
+Must Have
+Potential Search Values
+primary phone number;
+secondary phone number where supported.
+Business Rule
+A phone number shall not automatically be treated as a globally unique patient identifier unless hospital policy explicitly establishes such a rule.
+Multiple patients may share contact information.
+Example:
+Family Phone Number      │      ├────► Patient A      ├────► Patient B      └────► Patient C
+
+CS-PAT-FR-023 — Search Patient by National Identifier
+Description
+Where legally and operationally applicable, the system should allow authorized users to search for patients using an approved national identity identifier.
+Priority
+Should Have
+Important Considerations
+The identifier may vary according to deployment jurisdiction.
+Examples may include:
+national identity number;
+passport identifier;
+other government-issued identifiers.
+CuraSphere shall not hard-code a single country’s national identity model into the entire patient domain without an approved product decision.
+Security Consideration
+National identifiers shall be treated as sensitive administrative information.
+
+CS-PAT-FR-024 — Filter Patient Search Results
+Description
+The system should allow authorized users to refine patient search results using approved filters.
+Priority
+Should Have
+Potential Filters
+patient status;
+date of birth;
+registration period;
+sex or configured administrative gender field;
+registration source.
+The final filters shall be defined during UI and data design.
+
+5.26 PATIENT REGISTRATION REQUIREMENTS
+CS-PAT-FR-002 — Register Patient
+Requirement Name
+Register Patient
+Description
+The system shall allow an authorized user to register a new patient.
+Source
+CS-REC-SR-002 — Patient Registration
+Primary Actor
+Receptionist
+Secondary Actors
+Emergency Staff
+Authorized Patient Administration Staff
+Priority
+Must Have
+Preconditions
+The user is authenticated.
+The user has patient registration permission.
+The user has performed or initiated an appropriate patient search according to workflow rules.
+Required patient information is available, except where temporary patient registration rules apply.
+Trigger
+The authorized user initiates new patient registration.
+Main Requirement
+The system shall validate patient registration information, evaluate probable duplicate records, and create a new patient record when registration is eligible for completion.
+Main Flow
+PATIENT ARRIVES      │      ▼SEARCH EXISTING PATIENT      │      ▼PATIENT FOUND?   │        │  YES       NO   │        │   ▼        ▼USE       START REGISTRATIONEXISTING        │RECORD          ▼          ENTER PATIENT DATA                │                ▼             VALIDATE                │                ▼        DUPLICATE EVALUATION                │          ┌─────┴─────┐          │           │        MATCH       NO MATCH          │           │          ▼           ▼     REVIEW WARNING  CREATE PATIENT          │           │          ▼           ▼    CONFIRM / CANCEL GENERATE MRN                      │                      ▼                 REGISTRATION COMPLETE
+Main Flow Steps
+The user opens the patient registration interface.
+CuraSphere presents the approved registration form.
+The user enters patient administrative information.
+The user submits the registration request.
+CuraSphere validates required information.
+CuraSphere normalizes applicable registration data.
+CuraSphere evaluates probable duplicate patient records.
+If no blocking condition exists, CuraSphere creates a unique patient internal identifier.
+CuraSphere generates or assigns the Medical Record Number according to the MRN policy.
+CuraSphere stores the patient administrative record.
+CuraSphere records the registration event.
+CuraSphere confirms successful patient registration.
+Alternate Flow A — Probable Duplicate Found
+If probable duplicate records are identified:
+CuraSphere shall display an appropriate duplicate warning.
+CuraSphere shall show permitted identity comparison information.
+The user shall review the possible matches.
+The user may select an existing patient where appropriate.
+If permitted by business rules, the user may continue new patient registration after explicit confirmation.
+The system shall record applicable duplicate warning information.
+Alternate Flow B — Temporary Patient
+If the patient cannot be fully identified and the workflow permits temporary registration:
+The user initiates temporary patient registration.
+The system collects the minimum required temporary information.
+The system creates a temporary patient identity.
+The temporary status is clearly identifiable.
+The system allows the approved hospital workflow to continue.
+Exception Flow A — Missing Required Data
+The system shall reject normal registration when required patient information is missing.
+Exception Flow B — Invalid Data
+The system shall reject invalid patient information according to validation rules.
+Exception Flow C — MRN Generation Failure
+If a valid MRN cannot be generated or assigned:
+Patient registration shall not be reported as successfully completed.
+The system shall preserve transactional consistency.
+The technical failure shall be handled according to application error rules.
+Business Rules
+CS-PAT-BR-004
+A new patient shall receive a unique internal patient identifier.
+CS-PAT-BR-005
+A patient shall receive an MRN according to the approved MRN policy.
+CS-PAT-BR-006
+The system shall evaluate applicable duplicate patient rules before normal patient registration is finalized.
+CS-PAT-BR-007
+A probable duplicate warning does not automatically prove that two records represent the same patient.
+CS-PAT-BR-008
+Patient registration shall require appropriate authorization.
+CS-PAT-BR-009
+Patient registration shall be auditable.
+Inputs
+Potential inputs include:
+patient name;
+date of birth;
+sex or configured administrative gender information;
+phone information;
+email where applicable;
+address;
+national identifier where applicable;
+emergency contact;
+registration source.
+The final required and optional fields shall be defined in the Patient Data Requirements Specification.
+Outputs
+patient record;
+internal patient identifier;
+MRN;
+registration confirmation;
+audit event.
+Postconditions
+A valid patient administrative record exists.
+Security Considerations
+Patient registration data shall only be accessible through authorized workflows.
+Audit Requirements
+The system shall record:
+registering user;
+patient record identifier;
+registration action;
+registration time;
+operation result.
+Acceptance Criteria
+AC-001
+Given an authorized user and valid patient information with no blocking condition, when registration is submitted, then the patient shall be registered.
+AC-002
+A successfully registered patient shall have a unique internal patient identifier.
+AC-003
+A successfully registered normal patient shall have an MRN according to the MRN policy.
+AC-004
+If probable duplicate records are identified, the system shall invoke the duplicate review workflow.
+AC-005
+An unauthorized user shall not be able to create a patient through the protected registration operation.
+Dependencies
+IAM
+AUD
+CFG, where registration policies are configurable
+Traceability
+CS-REC-SR-002
+CS-REC-SR-003
+CS-PAT-SR-001
+UC-PAT-002
+Status
+Proposed
+
+5.27 PATIENT IDENTIFIER REQUIREMENTS
+CS-PAT-FR-003 — Generate Patient Internal Identifier
+Description
+The system shall assign a unique internal system identifier to every patient record.
+Priority
+Must Have
+Purpose
+The internal patient identifier shall provide a stable technical identity for the patient record.
+Conceptually:
+PATIENT ID    │    ▼SYSTEM IDENTITYMRN    │    ▼BUSINESS / MEDICAL RECORD IDENTIFIER
+These concepts shall not be assumed to be identical.
+Example
+Internal Patient ID:6f3a...technical identifierMRN:CS-MRN-00001245
+The exact technical identifier format shall be selected during architecture and data design.
+Business Rule
+The internal patient identifier shall not be manually reused for another patient record.
+
+CS-PAT-FR-004 — Generate Medical Record Number
+Description
+The system shall generate or assign a Medical Record Number to an eligible patient according to the approved MRN policy.
+Priority
+Must Have
+Purpose of MRN
+The MRN shall provide a hospital-recognizable medical record identifier.
+Conceptual MRN Examples
+MRN-00000001CS-000012452026-001245
+These are examples only.
+The final format shall be approved in the Patient Identifier Design Specification.
+MRN Requirements
+The MRN shall:
+be unique within its defined scope;
+identify the corresponding patient record;
+not be silently reassigned to another patient;
+remain traceable where correction or migration is required.
+Important Engineering Rule
+MRN generation shall not rely only on:
+SELECT MAX(MRN) + 1
+without a concurrency-safe design.
+Example risk:
+Receptionist A reads maximum = 100Receptionist B reads maximum = 100A generates 101B generates 101DUPLICATE MRN
+The final PostgreSQL design shall provide concurrency-safe identifier generation.
+Acceptance Criteria
+Two successfully registered patients shall not receive the same MRN within the configured MRN scope.
+
+5.28 PATIENT REGISTRATION VALIDATION
+CS-PAT-FR-005 — Validate Patient Registration Data
+Description
+The system shall validate patient information before completing normal patient registration.
+Priority
+Must Have
+Validation Categories
+PATIENT DATA VALIDATION          │          ├── Required Field Validation          ├── Format Validation          ├── Length Validation          ├── Date Validation          ├── Reference Validation          ├── Business Rule Validation          └── Duplicate Evaluation
+Example Validation Rules
+A date of birth shall not be accepted when it violates approved date rules.
+A configured required name field shall not be empty.
+A phone number shall follow configured normalization and validation rules where applicable.
+A national identifier shall follow applicable format rules where configured.
+Important Rule
+React validation improves user experience.
+However:
+REACT VALIDATION       │       ▼USER EXPERIENCE
+The trusted backend shall independently enforce required business validation.
+BACKEND VALIDATION       │       ▼DATA INTEGRITY
+Therefore:
+Frontend Validation        +Backend Validation        +Database Constraints
+may each have different responsibilities.
+
+5.29 DUPLICATE PATIENT DETECTION REQUIREMENTS
+CS-PAT-FR-006 — Detect Probable Duplicate Patient
+Description
+The system shall evaluate new patient registration information against existing patient records to identify probable duplicate records.
+Source
+CS-REC-SR-003 — Duplicate Patient Warning
+Priority
+Must Have
+Duplicate Detection Inputs May Include
+normalized patient name;
+date of birth;
+phone number;
+national identifier;
+other approved identity attributes.
+Conceptual Model
+NEW PATIENT DATA       │       ▼NORMALIZATION       │       ▼DUPLICATE EVALUATION       │ ┌─────┼────────────┐ │     │            │ ▼     ▼            ▼NAME   DOB        CONTACT │     │            │ └─────┼────────────┘       │       ▼POTENTIAL MATCH SCORE / RULE       │   ┌───┴───┐   │       │ MATCH   NO MATCH   │       │   ▼       ▼WARNING  CONTINUE
+Important Requirement
+The duplicate detection mechanism shall identify probable duplicates.
+It shall not automatically merge patient records solely because a similarity rule matched.
+Example
+NEW REGISTRATIONName:Muhammad AliDOB:2000-04-12Phone:0300XXXX111POSSIBLE EXISTING RECORDName:Muhammad AliDOB:2000-04-12Phone:0300XXXX111
+This is a strong possible match.
+Compared with:
+Name:Muhammad AliDOB:1981-09-21Phone:Different
+A name match alone may be insufficient.
+Business Rules
+CS-PAT-BR-010
+Duplicate detection shall use approved matching criteria.
+CS-PAT-BR-011
+A probable duplicate shall not automatically result in a patient record merge.
+CS-PAT-BR-012
+Duplicate detection results shall be presented only to authorized users.
+Acceptance Criteria
+When registration data satisfies an approved probable duplicate rule, the system shall trigger a duplicate warning or review process.
+
+CS-PAT-FR-007 — Confirm Registration After Duplicate Warning
+Description
+The system shall support controlled continuation of patient registration after a probable duplicate warning when hospital policy permits the operation.
+Priority
+Must Have
+Main Flow
+DUPLICATE WARNING       │       ▼REVIEW POSSIBLE MATCHES       │   ┌───┴──────────┐   │              │   ▼              ▼EXISTING       NOT SAMEPATIENT        PATIENT   │              │   ▼              ▼USE RECORD     CONFIRM NEW                  │                  ▼             REGISTER PATIENT
+Business Rules
+The user may be required to:
+explicitly confirm the decision;
+provide a duplicate override reason;
+have additional permission.
+The final override policy shall be approved during business rule design.
+Audit Requirement
+The system should retain sufficient information to identify that registration continued after a duplicate warning.
+
+5.30 PATIENT PROFILE REQUIREMENTS
+CS-PAT-FR-008 — View Patient Profile
+Description
+The system shall allow an authorized user to view permitted patient administrative profile information.
+Priority
+Must Have
+Patient Profile May Include
+PATIENT PROFILE      │      ├── Patient Identity      ├── MRN      ├── Demographics      ├── Contact Information      ├── Address      ├── Emergency Contact      ├── Patient Status      └── Administrative Summary
+Authorization Rule
+Different users may receive different views of patient information.
+Example:
+DOCTOR   │   ▼PATIENT IDENTITY+CLINICAL ACCESS THROUGH EMRRECEPTIONIST   │   ▼PATIENT ADMINISTRATIVE INFORMATIONBILLING OFFICER   │   ▼PATIENT BILLING IDENTITY+BILLING INFORMATION
+The Patient module shall not automatically expose all clinical information merely because a patient profile is opened.
+
+CS-PAT-FR-025 — View Patient Identity Summary
+Description
+The system shall provide a concise patient identity summary for authorized workflows where full patient profile information is unnecessary.
+Priority
+Must Have
+Identity Summary May Include
+patient name;
+MRN;
+date of birth;
+age presentation where applicable;
+sex or approved administrative gender information;
+selected identity warning indicators.
+Example
+PATIENTMuhammad AhmadMRN: CS-001245DOB: 12 Apr 1998Age: 28Patient Status: Active
+The exact presentation shall be defined during UI design.
+Purpose
+A reusable identity summary helps reduce patient selection errors across:
+OPD;
+IPD;
+laboratory;
+radiology;
+pharmacy;
+billing.
+
+5.31 PATIENT DEMOGRAPHIC REQUIREMENTS
+CS-PAT-FR-009 — Update Patient Demographics
+Description
+The system shall allow an authorized user to update permitted patient demographic information.
+Source
+CS-REC-SR-004 — Patient Demographic Update
+Priority
+Must Have
+Preconditions
+patient exists;
+user is authenticated;
+user has the required update permission.
+Main Flow
+User opens the patient profile.
+User initiates demographic editing.
+CuraSphere displays editable permitted fields.
+User modifies patient information.
+User submits the update.
+CuraSphere validates the changed information.
+CuraSphere evaluates applicable identity and duplicate rules.
+CuraSphere saves valid changes.
+CuraSphere records the administrative change.
+CuraSphere returns the updated patient information.
+Business Rules
+CS-PAT-BR-013
+Only permitted patient information shall be editable through the demographic update workflow.
+CS-PAT-BR-014
+Changing patient demographics shall not create a new patient record.
+CS-PAT-BR-015
+Sensitive identity changes may require enhanced audit information.
+Example
+Changing:
+Phone Number
+is not necessarily equivalent in risk to changing:
+Patient NameDate of BirthNational Identifier
+The system may classify patient identity fields according to data sensitivity and correction risk.
+Acceptance Criteria
+An authorized user shall be able to update permitted valid demographic information.
+An unauthorized user shall not be able to perform the protected update operation.
+
+5.32 PATIENT CONTACT REQUIREMENTS
+CS-PAT-FR-010 — Manage Patient Contact Information
+Description
+The system shall allow an authorized user to manage permitted patient contact information.
+Priority
+Must Have
+Contact Information May Include
+primary phone number;
+secondary phone number;
+email address;
+preferred communication information where supported.
+Business Rules
+Contact information shall be validated according to applicable field rules.
+A contact value shall not automatically become the patient’s unique system identity.
+
+CS-PAT-FR-011 — Manage Patient Address
+Description
+The system shall allow an authorized user to record and update patient address information.
+Priority
+Must Have
+Address Design Consideration
+The final data model shall determine whether the address is stored as:
+ONE LARGE TEXT FIELD
+or:
+ADDRESS LINECITYDISTRICTPROVINCE / STATEPOSTAL CODECOUNTRY
+The decision shall consider deployment requirements, search requirements, reporting requirements, and localization.
+The SRS defines the business capability.
+The detailed data structure shall be finalized in the Data Architecture Document.
+
+5.33 EMERGENCY CONTACT REQUIREMENTS
+CS-PAT-FR-012 — Manage Emergency Contact
+Description
+The system shall allow authorized users to record and update patient emergency contact information.
+Priority
+Must Have
+Emergency Contact Information May Include
+contact name;
+relationship to patient;
+phone number;
+secondary contact information.
+Conceptual Relationship
+PATIENT   │   └────► EMERGENCY CONTACT               │               ├── Name               ├── Relationship               └── Contact Information
+Business Rule
+An emergency contact is not automatically a CuraSphere system user.
+Privacy Consideration
+Emergency contact information shall be handled as protected administrative information.
+
+5.34 PATIENT ADMINISTRATIVE HISTORY
+CS-PAT-FR-013 — View Patient Administrative History
+Description
+The system should allow authorized users to review selected patient administrative change history.
+Priority
+Should Have
+Potential History Information
+registration;
+status changes;
+significant identity corrections;
+contact changes;
+duplicate review events;
+merge events.
+Important Boundary
+Administrative history is not the same as the patient’s medical history.
+PATIENT ADMINISTRATIVE HISTORY             │             ▼PAT / AUDPATIENT MEDICAL HISTORY             │             ▼EMR
+
+5.35 PATIENT STATUS REQUIREMENTS
+CS-PAT-FR-014 — Change Patient Status
+Description
+The system shall allow an authorized user to change an eligible patient administrative status according to approved state transition rules.
+Priority
+Must Have
+Conceptual Patient Statuses
+ACTIVEINACTIVEDECEASEDMERGEDTEMPORARY
+The exact status vocabulary shall be finalized during domain design.
+Conceptual State Model
+                    PATIENT CREATED                           │                           ▼                         ACTIVE                           │              ┌────────────┼────────────┐              │            │            │              ▼            ▼            ▼           INACTIVE     DECEASED       MERGED              │              ▼            ACTIVE
+Temporary patient flow:
+TEMPORARY    │    ▼IDENTITY CONFIRMED    │    ▼ACTIVE
+Important Rule
+The backend shall validate state transitions.
+A client shall not be permitted to perform:
+PATCH patientstatus = "ACTIVE"
+and bypass the patient status workflow.
+Business Rules
+CS-PAT-BR-016
+Patient status transitions shall follow approved transition rules.
+CS-PAT-BR-017
+A merged patient record shall not be used as a normal independent active patient record.
+CS-PAT-BR-018
+Deceased status shall be handled according to approved hospital policies.
+Audit Requirements
+Patient status changes shall be auditable.
+
+5.36 PATIENT IDENTITY CORRECTION REQUIREMENTS
+CS-PAT-FR-015 — Record Patient Identity Correction
+Description
+The system shall allow an authorized user to correct eligible patient identity information through a controlled workflow.
+Priority
+Must Have
+Examples of Identity Corrections
+spelling correction in patient name;
+corrected date of birth;
+corrected identity document number.
+Main Requirement
+The system shall validate the correction and maintain appropriate traceability for significant identity changes.
+Conceptual Flow
+IDENTITY ERROR FOUND        │        ▼AUTHORIZED USER        │        ▼INITIATE CORRECTION        │        ▼ENTER CORRECT INFORMATION        │        ▼VALIDATE        │        ▼DUPLICATE RE-EVALUATION        │        ▼CONFIRM CORRECTION        │        ▼UPDATE PATIENT IDENTITY        │        ▼AUDIT SIGNIFICANT CHANGE
+Important Engineering Concept
+A correction is not always a normal edit.
+Example:
+Phone number changed
+may use a normal administrative update.
+But:
+Patient identity was entered under the wrong person's name
+may require an enhanced data correction workflow.
+The exact high-risk identity field classification shall be defined during data governance design.
+
+5.37 DUPLICATE RECORD GOVERNANCE
+CS-PAT-FR-016 — Flag Potential Duplicate Records
+Description
+The system shall allow eligible patient records to be flagged as potential duplicates.
+Priority
+Must Have
+Flag Sources May Include
+registration duplicate detection;
+authorized user report;
+data quality review;
+approved automated analysis.
+Duplicate Case Model
+PATIENT A    │    ├────────────┐    │            │    ▼            ▼POTENTIAL DUPLICATE CASE                 ▲                 │             PATIENT B
+A duplicate flag shall not automatically merge the records.
+
+CS-PAT-FR-017 — Review Duplicate Patient Records
+Description
+The system shall allow an authorized user to review patient records identified as potential duplicates.
+Priority
+Must Have
+Primary Actor
+Authorized Data Steward
+Review Information May Include
+patient identifiers;
+MRNs;
+names;
+dates of birth;
+contact information;
+identity identifiers;
+registration information.
+Clinical information access during duplicate review shall follow authorization rules.
+Possible Review Outcomes
+DUPLICATE REVIEW       │       ├────► NOT DUPLICATE       │       ├────► CONFIRMED DUPLICATE       │       └────► NEEDS FURTHER REVIEW
+Audit Requirement
+Duplicate review decisions shall be traceable.
+
+CS-PAT-FR-018 — Merge Duplicate Patient Records
+Description
+The system should support a controlled process for merging confirmed duplicate patient records.
+Priority
+Should Have
+Risk Classification
+High-Risk Data Operation
+Important Requirement
+Patient record merging shall not be implemented as:
+DELETE Patient B
+The merge process must consider records referencing both patient identities.
+Example:
+PATIENT A   │   ├── OPD Encounter   ├── Allergy   └── InvoicePATIENT B   │   ├── Lab Result   ├── Prescription   └── Appointment
+If both records represent the same real patient:
+PATIENT A ──┐            │            ▼      SURVIVING PATIENT            ▲            │PATIENT B ──┘
+The merge workflow must preserve traceability.
+Conceptual Merge Flow
+CONFIRMED DUPLICATE        │        ▼SELECT SURVIVING RECORD        │        ▼REVIEW IDENTITY DATA        │        ▼REVIEW DEPENDENT REFERENCES        │        ▼VALIDATE MERGE ELIGIBILITY        │        ▼AUTHORIZED CONFIRMATION        │        ▼EXECUTE CONTROLLED MERGE        │        ▼MARK DUPLICATE RECORD AS MERGED        │        ▼PRESERVE MERGE REFERENCE        │        ▼AUDIT MERGE EVENT
+Business Rules
+CS-PAT-BR-019
+Only confirmed duplicate records shall be eligible for the approved merge process.
+CS-PAT-BR-020
+The merge process shall identify a surviving patient record.
+CS-PAT-BR-021
+The merged record shall remain traceable to the surviving patient.
+CS-PAT-BR-022
+Patient merge shall require enhanced authorization.
+CS-PAT-BR-023
+Patient merge shall be auditable.
+CS-PAT-BR-024
+The system shall preserve applicable dependent business information during a successful merge.
+Technical Design Note
+The detailed merge algorithm shall not be finalized in the SRS.
+It requires analysis of:
+PostgreSQL relationships;
+foreign keys;
+transaction boundaries;
+clinical record references;
+audit requirements;
+rollback strategy.
+This shall be addressed in the Patient Data Architecture and Patient Merge Design Specification.
+
+5.38 PATIENT DELETION PROTECTION
+CS-PAT-FR-019 — Prevent Uncontrolled Patient Deletion
+Description
+The system shall prevent normal users from permanently deleting patient records through uncontrolled patient management operations.
+Priority
+Must Have
+Purpose
+Patient records may be referenced by:
+appointments;
+encounters;
+diagnoses;
+prescriptions;
+laboratory requests;
+radiology requests;
+admissions;
+invoices;
+payments.
+A simple delete operation may damage historical and clinical integrity.
+Prohibited Conceptual Design
+DELETE FROM patientsWHERE patient_id = ...
+as a normal receptionist operation.
+Required Concept
+PATIENT RECORD      │      ▼CONTROLLED STATUS / DATA GOVERNANCE
+rather than unrestricted deletion.
+Business Rule
+Patient record removal, anonymization, archival, or legally required erasure shall require a separately defined data governance workflow.
+
+5.39 PATIENT REGISTRATION SOURCE
+CS-PAT-FR-026 — Record Patient Registration Source
+Description
+The system should record the approved source or workflow through which a patient was initially registered.
+Priority
+Should Have
+Potential Sources
+RECEPTIONEMERGENCYOPDMIGRATIONPATIENT PORTALEXTERNAL INTEGRATION
+The exact values shall be configurable or defined as controlled reference data.
+Purpose
+Registration source information may support:
+operational reporting;
+data quality investigation;
+migration traceability.
+
+5.40 TEMPORARY PATIENT MANAGEMENT
+CS-PAT-FR-027 — Support Temporary Patient Identity
+Description
+The system shall support creation of a temporary patient identity for approved workflows where complete patient identification is not immediately available.
+Priority
+Must Have
+Primary Use Context
+Emergency workflows.
+Example Situation
+UNCONSCIOUS PATIENT ARRIVESName:UnknownIdentity Document:UnavailableFamily:Not Present
+The hospital may need to begin care immediately.
+The system must not force staff to invent false permanent identity information merely to continue the workflow.
+Conceptual Temporary Identity
+TEMPORARY PATIENTTemporary ID:TEMP-2026-00041Identity Status:UNCONFIRMEDDisplay Name:Unknown Patient 41
+The exact format is a design decision.
+Business Rules
+CS-PAT-BR-025
+Temporary patient creation shall only be available through approved workflows.
+CS-PAT-BR-026
+Temporary patient identity shall be clearly distinguishable from confirmed patient identity.
+CS-PAT-BR-027
+The system shall not require invented permanent identity information for a valid temporary patient workflow.
+Security and Safety Consideration
+Temporary patient records must remain traceable.
+A temporary identity must not be casually reused for another patient.
+
+CS-PAT-FR-028 — Convert Temporary Patient to Identified Patient
+Description
+The system shall support a controlled process for updating a temporary patient identity when reliable patient identity information becomes available.
+Priority
+Must Have
+Conceptual Flow
+TEMPORARY PATIENT        │        ▼IDENTITY INFORMATION AVAILABLE        │        ▼SEARCH EXISTING PATIENTS        │        ▼EXISTING PATIENT FOUND?    │               │   YES              NO    │               │    ▼               ▼IDENTITY /        COMPLETEMERGE REVIEW      IDENTITY    │               │    └───────┬───────┘            │            ▼    CONFIRMED PATIENT IDENTITY
+Important Requirement
+Before converting a temporary patient into a new confirmed patient, the system shall consider whether an existing patient record represents the same person.
+Example
+Temporary Patient:TEMP-0041Later identified as:Muhammad AhmadSearch finds:MRN-001245 Muhammad AhmadDOB 1998-04-12
+The system should not blindly create:
+New MRN-009999
+without considering the existing patient identity.
+Business Rules
+CS-PAT-BR-028
+Temporary identity conversion shall invoke applicable duplicate evaluation.
+CS-PAT-BR-029
+Clinical information recorded under the temporary patient shall remain associated with the correct patient identity after an approved identity resolution process.
+CS-PAT-BR-030
+Temporary identity resolution shall be auditable.
+
+5.41 PATIENT AND INSURANCE RELATIONSHIP
+CS-PAT-FR-029 — Link Patient to Insurance Information
+Description
+The system should allow an authorized workflow to associate a patient with insurance information managed by the Insurance module.
+Priority
+Should Have
+Module Boundary
+PAT │ ▼PATIENT IDENTITYINS │ ▼PATIENT INSURANCE
+PAT shall not become the owner of insurance claim processing.
+The Patient module provides the patient identity reference.
+The Insurance module manages insurance-specific information.
+
+5.42 PATIENT AUDIT REQUIREMENTS
+CS-PAT-FR-030 — Record Patient Administrative Audit Events
+Description
+The system shall generate appropriate audit information for selected patient administrative activities.
+Priority
+Must Have
+Auditable Activities Shall Include
+patient registration;
+significant patient identity correction;
+patient status change;
+duplicate review decision;
+patient merge;
+temporary identity resolution.
+Additional events may be defined by security and compliance policy.
+Conceptual Audit Event
+ACTORReceptionist USER-104        │        ▼ACTIONPATIENT_REGISTERED        │        ▼TARGETPATIENT-001245        │        ▼TIME2026-XX-XX 09:42        │        ▼RESULTSUCCESS
+Sensitive Data Rule
+Audit records shall not indiscriminately duplicate the complete patient profile.
+The audit design shall balance:
+TRACEABILITY      │      ▼WHAT CHANGED?          VSDATA MINIMIZATION      │      ▼DO NOT COPY ALL PATIENT DATA INTO LOGS
+
+5.43 PATIENT DATA OWNERSHIP MODEL
+The PAT module shall logically own patient administrative identity information.
+                        PAT MODULE                            │          ┌─────────────────┼─────────────────┐          │                 │                 │          ▼                 ▼                 ▼     IDENTIFICATION      DEMOGRAPHICS       CONTACT          │                 │                 │          ├── Patient ID    ├── Name          ├── Phone          ├── MRN           ├── DOB           ├── Email          └── Identity      └── Admin Data    └── Address                            │                            ▼                    EMERGENCY CONTACT
+Other modules shall reference the patient.
+APT ───────────► PATIENT IDEMR ───────────► PATIENT IDLAB ───────────► PATIENT IDRAD ───────────► PATIENT IDPRE ───────────► PATIENT IDIPD ───────────► PATIENT IDBIL ───────────► PATIENT ID
+The other modules shall not independently create separate patient master identities.
+
+5.44 PATIENT REGISTRATION LEVEL-1 DATA FLOW
+                         RECEPTIONIST                              │                              │ Patient Information                              ▼                 ┌────────────────────────┐                 │ 1. SEARCH PATIENT      │                 └────────────┬───────────┘                              │                              ▼                       PATIENT DATA                              │                     Search Results                              │                              ▼                    PATIENT FOUND?                         │        │                        YES       NO                         │        │                         ▼        ▼                    USE PATIENT  2. VALIDATE                                      │                                      ▼                              REGISTRATION DATA                                      │                                      ▼                              3. DUPLICATE CHECK                                      │                              ┌───────┴───────┐                              │               │                           WARNING          CLEAR                              │               │                              ▼               ▼                           REVIEW        4. CREATE PATIENT                                              │                                              ▼                                       GENERATE IDENTIFIERS                                              │                                              ▼                                         PATIENT DATA                                              │                                              ▼                                          AUDIT EVENT
+
+5.45 PATIENT CONTEXT DIAGRAM
+                              RECEPTIONIST                                   │                                   │ Registration / Search                                   ▼                         ┌───────────────────┐                         │                   │                         │    PAT MODULE     │                         │                   │                         └───────────────────┘                                   │          ┌────────────────────────┼────────────────────────┐          │                        │                        │          ▼                        ▼                        ▼        DOCTOR                   NURSE                BILLING OFFICER   Patient Identity        Patient Identity          Billing Identity          │                        │                        │          └────────────────────────┼────────────────────────┘                                   │                                   ▼                              PATIENT DATA                                   │                 ┌─────────────────┼─────────────────┐                 │                 │                 │                 ▼                 ▼                 ▼               EMR                APT               INS
+
+5.46 PATIENT STATE MODEL
+                        REGISTRATION STARTED                                │                                ▼                          DATA VALIDATION                                │                  ┌─────────────┴─────────────┐                  │                           │               INVALID                      VALID                  │                           │                  ▼                           ▼             CORRECTION               DUPLICATE CHECK                                              │                                  ┌───────────┴───────────┐                                  │                       │                              POSSIBLE MATCH           NO MATCH                                  │                       │                                  ▼                       ▼                                REVIEW               CREATE PATIENT                                  │                       │                       ┌──────────┴──────────┐            ▼                       │                     │          ACTIVE                       ▼                     ▼                USE EXISTING          CONFIRM NEW                                             │                                             ▼                                           ACTIVE                                             │                         ┌───────────────────┼───────────────────┐                         │                   │                   │                         ▼                   ▼                   ▼                     INACTIVE            DECEASED              MERGED
+Temporary identity model:
+EMERGENCY NEED      │      ▼TEMPORARY PATIENT      │      ▼IDENTITY AVAILABLE      │      ▼PATIENT SEARCH      │  ┌───┴──────────┐  │              │  ▼              ▼EXISTING       NEW IDENTITYPATIENT           │  │               │  ▼               ▼RESOLUTION      COMPLETE PROFILE  │               │  └───────┬───────┘          │          ▼   CONFIRMED IDENTITY
+
+5.47 PATIENT PERMISSION CONCEPT
+Potential patient permissions include:
+PATIENT_VIEWPATIENT_SEARCHPATIENT_CREATEPATIENT_UPDATE_DEMOGRAPHICSPATIENT_UPDATE_CONTACTPATIENT_UPDATE_ADDRESSPATIENT_UPDATE_EMERGENCY_CONTACTPATIENT_STATUS_CHANGEPATIENT_IDENTITY_CORRECTPATIENT_DUPLICATE_REVIEWPATIENT_DUPLICATE_OVERRIDEPATIENT_MERGEPATIENT_TEMPORARY_CREATEPATIENT_TEMPORARY_RESOLVE
+The exact permission registry shall be finalized in the Authorization Design Specification.
+Example Role Mapping
+RECEPTIONIST   │   ├── PATIENT_VIEW   ├── PATIENT_SEARCH   ├── PATIENT_CREATE   ├── PATIENT_UPDATE_DEMOGRAPHICS   ├── PATIENT_UPDATE_CONTACT   ├── PATIENT_UPDATE_ADDRESS   └── PATIENT_UPDATE_EMERGENCY_CONTACT
+Compared with:
+DATA STEWARD   │   ├── PATIENT_VIEW   ├── PATIENT_SEARCH   ├── PATIENT_IDENTITY_CORRECT   ├── PATIENT_DUPLICATE_REVIEW   └── PATIENT_MERGE
+A receptionist should not automatically receive:
+PATIENT_MERGE
+merely because the receptionist can register a patient.
+
+5.48 PATIENT BUSINESS RULE SUMMARY
+Rule ID
+Business Rule
+CS-PAT-BR-001
+Authorized users should search before registering a new patient
+CS-PAT-BR-002
+Patient search results shall follow information visibility rules
+CS-PAT-BR-003
+Name matching alone shall not prove patient identity
+CS-PAT-BR-004
+Each patient record shall have a unique internal identifier
+CS-PAT-BR-005
+Eligible patients shall receive an MRN according to MRN policy
+CS-PAT-BR-006
+Duplicate evaluation shall occur before normal registration finalization
+CS-PAT-BR-007
+A probable duplicate does not prove identity equivalence
+CS-PAT-BR-008
+Patient registration requires authorization
+CS-PAT-BR-009
+Patient registration shall be auditable
+CS-PAT-BR-010
+Duplicate detection shall use approved matching criteria
+CS-PAT-BR-011
+Probable duplicate records shall not be automatically merged
+CS-PAT-BR-012
+Duplicate information shall only be available to authorized users
+CS-PAT-BR-013
+Only permitted demographic information may be updated
+CS-PAT-BR-014
+Demographic updates shall not create a new patient
+CS-PAT-BR-015
+Sensitive identity changes may require enhanced auditing
+CS-PAT-BR-016
+Patient status changes shall follow valid transitions
+CS-PAT-BR-017
+Merged records shall not operate as normal independent active records
+CS-PAT-BR-018
+Deceased patient status shall follow approved hospital policy
+CS-PAT-BR-019
+Only confirmed duplicates are eligible for merge
+CS-PAT-BR-020
+Patient merge shall identify a surviving patient
+CS-PAT-BR-021
+Merged patient records shall remain traceable
+CS-PAT-BR-022
+Patient merge requires enhanced authorization
+CS-PAT-BR-023
+Patient merge shall be auditable
+CS-PAT-BR-024
+Applicable dependent information shall be preserved during merge
+CS-PAT-BR-025
+Temporary patient creation requires an approved workflow
+CS-PAT-BR-026
+Temporary identity shall be clearly identifiable
+CS-PAT-BR-027
+Temporary workflows shall not require invented permanent identity data
+CS-PAT-BR-028
+Temporary identity resolution shall evaluate duplicates
+CS-PAT-BR-029
+Clinical information shall remain associated with the correct resolved identity
+CS-PAT-BR-030
+Temporary patient identity resolution shall be auditable
+
+5.49 PAT REQUIREMENT TRACEABILITY MATRIX
+Stakeholder Requirement
+Functional Requirements
+CS-REC-SR-001
+CS-PAT-FR-001, 020, 021, 022, 023, 024
+CS-REC-SR-002
+CS-PAT-FR-002, 003, 004, 005
+CS-REC-SR-003
+CS-PAT-FR-006, 007, 016, 017
+CS-REC-SR-004
+CS-PAT-FR-009, 010, 011, 012
+CS-REC-SR-010
+CS-PAT-FR-008, 009
+CS-PAT-SR-001
+CS-PAT-FR-002, 003, 004
+CS-PAT-SR-002
+CS-PAT-FR-019
+CS-PAT-SR-003
+CS-PAT-FR-001, 008
+CS-PAT-SR-006
+CS-PAT-FR-008, 030
+Emergency Workflow Need
+CS-PAT-FR-027, 028
+Data Quality Need
+CS-PAT-FR-006, 016, 017, 018
+Security Auditability
+CS-PAT-FR-015, 018, 030
+
+5.50 PATIENT FUNCTIONAL CAPABILITY MODEL
+                           PATIENT MANAGEMENT                                   │        ┌──────────────────────────┼──────────────────────────┐        │                          │                          │        ▼                          ▼                          ▼   IDENTIFICATION              REGISTRATION               MAINTENANCE        │                          │                          │        ├── Search                 ├── Validate               ├── Demographics        ├── MRN                    ├── Duplicate Check        ├── Contact        ├── Patient ID             ├── Create Patient         ├── Address        └── Identity Summary       └── Registration Source    └── Emergency Contact                                   │                                   ▼                             DATA GOVERNANCE                                   │                      ┌────────────┼────────────┐                      │            │            │                      ▼            ▼            ▼                  CORRECTION    DUPLICATES     STATUS                                   │                             ┌─────┴─────┐                             │           │                             ▼           ▼                           REVIEW       MERGE                                   │                                   ▼                         TEMPORARY IDENTITY                                   │                                   ├── Create                                   └── Resolve
+
+5.51 PATIENT MODULE RISK ANALYSIS
+Risk 1 — Duplicate Patient Records
+Problem
+The same real patient may have multiple CuraSphere patient records.
+Example
+MRN-10021Muhammad AhmadMRN-20441Mohammad Ahmed
+Both may represent the same person.
+Impact
+divided medical history;
+duplicate testing;
+incorrect clinical decisions;
+billing confusion;
+inaccurate reports.
+Mitigation
+search-before-register workflow;
+duplicate detection;
+duplicate review;
+controlled merge process.
+
+Risk 2 — Wrong Patient Selection
+Problem
+A user selects the wrong patient with a similar name.
+Impact
+The wrong patient’s record may receive:
+consultation information;
+laboratory requests;
+prescriptions;
+billing charges.
+Mitigation
+The UI architecture shall use a consistent patient identity summary and appropriate identity confirmation patterns.
+
+Risk 3 — MRN Collision
+Problem
+Two patients receive the same Medical Record Number.
+Impact
+Patient identity integrity is compromised.
+Mitigation
+MRN generation shall use a concurrency-safe technical design and database-level uniqueness protection.
+
+Risk 4 — Frontend-Only Validation
+Problem
+The React application validates patient information, but the API accepts invalid direct requests.
+Mitigation
+Validation responsibilities shall be applied at appropriate frontend, backend, domain, and database boundaries.
+
+Risk 5 — Uncontrolled Patient Deletion
+Problem
+Deleting a patient record may break clinical and financial references.
+Mitigation
+Normal patient workflows shall not provide unrestricted permanent patient deletion.
+
+Risk 6 — Incorrect Patient Merge
+Problem
+Two different real people may be merged into one record.
+Impact
+This is a high-risk data integrity and clinical safety problem.
+Mitigation
+Patient merge shall require:
+duplicate review;
+enhanced authorization;
+explicit surviving record selection;
+transaction control;
+audit traceability.
+
+Risk 7 — Invented Emergency Patient Information
+Problem
+Staff may enter false names or dates of birth because the software requires complete permanent patient information.
+Mitigation
+CuraSphere shall support an approved temporary patient identity workflow.
+
+5.52 PATIENT MODULE ACCEPTANCE SUMMARY
+The Patient Management module shall support the following complete capability chain:
+PATIENT ARRIVES      │      ▼SEARCH PATIENT      │      ├────► EXISTING PATIENT      │              │      │              ▼      │         VERIFY IDENTITY      │              │      │              ▼      │         USE PATIENT RECORD      │      ▼NO PATIENT FOUND      │      ▼START REGISTRATION      │      ▼VALIDATE PATIENT DATA      │      ▼DUPLICATE EVALUATION      │ ┌────┴────────────┐ │                 │ ▼                 ▼POSSIBLE MATCH    NO MATCH │                 │ ▼                 ▼REVIEW          CREATE PATIENT │                 │ ├── USE EXISTING  ▼ │              GENERATE ID │                 │ └── CONFIRM NEW   ▼               GENERATE MRN                     │                     ▼               PATIENT ACTIVE                     │                     ▼             AVAILABLE TO AUTHORIZED               HOSPITAL WORKFLOWS
+The module shall additionally support:
+demographic updates;
+contact management;
+address management;
+emergency contact management;
+patient status management;
+identity correction;
+duplicate record flagging;
+duplicate review;
+controlled patient merge considerations;
+deletion protection;
+temporary patient creation;
+temporary identity resolution;
+patient administrative auditing.
+
+5.53 PAT MODULE COMPLETION STATUS
+Module: Patient ManagementModule Code: PATRequirement Range: CS-PAT-FR-001 to CS-PAT-FR-030Business Rule Range: CS-PAT-BR-001 to CS-PAT-BR-030Priority Model: MoSCoWPatient Search Model: DefinedRegistration Workflow: DefinedMRN Requirement Model: DefinedDuplicate Detection Model: DefinedDuplicate Governance Model: DefinedPatient State Model: DefinedTemporary Patient Model: DefinedPatient Data Ownership: DefinedLevel-1 Data Flow: DefinedPermission Concept: DefinedRisk Analysis: DefinedTraceability: EstablishedStatus: Functional Requirements Draft Completed
+The PAT module now establishes the patient administrative identity foundation for CuraSphere.
+These requirements shall later be transformed into:
+Patient Management use cases;
+patient registration activity diagram;
+patient search sequence diagram;
+patient registration sequence diagram;
+duplicate detection sequence diagram;
+patient merge workflow specification;
+patient state transition diagram;
+Patient domain model;
+Patient entity and value object design;
+PostgreSQL patient data model;
+MRN generation design;
+duplicate matching strategy;
+React patient search requirements;
+React patient registration UI requirements;
+ASP.NET Core Patient API specification;
+patient authorization policies;
+unit tests;
+integration tests;
+data integrity tests;
+concurrency tests;
+patient merge tests.
+No React component structure, ASP.NET Core class structure, PostgreSQL table design, MRN algorithm, or duplicate matching algorithm is finalized by this SRS section.
+Those decisions shall be documented during the architecture and detailed design stages.
+

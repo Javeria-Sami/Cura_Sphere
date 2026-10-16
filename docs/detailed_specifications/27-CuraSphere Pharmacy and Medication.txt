@@ -1,0 +1,484 @@
+﻿Software Requirements Specification (SRS)
+CuraSphere - Hospital Management System
+Section 5 - System Functional Requirements
+Part 5.9 - Pharmacy and Medication Management System (PHR)
+
+5.9.1 Introduction
+The Pharmacy and Medication Management System (PHR) is responsible for managing the complete medication lifecycle within the CuraSphere Hospital Management System.
+This module ensures that medications prescribed by authorized healthcare professionals are accurately validated, dispensed, tracked, billed, monitored, and recorded while maintaining patient safety and regulatory compliance.
+The Pharmacy System integrates with multiple CuraSphere modules, including:
+Electronic Medical Record (EMR)
+Computerized Physician Order Entry (CPOE)
+Outpatient Department (OPD)
+Inpatient Department (IPD)
+Emergency Department (ED)
+Laboratory
+Billing System
+Inventory Management
+Procurement System
+Drug Formulary
+Insurance System
+Clinical Decision Support System (CDSS)
+Audit Management
+The system shall minimize medication errors, improve dispensing efficiency, ensure medicine traceability, and maintain complete pharmaceutical records.
+
+Pharmacy Management Scope
+The Pharmacy module shall manage:
+Medicine Master Database
+Drug Categories
+Drug Formulary
+Prescription Processing
+Medication Verification
+Drug Dispensing
+Controlled Drug Management
+Batch Tracking
+Expiry Monitoring
+Stock Management
+Medicine Returns
+Drug Substitution
+Patient Medication History
+Pharmacy Billing Integration
+Drug Interaction Checking
+Allergy Checking
+Clinical Warnings
+Pharmacy Reports
+Pharmacy Audit Logs
+
+Pharmacy Workflow Overview
+Doctor Prescribes Medicine
+          │
+          ▼
+Electronic Prescription Created
+          │
+          ▼
+Clinical Validation
+          │
+          ▼
+Pharmacist Review
+          │
+          ▼
+Medicine Availability Check
+          │
+          ▼
+Stock Reserved
+          │
+          ▼
+Medicine Dispensed
+          │
+          ▼
+Inventory Updated
+          │
+          ▼
+Billing Updated
+          │
+          ▼
+Medication History Updated
+          │
+          ▼
+Audit Log Created
+The Pharmacy System acts as the centralized medication management component of CuraSphere.
+
+5.9.2 Objectives
+The Pharmacy module shall achieve the following objectives.
+Manage hospital medicine inventory.
+Maintain complete medicine master records.
+Process electronic prescriptions.
+Reduce medication errors.
+Improve dispensing accuracy.
+Track medicine batches.
+Monitor medicine expiry.
+Prevent dispensing expired medicines.
+Manage controlled medicines.
+Record medication history.
+Integrate pharmacy with billing.
+Support insurance medication coverage.
+Improve patient safety.
+Maintain complete audit history.
+Generate pharmacy reports.
+
+5.9.3 Actors
+Actor
+Description
+Doctor
+Prescribes medicines
+Pharmacist
+Reviews and dispenses medicines
+Pharmacy Technician
+Assists dispensing
+Patient
+Receives medicines
+Nurse
+Requests inpatient medication
+Inventory Officer
+Maintains medicine stock
+Procurement Officer
+Purchases medicines
+Finance Officer
+Reviews billing
+Insurance Officer
+Reviews medicine coverage
+Hospital Administrator
+Configures pharmacy
+System Administrator
+Manages permissions
+CuraSphere System
+Performs automatic validations
+
+5.9.4 High-Level Pharmacy Architecture
+               Doctor
+                  │
+                  ▼
+      Electronic Prescription
+                  │
+                  ▼
+        Pharmacy Validation Engine
+                  │
+     ┌────────────┼────────────┐
+     │            │            │
+     ▼            ▼            ▼
+Drug Rules   Allergy Check  Interaction Check
+     │            │            │
+     └────────────┼────────────┘
+                  ▼
+       Pharmacist Verification
+                  │
+                  ▼
+      Inventory Availability
+                  │
+                  ▼
+         Medicine Dispensing
+                  │
+        ┌─────────┼──────────┐
+        ▼         ▼          ▼
+ Billing      Inventory    EMR
+ Update       Update       Update
+                  │
+                  ▼
+             Audit System
+
+5.9.5 Functional Requirement PHR-FR-001
+Medicine Master Management
+
+Requirement ID
+PHR-FR-001
+Requirement Name
+Medicine Master Management
+
+Description
+The system shall maintain a centralized Medicine Master containing every medicine approved for use within the hospital.
+Every medicine shall possess a unique identifier and standardized pharmaceutical information.
+
+Actors
+Pharmacist
+Inventory Officer
+Pharmacy Manager
+System Administrator
+
+Preconditions
+User must have pharmacy management permission.
+Pharmacy configuration must be active.
+
+Trigger
+Authorized user creates or updates medicine information.
+
+Main Flow
+Open Medicine Master
+        │
+        ▼
+Create / Edit Medicine
+        │
+        ▼
+Validate Information
+        │
+        ▼
+Save Medicine
+        │
+        ▼
+Assign Medicine ID
+        │
+        ▼
+Audit Record Created
+
+System shall store
+Medicine ID
+Generic Name
+Brand Name
+Strength
+Dosage Form
+Manufacturer
+Supplier
+Drug Class
+Therapeutic Category
+Route of Administration
+Storage Conditions
+Unit Price
+Selling Price
+Barcode
+Status
+
+Alternative Flow
+Existing medicine updated.
+
+Exception Flow
+Duplicate medicine detected.
+System shall reject duplicate entries.
+
+Business Rules
+PHR-BR-001
+Every medicine shall have one unique Medicine ID.
+PHR-BR-002
+Medicine records shall never be permanently deleted.
+PHR-BR-003
+Only authorized pharmacy administrators may modify medicine information.
+
+Acceptance Criteria
+✔ Medicine created successfully
+✔ Duplicate medicine prevented
+✔ Audit generated
+
+5.9.6 Functional Requirement PHR-FR-002
+Drug Formulary Management
+
+Requirement ID
+PHR-FR-002
+
+Description
+The system shall maintain an approved hospital drug formulary.
+The formulary shall determine which medicines may be prescribed within the hospital.
+
+Actors
+Pharmacy Manager
+Clinical Pharmacist
+Hospital Administrator
+
+Main Flow
+Medicine Selected
+        │
+        ▼
+Formulary Validation
+        │
+        ▼
+Approve
+        │
+        ▼
+Available for Prescription
+
+Business Rules
+Only approved medicines appear during prescription.
+Inactive medicines cannot be prescribed.
+Formulary updates require authorization.
+
+Acceptance Criteria
+Approved medicines become available for doctors.
+
+5.9.7 Functional Requirement PHR-FR-003
+Electronic Prescription Processing
+
+Requirement ID
+PHR-FR-003
+
+Description
+The Pharmacy System shall receive electronic prescriptions directly from the Electronic Medical Record system.
+
+Actors
+Doctor
+Pharmacist
+CuraSphere System
+
+Workflow
+Doctor Creates Prescription
+            │
+            ▼
+Prescription Received
+            │
+            ▼
+Validate Patient
+            │
+            ▼
+Validate Drug
+            │
+            ▼
+Queue for Pharmacist
+
+Data Elements
+Prescription ID
+Patient ID
+Doctor ID
+Medicine
+Dose
+Frequency
+Duration
+Quantity
+Diagnosis
+Notes
+
+Business Rules
+Prescription cannot be modified by unauthorized users.
+
+Acceptance Criteria
+Electronic prescriptions received successfully.
+
+5.9.8 Functional Requirement PHR-FR-004
+Clinical Prescription Validation
+
+Requirement ID
+PHR-FR-004
+
+Description
+Before dispensing medication, CuraSphere shall automatically validate every prescription for patient safety.
+
+Validation Engine
+Prescription
+      │
+      ▼
+Drug Interaction
+      │
+      ▼
+Allergy Check
+      │
+      ▼
+Duplicate Therapy
+      │
+      ▼
+Maximum Dose
+      │
+      ▼
+Age Validation
+      │
+      ▼
+Pregnancy Check
+      │
+      ▼
+Renal/Liver Check
+      │
+      ▼
+Safe to Dispense
+
+Automatic Checks
+Drug interactions
+Drug allergy
+Dose validation
+Duplicate medicines
+Contraindications
+Maximum daily dose
+Pediatric dosage
+Pregnancy warnings
+Renal adjustment
+Liver adjustment
+
+Business Rules
+Unsafe prescriptions shall generate clinical alerts.
+
+Acceptance Criteria
+Unsafe prescriptions cannot proceed without review.
+
+5.9.9 Functional Requirement PHR-FR-005
+Pharmacist Verification
+
+Requirement ID
+PHR-FR-005
+
+Description
+Every prescription shall be reviewed by an authorized pharmacist before medicine dispensing.
+
+Workflow
+Prescription Queue
+        │
+        ▼
+Pharmacist Opens
+        │
+        ▼
+Clinical Review
+        │
+        ▼
+Approve
+Reject
+Hold
+Clarification
+
+Business Rules
+Only pharmacists may approve medicine dispensing.
+
+Acceptance Criteria
+Every dispensed medicine has pharmacist approval.
+
+5.9.10 Functional Requirement PHR-FR-006
+Medicine Dispensing
+
+Requirement ID
+PHR-FR-006
+
+Description
+The system shall record every medicine dispensed to a patient.
+
+Workflow
+Prescription Approved
+        │
+        ▼
+Stock Reserved
+        │
+        ▼
+Medicine Picked
+        │
+        ▼
+Barcode Scan
+        │
+        ▼
+Dispensed
+        │
+        ▼
+Inventory Updated
+        │
+        ▼
+Billing Updated
+
+Information Recorded
+Batch Number
+Expiry Date
+Quantity
+Pharmacist
+Date
+Time
+Patient
+Prescription
+
+Business Rules
+Expired medicines cannot be dispensed.
+
+Acceptance Criteria
+Inventory decreases automatically after dispensing.
+
+5.9 Progress
+Section 5
+│
+├── Previous Modules ✔
+├── Billing Module ✔
+│
+└── Pharmacy Module
+      │
+      ├── Introduction ✔
+      ├── Objectives ✔
+      ├── Actors ✔
+      ├── Architecture ✔
+      ├── PHR-FR-001 ✔
+      ├── PHR-FR-002 ✔
+      ├── PHR-FR-003 ✔
+      ├── PHR-FR-004 ✔
+      ├── PHR-FR-005 ✔
+      └── PHR-FR-006 ✔
+This completes approximately 40–45% of Section 5.9 (Pharmacy & Medication Management System).
+Next, we will continue with:
+PHR-FR-007 — Controlled Drug (Narcotics) Management
+PHR-FR-008 — Batch and Expiry Management
+PHR-FR-009 — Medicine Returns
+PHR-FR-010 — Drug Substitution
+PHR-FR-011 — Pharmacy Inventory Integration
+PHR-FR-012 — Pharmacy Billing Integration
+PHR-FR-013 — Patient Medication History
+PHR-FR-014 — Pharmacy Reports
+PHR-FR-015 — Pharmacy Audit & Security
+PHR-FR-016 — Integration Requirements
+PHR-FR-017 — Non-Functional Requirements
+PHR-FR-018 — Requirement Traceability Matrix
+
+
