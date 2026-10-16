@@ -39,6 +39,7 @@ export default function TopNavBar() {
   const location = useLocation();
   const { user, logout } = useAuthStore();
   const currentEdition = useEditionStore((state) => state.currentEdition);
+  const setEdition = useEditionStore((state) => state.setEdition);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,7 +60,7 @@ export default function TopNavBar() {
   }, []);
 
   const handleLogout = async () => {
-    try { await api.post("/auth/logout"); } catch {}
+    try { await api.post("/auth/logout"); } catch (err) { void err; }
     logout();
     navigate("/login");
   };
@@ -86,17 +87,22 @@ export default function TopNavBar() {
         ))}
       </div>
 
-      {/* Edition Indicator Badge */}
+      {/* Edition Indicator Badge & Interactive Switcher */}
       <div className="hidden md:flex items-center">
-        <span
-          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${
+        <button
+          type="button"
+          onClick={() => setEdition(currentEdition === "Clinic" ? "Hospital" : "Clinic")}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all duration-150 cursor-pointer shadow-sm hover:shadow ${
             currentEdition === "Clinic"
-              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-              : "bg-primary-50 text-primary-700 border border-primary-200"
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+              : "bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100"
           }`}
+          title={`Active: ${currentEdition} Edition. Click to toggle to ${currentEdition === "Clinic" ? "Hospital" : "Clinic"} Edition.`}
+          aria-label={`Current edition: ${currentEdition}. Click to toggle edition.`}
         >
-          {currentEdition} Edition
-        </span>
+          <span className={`w-1.5 h-1.5 rounded-full ${currentEdition === "Clinic" ? "bg-emerald-500 animate-pulse" : "bg-primary-500"}`} />
+          <span>{currentEdition} Edition</span>
+        </button>
       </div>
 
       {/* Search */}
