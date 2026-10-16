@@ -5,7 +5,7 @@ import {
   HOSPITAL_EDITION_CONFIG,
   CLINIC_EDITION_CONFIG,
 } from "../config/editionConfig";
-import { navItems, NavItem } from "../components/layout/Sidebar";
+import { navItems, NavItem } from "../config/navigation";
 import { EditionType, ModuleId } from "../types/edition";
 
 describe("Edition Configuration & Navigation Foundations Tests (Session 4)", () => {

@@ -1,72 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
-import {
-  LayoutDashboard, Users, Calendar, Stethoscope, BedDouble,
-  AlertTriangle, FileText, FlaskConical, Scan, Pill,
-  Scissors, Heart, Receipt, CreditCard, Shield,
-  Package, Users2, Clock, BarChart3, Settings,
-  Bell, ChevronLeft, ChevronRight, Activity
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 import { useEditionStore } from "../../stores/editionStore";
-import { ModuleId } from "../../types/edition";
-
-export interface NavItem {
-  label: string;
-  path: string;
-  icon: React.ReactNode;
-  moduleId: ModuleId;
-  permission?: string;
-  roles?: string[];
-  badge?: number;
-  section?: string;
-}
-
-export const navItems: NavItem[] = [
-  // Core Overview
-  { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} />, moduleId: "dashboard", section: "core" },
-
-  // Clinical Workspace (Doctors, Nurses, Receptionists)
-  { label: "Patients", path: "/patients", icon: <Users size={18} />, moduleId: "patients", permission: "patients.read", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse", "Receptionist"], section: "clinical" },
-  { label: "Doctors Directory", path: "/doctors", icon: <Stethoscope size={18} />, moduleId: "doctors", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Receptionist", "HR Manager"], section: "clinical" },
-  { label: "Nurses Desk", path: "/nurses", icon: <Activity size={18} />, moduleId: "nurses", roles: ["Super Administrator", "Hospital Administrator", "Nurse", "Head Nurse", "HR Manager"], section: "clinical" },
-  { label: "Appointments", path: "/appointments", icon: <Calendar size={18} />, moduleId: "appointments", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Receptionist", "Nurse"], section: "clinical" },
-  { label: "OPD Queue", path: "/opd", icon: <Stethoscope size={18} />, moduleId: "opd", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse", "Receptionist"], section: "clinical" },
-  { label: "IPD Wards", path: "/ipd", icon: <BedDouble size={18} />, moduleId: "ipd", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse", "Receptionist"], section: "clinical" },
-  { label: "Emergency Triage", path: "/emergency", icon: <AlertTriangle size={18} />, moduleId: "emergency", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse", "Emergency Specialist"], section: "clinical" },
-  { label: "EMR Desk", path: "/emr", icon: <FileText size={18} />, moduleId: "emr", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse"], section: "clinical" },
-
-  // Clinical Services (Diagnostics, Surgery, ICU, Pharmacy)
-  { label: "Laboratory", path: "/laboratory", icon: <FlaskConical size={18} />, moduleId: "laboratory", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Laboratory Technician", "Pathologist"], section: "services" },
-  { label: "Radiology / PACS", path: "/radiology", icon: <Scan size={18} />, moduleId: "radiology", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Radiologist", "X-Ray Tech"], section: "services" },
-  { label: "Pharmacy", path: "/pharmacy", icon: <Pill size={18} />, moduleId: "pharmacy", roles: ["Super Administrator", "Hospital Administrator", "Pharmacist", "Dispensary Staff"], section: "services" },
-  { label: "Surgery OT", path: "/surgery", icon: <Scissors size={18} />, moduleId: "surgery", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Surgeon", "Nurse"], section: "services" },
-  { label: "ICU Telemetry", path: "/icu", icon: <Heart size={18} />, moduleId: "icu", roles: ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse", "ICU Specialist"], section: "services" },
-
-  // Finance Workspace
-  { label: "Billing & Invoices", path: "/billing", icon: <Receipt size={18} />, moduleId: "billing", permission: "billing.read", roles: ["Super Administrator", "Hospital Administrator", "Accountant", "Cashier", "Billing Officer"], section: "finance" },
-  { label: "Payments Cashier", path: "/payments", icon: <CreditCard size={18} />, moduleId: "payments", roles: ["Super Administrator", "Hospital Administrator", "Accountant", "Cashier"], section: "finance" },
-  { label: "Insurance Claims", path: "/insurance", icon: <Shield size={18} />, moduleId: "insurance", roles: ["Super Administrator", "Hospital Administrator", "Accountant", "Insurance Officer"], section: "finance" },
-
-  // Operations Workspace
-  { label: "Store Inventory", path: "/inventory", icon: <Package size={18} />, moduleId: "inventory", roles: ["Super Administrator", "Hospital Administrator", "Store Manager", "Pharmacist"], section: "operations" },
-  { label: "HR Staff", path: "/hr", icon: <Users2 size={18} />, moduleId: "hr", roles: ["Super Administrator", "Hospital Administrator", "HR Manager", "HR Officer"], section: "operations" },
-  { label: "Attendance Roster", path: "/attendance", icon: <Clock size={18} />, moduleId: "attendance", roles: ["Super Administrator", "Hospital Administrator", "HR Manager", "Department Head"], section: "operations" },
-
-  // System Administration
-  { label: "BI Reports", path: "/reports", icon: <BarChart3 size={18} />, moduleId: "reports", roles: ["Super Administrator", "Hospital Administrator", "Manager", "Accountant"], section: "admin" },
-  { label: "Notifications", path: "/notifications", icon: <Bell size={18} />, moduleId: "notifications", section: "admin" },
-  { label: "Audit Logs", path: "/audit", icon: <Shield size={18} />, moduleId: "audit", roles: ["Super Administrator", "Hospital Administrator", "IT Support"], section: "admin" },
-  { label: "System Config", path: "/administration", icon: <Settings size={18} />, moduleId: "administration", roles: ["Super Administrator", "Hospital Administrator", "IT Support"], section: "admin" },
-];
-
-const sectionLabels: Record<string, string> = {
-  core: "OVERVIEW",
-  clinical: "CLINICAL WORKSPACE",
-  services: "DIAGNOSTICS & SERVICES",
-  finance: "FINANCE & CASHIER",
-  operations: "OPERATIONS & STORE",
-  admin: "ADMINISTRATION",
-};
+import { navItems, sectionLabels, NavItem } from "../../config/navigation";
 
 interface SidebarProps {
   collapsed: boolean;
