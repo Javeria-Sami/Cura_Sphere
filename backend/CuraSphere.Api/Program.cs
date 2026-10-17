@@ -207,6 +207,7 @@ app.UseCors("CuraSphereCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHealthChecks("/health").AllowAnonymous();
 app.MapControllers().RequireCors("CuraSphereCorsPolicy");
 
 app.Run();

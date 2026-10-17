@@ -19,6 +19,14 @@ RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+
+# Run as built-in non-root user (app)
+USER app
+
 ENV ASPNETCORE_URLS=http://+:5000
 EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -q -O /dev/null http://localhost:5000/health || exit 1
+
 ENTRYPOINT ["dotnet", "CuraSphere.Api.dll"]

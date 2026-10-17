@@ -2,9 +2,9 @@ name: CuraSphere HMS CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, master, develop, 'feature/**' ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ main, master, develop, 'feature/**' ]
 
 jobs:
   backend-build-test:
@@ -46,6 +46,10 @@ jobs:
       - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm ci
+
+      - name: Run ESLint Code Analysis
+        working-directory: ./frontend
+        run: npm run lint
 
       - name: Run Vitest Suite
         working-directory: ./frontend

@@ -62,3 +62,12 @@ Every functional module across CuraSphere HMS is audited and mapped to one of fi
 - Emergency trauma triage (P1/P2/P3) and crash cart tracking.
 - Surgical suites, post-op telemetry, anesthesia charts.
 - Intensive Care Unit (ICU) real-time vital telemetry streams.
+
+---
+
+## 4. Release & Deployment Readiness (Session 10)
+
+- **Release Gate Classification:** **READY FOR STAGING**
+- **Deployment Guide:** Complete reference guide in [`16-deployment-and-release-guide.md`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/docs/clinic-edition/16-deployment-and-release-guide.md)
+- **Container Hardening:** Backend Dockerfile configured with unprivileged `USER app` and `/health` probe; frontend Dockerfile configured with Nginx SPA fallback `try_files` and health check.
+- **CI/CD Automation:** Multi-stage GitHub Actions pipeline configured for continuous build, linting, Vitest, and .NET tests on `main` and `feature/**` branches.

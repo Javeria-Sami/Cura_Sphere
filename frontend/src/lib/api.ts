@@ -1,8 +1,13 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import { useAuthStore } from "../stores/authStore";
 
+const configuredApiUrl = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL) as string | undefined;
+const resolvedBaseUrl = configuredApiUrl
+  ? (configuredApiUrl.endsWith("/api") ? configuredApiUrl : `${configuredApiUrl.replace(/\/$/, "")}/api`)
+  : "/api";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: resolvedBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
