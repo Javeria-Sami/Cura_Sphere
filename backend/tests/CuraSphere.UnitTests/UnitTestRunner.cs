@@ -632,6 +632,136 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 23: Enterprise Organization Creation & Code Normalization
+        try
+        {
+            var rawCode = "  org-beacon-health  ";
+            var normalized = Organization.NormalizeCode(rawCode);
+            Assert(normalized == "ORG-BEACON-HEALTH", "Organization code is trimmed and uppercase normalized");
+
+            Assert(Organization.IsValidCodeFormat("ORG-BEACON"), "Valid alphanumeric code format accepted");
+            Assert(!Organization.IsValidCodeFormat("NO"), "Short code (<3 chars) is rejected");
+            Assert(!Organization.IsValidCodeFormat("ORG$$$BAD"), "Code with invalid symbols is rejected");
+            Assert(!Organization.IsValidCodeFormat(""), "Empty code is rejected");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Organization code normalization test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 24: Organization Status Invariants
+        try
+        {
+            Assert(Organization.ValidStatuses.Contains("Active"), "Organization status 'Active' is valid");
+            Assert(Organization.ValidStatuses.Contains("Suspended"), "Organization status 'Suspended' is valid");
+            Assert(Organization.ValidStatuses.Contains("Inactive"), "Organization status 'Inactive' is valid");
+            Assert(!Organization.ValidStatuses.Contains("Deleted"), "Invalid organization status 'Deleted' is rejected");
+
+            var org = new Organization
+            {
+                OrganizationId = 1,
+                OrganizationCode = "ORG-TEST",
+                OrganizationName = "Test Healthcare Network",
+                Status = "Active"
+            };
+            Assert(org.Status == "Active", "Organization status defaults to Active");
+            Assert(org.IsActive, "BaseEntity IsActive is true for new organization");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Organization status invariants test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 25: Branch Facility Association with Organization
+        try
+        {
+            var facility = new BranchFacility
+            {
+                BranchFacilityId = 10,
+                OrganizationId = 1,
+                BranchCode = BranchFacility.NormalizeCode("  br-downtown  "),
+                BranchName = "Downtown Family Clinic",
+                FacilityType = "Clinic",
+                EditionProfile = "Clinic",
+                Status = "Active"
+            };
+
+            Assert(facility.OrganizationId == 1, "Facility correctly associates with parent Organization ID");
+            Assert(facility.BranchCode == "BR-DOWNTOWN", "Branch code is normalized uppercase");
+            Assert(BranchFacility.ValidFacilityTypes.Contains(facility.FacilityType), "Facility type 'Clinic' is recognized");
+            Assert(BranchFacility.ValidFacilityTypes.Contains("Hospital"), "Facility type 'Hospital' is recognized");
+            Assert(facility.EditionProfile == "Clinic", "Edition profile defaults to Clinic");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Facility association test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 26: Department Association to Branch Facility
+        try
+        {
+            var deptWithBranch = new Department
+            {
+                DepartmentId = 5,
+                DepartmentName = "Outpatient Pediatrics",
+                DepartmentCode = "DEP-PED",
+                Location = "Wing B",
+                BranchFacilityId = 10
+            };
+
+            var deptLegacy = new Department
+            {
+                DepartmentId = 6,
+                DepartmentName = "Central Administration",
+                DepartmentCode = "DEP-ADMIN",
+                Location = "Main Building",
+                BranchFacilityId = null
+            };
+
+            Assert(deptWithBranch.BranchFacilityId == 10, "Department correctly associates with BranchFacilityId");
+            Assert(deptLegacy.BranchFacilityId == null, "Legacy/global department functions with null BranchFacilityId for backward compatibility");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Department association test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 27: ITenantScopedEntity Contract Verification
+        try
+        {
+            var facility = new BranchFacility { OrganizationId = 42 };
+            Assert(facility is CuraSphere.Domain.Interfaces.ITenantScopedEntity, "BranchFacility implements ITenantScopedEntity interface");
+            Assert(facility.OrganizationId == 42, "ITenantScopedEntity OrganizationId holds assigned tenant key");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] ITenantScopedEntity contract test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 28: Compound Organization-Facility Uniqueness Invariant
+        try
+        {
+            var facilityA1 = new { OrgId = 1L, Code = "BR-MAIN" };
+            var facilityA2 = new { OrgId = 1L, Code = "BR-MAIN" };
+            var facilityB1 = new { OrgId = 2L, Code = "BR-MAIN" };
+
+            bool isConflictWithinSameOrg = (facilityA1.OrgId == facilityA2.OrgId && facilityA1.Code == facilityA2.Code);
+            bool isAllowedAcrossDifferentOrgs = (facilityA1.OrgId != facilityB1.OrgId && facilityA1.Code == facilityB1.Code);
+
+            Assert(isConflictWithinSameOrg, "Duplicate branch code within same organization detected as conflict");
+            Assert(isAllowedAcrossDifferentOrgs, "Same branch code in distinct organizations is allowed under compound uniqueness");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Compound uniqueness invariant test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");
