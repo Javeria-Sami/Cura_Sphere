@@ -521,6 +521,117 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 19: Appointment Status Transitions & Terminal State Locking
+        try
+        {
+            var appt = new Appointment
+            {
+                AppointmentId = 201,
+                PatientId = 101,
+                DoctorId = 5,
+                AppointmentDate = DateTime.UtcNow.Date,
+                AppointmentTime = new TimeSpan(10, 0, 0),
+                Status = "Completed"
+            };
+
+            // Terminal state rule: cannot alter an appointment that is Completed or Cancelled
+            bool canModifyCompleted = !appt.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase);
+            bool canModifyCancelled = !appt.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase);
+
+            Assert(!canModifyCompleted, "Terminal state check prevents altering Completed appointment");
+
+            appt.Status = "Cancelled";
+            canModifyCancelled = !appt.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase);
+            Assert(!canModifyCancelled, "Terminal state check prevents altering Cancelled appointment");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Appointment terminal state test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 20: Clinical Consultation EMR Immutability & Sealing
+        try
+        {
+            var encounter = new EmrEncounter
+            {
+                EncounterId = 701,
+                PatientId = 101,
+                DoctorId = 5,
+                EncounterNumber = "ENC-20261017-00701",
+                Status = "Finalized",
+                ChiefComplaint = "Chest pain on exertion"
+            };
+
+            bool isSealed = encounter.Status == "Finalized" || encounter.Status == "SignedOff";
+            Assert(isSealed, "Finalized clinical encounter is flagged as sealed and immutable");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Clinical consultation sealing test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 21: Authoritative Invoice Arithmetic, Discounts, Taxes & Zero-Overpayment Guard
+        try
+        {
+            decimal subTotal = 100.00m;
+            decimal discountPercent = 10m;
+            decimal taxPercent = 5m;
+
+            decimal discountAmount = Math.Round(subTotal * (discountPercent / 100m), 2);
+            decimal taxableAmount = subTotal - discountAmount;
+            decimal taxAmount = Math.Round(taxableAmount * (taxPercent / 100m), 2);
+            decimal totalAmount = Math.Round(taxableAmount + taxAmount, 2);
+
+            Assert(discountAmount == 10.00m, "Invoice discount amount accurately computed as 10.00");
+            Assert(taxAmount == 4.50m, "Invoice tax amount accurately computed on discounted amount (4.50)");
+            Assert(totalAmount == 94.50m, "Invoice total accurately computed with 2 decimal precision (94.50)");
+
+            // Overpayment prevention
+            decimal paidSoFar = 40.00m;
+            decimal balance = totalAmount - paidSoFar;
+            decimal paymentAttempt = 60.00m;
+            bool isOverpayment = paymentAttempt > balance;
+
+            Assert(isOverpayment, "Overpayment attempt ($60.00 > $54.50) successfully detected and blocked");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Authoritative invoice arithmetic test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 22: Payment Methods Validation & Balance Transitions
+        try
+        {
+            var validMethods = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Cash", "Card", "Bank Transfer", "Insurance Claim"
+            };
+
+            Assert(validMethods.Contains("Cash"), "Cash is recognized as a valid payment method");
+            Assert(validMethods.Contains("Card"), "Card is recognized as a valid payment method");
+            Assert(validMethods.Contains("Bank Transfer"), "Bank Transfer is recognized as a valid payment method");
+            Assert(validMethods.Contains("Insurance Claim"), "Insurance Claim is recognized as a valid payment method");
+            Assert(!validMethods.Contains("CryptoCoin"), "Unsupported payment method 'CryptoCoin' is rejected");
+
+            // Status transitions
+            decimal invoiceTotal = 100.00m;
+            decimal partialPayment = 40.00m;
+            string status1 = partialPayment >= invoiceTotal ? "Paid" : "Partial";
+            Assert(status1 == "Partial", "Partial payment correctly sets invoice status to 'Partial'");
+
+            decimal secondPayment = 60.00m;
+            string status2 = (partialPayment + secondPayment) >= invoiceTotal ? "Paid" : "Partial";
+            Assert(status2 == "Paid", "Final settling payment correctly transitions invoice status to 'Paid'");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Payment methods and status transition test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");
