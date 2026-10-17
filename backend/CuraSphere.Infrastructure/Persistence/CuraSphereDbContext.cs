@@ -31,10 +31,6 @@ public class CuraSphereDbContext : DbContext
     public DbSet<AuditLog> AuditLogs { get; set; } = null!;
     public DbSet<PatientDocument> PatientDocuments { get; set; } = null!;
 
-    // Enterprise Organization & Facility
-    public DbSet<Organization> Organizations { get; set; } = null!;
-    public DbSet<BranchFacility> BranchFacilities { get; set; } = null!;
-
     // Clinical & OPD
     public DbSet<Appointment> Appointments { get; set; } = null!;
     public DbSet<OpdToken> OpdTokens { get; set; } = null!;
@@ -216,55 +212,6 @@ public class CuraSphereDbContext : DbContext
             entity.Property(e => e.ExtensionNumber).HasColumnName("extension_number").HasMaxLength(20);
             entity.Property(e => e.HeadDoctorId).HasColumnName("head_doctor_id");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.BranchFacilityId).HasColumnName("branch_facility_id");
-
-            entity.HasOne(e => e.BranchFacility)
-                .WithMany(f => f.Departments)
-                .HasForeignKey(e => e.BranchFacilityId)
-                .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        // Configure Enterprise Organization & Facility tables
-        modelBuilder.Entity<Organization>(entity =>
-        {
-            entity.ToTable("organization", "security");
-            entity.HasKey(e => e.OrganizationId);
-            entity.Property(e => e.OrganizationId).HasColumnName("organization_id");
-            entity.Property(e => e.OrganizationCode).HasColumnName("organization_code").HasMaxLength(30).IsRequired();
-            entity.HasIndex(e => e.OrganizationCode).IsUnique();
-            entity.Property(e => e.OrganizationName).HasColumnName("organization_name").HasMaxLength(150).IsRequired();
-            entity.Property(e => e.LegalRegistrationNumber).HasColumnName("legal_registration_number").HasMaxLength(50);
-            entity.Property(e => e.TaxId).HasColumnName("tax_id").HasMaxLength(50);
-            entity.Property(e => e.PrimaryEmail).HasColumnName("primary_email").HasMaxLength(150);
-            entity.Property(e => e.PrimaryPhone).HasColumnName("primary_phone").HasMaxLength(30);
-            entity.Property(e => e.Timezone).HasColumnName("timezone").HasMaxLength(50).HasDefaultValue("UTC");
-            entity.Property(e => e.CurrencyCode).HasColumnName("currency_code").HasMaxLength(10).HasDefaultValue("PKR");
-            entity.Property(e => e.Status).HasColumnName("status").HasMaxLength(30).IsRequired().HasDefaultValue("Active");
-            entity.Property(e => e.SettingsJson).HasColumnName("settings_json").HasColumnType("text").HasDefaultValue("{}");
-        });
-
-        modelBuilder.Entity<BranchFacility>(entity =>
-        {
-            entity.ToTable("branch_facility", "security");
-            entity.HasKey(e => e.BranchFacilityId);
-            entity.Property(e => e.BranchFacilityId).HasColumnName("branch_facility_id");
-            entity.Property(e => e.OrganizationId).HasColumnName("organization_id").IsRequired();
-            entity.Property(e => e.BranchCode).HasColumnName("branch_code").HasMaxLength(30).IsRequired();
-            entity.HasIndex(e => new { e.OrganizationId, e.BranchCode }).IsUnique();
-            entity.Property(e => e.BranchName).HasColumnName("branch_name").HasMaxLength(150).IsRequired();
-            entity.Property(e => e.FacilityType).HasColumnName("facility_type").HasMaxLength(50).IsRequired().HasDefaultValue("Clinic");
-            entity.Property(e => e.EditionProfile).HasColumnName("edition_profile").HasMaxLength(30).IsRequired().HasDefaultValue("Clinic");
-            entity.Property(e => e.Address).HasColumnName("address").HasMaxLength(255).IsRequired();
-            entity.Property(e => e.City).HasColumnName("city").HasMaxLength(100).IsRequired();
-            entity.Property(e => e.Province).HasColumnName("province").HasMaxLength(100).IsRequired();
-            entity.Property(e => e.ContactPhone).HasColumnName("contact_phone").HasMaxLength(30).IsRequired();
-            entity.Property(e => e.ContactEmail).HasColumnName("contact_email").HasMaxLength(150);
-            entity.Property(e => e.Status).HasColumnName("status").HasMaxLength(30).IsRequired().HasDefaultValue("Active");
-
-            entity.HasOne(e => e.Organization)
-                .WithMany(o => o.Facilities)
-                .HasForeignKey(e => e.OrganizationId)
-                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Specialization>(entity =>

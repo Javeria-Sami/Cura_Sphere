@@ -11,12 +11,6 @@ public class Department : BaseEntity
     public string? ExtensionNumber { get; set; }
     public long? HeadDoctorId { get; set; }
     public string? Description { get; set; }
-
-    /// <summary>
-    /// Optional branch facility association.
-    /// </summary>
-    public long? BranchFacilityId { get; set; }
-    public virtual BranchFacility? BranchFacility { get; set; }
 }
 
 public class Specialization : BaseEntity
