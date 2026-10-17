@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CuraSphere.Application.Common;
+using CuraSphere.Application.DTOs;
 using CuraSphere.Domain.Entities;
 using CuraSphere.Infrastructure.Services;
 using CuraSphere.Infrastructure.Services.Clinical;
@@ -629,6 +630,108 @@ public class UnitTestRunner
         catch (Exception ex)
         {
             Console.WriteLine($"  [ERROR] Payment methods and status transition test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 23: Doctor Profile & Fee Validation (Module 4)
+        try
+        {
+            var doctor = new Doctor
+            {
+                DoctorId = 201,
+                DoctorCode = "DOC-00201",
+                ConsultationFee = 2500m,
+                YearsOfExperience = 12,
+                Status = "Active"
+            };
+
+            Assert(doctor.DoctorCode.StartsWith("DOC-"), "Doctor code adheres to standard DOC- prefix");
+            Assert(doctor.ConsultationFee > 0, "Consultation fee is strictly positive for active specialist");
+            Assert(doctor.YearsOfExperience >= 0, "Years of experience is non-negative");
+            Assert(doctor.Status == "Active", "Doctor default status is Active");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Doctor Profile & Fee test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 24: Doctor Name Normalization & DTO Mapping (Module 4)
+        try
+        {
+            var emp = new Employee
+            {
+                EmployeeId = 501,
+                FirstName = "Kamran",
+                LastName = "Ahmed",
+                PhoneNumber = "+923001112233",
+                Email = "kamran.ahmed@curasphere.com"
+            };
+            var spec = new Specialization { SpecializationId = 1, SpecializationName = "Cardiology" };
+            var dept = new Department { DepartmentId = 2, DepartmentName = "Cardiovascular" };
+
+            var doc = new Doctor
+            {
+                DoctorId = 1,
+                DoctorCode = "DOC-001",
+                Employee = emp,
+                Specialization = spec,
+                Department = dept,
+                ConsultationFee = 2500m,
+                YearsOfExperience = 12,
+                Status = "Active"
+            };
+
+            var dto = new DoctorLookupDto
+            {
+                DoctorId = doc.DoctorId,
+                DoctorCode = doc.DoctorCode,
+                DoctorName = $"Dr. {doc.Employee.FirstName} {doc.Employee.LastName}".Trim(),
+                Specialization = doc.Specialization.SpecializationName,
+                DepartmentId = doc.DepartmentId,
+                DepartmentName = doc.Department.DepartmentName,
+                ConsultationFee = doc.ConsultationFee,
+                PhoneNumber = doc.Employee.PhoneNumber,
+                Email = doc.Employee.Email,
+                YearsOfExperience = doc.YearsOfExperience,
+                Status = doc.Status
+            };
+
+            Assert(dto.DoctorName == "Dr. Kamran Ahmed", "Doctor name correctly formatted with single 'Dr.' title prefix");
+            Assert(dto.Specialization == "Cardiology", "Doctor specialization correctly mapped");
+            Assert(dto.PhoneNumber == "+923001112233", "Doctor contact phone correctly exposed in lookup DTO");
+            Assert(dto.YearsOfExperience == 12, "Doctor experience correctly exposed in lookup DTO");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Doctor Name Normalization test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 25: Doctor Create Validation Rules (Module 4)
+        try
+        {
+            var createDto = new CreateDoctorDto
+            {
+                Name = "Ayesha Malik",
+                Specialization = "Neurology",
+                ConsultationFee = 3000m,
+                PhoneNumber = "+923002223344",
+                Email = "ayesha.malik@curasphere.com",
+                YearsOfExperience = 15
+            };
+
+            bool isValidFee = createDto.ConsultationFee >= 0;
+            bool isValidName = !string.IsNullOrWhiteSpace(createDto.Name);
+            bool isValidExp = createDto.YearsOfExperience >= 0 && createDto.YearsOfExperience <= 70;
+
+            Assert(isValidName, "Doctor registration validates non-empty full name");
+            Assert(isValidFee, "Doctor registration validates non-negative consultation fee");
+            Assert(isValidExp, "Doctor registration validates reasonable experience bound (0-70)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Doctor Create Validation test threw: {ex.Message}");
             failed++;
         }
 

@@ -226,28 +226,140 @@ public class AppointmentService : IAppointmentService
         return await GetAppointmentByIdAsync(appt.AppointmentId);
     }
 
-    public async Task<IEnumerable<DoctorLookupDto>> GetDoctorsAsync()
+    public async Task<IEnumerable<DoctorLookupDto>> GetDoctorsAsync(string? status = null)
     {
-        var doctors = await _context.Doctors
+        var query = _context.Doctors
             .Include(d => d.Employee)
             .Include(d => d.Specialization)
             .Include(d => d.Department)
-            .AsNoTracking()
-            .Where(d => d.Status == "Active")
-            .OrderBy(d => d.Employee.LastName)
-            .ThenBy(d => d.Employee.FirstName)
+            .AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(status) && !status.Equals("all", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.Where(d => d.Status == status);
+        }
+
+        var doctors = await query
+            .OrderBy(d => d.Employee != null ? d.Employee.LastName : "")
+            .ThenBy(d => d.Employee != null ? d.Employee.FirstName : "")
             .ToListAsync();
 
         return doctors.Select(d => new DoctorLookupDto
         {
             DoctorId = d.DoctorId,
-            DoctorName = d.Employee != null ? $"Dr. {d.Employee.FirstName} {d.Employee.LastName}" : "Dr. Provider",
+            DoctorCode = !string.IsNullOrWhiteSpace(d.DoctorCode) ? d.DoctorCode : $"DOC-{d.DoctorId:D3}",
+            DoctorName = d.Employee != null 
+                ? (d.Employee.FirstName.StartsWith("Dr.") ? $"{d.Employee.FirstName} {d.Employee.LastName}".Trim() : $"Dr. {d.Employee.FirstName} {d.Employee.LastName}".Trim())
+                : "Dr. Provider",
             Specialization = d.Specialization?.SpecializationName ?? "General Practice",
             DepartmentId = d.DepartmentId,
             DepartmentName = d.Department?.DepartmentName ?? "Outpatient Clinic",
             ConsultationFee = d.ConsultationFee > 0 ? d.ConsultationFee : 1500,
+            PhoneNumber = d.Employee?.PhoneNumber ?? string.Empty,
+            Email = d.Employee?.Email ?? string.Empty,
+            YearsOfExperience = d.YearsOfExperience,
             Status = d.Status
         });
+    }
+
+    public async Task<DoctorLookupDto> CreateDoctorAsync(CreateDoctorDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            throw new ArgumentException("Doctor full name is required.");
+
+        var cleanName = dto.Name.Trim();
+        if (cleanName.StartsWith("Dr. ", StringComparison.OrdinalIgnoreCase))
+            cleanName = cleanName.Substring(4).Trim();
+        else if (cleanName.StartsWith("Dr.", StringComparison.OrdinalIgnoreCase))
+            cleanName = cleanName.Substring(3).Trim();
+
+        var nameParts = cleanName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        var firstName = nameParts.Length > 0 ? nameParts[0] : "Doctor";
+        var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
+
+        // Resolve or create specialization
+        var specName = !string.IsNullOrWhiteSpace(dto.Specialization) ? dto.Specialization.Trim() : "General Practice";
+        var spec = await _context.Specializations.FirstOrDefaultAsync(s => s.SpecializationName.ToLower() == specName.ToLower());
+        if (spec == null)
+        {
+            spec = new Specialization
+            {
+                SpecializationName = specName,
+                Description = $"{specName} Clinical Specialty"
+            };
+            _context.Specializations.Add(spec);
+            await _context.SaveChangesAsync();
+        }
+
+        // Resolve department
+        Department? dept = null;
+        if (dto.DepartmentId.HasValue && dto.DepartmentId.Value > 0)
+        {
+            dept = await _context.Departments.FindAsync(dto.DepartmentId.Value);
+        }
+        if (dept == null)
+        {
+            dept = await _context.Departments.FirstOrDefaultAsync() 
+                   ?? new Department { DepartmentName = "Outpatient Clinic", DepartmentCode = "OPD", Location = "Building A" };
+            if (dept.DepartmentId == 0)
+            {
+                _context.Departments.Add(dept);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
+        var randomSuffix = new Random().Next(1000, 9999);
+        var employee = new Employee
+        {
+            EmployeeCode = $"EMP-DOC-{DateTime.UtcNow:yyMM}-{randomSuffix}",
+            FirstName = firstName,
+            LastName = lastName,
+            Gender = "Not Specified",
+            DateOfBirth = DateTime.UtcNow.AddYears(-35),
+            PhoneNumber = !string.IsNullOrWhiteSpace(dto.PhoneNumber) ? dto.PhoneNumber.Trim() : "+923000000000",
+            Email = !string.IsNullOrWhiteSpace(dto.Email) ? dto.Email.Trim() : $"{firstName.ToLower()}.{lastName.ToLower()}@curasphere.com",
+            HireDate = DateTime.UtcNow,
+            Designation = "Medical Specialist",
+            DepartmentId = dept.DepartmentId,
+            EmploymentStatus = "Active"
+        };
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+
+        var doctor = new Doctor
+        {
+            DoctorCode = $"DOC-{DateTime.UtcNow:yyMM}-{randomSuffix}",
+            EmployeeId = employee.EmployeeId,
+            DepartmentId = dept.DepartmentId,
+            SpecializationId = spec.SpecializationId,
+            ConsultationFee = dto.ConsultationFee >= 0 ? dto.ConsultationFee : 1500,
+            YearsOfExperience = dto.YearsOfExperience >= 0 ? dto.YearsOfExperience : 1,
+            LicenseNumber = $"PMC-{randomSuffix}",
+            Qualification = "MBBS, Specialist",
+            ConsultationDuration = 15,
+            Status = "Active"
+        };
+        _context.Doctors.Add(doctor);
+        await _context.SaveChangesAsync();
+
+        await transaction.CommitAsync();
+
+        return new DoctorLookupDto
+        {
+            DoctorId = doctor.DoctorId,
+            DoctorCode = doctor.DoctorCode,
+            DoctorName = $"Dr. {employee.FirstName} {employee.LastName}".Trim(),
+            Specialization = spec.SpecializationName,
+            DepartmentId = dept.DepartmentId,
+            DepartmentName = dept.DepartmentName,
+            ConsultationFee = doctor.ConsultationFee,
+            PhoneNumber = employee.PhoneNumber,
+            Email = employee.Email,
+            YearsOfExperience = doctor.YearsOfExperience,
+            Status = doctor.Status
+        };
     }
 
     public async Task<IEnumerable<DepartmentLookupDto>> GetDepartmentsAsync()

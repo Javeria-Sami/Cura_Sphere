@@ -36,12 +36,26 @@ export interface RescheduleAppointmentRequest {
 
 export interface DoctorLookupItem {
   doctorId: number;
+  doctorCode?: string;
   doctorName: string;
   specialization: string;
   departmentId: number;
   departmentName: string;
   consultationFee: number;
+  phoneNumber?: string;
+  email?: string;
+  yearsOfExperience?: number;
   status: string;
+}
+
+export interface CreateDoctorRequest {
+  name: string;
+  specialization: string;
+  departmentId?: number;
+  consultationFee: number;
+  phoneNumber?: string;
+  email?: string;
+  yearsOfExperience?: number;
 }
 
 export interface DepartmentLookupItem {
@@ -83,9 +97,16 @@ export const appointmentService = {
     return res.data?.data;
   },
 
-  getDoctors: async (): Promise<DoctorLookupItem[]> => {
-    const res = await api.get("/appointment/doctors");
+  getDoctors: async (status?: string): Promise<DoctorLookupItem[]> => {
+    const params: Record<string, string> = {};
+    if (status && status !== "all") params.status = status;
+    const res = await api.get("/appointment/doctors", { params });
     return res.data?.data ?? [];
+  },
+
+  createDoctor: async (data: CreateDoctorRequest): Promise<DoctorLookupItem> => {
+    const res = await api.post("/appointment/doctors", data);
+    return res.data?.data;
   },
 
   getDepartments: async (): Promise<DepartmentLookupItem[]> => {

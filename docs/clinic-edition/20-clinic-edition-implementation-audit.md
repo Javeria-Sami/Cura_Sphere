@@ -1,6 +1,6 @@
 # CURASPHERE CLINIC EDITION — COMPREHENSIVE IMPLEMENTATION AUDIT & STATUS REPORT
 **Document ID:** `DOC-CE-020`  
-**Version:** 1.1.0 (Master Audit)  
+**Version:** 1.2.0 (Post-Session 17 Prioritized Fix)  
 **Audit Date:** October 2026  
 **Auditor:** Senior Software Architect, Healthcare Software Engineer, QA Lead, Application Security Reviewer  
 **Scope:** Strict Clinic Edition Implementation Audit (Hospital Edition Preserved; Enterprise Multi-Tenant Excluded)
@@ -14,9 +14,9 @@ This document presents the definitive, empirical implementation audit of the **C
 The audit systematically evaluated all 20 functional, architectural, operational, and security dimensions specified in the master audit protocol. Verification was performed using direct source code inspection, static code analysis (`eslint`), automated integration testing (`vitest`), production asset compilation (`tsc -b && vite build`), database schema inspection, and API security middleware auditing.
 
 ### Key Audit Findings:
-- **Core Clinical Workflows:** **100% Operational** across Patient Registration & Search, Doctor Scheduling, Reception Queue, EMR/SOAP Notes, Electronic Prescriptions, Outpatient Invoicing, and Cashier Payments.
-- **Automated Verification:** **81 frontend unit/integration tests passed across 11 Vitest suites** (100% pass rate in 1.39s); **0 linter errors or warnings**; **22 backend domain unit tests passed** in `UnitTestRunner.cs`.
-- **Production Bundle Compilation:** React 18 + Vite static bundle compiles cleanly in **1.25s** with optimized Rollup vendor chunk splitting (`458.5 kB` main app, `221.4 kB` React, `24.3 kB` Lucide).
+- **Core Clinical Workflows:** **100% Operational** across Patient Registration & Search, Doctor Scheduling, Reception Queue, EMR/SOAP Notes, Electronic Prescriptions, Outpatient Invoicing, Cashier Payments, and Doctor Profiles & Availability.
+- **Automated Verification:** **88 frontend unit/integration tests passed across 12 Vitest suites** (100% pass rate in 1.43s); **0 linter errors or warnings**; **25 backend domain unit tests passed** in `UnitTestRunner.cs`.
+- **Production Bundle Compilation:** React 18 + Vite static bundle compiles cleanly in **994ms** with optimized Rollup vendor chunk splitting (`462.6 kB` main app, `221.4 kB` React, `24.3 kB` Lucide).
 - **Security & Privacy Posture:** Zero hardcoded credentials; 256-bit cryptographic JWT validation enforced; 5-attempt account lockout active; production exception masking (RFC 7231 Problem Details); non-root unprivileged container execution (`USER app`).
 - **Hospital Edition Non-Regression:** Zero breaking changes. Inpatient (`ipd`), Emergency (`emergency`), Surgery (`surgery`), and ICU (`icu`) modules are preserved intact and protected in Clinic Edition via backend `[RequireModule]` attribute filters.
 
@@ -32,7 +32,7 @@ The CuraSphere codebase uses a decoupled, three-tier architecture:
   ├── Styling: Tailwind CSS & Lucide React Iconography
   ├── State Management: Zustand (authStore.ts, editionStore.ts)
   ├── Networking: Axios instance (api.ts) with dynamic VITE_API_URL and X-Correlation-ID tracing
-  └── Output: frontend/dist/ (458.5 kB main app, 221.4 kB vendor-react, 24.3 kB icons)
+  └── Output: frontend/dist/ (462.6 kB main app, 221.4 kB vendor-react, 24.3 kB icons)
 
 [Application API Tier]
   ├── Framework: ASP.NET Core 8 Web API (.NET 8 SDK / C# 12)
@@ -64,7 +64,7 @@ Each module is classified strictly as **COMPLETE**, **PARTIAL**, **MISSING**, **
 | **1** | **Clinic Configuration & Navigation** | **COMPLETE** | P1 | `editionStore.ts`, `editionConfig.ts`, `Sidebar.tsx`, `EditionSettings.cs`, `EditionService.cs`, `SystemController.cs`, `RequireModuleAttribute.cs`. Suppresses inpatient/ER/ICU modules. 6 passing tests in `edition-navigation.test.ts`. |
 | **2** | **Dashboard & Clinic Statistics** | **COMPLETE** | P1 | `ClinicDashboardPage.tsx`, `DashboardPage.tsx`, `ReportsController.cs`, `ReportsService.cs`. Outpatient KPIs (Today's Appts, Waiting, In-Consultation, Revenue Billed/Paid) using SARGable timestamp range queries. 5 passing tests in `clinic-dashboard.test.ts`. |
 | **3** | **Patient Registration & Records** | **COMPLETE** | P1 | `PatientsPage.tsx`, `PatientRegistration.tsx`, `PatientList.tsx`, `PatientController.cs`, `PatientService.cs`. MRN auto-generation (`MRN-YYYY-XXXXX`), phone regex validation, National ID/CNIC duplicate checking, server-side pagination. 10 passing tests. |
-| **4** | **Doctor Profiles & Availability** | **PARTIAL** | P1 | `DoctorsPage.tsx`, `DoctorsController.cs`, `Doctor.cs`, `Department.cs`. Specialization, contact info, and working hours active. Basic time-slot scheduling operational, but multi-week clinician recurring schedule templates/leave calendars are static. |
+| **4** | **Doctor Profiles & Availability** | **COMPLETE** | P1 | `DoctorsPage.tsx`, `AppointmentController.cs`, `AppointmentService.cs`, `HR.cs`. Live directory fetching from database, persistent specialist creation (`POST /api/appointment/doctors`), dynamic KPI metrics (on-duty, fee avg, specialties), multi-field search and duty status filters. 7 automated tests in `doctor-availability.test.ts` & Tests 23-25 in `UnitTestRunner.cs`. See `docs/clinic-edition/21-prioritized-fix-report.md`. |
 | **5** | **Reception & Appointment Booking** | **COMPLETE** | P1 | `AppointmentsPage.tsx`, `AppointmentModal.tsx`, `AppointmentController.cs`, `AppointmentService.cs`. 15/30-minute time slot picker, clinician schedule conflict prevention, double-booking rejection, printable appointment slips. |
 | **6** | **Appointment Status & Lifecycle** | **COMPLETE** | P1 | Full state machine transitions: `Scheduled` $\to$ `Confirmed` $\to$ `Checked In` $\to$ `In Consultation` $\to$ `Completed` / `Cancelled`. Terminal states strictly locked against mutation. Verified in `patient-appointment-workflows.test.ts`. |
 | **7** | **Doctor Consultation & Notes** | **COMPLETE** | P1 | `EMRPage.tsx`, `ConsultationForm.tsx`, `EmrController.cs`, `EmrService.cs`. SOAP format notes (Subjective, Objective, Assessment, Plan), vitals recording with auto-BMI calculation, ICD-10 diagnostic tagging, consultation sealing. 7 passing tests. |

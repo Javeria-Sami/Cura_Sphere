@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CuraSphere.Application.DTOs;
 
@@ -47,12 +48,37 @@ public class RescheduleAppointmentDto
 public class DoctorLookupDto
 {
     public long DoctorId { get; set; }
+    public string DoctorCode { get; set; } = string.Empty;
     public string DoctorName { get; set; } = string.Empty;
     public string Specialization { get; set; } = string.Empty;
     public long DepartmentId { get; set; }
     public string DepartmentName { get; set; } = string.Empty;
     public decimal ConsultationFee { get; set; }
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public int YearsOfExperience { get; set; }
     public string Status { get; set; } = "Active";
+}
+
+public class CreateDoctorDto
+{
+    [Required(ErrorMessage = "Doctor full name is required.")]
+    public string Name { get; set; } = string.Empty;
+
+    public string Specialization { get; set; } = "General Practice";
+
+    public long? DepartmentId { get; set; }
+
+    [Range(0, 1000000, ErrorMessage = "Consultation fee must be non-negative.")]
+    public decimal ConsultationFee { get; set; } = 1500;
+
+    public string? PhoneNumber { get; set; }
+
+    [EmailAddress(ErrorMessage = "Invalid email address format.")]
+    public string? Email { get; set; }
+
+    [Range(0, 70, ErrorMessage = "Years of experience must be between 0 and 70.")]
+    public int YearsOfExperience { get; set; } = 1;
 }
 
 public class DepartmentLookupDto

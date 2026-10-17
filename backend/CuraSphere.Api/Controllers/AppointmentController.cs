@@ -106,10 +106,31 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet("doctors")]
-    public async Task<IActionResult> GetDoctors()
+    public async Task<IActionResult> GetDoctors([FromQuery] string? status)
     {
-        var doctors = await _appointmentService.GetDoctorsAsync();
+        var doctors = await _appointmentService.GetDoctorsAsync(status);
         return Ok(new { success = true, data = doctors });
+    }
+
+    [HttpPost("doctors")]
+    public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new { success = false, message = "Invalid doctor details provided." });
+
+        try
+        {
+            var created = await _appointmentService.CreateDoctorAsync(dto);
+            return Ok(new { success = true, data = created, message = "Medical specialist registered successfully." });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { success = false, message = "Failed to register doctor: " + ex.Message });
+        }
     }
 
     [HttpGet("departments")]
