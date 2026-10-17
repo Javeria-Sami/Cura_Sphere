@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,19 +40,82 @@ public class AppointmentController : ControllerBase
     public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentDto dto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new { success = false, message = "Invalid data." });
+            return BadRequest(new { success = false, message = "Invalid appointment details provided." });
 
-        var created = await _appointmentService.CreateAppointmentAsync(dto);
-        return CreatedAtAction(nameof(GetAppointmentById), new { id = created.AppointmentId }, new { success = true, data = created });
+        try
+        {
+            var created = await _appointmentService.CreateAppointmentAsync(dto);
+            return CreatedAtAction(
+                nameof(GetAppointmentById),
+                new { id = created.AppointmentId },
+                new { success = true, data = created, message = "Appointment scheduled successfully." }
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { success = false, message = "Failed to create appointment: " + ex.Message });
+        }
     }
 
     [HttpPatch("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(long id, [FromBody] string status)
+    public async Task<IActionResult> UpdateStatus(long id, [FromBody] UpdateAppointmentStatusDto dto)
     {
-        var result = await _appointmentService.UpdateStatusAsync(id, status);
-        if (!result)
-            return NotFound(new { success = false, message = "Appointment not found." });
+        if (string.IsNullOrWhiteSpace(dto?.Status))
+            return BadRequest(new { success = false, message = "Status cannot be empty." });
 
-        return Ok(new { success = true, message = "Status updated successfully." });
+        try
+        {
+            var result = await _appointmentService.UpdateStatusAsync(id, dto.Status, dto.Remarks);
+            if (!result)
+                return NotFound(new { success = false, message = "Appointment not found." });
+
+            return Ok(new { success = true, message = $"Appointment status updated to '{dto.Status}'." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
+
+    [HttpPatch("{id}/reschedule")]
+    public async Task<IActionResult> Reschedule(long id, [FromBody] RescheduleAppointmentDto dto)
+    {
+        if (dto.AppointmentDate == default)
+            return BadRequest(new { success = false, message = "A valid appointment date is required." });
+
+        try
+        {
+            var updated = await _appointmentService.RescheduleAppointmentAsync(id, dto);
+            if (updated == null)
+                return NotFound(new { success = false, message = "Appointment not found." });
+
+            return Ok(new { success = true, data = updated, message = "Appointment rescheduled successfully." });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { success = false, message = ex.Message });
+        }
+    }
+
+    [HttpGet("doctors")]
+    public async Task<IActionResult> GetDoctors()
+    {
+        var doctors = await _appointmentService.GetDoctorsAsync();
+        return Ok(new { success = true, data = doctors });
+    }
+
+    [HttpGet("departments")]
+    public async Task<IActionResult> GetDepartments()
+    {
+        var departments = await _appointmentService.GetDepartmentsAsync();
+        return Ok(new { success = true, data = departments });
     }
 }

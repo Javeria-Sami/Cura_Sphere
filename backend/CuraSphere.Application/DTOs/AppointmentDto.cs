@@ -29,3 +29,35 @@ public class CreateAppointmentDto
     public string AppointmentType { get; set; } = "OPD";
     public string? ReasonForVisit { get; set; }
 }
+
+public class UpdateAppointmentStatusDto
+{
+    public string Status { get; set; } = string.Empty;
+    public string? Remarks { get; set; }
+}
+
+public class RescheduleAppointmentDto
+{
+    public DateTime AppointmentDate { get; set; }
+    public string AppointmentTime { get; set; } = "10:00 AM";
+    public long? DoctorId { get; set; }
+    public string? Remarks { get; set; }
+}
+
+public class DoctorLookupDto
+{
+    public long DoctorId { get; set; }
+    public string DoctorName { get; set; } = string.Empty;
+    public string Specialization { get; set; } = string.Empty;
+    public long DepartmentId { get; set; }
+    public string DepartmentName { get; set; } = string.Empty;
+    public decimal ConsultationFee { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+public class DepartmentLookupDto
+{
+    public long DepartmentId { get; set; }
+    public string DepartmentName { get; set; } = string.Empty;
+    public string DepartmentCode { get; set; } = string.Empty;
+}

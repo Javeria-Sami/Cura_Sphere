@@ -6,7 +6,7 @@ import { useAuthStore } from "../../../stores/authStore";
 import { Input } from "../../../components/ui/Input";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
-import { Search, UserPlus, Eye, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, UserPlus, Eye, Edit2, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 
 export default function PatientList() {
   const navigate = useNavigate();
@@ -182,13 +182,25 @@ export default function PatientList() {
                         </Badge>
                       </td>
                       <td className="p-4">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const fullName = [p.firstName, p.middleName, p.lastName].filter(Boolean).join(" ");
+                              navigate(`/appointments?patientId=${p.patientId}&patientName=${encodeURIComponent(fullName)}&mrn=${encodeURIComponent(p.medicalRecordNumber)}`);
+                            }}
+                            title="Schedule Appointment for this patient"
+                            className="p-1.5 text-primary-600 hover:text-primary-700 hover:bg-primary-50"
+                          >
+                            <Calendar className="w-4 h-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => navigate(`/patients/${p.patientId}`)}
                             title="View Profile"
-                            className="p-1.5"
+                            className="p-1.5 text-slate-600 hover:text-slate-900"
                           >
                             <Eye className="w-4 h-4" />
                           </Button>

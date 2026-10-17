@@ -9,5 +9,8 @@ public interface IAppointmentService
     Task<IEnumerable<AppointmentListDto>> GetAppointmentsAsync(string? search, string? status);
     Task<AppointmentListDto?> GetAppointmentByIdAsync(long id);
     Task<AppointmentListDto> CreateAppointmentAsync(CreateAppointmentDto dto);
-    Task<bool> UpdateStatusAsync(long id, string status);
+    Task<bool> UpdateStatusAsync(long id, string status, string? remarks = null);
+    Task<AppointmentListDto?> RescheduleAppointmentAsync(long id, RescheduleAppointmentDto dto);
+    Task<IEnumerable<DoctorLookupDto>> GetDoctorsAsync();
+    Task<IEnumerable<DepartmentLookupDto>> GetDepartmentsAsync();
 }

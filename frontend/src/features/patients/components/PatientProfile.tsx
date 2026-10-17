@@ -5,7 +5,7 @@ import { PatientDetailDto } from "../../../types/patient";
 import { useAuthStore } from "../../../stores/authStore";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
-import { ArrowLeft, Edit2, Phone, Mail, MapPin, Heart, ShieldAlert, Users, FileText, History } from "lucide-react";
+import { ArrowLeft, Edit2, Phone, Mail, MapPin, Heart, ShieldAlert, Users, FileText, History, Calendar } from "lucide-react";
 
 export default function PatientProfile() {
   const navigate = useNavigate();
@@ -113,16 +113,30 @@ export default function PatientProfile() {
             <ArrowLeft className="w-4 h-4" /> Back to Registry List
           </button>
 
-          {canUpdate && (
+          <div className="flex items-center gap-2">
             <Button
-              onClick={() => navigate(`/patients/${patient.patientId}/edit`)}
-              variant="outline"
+              onClick={() => {
+                const fullName = [patient.firstName, patient.middleName, patient.lastName].filter(Boolean).join(" ");
+                navigate(`/appointments?patientId=${patient.patientId}&patientName=${encodeURIComponent(fullName)}&mrn=${encodeURIComponent(patient.medicalRecordNumber)}`);
+              }}
+              variant="primary"
               size="sm"
-              leftIcon={<Edit2 className="w-3.5 h-3.5" />}
+              leftIcon={<Calendar className="w-3.5 h-3.5" />}
+              className="bg-primary-600 hover:bg-primary-700 text-white"
             >
-              Edit Profile
+              Book Appointment
             </Button>
-          )}
+            {canUpdate && (
+              <Button
+                onClick={() => navigate(`/patients/${patient.patientId}/edit`)}
+                variant="outline"
+                size="sm"
+                leftIcon={<Edit2 className="w-3.5 h-3.5" />}
+              >
+                Edit Profile
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Patient Summary Header Card */}
