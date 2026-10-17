@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   FileText,
   Plus,
@@ -16,7 +16,8 @@ import {
   Trash2,
   Lock,
   ArrowLeft,
-  Info
+  Info,
+  Receipt
 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
@@ -57,6 +58,7 @@ const COMMON_ICD10: { code: string; desc: string }[] = [
 ];
 
 export default function EMRPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // URL query parameters for direct consultation launch
@@ -1205,6 +1207,18 @@ export default function EMRPage() {
                         >
                           View / Print Record
                         </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-xs text-primary-600 hover:bg-primary-50 font-semibold"
+                          onClick={() => {
+                            navigate(
+                              `/billing?patientId=${r.patientId}&patientName=${encodeURIComponent(r.patientName)}&mrn=${encodeURIComponent(r.medicalRecordNumber)}&serviceType=OPD Consultation&amount=30`
+                            );
+                          }}
+                        >
+                          Bill
+                        </Button>
                       </div>
                     ),
                   },
@@ -1393,13 +1407,26 @@ export default function EMRPage() {
               <Button variant="ghost" onClick={() => setSelectedEncounterForPrint(null)}>
                 Close
               </Button>
-              <Button
-                variant="outline"
-                leftIcon={<Printer size={14} />}
-                onClick={() => window.print()}
-              >
-                Print Official Clinical Record
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="primary"
+                  leftIcon={<Receipt size={14} />}
+                  onClick={() => {
+                    navigate(
+                      `/billing?patientId=${selectedEncounterForPrint.patientId}&patientName=${encodeURIComponent(selectedEncounterForPrint.patientName)}&mrn=${encodeURIComponent(selectedEncounterForPrint.medicalRecordNumber)}&serviceType=OPD Consultation&amount=30`
+                    );
+                  }}
+                >
+                  Generate Invoice
+                </Button>
+                <Button
+                  variant="outline"
+                  leftIcon={<Printer size={14} />}
+                  onClick={() => window.print()}
+                >
+                  Print Official Clinical Record
+                </Button>
+              </div>
             </div>
           </div>
         </Modal>

@@ -571,6 +571,22 @@ export default function AppointmentsPage() {
                         </Button>
                       )}
 
+                      {/* Bill Patient option for Completed appointments */}
+                      {r.status === "Completed" && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-xs text-primary-600 hover:bg-primary-50 font-semibold"
+                          onClick={() => {
+                            navigate(
+                              `/billing?patientId=${r.patientId}&patientName=${encodeURIComponent(r.patientName)}&mrn=${encodeURIComponent(r.medicalRecordNumber)}&serviceType=OPD Consultation&amount=30`
+                            );
+                          }}
+                        >
+                          Bill
+                        </Button>
+                      )}
+
                       {/* Cancel option if not Completed or Cancelled */}
                       {r.status !== "Completed" && r.status !== "Cancelled" && (
                         <Button
