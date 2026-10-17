@@ -206,6 +206,7 @@ public class PatientService : IPatientService
     public async Task<PatientDetailDto?> GetPatientByIdAsync(long patientId)
     {
         var patient = await _context.Patients
+            .AsNoTracking()
             .Include(p => p.BloodGroup)
             .Include(p => p.MaritalStatus)
             .Include(p => p.Religion)
@@ -275,7 +276,7 @@ public class PatientService : IPatientService
 
     public async Task<PagedResultDto<PatientListDto>> GetPagedPatientsAsync(string search, int pageNumber, int pageSize)
     {
-        var query = _context.Patients.AsQueryable();
+        var query = _context.Patients.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -332,6 +333,7 @@ public class PatientService : IPatientService
         {
             var cleanCnic = request.CnicPassport.Trim().ToLower();
             var matchesByCnic = await _context.Patients
+                .AsNoTracking()
                 .Where(p => p.CnicPassport != null && p.CnicPassport.ToLower() == cleanCnic)
                 .Select(p => new PatientListDto
                 {
@@ -356,6 +358,7 @@ public class PatientService : IPatientService
         var targetDob = DateTime.SpecifyKind(request.DateOfBirth.Date, DateTimeKind.Utc);
 
         var matchesByNameAndDob = await _context.Patients
+            .AsNoTracking()
             .Where(p => p.FirstName.ToLower() == cleanFirst &&
                         p.LastName.ToLower() == cleanLast &&
                         p.DateOfBirth.Date == targetDob)

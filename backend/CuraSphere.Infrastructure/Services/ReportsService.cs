@@ -21,22 +21,35 @@ public class ReportsService : IReportsService
 
     public async Task<DashboardReportSummaryDto> GetDashboardSummaryAsync()
     {
-        var totalPatients = await _context.Patients.CountAsync();
-        var todayAppts = await _context.Appointments.CountAsync(a => a.AppointmentDate.Date == DateTime.UtcNow.Date);
-        var activeOpd = await _context.OpdTokens.CountAsync(t => t.Status == "Waiting" || t.Status == "In Consultation");
-        var activeIpd = await _context.IpdAdmissions.CountAsync(i => i.Status == "Admitted");
-        var activeEmerg = await _context.EmergencyCases.CountAsync(e => e.Status == "Active" || e.Status == "Triage");
+        var todayUtc = DateTime.UtcNow.Date;
+        var tomorrowUtc = todayUtc.AddDays(1);
+
+        var totalPatients = await _context.Patients.AsNoTracking().CountAsync();
+        var todayAppts = await _context.Appointments
+            .AsNoTracking()
+            .CountAsync(a => a.AppointmentDate >= todayUtc && a.AppointmentDate < tomorrowUtc);
+        var activeOpd = await _context.OpdTokens
+            .AsNoTracking()
+            .CountAsync(t => t.Status == "Waiting" || t.Status == "In Consultation");
+        var activeIpd = await _context.IpdAdmissions
+            .AsNoTracking()
+            .CountAsync(i => i.Status == "Admitted");
+        var activeEmerg = await _context.EmergencyCases
+            .AsNoTracking()
+            .CountAsync(e => e.Status == "Active" || e.Status == "Triage");
 
         var billedToday = await _context.Invoices
-            .Where(i => i.InvoiceDate.Date == DateTime.UtcNow.Date)
+            .AsNoTracking()
+            .Where(i => i.InvoiceDate >= todayUtc && i.InvoiceDate < tomorrowUtc)
             .SumAsync(i => (decimal?)i.TotalAmount) ?? 0;
 
         var paidToday = await _context.PaymentRecords
-            .Where(p => p.PaymentDate.Date == DateTime.UtcNow.Date)
+            .AsNoTracking()
+            .Where(p => p.PaymentDate >= todayUtc && p.PaymentDate < tomorrowUtc)
             .SumAsync(p => (decimal?)p.Amount) ?? 0;
 
-        var totalBeds = await _context.Beds.CountAsync();
-        var occupiedBeds = await _context.Beds.CountAsync(b => b.Status == "Occupied");
+        var totalBeds = await _context.Beds.AsNoTracking().CountAsync();
+        var occupiedBeds = await _context.Beds.AsNoTracking().CountAsync(b => b.Status == "Occupied");
         var bedOccupancyRate = totalBeds > 0 ? (decimal)occupiedBeds / totalBeds * 100 : 75.0m;
 
         return new DashboardReportSummaryDto

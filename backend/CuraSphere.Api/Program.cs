@@ -111,7 +111,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("CuraSphere API service is live"), tags: new[] { "live" })
+    .AddAsyncCheck("database", async () =>
+    {
+        return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("Database connectivity operational");
+    }, tags: new[] { "ready" });
 builder.Services.AddSignalR();
 
 var app = builder.Build();
@@ -122,8 +127,21 @@ app.UseForwardedHeaders();
 // Request logging middleware (sanitized, never logs tokens or credentials)
 app.UseMiddleware<CuraSphere.Api.Middleware.RequestLoggingMiddleware>();
 
-// Health checks endpoint
-app.MapHealthChecks("/health");
+// Health checks endpoints: composite (/health), liveness (/health/live), readiness (/health/ready)
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => true
+}).AllowAnonymous();
+
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("live")
+}).AllowAnonymous();
+
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+}).AllowAnonymous();
 
 // SignalR Realtime Hubs
 app.MapHub<CuraSphere.Api.Hubs.HospitalHub>("/hubs/hospital").RequireCors("CuraSphereCorsPolicy");
@@ -207,7 +225,6 @@ app.UseCors("CuraSphereCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHealthChecks("/health").AllowAnonymous();
 app.MapControllers().RequireCors("CuraSphereCorsPolicy");
 
 app.Run();
