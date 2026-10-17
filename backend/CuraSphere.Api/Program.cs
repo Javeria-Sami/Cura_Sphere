@@ -56,6 +56,7 @@ builder.Services.AddScoped<IOperationsService, OperationsService>();
 builder.Services.AddScoped<IClinicalServicesService, ClinicalServicesService>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
 builder.Services.AddScoped<IRealTimeNotificationService, RealTimeNotificationService>();
+builder.Services.AddScoped<IEmrService, EmrService>();
 
 // 4. Configure Secure JWT Bearer Authentication
 var key = Encoding.UTF8.GetBytes(jwtSettings.Secret);

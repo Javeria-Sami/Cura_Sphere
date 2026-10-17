@@ -523,7 +523,7 @@ export default function AppointmentsPage() {
                           className="text-xs text-indigo-600 hover:bg-indigo-50 font-semibold"
                           onClick={() => {
                             handleStatusChange(r.appointmentId, "In Consultation");
-                            navigate(`/emr?patientId=${r.patientId}`);
+                            navigate(`/emr?appointmentId=${r.appointmentId}&patientId=${r.patientId}&patientName=${encodeURIComponent(r.patientName)}&mrn=${encodeURIComponent(r.medicalRecordNumber)}`);
                           }}
                         >
                           Start Consult
@@ -531,14 +531,26 @@ export default function AppointmentsPage() {
                       )}
 
                       {r.status === "In Consultation" && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-xs text-emerald-600 hover:bg-emerald-50 font-semibold"
-                          onClick={() => handleStatusChange(r.appointmentId, "Completed")}
-                        >
-                          Complete
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-xs text-indigo-600 hover:bg-indigo-50 font-semibold"
+                            onClick={() => {
+                              navigate(`/emr?appointmentId=${r.appointmentId}&patientId=${r.patientId}&patientName=${encodeURIComponent(r.patientName)}&mrn=${encodeURIComponent(r.medicalRecordNumber)}`);
+                            }}
+                          >
+                            Open Consult
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-xs text-emerald-600 hover:bg-emerald-50 font-semibold"
+                            onClick={() => handleStatusChange(r.appointmentId, "Completed")}
+                          >
+                            Complete
+                          </Button>
+                        </>
                       )}
 
                       {/* Reschedule option if not Completed or Cancelled */}
