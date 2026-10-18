@@ -153,3 +153,42 @@ body {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
+
+/* Print Media Styles for Invoices and 80mm POS Thermal Slips */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Hide navigation, sidebars, toast popups, and non-printable action buttons */
+  aside,
+  nav,
+  header,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* 80mm POS thermal receipt print formatting */
+  .thermal-receipt-slip {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 3mm !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 11px !important;
+    color: #000000 !important;
+  }
+
+  /* A4 Invoice print styling */
+  .a4-invoice-sheet {
+    width: 100% !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
+    padding: 10mm !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

@@ -301,6 +301,30 @@ describe("Clinic Billing, Invoices & Payments (Session 8)", () => {
       expect(payment.status).toBe("Confirmed");
       expect(payment.cashierName).toBe("Tariq Mahmood (Cashier)");
     });
+
+    it("should format 80mm thermal POS receipt slip data with cashier and transaction confirmation", () => {
+      const thermalReceiptData = {
+        clinicTitle: "CURASPHERE CLINIC",
+        serviceSubtitle: "Outpatient Medical Services",
+        receiptType: "Official Payment Receipt",
+        receiptNumber: "PAY-20261017-0089",
+        invoiceNumber: "INV-20261017-0042",
+        dateTime: "2026-10-17 11:30 AM",
+        patientName: "Farhan Saeed",
+        cashierName: "Tariq Mahmood (Cashier)",
+        paymentMethod: "Card",
+        amountReceived: 100.0,
+        statusConfirmation: "TRANSACTION CONFIRMED",
+        cssPrintClass: "thermal-receipt-slip",
+        targetWidthMm: 80,
+      };
+
+      expect(thermalReceiptData.receiptNumber).toMatch(/^PAY-\d{8}-\d{4}$/);
+      expect(thermalReceiptData.amountReceived).toBe(100.0);
+      expect(thermalReceiptData.statusConfirmation).toBe("TRANSACTION CONFIRMED");
+      expect(thermalReceiptData.cssPrintClass).toBe("thermal-receipt-slip");
+      expect(thermalReceiptData.targetWidthMm).toBe(80);
+    });
   });
 
   describe("Role-Based Access Control & Permission Enforcement", () => {

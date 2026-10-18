@@ -829,7 +829,7 @@ export default function BillingPage() {
           title={`Outpatient Invoice — ${selectedInvoiceDetail.invoiceNumber}`}
           description="Official Patient Billing Record"
         >
-          <div className="space-y-6 print:p-0" id="printable-a4-invoice">
+          <div className="space-y-6 print:p-0 a4-invoice-sheet" id="printable-a4-invoice">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b-2 border-slate-900">
               <div className="flex items-center gap-3">
@@ -962,7 +962,7 @@ export default function BillingPage() {
           title="Cashier Payment Receipt (80mm Thermal POS)"
           description="Customer thermal receipt copy"
         >
-          <div className="space-y-4 max-w-sm mx-auto p-4 bg-white border border-slate-200 rounded-xl shadow-sm text-xs font-mono">
+          <div className="space-y-4 max-w-sm mx-auto p-4 bg-white border border-slate-200 rounded-xl shadow-sm text-xs font-mono thermal-receipt-slip">
             <div className="text-center space-y-1 pb-3 border-b border-dashed border-slate-300">
               <h3 className="font-bold text-sm tracking-wider uppercase text-slate-900">CURASPHERE CLINIC</h3>
               <p className="text-[10px] text-slate-500">Outpatient Medical Services</p>
