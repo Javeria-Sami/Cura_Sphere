@@ -1,6 +1,6 @@
 # CURASPHERE CLINIC EDITION — OPERATIONAL RUNBOOK
 **Document ID:** `DOC-CE-031`  
-**Version:** 1.0.0  
+**Version:** 1.1.0 (Session 26 Security & Maintenance Update)  
 **Effective Date:** October 2026  
 **Audience:** Site Reliability Engineers (SRE), DevOps Engineers, System Administrators, Database Administrators  
 **Notice:** This runbook contains standard operating procedures. Never insert real passwords, private keys, or credentials into this document.
@@ -308,6 +308,65 @@ pg_restore -h <TARGET_DB_HOST> -p 5432 -U <ADMIN_USER> -d curasphere_restore_db 
 - **Application Security Specialist:** JWT secrets, RBAC policies, and vulnerability management.
 - **Clinic Operations Lead:** Staff accounts, on-site cashier hardware, and clinical workflow sign-off.
 - **Clinic Medical Director:** Clinical governance, medical record sealing policies, and legal compliance.
+
+---
+
+## 18. Dependency Maintenance & Security Patching Protocol
+
+To safely upgrade dependencies without causing clinical regressions:
+1. **Audit Dependencies:**
+   ```bash
+   cd frontend && npm audit
+   ```
+2. **Evaluate Security Advisories:**
+   - Differentiate high-risk CVEs (e.g., prototype pollution, remote execution) from low-risk dev-dependency notices.
+   - Restrict updates to non-breaking semantic patches (`~` or `^`).
+3. **Execute Targeted Update:**
+   ```bash
+   npm audit fix
+   # or for targeted package: npm install <package>@latest
+   ```
+4. **Run Mandatory Automated Quality Gates:**
+   ```bash
+   npm test -- --run
+   npm run lint
+   npm run build
+   ```
+5. **Verify Hospital Edition Regression:**
+   - Confirm that all 24 enterprise hospital modules continue to pass automated tests.
+6. **Commit & Tag Release:**
+   - Commit lockfile changes and document the advisory ID in the Security & Maintenance Register ([`DOC-CE-036`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/docs/clinic-edition/36-security-and-maintenance-register.md)).
+
+---
+
+## 19. Disaster Recovery Verification Drill Protocol
+
+To verify backup recoverability without impacting live operations:
+1. **Provision Isolated Sandbox Database:**
+   ```bash
+   createdb -h <SANDBOX_DB_HOST> -p 5432 -U <ADMIN_USER> curasphere_restore_verification_db
+   ```
+2. **Execute Clean-Schema Restoration:**
+   ```bash
+   pg_restore -h <SANDBOX_DB_HOST> -p 5432 -U <ADMIN_USER> -d curasphere_restore_verification_db -v -c <LATEST_BACKUP_SNAPSHOT>.dump
+   ```
+3. **Verify Relational Invariants & Row Counts:**
+   ```sql
+   -- Verify all 6 schemas restored intact
+   SELECT table_schema, count(*) FROM information_schema.tables WHERE table_schema IN ('patient','clinical','billing','hr','security','audit') GROUP BY table_schema;
+   
+   -- Check foreign key referential integrity
+   SELECT count(*) FROM clinical."Appointments" a LEFT JOIN patient."Patients" p ON a."PatientId" = p."Id" WHERE p."Id" IS NULL;
+   ```
+4. **Application Probe Validation:**
+   - Boot temporary test container pointing connection string to `curasphere_restore_verification_db`.
+   - Verify `GET /health/ready` returns HTTP 200.
+5. **Teardown & Clean Up Sandbox:**
+   ```bash
+   dropdb -h <SANDBOX_DB_HOST> -p 5432 -U <ADMIN_USER> curasphere_restore_verification_db
+   ```
+6. **Log Verification Drill:**
+   - Record duration, timestamp, and results in the Maintenance & Support Checklist ([`DOC-CE-033`](file:///c:/Users/LENOVO/Downloads/-CuraSphere-HMS-DevelopbyUzaii-main/-CuraSphere-HMS-DevelopbyUzaii-main/docs/clinic-edition/33-maintenance-and-support-checklist.md)).
 
 ---
 *Runbook approved by Senior Production Reliability Engineer on October 18, 2026.*

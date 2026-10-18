@@ -15,7 +15,7 @@
     "@hookform/resolvers": "latest",
     "@microsoft/signalr": "^8.0.7",
     "@tanstack/react-query": "latest",
-    "axios": "^1.19.0",
+    "axios": "^1.20.0",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",

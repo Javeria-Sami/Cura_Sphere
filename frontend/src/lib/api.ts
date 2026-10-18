@@ -13,12 +13,15 @@ const api = axios.create({
   },
 });
 
-// Request Interceptor to attach JWT token
+// Request Interceptor to attach JWT token and X-Correlation-ID tracing
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = useAuthStore.getState().token;
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (config.headers && !config.headers["X-Correlation-ID"]) {
+      config.headers["X-Correlation-ID"] = `req-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     }
     return config;
   },
@@ -31,7 +34,9 @@ api.interceptors.response.use(
   (error: any) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
-      window.location.href = "/login";
+      if (typeof window !== "undefined" && window.location) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
