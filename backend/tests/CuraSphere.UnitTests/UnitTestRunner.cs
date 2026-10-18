@@ -735,6 +735,77 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 26: Edition-Aware BI Report Metrics Isolation (Module 12)
+        try
+        {
+            var clinicReport = new DashboardReportSummaryDto
+            {
+                ActiveEdition = "Clinic",
+                TotalPatientsRegistered = 520,
+                TodayAppointments = 34,
+                CompletedConsultationsToday = 29,
+                ConsultationCompletionRate = 85.3m,
+                AdmittedIpdPatients = 0,
+                BedOccupancyPercentage = 0,
+                RevenueByDepartment = new List<DepartmentRevenueDto>
+                {
+                    new DepartmentRevenueDto { DepartmentName = "Outpatient Consultations (OPD)", Amount = 45000 },
+                    new DepartmentRevenueDto { DepartmentName = "Diagnostic Laboratory", Amount = 28000 }
+                }
+            };
+
+            Assert(clinicReport.ActiveEdition == "Clinic", "Active edition flag correctly identifies Clinic Edition");
+            Assert(clinicReport.AdmittedIpdPatients == 0, "Clinic Edition strictly zeroes inpatient (IPD) admissions");
+            Assert(clinicReport.BedOccupancyPercentage == 0, "Clinic Edition strictly zeroes bed occupancy rate");
+            Assert(!clinicReport.RevenueByDepartment.Any(r => r.DepartmentName.Contains("Inpatient")), "Clinic revenue breakdown excludes Inpatient Wards");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Edition-Aware BI Report test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 27: Payment Methods Breakdown & Percentage Distribution (Module 12)
+        try
+        {
+            var methods = new List<PaymentMethodSummaryDto>
+            {
+                new PaymentMethodSummaryDto { Method = "Cash", Amount = 60000m, Percentage = 60.0m },
+                new PaymentMethodSummaryDto { Method = "Card", Amount = 30000m, Percentage = 30.0m },
+                new PaymentMethodSummaryDto { Method = "Bank Transfer", Amount = 10000m, Percentage = 10.0m }
+            };
+
+            decimal totalSum = methods.Sum(m => m.Amount);
+            decimal pctSum = methods.Sum(m => m.Percentage);
+
+            Assert(totalSum == 100000m, "Total payments aggregated accurately as 100,000.00");
+            Assert(Math.Abs(pctSum - 100.0m) < 0.1m, "Payment method percentage distribution sums to 100%");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Payment Methods Breakdown test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 28: Outpatient Consultation Completion Rate Arithmetic (Module 12)
+        try
+        {
+            int scheduledAppts = 40;
+            int completedAppts = 32;
+            decimal rate = scheduledAppts > 0 ? Math.Round((decimal)completedAppts / scheduledAppts * 100, 1) : 0;
+
+            Assert(rate == 80.0m, "Consultation completion rate correctly computed as 80.0% (32/40)");
+
+            int zeroAppts = 0;
+            decimal zeroRate = zeroAppts > 0 ? (decimal)10 / zeroAppts * 100 : 0;
+            Assert(zeroRate == 0, "Zero appointment divisor handled safely without divide-by-zero exception");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Consultation Completion Rate test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");

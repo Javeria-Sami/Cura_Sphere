@@ -19,9 +19,9 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboardSummary()
+    public async Task<IActionResult> GetDashboardSummary([FromQuery] string? edition, [FromQuery] string? timeframe)
     {
-        var data = await _reportsService.GetDashboardSummaryAsync();
+        var data = await _reportsService.GetDashboardSummaryAsync(edition, timeframe);
         return Ok(new { success = true, data });
     }
 

@@ -6,7 +6,7 @@ namespace CuraSphere.Application.Interfaces;
 
 public interface IReportsService
 {
-    Task<DashboardReportSummaryDto> GetDashboardSummaryAsync();
+    Task<DashboardReportSummaryDto> GetDashboardSummaryAsync(string? edition = null, string? timeframe = null);
     Task<IEnumerable<UserAccountManagementDto>> GetUserAccountsAsync(string? search);
     Task<IEnumerable<AuditLogEntryDto>> GetAuditLogsAsync(string? search, string? module);
 }

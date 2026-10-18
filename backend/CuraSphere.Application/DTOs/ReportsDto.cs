@@ -13,9 +13,16 @@ public class DashboardReportSummaryDto
     public decimal TotalRevenueBilledToday { get; set; }
     public decimal TotalRevenueCollectedToday { get; set; }
     public decimal BedOccupancyPercentage { get; set; }
+    public int CompletedConsultationsToday { get; set; }
+    public decimal ConsultationCompletionRate { get; set; }
+    public decimal TotalOutstandingBalance { get; set; }
+    public string ActiveEdition { get; set; } = "Hospital";
+    public string Timeframe { get; set; } = "today";
     
     public List<DepartmentRevenueDto> RevenueByDepartment { get; set; } = new();
     public List<MonthlyCensusDto> MonthlyCensusTrend { get; set; } = new();
+    public List<PaymentMethodSummaryDto> PaymentMethodsBreakdown { get; set; } = new();
+    public List<InvoiceStatusSummaryDto> InvoiceStatusBreakdown { get; set; } = new();
 }
 
 public class DepartmentRevenueDto
@@ -24,11 +31,26 @@ public class DepartmentRevenueDto
     public decimal Amount { get; set; }
 }
 
+public class PaymentMethodSummaryDto
+{
+    public string Method { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public decimal Percentage { get; set; }
+}
+
+public class InvoiceStatusSummaryDto
+{
+    public string Status { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public decimal TotalAmount { get; set; }
+}
+
 public class MonthlyCensusDto
 {
     public string Month { get; set; } = string.Empty;
     public int OutpatientCount { get; set; }
     public int InpatientCount { get; set; }
+    public int WalkInCount { get; set; }
 }
 
 public class UserAccountManagementDto
