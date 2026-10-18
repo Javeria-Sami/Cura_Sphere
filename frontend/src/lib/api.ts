@@ -8,6 +8,7 @@ const resolvedBaseUrl = configuredApiUrl
 
 const api = axios.create({
   baseURL: resolvedBaseUrl,
+  timeout: 15000, // 15-second timeout to prevent hung requests in degraded networks
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,10 +29,13 @@ api.interceptors.request.use(
   (error: any) => Promise.reject(error)
 );
 
-// Response Interceptor to handle authentication errors
+// Response Interceptor to handle authentication and timeout errors
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: any) => {
+    if (error?.code === "ECONNABORTED" || error?.message?.includes("timeout")) {
+      error.userFriendlyMessage = "Request timed out after 15 seconds. Please check your network connection and retry.";
+    }
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
       if (typeof window !== "undefined" && window.location) {

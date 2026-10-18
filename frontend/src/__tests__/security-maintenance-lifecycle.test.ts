@@ -3,9 +3,10 @@ import api from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 
 describe('Security Maintenance & Continuous Quality Assurance', () => {
-  it('SEC-MNT-01: Axios client properly enforces baseURL and default headers without prototype pollution', () => {
+  it('SEC-MNT-01: Axios client properly enforces baseURL, timeout, and default headers without prototype pollution', () => {
     expect(api.defaults.headers).toBeDefined();
     expect(api.defaults.headers['Content-Type']).toBe('application/json');
+    expect(api.defaults.timeout).toBe(15000);
     // Ensure Object.prototype is not polluted
     expect((Object.prototype as Record<string, unknown>).method).toBeUndefined();
     expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
