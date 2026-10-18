@@ -45,13 +45,19 @@ public class ReportsService : IReportsService
         bool isClinic = string.Equals(edition, "Clinic", StringComparison.OrdinalIgnoreCase);
 
         var totalPatients = await _context.Patients.AsNoTracking().CountAsync();
-        var todayAppts = await _context.Appointments
+        var apptStats = await _context.Appointments
             .AsNoTracking()
-            .CountAsync(a => a.AppointmentDate >= startUtc && a.AppointmentDate < endUtc);
-        
-        var completedAppts = await _context.Appointments
-            .AsNoTracking()
-            .CountAsync(a => a.AppointmentDate >= startUtc && a.AppointmentDate < endUtc && a.Status == "Completed");
+            .Where(a => a.AppointmentDate >= startUtc && a.AppointmentDate < endUtc)
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Completed = g.Count(a => a.Status == "Completed")
+            })
+            .FirstOrDefaultAsync();
+
+        var todayAppts = apptStats?.Total ?? 0;
+        var completedAppts = apptStats?.Completed ?? 0;
 
         var activeOpd = await _context.OpdTokens
             .AsNoTracking()

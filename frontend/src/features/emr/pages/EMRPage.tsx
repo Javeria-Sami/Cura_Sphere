@@ -76,7 +76,16 @@ export default function EMRPage() {
   const [encounters, setEncounters] = useState<EmrEncounter[]>([]);
   const [loadingList, setLoadingList] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // Debounce encounter search input by 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Patient context for active consultation
   const [selectedPatientId, setSelectedPatientId] = useState<number | null>(
@@ -175,7 +184,7 @@ export default function EMRPage() {
   const loadEncountersList = async () => {
     try {
       setLoadingList(true);
-      const data = await emrService.getAllEncounters(searchTerm);
+      const data = await emrService.getAllEncounters(debouncedSearchTerm);
       setEncounters(data);
     } catch (err) {
       console.error("Failed to fetch EMR encounters", err);
@@ -188,7 +197,7 @@ export default function EMRPage() {
     if (activeMode === "list") {
       loadEncountersList();
     }
-  }, [activeMode, searchTerm]);
+  }, [activeMode, debouncedSearchTerm]);
 
   // Load Patient Details & History when Patient Selected
   useEffect(() => {

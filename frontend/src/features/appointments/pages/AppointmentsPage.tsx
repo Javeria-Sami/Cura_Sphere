@@ -61,8 +61,17 @@ export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<AppointmentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  // Debounce main search input by 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Lookups State
   const [doctors, setDoctors] = useState<DoctorLookupItem[]>(fallbackDoctors);
@@ -137,11 +146,11 @@ export default function AppointmentsPage() {
     loadLookups();
   }, []);
 
-  // Fetch Appointments
+  // Fetch Appointments (using debounced search)
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await appointmentService.getAppointments(search, activeTab);
+      const data = await appointmentService.getAppointments(debouncedSearch, activeTab);
       setAppointments(data || []);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to load appointments.";
@@ -149,7 +158,7 @@ export default function AppointmentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, activeTab]);
+  }, [debouncedSearch, activeTab]);
 
   useEffect(() => {
     fetchAppointments();

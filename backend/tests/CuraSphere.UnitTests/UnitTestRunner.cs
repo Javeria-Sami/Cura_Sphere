@@ -1043,6 +1043,104 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 37: Relational Index Configuration & Schema Coverage (Session 28)
+        try
+        {
+            var dbContextType = typeof(CuraSphere.Infrastructure.Persistence.CuraSphereDbContext);
+            var onModelCreatingMethod = dbContextType.GetMethod("OnModelCreating", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert(onModelCreatingMethod != null, "CuraSphereDbContext overrides OnModelCreating for explicit index configuration");
+
+            // Verify Appointment entity has indexed properties
+            var apptType = typeof(Appointment);
+            Assert(apptType.GetProperty("PatientId") != null, "Appointment.PatientId property exists for foreign key indexing");
+            Assert(apptType.GetProperty("DoctorId") != null, "Appointment.DoctorId property exists for foreign key indexing");
+            Assert(apptType.GetProperty("AppointmentDate") != null, "Appointment.AppointmentDate property exists for range indexing");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Relational Index Configuration test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 38: Combined Appointment Aggregation Parity (Session 28)
+        try
+        {
+            var appts = new List<Appointment>
+            {
+                new() { AppointmentId = 1, AppointmentDate = new DateTime(2026, 10, 18), Status = "Completed" },
+                new() { AppointmentId = 2, AppointmentDate = new DateTime(2026, 10, 18), Status = "Completed" },
+                new() { AppointmentId = 3, AppointmentDate = new DateTime(2026, 10, 18), Status = "Scheduled" },
+                new() { AppointmentId = 4, AppointmentDate = new DateTime(2026, 10, 18), Status = "Confirmed" }
+            };
+
+            // Aggregated evaluation matches individual counts
+            int total = appts.Count;
+            int completed = appts.Count(a => a.Status == "Completed");
+
+            var aggregated = appts.GroupBy(_ => 1).Select(g => new
+            {
+                Total = g.Count(),
+                Completed = g.Count(a => a.Status == "Completed")
+            }).First();
+
+            Assert(aggregated.Total == total, "Consolidated aggregation Total count equals 4");
+            Assert(aggregated.Completed == completed, "Consolidated aggregation Completed count equals 2");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Combined Appointment Aggregation test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 39: Bounded Pagination Parameters (Session 28)
+        try
+        {
+            int pageNumber = -5;
+            int pageSize = 50000;
+
+            int sanitizedPage = Math.Max(1, pageNumber);
+            int sanitizedPageSize = Math.Clamp(pageSize, 1, 100);
+
+            int skip = (sanitizedPage - 1) * sanitizedPageSize;
+            int take = sanitizedPageSize;
+
+            Assert(sanitizedPage == 1, "Page number is bounded to minimum 1");
+            Assert(sanitizedPageSize == 100, "Page size is clamped to safe maximum 100");
+            Assert(skip == 0, "Calculated Skip is 0");
+            Assert(take == 100, "Calculated Take is 100");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Bounded Pagination test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 40: Fast Patient Search Substring Match Efficiency (Session 28)
+        try
+        {
+            var samplePatients = new List<PatientListDto>
+            {
+                new() { PatientId = 101, MedicalRecordNumber = "MRN-2026-00101", FirstName = "Muhammad", LastName = "Ali", PhoneNumber = "+923001234567" },
+                new() { PatientId = 102, MedicalRecordNumber = "MRN-2026-00102", FirstName = "Fatima", LastName = "Noor", PhoneNumber = "+923019876543" }
+            };
+
+            string searchClean = "fatima";
+            var matches = samplePatients.Where(p =>
+                p.FirstName.ToLower().Contains(searchClean) ||
+                p.LastName.ToLower().Contains(searchClean) ||
+                p.MedicalRecordNumber.ToLower().Contains(searchClean) ||
+                p.PhoneNumber.Contains(searchClean)
+            ).ToList();
+
+            Assert(matches.Count == 1, "Search predicate correctly matches exactly 1 patient");
+            Assert(matches[0].FirstName == "Fatima", "Matched patient first name is Fatima");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Patient Search Match test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");

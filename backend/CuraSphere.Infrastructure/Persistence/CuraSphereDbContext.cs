@@ -106,6 +106,8 @@ public class CuraSphereDbContext : DbContext
             entity.Property(e => e.PatientId).HasColumnName("patient_id");
             entity.Property(e => e.MedicalRecordNumber).HasColumnName("medical_record_number").HasMaxLength(25).IsRequired();
             entity.HasIndex(e => e.MedicalRecordNumber).IsUnique();
+            entity.HasIndex(e => e.PhoneNumber).HasDatabaseName("IX_patient_phone_number");
+            entity.HasIndex(e => e.CnicPassport).HasDatabaseName("IX_patient_cnic_passport");
             
             entity.Property(e => e.FirstName).HasColumnName("first_name").HasMaxLength(100).IsRequired();
             entity.Property(e => e.MiddleName).HasColumnName("middle_name").HasMaxLength(100);
@@ -390,9 +392,29 @@ public class CuraSphereDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<Appointment>(e => { e.HasKey(x => x.AppointmentId); });
-        modelBuilder.Entity<OpdToken>(e => { e.HasKey(x => x.OpdTokenId); });
-        modelBuilder.Entity<EmrEncounter>(e => { e.HasKey(x => x.EncounterId); });
+        modelBuilder.Entity<Appointment>(e =>
+        {
+            e.HasKey(x => x.AppointmentId);
+            e.HasIndex(x => x.PatientId).HasDatabaseName("IX_appointment_patient_id");
+            e.HasIndex(x => x.DoctorId).HasDatabaseName("IX_appointment_doctor_id");
+            e.HasIndex(x => new { x.AppointmentDate, x.Status }).HasDatabaseName("IX_appointment_date_status");
+        });
+
+        modelBuilder.Entity<OpdToken>(e =>
+        {
+            e.HasKey(x => x.OpdTokenId);
+            e.HasIndex(x => x.PatientId).HasDatabaseName("IX_opd_token_patient_id");
+            e.HasIndex(x => x.DoctorId).HasDatabaseName("IX_opd_token_doctor_id");
+            e.HasIndex(x => x.Status).HasDatabaseName("IX_opd_token_status");
+        });
+
+        modelBuilder.Entity<EmrEncounter>(e =>
+        {
+            e.HasKey(x => x.EncounterId);
+            e.HasIndex(x => x.PatientId).HasDatabaseName("IX_emr_encounter_patient_id");
+            e.HasIndex(x => x.DoctorId).HasDatabaseName("IX_emr_encounter_doctor_id");
+            e.HasIndex(x => x.EncounterDate).HasDatabaseName("IX_emr_encounter_date");
+        });
 
         modelBuilder.Entity<Ward>(e => { e.HasKey(x => x.WardId); });
         modelBuilder.Entity<Bed>(e => { e.HasKey(x => x.BedId); });
@@ -402,15 +424,32 @@ public class CuraSphereDbContext : DbContext
         modelBuilder.Entity<LabOrder>(e => { e.HasKey(x => x.LabOrderId); });
         modelBuilder.Entity<RadiologyStudy>(e => { e.HasKey(x => x.StudyId); });
 
-        modelBuilder.Entity<Invoice>(e => { e.HasKey(x => x.InvoiceId); });
-        modelBuilder.Entity<PaymentRecord>(e => { e.HasKey(x => x.PaymentId); });
+        modelBuilder.Entity<Invoice>(e =>
+        {
+            e.HasKey(x => x.InvoiceId);
+            e.HasIndex(x => x.PatientId).HasDatabaseName("IX_invoice_patient_id");
+            e.HasIndex(x => new { x.InvoiceDate, x.Status }).HasDatabaseName("IX_invoice_date_status");
+        });
+
+        modelBuilder.Entity<PaymentRecord>(e =>
+        {
+            e.HasKey(x => x.PaymentId);
+            e.HasIndex(x => x.InvoiceId).HasDatabaseName("IX_payment_record_invoice_id");
+            e.HasIndex(x => x.PaymentDate).HasDatabaseName("IX_payment_record_date");
+        });
+
         modelBuilder.Entity<InsuranceClaimRecord>(e => { e.HasKey(x => x.ClaimId); });
         modelBuilder.Entity<InventoryItem>(e => { e.HasKey(x => x.ItemId); });
         modelBuilder.Entity<AttendanceRecord>(e => { e.HasKey(x => x.AttendanceId); });
         modelBuilder.Entity<PharmacyStock>(e => { e.HasKey(x => x.DrugId); });
         modelBuilder.Entity<SurgicalProcedure>(e => { e.HasKey(x => x.SurgeryId); });
         modelBuilder.Entity<IcuPatientVital>(e => { e.HasKey(x => x.VitalId); });
-        modelBuilder.Entity<PatientDocument>(e => { e.HasKey(x => x.DocumentId); });
+        
+        modelBuilder.Entity<PatientDocument>(e =>
+        {
+            e.HasKey(x => x.DocumentId);
+            e.HasIndex(x => x.PatientId).HasDatabaseName("IX_patient_document_patient_id");
+        });
 
         // Apply Global Query Filter for BaseEntity (Soft Delete)
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())

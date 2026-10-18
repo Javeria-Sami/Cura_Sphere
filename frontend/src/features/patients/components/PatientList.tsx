@@ -17,12 +17,22 @@ export default function PatientList() {
   // State controls
   const [patients, setPatients] = useState<PatientListDto[]>([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Debounce search input by 300ms to prevent keystroke request flooding
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Sample fallback patients
   const sampleFallbackPatients: PatientListDto[] = [
@@ -35,21 +45,21 @@ export default function PatientList() {
   ];
 
   // Fetch handler
-  const fetchPatients = async () => {
+  const fetchPatients = async (query: string, pageNum: number) => {
     setLoading(true);
     setError("");
     try {
-      const data = await patientService.getPagedPatients(search, page, pageSize);
+      const data = await patientService.getPagedPatients(query, pageNum, pageSize);
       if (data && data.items && data.items.length > 0) {
         setPatients(data.items);
         setTotalPages(data.totalPages);
         setTotalCount(data.totalCount);
       } else {
         const filtered = sampleFallbackPatients.filter(p =>
-          p.firstName.toLowerCase().includes(search.toLowerCase()) ||
-          p.lastName.toLowerCase().includes(search.toLowerCase()) ||
-          p.medicalRecordNumber.toLowerCase().includes(search.toLowerCase()) ||
-          p.phoneNumber.includes(search)
+          p.firstName.toLowerCase().includes(query.toLowerCase()) ||
+          p.lastName.toLowerCase().includes(query.toLowerCase()) ||
+          p.medicalRecordNumber.toLowerCase().includes(query.toLowerCase()) ||
+          p.phoneNumber.includes(query)
         );
         setPatients(filtered);
         setTotalPages(1);
@@ -57,10 +67,10 @@ export default function PatientList() {
       }
     } catch {
       const filtered = sampleFallbackPatients.filter(p =>
-        p.firstName.toLowerCase().includes(search.toLowerCase()) ||
-        p.lastName.toLowerCase().includes(search.toLowerCase()) ||
-        p.medicalRecordNumber.toLowerCase().includes(search.toLowerCase()) ||
-        p.phoneNumber.includes(search)
+        p.firstName.toLowerCase().includes(query.toLowerCase()) ||
+        p.lastName.toLowerCase().includes(query.toLowerCase()) ||
+        p.medicalRecordNumber.toLowerCase().includes(query.toLowerCase()) ||
+        p.phoneNumber.includes(query)
       );
       setPatients(filtered);
       setTotalPages(1);
@@ -71,8 +81,8 @@ export default function PatientList() {
   };
 
   useEffect(() => {
-    fetchPatients();
-  }, [search, page]);
+    fetchPatients(debouncedSearch, page);
+  }, [debouncedSearch, page]);
 
   return (
     <div className="p-6 animate-fade-in font-sans">

@@ -66,7 +66,16 @@ export default function BillingPage() {
   });
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+
+  // Debounce search input by 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(Boolean(urlPatientId));
@@ -114,26 +123,40 @@ export default function BillingPage() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Fetch Invoices and Summary
-  const loadBillingData = async () => {
-    setLoading(true);
+  // Fetch Summary
+  const loadSummary = async () => {
     try {
-      const [invList, sumData] = await Promise.all([
-        financialService.getInvoices(search, activeTab),
-        financialService.getBillingSummary(),
-      ]);
-      setInvoices(invList);
+      const sumData = await financialService.getBillingSummary();
       setSummary(sumData);
     } catch (err) {
-      console.error("Failed to load billing data", err);
+      console.error("Failed to load billing summary", err);
+    }
+  };
+
+  // Fetch Invoices (using debounced search)
+  const loadInvoices = async (query: string, tab: string) => {
+    setLoading(true);
+    try {
+      const invList = await financialService.getInvoices(query, tab);
+      setInvoices(invList);
+    } catch (err) {
+      console.error("Failed to load invoices", err);
     } finally {
       setLoading(false);
     }
   };
 
+  const loadBillingData = async () => {
+    await Promise.all([loadInvoices(debouncedSearch, activeTab), loadSummary()]);
+  };
+
   useEffect(() => {
-    loadBillingData();
-  }, [search, activeTab]);
+    loadSummary();
+  }, [activeTab]);
+
+  useEffect(() => {
+    loadInvoices(debouncedSearch, activeTab);
+  }, [debouncedSearch, activeTab]);
 
   // Live Patient Search for Invoice Creation
   useEffect(() => {
