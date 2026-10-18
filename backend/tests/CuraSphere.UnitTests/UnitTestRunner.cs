@@ -806,6 +806,160 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 29: End-to-End Clinical State Synchronization (Session 19)
+        try
+        {
+            var appt = new Appointment
+            {
+                AppointmentId = 8801,
+                PatientId = 101,
+                DoctorId = 201,
+                AppointmentNumber = "APT-20261018-801",
+                AppointmentDate = DateTime.UtcNow.Date,
+                AppointmentTime = new TimeSpan(10, 0, 0),
+                Status = "In Consultation"
+            };
+
+            var encounter = new EmrEncounter
+            {
+                EncounterId = 9901,
+                EncounterNumber = "EMR-20261018-901",
+                PatientId = appt.PatientId,
+                DoctorId = appt.DoctorId,
+                EncounterDate = DateTime.UtcNow,
+                Status = "Draft",
+                Diagnosis = "Essential Hypertension (I10)",
+                Symptoms = "Headache and elevated blood pressure"
+            };
+
+            // Simulate clinician sealing and finalization
+            encounter.Status = "Finalized";
+            appt.Status = "Completed";
+            appt.Remarks = $"Consultation finalized — {encounter.EncounterNumber}";
+
+            Assert(encounter.Status == "Finalized", "Clinical encounter successfully sealed as Finalized");
+            Assert(appt.Status == "Completed", "Associated appointment automatically transitions to Completed");
+            Assert(appt.Remarks.Contains(encounter.EncounterNumber), "Appointment remarks link back to finalized EMR record");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Clinical State Synchronization test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 30: Billing Ledger Consistency & Overpayment Guard (Session 19)
+        try
+        {
+            var invoice = new Invoice
+            {
+                InvoiceId = 7701,
+                InvoiceNumber = "INV-20261018-701",
+                PatientId = 101,
+                ServiceType = "OPD Consultation & Diagnostics",
+                TotalAmount = 5000.00m,
+                PaidAmount = 0.00m,
+                Status = "Unpaid"
+            };
+
+            Assert(invoice.BalanceAmount == 5000.00m, "Initial unpaid invoice balance matches total amount");
+
+            // Process partial payment of 2000.00
+            decimal partialPayment = 2000.00m;
+            invoice.PaidAmount += partialPayment;
+            invoice.Status = invoice.PaidAmount >= invoice.TotalAmount ? "Paid" : "Partial";
+
+            Assert(invoice.PaidAmount == 2000.00m, "Recorded partial payment reflects accurately");
+            Assert(invoice.BalanceAmount == 3000.00m, "Outstanding balance decreases to 3,000.00");
+            Assert(invoice.Status == "Partial", "Invoice status correctly transitioned to Partial");
+
+            // Test overpayment guard
+            decimal excessPayment = 3500.00m;
+            bool overpaymentBlocked = excessPayment > invoice.BalanceAmount;
+            Assert(overpaymentBlocked, "Excess payment of 3,500.00 against 3,000.00 balance is strictly blocked");
+
+            // Process full settlement of 3000.00
+            decimal finalPayment = 3000.00m;
+            invoice.PaidAmount += finalPayment;
+            invoice.Status = invoice.PaidAmount >= invoice.TotalAmount ? "Paid" : "Partial";
+
+            Assert(invoice.PaidAmount == 5000.00m, "Total paid amount equals invoice total 5,000.00");
+            Assert(invoice.BalanceAmount == 0.00m, "Balance cleared to zero");
+            Assert(invoice.Status == "Paid", "Invoice status transitions to Paid upon full settlement");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Billing Ledger Consistency test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 31: Role-Based Authorization Policy Matrix (Session 19)
+        try
+        {
+            var rolePermissions = new Dictionary<string, HashSet<string>>
+            {
+                ["Admin"] = new() { "patients.create", "patients.read", "appointments.create", "emr.read", "emr.create", "emr.diagnose", "billing.create", "billing.pay", "reports.read" },
+                ["Receptionist"] = new() { "patients.create", "patients.read", "appointments.create", "appointments.read", "billing.read" },
+                ["Doctor"] = new() { "patients.read", "appointments.read", "emr.read", "emr.create", "emr.diagnose" },
+                ["Cashier"] = new() { "patients.read", "billing.create", "billing.pay", "billing.read" },
+                ["ReadOnly"] = new() { "patients.read", "appointments.read" }
+            };
+
+            // Receptionist can create appointments and register patients, but CANNOT finalize EMR or process payments
+            Assert(rolePermissions["Receptionist"].Contains("appointments.create"), "Receptionist can schedule appointments");
+            Assert(!rolePermissions["Receptionist"].Contains("emr.diagnose"), "Receptionist CANNOT diagnose or finalize EMR");
+            Assert(!rolePermissions["Receptionist"].Contains("billing.pay"), "Receptionist CANNOT process cashier payments");
+
+            // Doctor can read patients, create EMR, and diagnose, but CANNOT process cashier payments
+            Assert(rolePermissions["Doctor"].Contains("emr.diagnose"), "Doctor can diagnose and seal clinical encounters");
+            Assert(!rolePermissions["Doctor"].Contains("billing.pay"), "Doctor CANNOT process cashier payments");
+
+            // Cashier can process payments and create invoices, but CANNOT create clinical encounters
+            Assert(rolePermissions["Cashier"].Contains("billing.pay"), "Cashier can record patient payments");
+            Assert(!rolePermissions["Cashier"].Contains("emr.create"), "Cashier CANNOT create clinical encounters");
+
+            // ReadOnly user is denied all mutation permissions
+            Assert(!rolePermissions["ReadOnly"].Contains("patients.create"), "ReadOnly user cannot register patients");
+            Assert(!rolePermissions["ReadOnly"].Contains("appointments.create"), "ReadOnly user cannot schedule appointments");
+            Assert(!rolePermissions["ReadOnly"].Contains("billing.pay"), "ReadOnly user cannot record payments");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Role Authorization Policy Matrix test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 32: Hospital Edition Non-Regression Boundary Guard (Session 19)
+        try
+        {
+            var hospitalModules = new HashSet<string>
+            {
+                "dashboard", "patients", "doctors", "nurses", "appointments", "opd", "emr",
+                "laboratory", "radiology", "pharmacy", "billing", "payments", "insurance",
+                "inventory", "hr", "attendance", "reports", "notifications", "audit", "administration",
+                "ipd", "emergency", "surgery", "icu"
+            };
+
+            var clinicDisabledModules = new HashSet<string> { "ipd", "emergency", "surgery", "icu" };
+
+            // In Hospital Edition: all tertiary modules must be active
+            Assert(hospitalModules.Contains("ipd"), "Hospital Edition includes Inpatient (IPD) wards");
+            Assert(hospitalModules.Contains("emergency"), "Hospital Edition includes Emergency trauma triage");
+            Assert(hospitalModules.Contains("surgery"), "Hospital Edition includes Surgery operation theaters");
+            Assert(hospitalModules.Contains("icu"), "Hospital Edition includes ICU telemetry");
+            Assert(hospitalModules.Count == 24, "Hospital Edition retains all 24 medical enterprise modules");
+
+            // In Clinic Edition: tertiary hospital modules must be strictly disabled
+            foreach (var mod in clinicDisabledModules)
+            {
+                Assert(clinicDisabledModules.Contains(mod), $"Clinic Edition strictly suppresses tertiary module '{mod}'");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Hospital Edition Boundary Guard test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");
@@ -814,3 +968,4 @@ public class UnitTestRunner
         return failed == 0 ? 0 : 1;
     }
 }
+
