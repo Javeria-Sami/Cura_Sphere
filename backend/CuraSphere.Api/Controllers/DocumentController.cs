@@ -1,16 +1,19 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuraSphere.Infrastructure.Persistence;
 using CuraSphere.Domain.Entities;
 using CuraSphere.Infrastructure.Services.Integration;
+using CuraSphere.Api.Middleware;
 
 namespace CuraSphere.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DocumentController : ControllerBase
 {
     private readonly CuraSphereDbContext _context;
@@ -21,18 +24,32 @@ public class DocumentController : ControllerBase
     }
 
     [HttpGet("patient/{patientId:long}")]
+    [HasPermission("patients.read")]
     public async Task<IActionResult> GetPatientDocuments(long patientId)
     {
+        var patientExists = await _context.Patients.AnyAsync(p => p.PatientId == patientId);
+        if (!patientExists)
+        {
+            return NotFound(new { success = false, message = $"Patient with ID {patientId} not found." });
+        }
+
         var docs = await _context.PatientDocuments
             .Where(d => d.PatientId == patientId)
             .OrderByDescending(d => d.UploadedAt)
             .ToListAsync();
-        return Ok(docs);
+        return Ok(new { success = true, data = docs });
     }
 
     [HttpPost("upload")]
+    [HasPermission("patients.update")]
     public async Task<IActionResult> UploadDocument([FromForm] long patientId, [FromForm] string category, [FromForm] string title, [FromForm] string uploadedBy)
     {
+        var patientExists = await _context.Patients.AnyAsync(p => p.PatientId == patientId);
+        if (!patientExists)
+        {
+            return NotFound(new { success = false, message = $"Patient with ID {patientId} not found." });
+        }
+
         var doc = new PatientDocument
         {
             PatientId = patientId,
@@ -53,16 +70,17 @@ public class DocumentController : ControllerBase
         _context.PatientDocuments.Add(doc);
         await _context.SaveChangesAsync();
 
-        return Ok(doc);
+        return Ok(new { success = true, data = doc });
     }
 
     [HttpGet("fhir/patient/{patientId:long}")]
+    [HasPermission("patients.read")]
     public async Task<IActionResult> ExportFhirPatient(long patientId)
     {
         var patient = await _context.Patients.FirstOrDefaultAsync(p => p.PatientId == patientId);
         if (patient == null)
         {
-            return NotFound(new { message = $"Patient with ID {patientId} not found." });
+            return NotFound(new { success = false, message = $"Patient with ID {patientId} not found." });
         }
 
         string fhirJson = FhirConverter.ToFhirPatientJson(patient);

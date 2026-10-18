@@ -26,6 +26,7 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet("users")]
+    [Authorize(Roles = "Super Administrator,Hospital Administrator")]
     public async Task<IActionResult> GetUserAccounts([FromQuery] string? search)
     {
         var list = await _reportsService.GetUserAccountsAsync(search);
@@ -33,6 +34,7 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet("audit-logs")]
+    [Authorize(Roles = "Super Administrator,Hospital Administrator")]
     public async Task<IActionResult> GetAuditLogs([FromQuery] string? search, [FromQuery] string? module)
     {
         var list = await _reportsService.GetAuditLogsAsync(search, module);

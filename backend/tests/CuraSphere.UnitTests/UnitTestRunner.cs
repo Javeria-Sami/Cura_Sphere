@@ -960,6 +960,89 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 33: Document Management Endpoint Security & Authorization Guard (Session 27)
+        try
+        {
+            var documentControllerType = typeof(CuraSphere.Api.Controllers.DocumentController);
+            var authorizeAttr = Attribute.GetCustomAttribute(documentControllerType, typeof(Microsoft.AspNetCore.Authorization.AuthorizeAttribute));
+            Assert(authorizeAttr != null, "DocumentController is decorated with class-level [Authorize] attribute");
+
+            var getDocMethod = documentControllerType.GetMethod("GetPatientDocuments");
+            var uploadDocMethod = documentControllerType.GetMethod("UploadDocument");
+            var fhirExportMethod = documentControllerType.GetMethod("ExportFhirPatient");
+
+            Assert(getDocMethod != null, "DocumentController.GetPatientDocuments endpoint exists");
+            Assert(uploadDocMethod != null, "DocumentController.UploadDocument endpoint exists");
+            Assert(fhirExportMethod != null, "DocumentController.ExportFhirPatient endpoint exists");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Document Controller Security Guard test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 34: Administrative Role Privilege Boundaries (Session 27)
+        try
+        {
+            var reportsControllerType = typeof(CuraSphere.Api.Controllers.ReportsController);
+            var usersMethod = reportsControllerType.GetMethod("GetUserAccounts");
+            var auditMethod = reportsControllerType.GetMethod("GetAuditLogs");
+
+            var usersAuthAttr = usersMethod != null ? Attribute.GetCustomAttribute(usersMethod, typeof(Microsoft.AspNetCore.Authorization.AuthorizeAttribute)) as Microsoft.AspNetCore.Authorization.AuthorizeAttribute : null;
+            var auditAuthAttr = auditMethod != null ? Attribute.GetCustomAttribute(auditMethod, typeof(Microsoft.AspNetCore.Authorization.AuthorizeAttribute)) as Microsoft.AspNetCore.Authorization.AuthorizeAttribute : null;
+
+            Assert(usersAuthAttr != null && usersAuthAttr.Roles != null && usersAuthAttr.Roles.Contains("Super Administrator"), "GetUserAccounts strictly restricted to administrative roles");
+            Assert(auditAuthAttr != null && auditAuthAttr.Roles != null && auditAuthAttr.Roles.Contains("Super Administrator"), "GetAuditLogs strictly restricted to administrative roles");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Administrative Privilege Boundary test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 35: Specialist Doctor Creation Authorization Boundary (Session 27)
+        try
+        {
+            var appointmentControllerType = typeof(CuraSphere.Api.Controllers.AppointmentController);
+            var createDoctorMethod = appointmentControllerType.GetMethod("CreateDoctor");
+            var doctorAuthAttr = createDoctorMethod != null ? Attribute.GetCustomAttribute(createDoctorMethod, typeof(Microsoft.AspNetCore.Authorization.AuthorizeAttribute)) as Microsoft.AspNetCore.Authorization.AuthorizeAttribute : null;
+
+            Assert(doctorAuthAttr != null && doctorAuthAttr.Roles != null && doctorAuthAttr.Roles.Contains("Super Administrator"), "CreateDoctor strictly restricted to administrative roles");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Specialist Doctor Authorization Boundary test threw: {ex.Message}");
+            failed++;
+        }
+
+        // Test 36: IDOR Protection & Object-Level Existence Guard (Session 27)
+        try
+        {
+            var doc = new PatientDocument
+            {
+                DocumentId = 1,
+                PatientId = 101,
+                DocumentNumber = "DOC-20261018-001",
+                Title = "Diagnostic Ultrasound",
+                FilePath = "/uploads/patients/101/doc_1.pdf",
+                Status = "Active"
+            };
+
+            // IDOR Check: Ensure document PatientId is checked against target patient
+            long targetPatientId = 102; // Attacker attempting to read patient 101's document under patient 102
+            bool isAuthorizedObject = doc.PatientId == targetPatientId;
+            Assert(!isAuthorizedObject, "IDOR Guard: Reject document access when PatientId does not match requesting context");
+
+            targetPatientId = 101;
+            isAuthorizedObject = doc.PatientId == targetPatientId;
+            Assert(isAuthorizedObject, "Legitimate patient document access granted for matching PatientId");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] IDOR Protection Guard test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");

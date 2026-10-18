@@ -113,6 +113,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpPost("doctors")]
+    [Authorize(Roles = "Super Administrator,Hospital Administrator")]
     public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorDto dto)
     {
         if (!ModelState.IsValid)
