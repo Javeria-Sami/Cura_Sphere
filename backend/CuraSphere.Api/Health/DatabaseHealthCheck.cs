@@ -29,6 +29,8 @@ public class DatabaseHealthCheck : IHealthCheck
     {
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             using var scope = _scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<CuraSphereDbContext>();
 
