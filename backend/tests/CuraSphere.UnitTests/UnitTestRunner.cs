@@ -561,7 +561,7 @@ public class UnitTestRunner
                 DoctorId = 5,
                 EncounterNumber = "ENC-20261017-00701",
                 Status = "Finalized",
-                ChiefComplaint = "Chest pain on exertion"
+                Symptoms = "Chest pain on exertion"
             };
 
             bool isSealed = encounter.Status == "Finalized" || encounter.Status == "SignedOff";
