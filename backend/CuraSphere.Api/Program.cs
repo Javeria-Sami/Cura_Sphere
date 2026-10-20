@@ -9,6 +9,7 @@ using CuraSphere.Application.Interfaces;
 using CuraSphere.Infrastructure.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using System;
+using CuraSphere.Api.Health;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,16 +31,52 @@ builder.Services.AddDbContext<CuraSphereDbContext>(options =>
 // 2. Strongly-typed JWT Settings Configuration & Strict Startup Validation
 var jwtSettings = new JwtSettings();
 builder.Configuration.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
+
+// Graceful fallback: Support legacy "Jwt" section or "Key" property if "JwtSettings:Secret" was not populated
+if (string.IsNullOrWhiteSpace(jwtSettings.Secret))
+{
+    var legacyJwt = builder.Configuration.GetSection("Jwt");
+    if (legacyJwt.Exists())
+    {
+        legacyJwt.Bind(jwtSettings);
+        if (string.IsNullOrWhiteSpace(jwtSettings.Secret) && !string.IsNullOrWhiteSpace(legacyJwt["Key"]))
+        {
+            jwtSettings.Secret = legacyJwt["Key"]!;
+        }
+    }
+}
 jwtSettings.Validate();
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+builder.Services.Configure<JwtSettings>(options =>
+{
+    options.Secret = jwtSettings.Secret;
+    options.Issuer = jwtSettings.Issuer;
+    options.Audience = jwtSettings.Audience;
+    options.ExpiryInMinutes = jwtSettings.ExpiryInMinutes;
+});
 builder.Services.AddSingleton(jwtSettings);
 
 // 2.5. Strongly-typed Edition Configuration & Module Service
 var editionSettings = new EditionSettings();
 builder.Configuration.GetSection(EditionSettings.SectionName).Bind(editionSettings);
-builder.Services.Configure<EditionSettings>(builder.Configuration.GetSection(EditionSettings.SectionName));
+
+// Graceful fallback: Support legacy "Edition:DefaultEdition" / "Edition:CurrentEdition" if configured
+if (string.IsNullOrWhiteSpace(editionSettings.CurrentEdition) || editionSettings.CurrentEdition.Equals("Hospital", StringComparison.OrdinalIgnoreCase))
+{
+    var altEdition = builder.Configuration["Edition:DefaultEdition"] ?? builder.Configuration["Edition:CurrentEdition"];
+    if (!string.IsNullOrWhiteSpace(altEdition))
+    {
+        editionSettings.CurrentEdition = altEdition;
+    }
+}
+
+builder.Services.Configure<EditionSettings>(options =>
+{
+    options.CurrentEdition = editionSettings.CurrentEdition;
+    options.FacilityName = editionSettings.FacilityName;
+});
 builder.Services.AddSingleton<IEditionService, EditionService>();
+
 
 // 3. Register Dependency Injection Services
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -113,10 +150,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("CuraSphere API service is live"), tags: new[] { "live" })
-    .AddAsyncCheck("database", async () =>
-    {
-        return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("Database connectivity operational");
-    }, tags: new[] { "ready" });
+    .AddCheck<DatabaseHealthCheck>("database", tags: new[] { "ready" });
 builder.Services.AddSignalR();
 
 var app = builder.Build();

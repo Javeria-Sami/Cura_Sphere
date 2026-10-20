@@ -3,4 +3,6 @@
   <Project Path="CuraSphere.Application/CuraSphere.Application.csproj" />
   <Project Path="CuraSphere.Domain/CuraSphere.Domain.csproj" />
   <Project Path="CuraSphere.Infrastructure/CuraSphere.Infrastructure.csproj" />
+  <Project Path="tests/CuraSphere.UnitTests/CuraSphere.UnitTests.csproj" />
+  <Project Path="tests/CuraSphere.IntegrationTests/CuraSphere.IntegrationTests.csproj" />
 </Solution>

@@ -9,6 +9,10 @@ using CuraSphere.Domain.Entities;
 using CuraSphere.Application.Interfaces;
 using CuraSphere.Application.DTOs;
 using CuraSphere.Api.Controllers;
+using CuraSphere.Api.Health;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 
 namespace CuraSphere.IntegrationTests;
 
@@ -123,6 +127,81 @@ public class IntegrationTestRunner
         catch (Exception ex)
         {
             Console.WriteLine($"  [ERROR] Integration Test 3 threw exception: {ex.Message}");
+            failed++;
+        }
+
+        // Integration Test 4: Database Readiness Health Check Verification
+        try
+        {
+            var services = new ServiceCollection();
+            var options = new DbContextOptionsBuilder<CuraSphereDbContext>()
+                .UseInMemoryDatabase(databaseName: "CuraSphereHealthCheckDb_" + Guid.NewGuid())
+                .Options;
+
+            services.AddScoped(_ => new CuraSphereDbContext(options));
+            services.AddLogging();
+            var serviceProvider = services.BuildServiceProvider();
+            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            var logger = serviceProvider.GetRequiredService<ILogger<DatabaseHealthCheck>>();
+
+            var healthCheck = new DatabaseHealthCheck(scopeFactory, logger);
+            var checkResult = await healthCheck.CheckHealthAsync(new HealthCheckContext());
+
+            Assert(checkResult.Status == HealthStatus.Healthy, "DatabaseHealthCheck accurately reports Healthy when database can connect");
+            Assert(checkResult.Description == "Database connectivity operational", "DatabaseHealthCheck description matches operational contract");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 4 threw exception: {ex.Message}");
+            failed++;
+        }
+
+        // Integration Test 5: Database Readiness Cancellation / Timeout Handling
+        try
+        {
+            var services = new ServiceCollection();
+            var options = new DbContextOptionsBuilder<CuraSphereDbContext>()
+                .UseInMemoryDatabase(databaseName: "CuraSphereTimeoutDb_" + Guid.NewGuid())
+                .Options;
+
+            services.AddScoped(_ => new CuraSphereDbContext(options));
+            services.AddLogging();
+            var serviceProvider = services.BuildServiceProvider();
+            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            var logger = serviceProvider.GetRequiredService<ILogger<DatabaseHealthCheck>>();
+
+            var healthCheck = new DatabaseHealthCheck(scopeFactory, logger);
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            var canceledResult = await healthCheck.CheckHealthAsync(new HealthCheckContext(), cts.Token);
+            Assert(canceledResult.Status == HealthStatus.Unhealthy, "DatabaseHealthCheck returns Unhealthy when cancellation is signaled");
+            Assert(canceledResult.Description == "Database connectivity check timed out.", "DatabaseHealthCheck description indicates timeout on cancellation");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 5 threw exception: {ex.Message}");
+            failed++;
+        }
+
+        // Integration Test 6: Database Readiness Exception & Failure Handling
+        try
+        {
+            var brokenServices = new ServiceCollection();
+            brokenServices.AddLogging();
+            var brokenProvider = brokenServices.BuildServiceProvider();
+            var brokenScopeFactory = brokenProvider.GetRequiredService<IServiceScopeFactory>();
+            var brokenLogger = brokenProvider.GetRequiredService<ILogger<DatabaseHealthCheck>>();
+
+            var brokenHealthCheck = new DatabaseHealthCheck(brokenScopeFactory, brokenLogger);
+            var brokenResult = await brokenHealthCheck.CheckHealthAsync(new HealthCheckContext());
+
+            Assert(brokenResult.Status == HealthStatus.Unhealthy, "DatabaseHealthCheck returns Unhealthy when exception occurs during resolution or connectivity");
+            Assert(brokenResult.Description == "Database connectivity check encountered an exception.", "DatabaseHealthCheck description indicates failure with exception");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 6 threw exception: {ex.Message}");
             failed++;
         }
 

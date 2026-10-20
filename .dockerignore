@@ -1,0 +1,12 @@
+**/.git
+**/.github
+**/.vs
+**/.vscode
+**/node_modules
+**/dist
+**/bin
+**/obj
+**/*.user
+**/*.suo
+**/appsettings.Development.json
+**/*.md

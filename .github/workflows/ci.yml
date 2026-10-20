@@ -22,14 +22,17 @@ jobs:
       - name: Restore Backend Dependencies
         run: dotnet restore backend/CuraSphere.slnx
 
-      - name: Build Backend Solution
-        run: dotnet build backend/CuraSphere.slnx --no-restore -c Release
+      - name: Build Backend Solution & Test Projects
+        run: dotnet build backend/CuraSphere.slnx -c Release
 
       - name: Run Backend Unit Tests
-        run: dotnet run --project backend/tests/CuraSphere.UnitTests/CuraSphere.UnitTests.csproj
+        run: dotnet run --project backend/tests/CuraSphere.UnitTests/CuraSphere.UnitTests.csproj -c Release --no-build
 
       - name: Run Backend Integration Tests
-        run: dotnet run --project backend/tests/CuraSphere.IntegrationTests/CuraSphere.IntegrationTests.csproj
+        run: dotnet run --project backend/tests/CuraSphere.IntegrationTests/CuraSphere.IntegrationTests.csproj -c Release --no-build
+
+      - name: Build Backend Docker Image (Container Build Gate)
+        run: docker build -t curasphere-api:ci-test -f backend/CuraSphere.Api/Dockerfile backend/
 
   frontend-build-test:
     name: Frontend Vitest & TypeScript Build Check (React 18 + Vite)
