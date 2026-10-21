@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using CuraSphere.Infrastructure.Persistence;
+using CuraSphere.Infrastructure.Persistence.Seed;
 using CuraSphere.Domain.Entities;
 using CuraSphere.Application.Interfaces;
 using CuraSphere.Application.DTOs;
 using CuraSphere.Api.Controllers;
 using CuraSphere.Api.Health;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -203,6 +205,189 @@ public class IntegrationTestRunner
         {
             Console.WriteLine($"  [ERROR] Integration Test 6 threw exception: {ex.Message}");
             failed++;
+        }
+
+        // Integration Test 7: Production Seeding Safety (Zero User Accounts By Default)
+        try
+        {
+            var options = new DbContextOptionsBuilder<CuraSphereDbContext>()
+                .UseInMemoryDatabase(databaseName: "CuraSphereTestDb_ProdSafety_" + Guid.NewGuid())
+                .Options;
+
+            using var context = new CuraSphereDbContext(options);
+
+            // In production/staging with no explicit bootstrap flag set:
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", null);
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", null);
+
+            await DbContextSeed.SeedAsync(context, isDevelopment: false);
+
+            Assert(await context.Roles.AnyAsync(), "Production seed creates default system roles and lookups");
+            Assert(await context.UserAccounts.CountAsync() == 0, "Production seed creates zero user accounts by default");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 7 threw exception: {ex.Message}");
+            failed++;
+        }
+
+        // Integration Test 8: Controlled Administrator Bootstrap, Hashing & Idempotency
+        try
+        {
+            var options = new DbContextOptionsBuilder<CuraSphereDbContext>()
+                .UseInMemoryDatabase(databaseName: "CuraSphereTestDb_Bootstrap_" + Guid.NewGuid())
+                .Options;
+
+            using var context = new CuraSphereDbContext(options);
+
+            const string testAdminUser = "secops_admin";
+            const string testAdminPass = "ComplexInitialSecret2026!";
+
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", "true");
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_USERNAME", testAdminUser);
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", testAdminPass);
+
+            // Initial invocation
+            await DbContextSeed.SeedAsync(context, isDevelopment: false);
+
+            var createdUser = await context.UserAccounts.FirstOrDefaultAsync(u => u.Username == testAdminUser);
+            Assert(createdUser != null, "Controlled bootstrap creates initial administrator user account");
+            Assert(createdUser?.AccountStatus == "Active", "Initial administrator account is marked Active");
+
+            if (createdUser != null)
+            {
+                var hasher = new PasswordHasher<UserAccount>();
+                var verifySuccess = hasher.VerifyHashedPassword(createdUser, createdUser.PasswordHash, testAdminPass);
+                Assert(verifySuccess == PasswordVerificationResult.Success, "Administrator password hash verifies with provided initial secret");
+
+                var verifyFail = hasher.VerifyHashedPassword(createdUser, createdUser.PasswordHash, "WrongPassword!");
+                Assert(verifyFail == PasswordVerificationResult.Failed, "Administrator password hash rejects invalid password");
+            }
+
+            // Repeated invocation / Idempotency check:
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", "AnotherPassword999!");
+            await DbContextSeed.SeedAsync(context, isDevelopment: false);
+
+            var totalAccounts = await context.UserAccounts.CountAsync();
+            Assert(totalAccounts == 1, "Repeated bootstrap execution refuses to duplicate administrator account");
+
+            var reloadedUser = await context.UserAccounts.FirstOrDefaultAsync(u => u.Username == testAdminUser);
+            if (reloadedUser != null)
+            {
+                var hasher = new PasswordHasher<UserAccount>();
+                var verifyOriginal = hasher.VerifyHashedPassword(reloadedUser, reloadedUser.PasswordHash, testAdminPass);
+                Assert(verifyOriginal == PasswordVerificationResult.Success, "Existing administrator account is protected and password is not overwritten");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 8 threw exception: {ex.Message}");
+            failed++;
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", null);
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_USERNAME", null);
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", null);
+        }
+
+        // Integration Test 9: Bootstrap Validation Failure on Missing or Insecure Credentials
+        try
+        {
+            var options = new DbContextOptionsBuilder<CuraSphereDbContext>()
+                .UseInMemoryDatabase(databaseName: "CuraSphereTestDb_ValidationFail_" + Guid.NewGuid())
+                .Options;
+
+            using var context = new CuraSphereDbContext(options);
+
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", "true");
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", null);
+
+            bool threwOnMissing = false;
+            try
+            {
+                await DbContextSeed.SeedAsync(context, isDevelopment: false);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("minimum length of 12 characters"))
+            {
+                threwOnMissing = true;
+            }
+            Assert(threwOnMissing, "Bootstrap rejects missing initial password in non-development mode");
+
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", "short7");
+            bool threwOnShort = false;
+            try
+            {
+                await DbContextSeed.SeedAsync(context, isDevelopment: false);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("minimum length of 12 characters"))
+            {
+                threwOnShort = true;
+            }
+            Assert(threwOnShort, "Bootstrap rejects short password (< 12 characters) in non-development mode");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 9 threw exception: {ex.Message}");
+            failed++;
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", null);
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", null);
+        }
+
+        // Integration Test 10: Partial Seeding Recovery & Employee Uniqueness Safety
+        try
+        {
+            var options = new DbContextOptionsBuilder<CuraSphereDbContext>()
+                .UseInMemoryDatabase(databaseName: "CuraSphereTestDb_PartialRecovery_" + Guid.NewGuid())
+                .Options;
+
+            using var context = new CuraSphereDbContext(options);
+
+            // Pre-seed an employee with EMP00001 (simulating pre-existing employee or partial seed)
+            var preSeededEmployee = new Employee
+            {
+                EmployeeCode = "EMP00001",
+                FirstName = "Existing",
+                LastName = "Staff",
+                Gender = "Other",
+                DateOfBirth = new DateTime(1990, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                PhoneNumber = "+923001112233",
+                Email = "existing@curasphere.local",
+                HireDate = DateTime.UtcNow,
+                Designation = "Existing Staff",
+                DepartmentId = 1,
+                Salary = 100000.00m,
+                EmploymentStatus = "Active"
+            };
+            context.Employees.Add(preSeededEmployee);
+            await context.SaveChangesAsync();
+
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", "true");
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", "ResilientSecret2026!");
+
+            // Should safely reuse EMP00001 rather than throwing duplicate employee code exception
+            await DbContextSeed.SeedAsync(context, isDevelopment: false);
+
+            var adminUser = await context.UserAccounts.FirstOrDefaultAsync(u => u.Username == "admin");
+            Assert(adminUser != null, "Partial seeding recovery successfully creates administrator");
+            Assert(adminUser?.EmployeeId == preSeededEmployee.EmployeeId, "Administrator account is correctly linked to existing employee record");
+            Assert(await context.Employees.CountAsync(e => e.EmployeeCode == "EMP00001") == 1, "Employee EMP00001 uniqueness is preserved without duplicate collision");
+
+            var reloadedEmp = await context.Employees.FirstOrDefaultAsync(e => e.EmployeeCode == "EMP00001");
+            Assert(reloadedEmp?.FirstName == "Existing" && reloadedEmp?.LastName == "Staff", "Existing employee profile data is preserved during recovery");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] Integration Test 10 threw exception: {ex.Message}");
+            failed++;
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("SEED_INITIAL_ADMIN", null);
+            Environment.SetEnvironmentVariable("INITIAL_ADMIN_PASSWORD", null);
         }
 
         // Summary output

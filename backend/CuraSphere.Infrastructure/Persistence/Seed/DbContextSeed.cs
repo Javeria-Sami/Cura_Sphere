@@ -163,40 +163,72 @@ public static class DbContextSeed
             }
         }
 
-        // 9. Development-only Seed: Initial Development Administrator Account
-        // In Production, administrator accounts must NOT be created with static passwords on startup.
-        if (isDevelopment && !context.UserAccounts.Any())
+        // 9. Administrator Account Provisioning & Secure Bootstrap
+        // - In Development: seeds dev administrator if no accounts exist.
+        // - In Staging/Production: seeds initial administrator ONLY when explicitly requested via SEED_INITIAL_ADMIN=true
+        //   and an INITIAL_ADMIN_PASSWORD of at least 12 characters is provided. It will NEVER overwrite an existing administrator.
+        var seedAdminExplicitlyRequested = string.Equals(Environment.GetEnvironmentVariable("SEED_INITIAL_ADMIN"), "true", StringComparison.OrdinalIgnoreCase);
+        var initialPassword = Environment.GetEnvironmentVariable("INITIAL_ADMIN_PASSWORD");
+
+        if (!isDevelopment && seedAdminExplicitlyRequested)
+        {
+            if (string.IsNullOrWhiteSpace(initialPassword) || initialPassword.Length < 12)
+            {
+                throw new InvalidOperationException(
+                    "Security Configuration Error: When 'SEED_INITIAL_ADMIN' is set to 'true' in non-development environments, " +
+                    "'INITIAL_ADMIN_PASSWORD' must be provided with a minimum length of 12 characters.");
+            }
+        }
+
+        var shouldSeedAdmin = (isDevelopment || seedAdminExplicitlyRequested) && !context.UserAccounts.Any();
+
+        if (shouldSeedAdmin)
         {
             var adminDept = context.Departments.FirstOrDefault(d => d.DepartmentCode == "OPD");
-            
-            var adminEmployee = new Employee
+            if (adminDept == null)
             {
-                EmployeeCode = "EMP00001",
-                FirstName = "Development",
-                LastName = "Administrator",
-                Gender = "Male",
-                DateOfBirth = new DateTime(1985, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                PhoneNumber = "+923000000000",
-                Email = "devadmin@curasphere.local",
-                HireDate = DateTime.UtcNow,
-                Designation = "System Administrator",
-                DepartmentId = adminDept?.DepartmentId ?? 1,
-                Salary = 150000.00m,
-                EmploymentStatus = "Active"
-            };
+                throw new InvalidOperationException("Bootstrap Failure: Required department 'OPD' is not present in the database.");
+            }
 
-            context.Employees.Add(adminEmployee);
-            await context.SaveChangesAsync();
+            var adminRole = context.Roles.FirstOrDefault(r => r.RoleName == "Super Administrator");
+            if (adminRole == null)
+            {
+                throw new InvalidOperationException("Bootstrap Failure: Required role 'Super Administrator' is not present in the database.");
+            }
+
+            var adminEmployee = context.Employees.FirstOrDefault(e => e.EmployeeCode == "EMP00001");
+            if (adminEmployee == null)
+            {
+                adminEmployee = new Employee
+                {
+                    EmployeeCode = "EMP00001",
+                    FirstName = "System",
+                    LastName = "Administrator",
+                    Gender = "Other",
+                    DateOfBirth = new DateTime(1985, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    PhoneNumber = "+923000000000",
+                    Email = "admin@curasphere.local",
+                    HireDate = DateTime.UtcNow,
+                    Designation = "System Administrator",
+                    DepartmentId = adminDept.DepartmentId,
+                    Salary = 150000.00m,
+                    EmploymentStatus = "Active"
+                };
+
+                context.Employees.Add(adminEmployee);
+                await context.SaveChangesAsync();
+            }
 
             if (!context.Doctors.Any())
             {
+                var specId = context.Specializations.FirstOrDefault()?.SpecializationId ?? 1;
                 var doctor = new Doctor
                 {
                     EmployeeId = adminEmployee.EmployeeId,
                     DoctorCode = "DOC00001",
                     LicenseNumber = "PMC-12345",
-                    DepartmentId = adminDept?.DepartmentId ?? 1,
-                    SpecializationId = 1,
+                    DepartmentId = adminDept.DepartmentId,
+                    SpecializationId = specId,
                     ConsultationFee = 1500.00m,
                     Qualification = "MBBS, FCPS"
                 };
@@ -204,23 +236,26 @@ public static class DbContextSeed
                 await context.SaveChangesAsync();
             }
 
-            var adminRole = context.Roles.FirstOrDefault(r => r.RoleName == "Super Administrator");
-
-            var adminUser = new UserAccount
+            var targetUsername = Environment.GetEnvironmentVariable("INITIAL_ADMIN_USERNAME") ?? "admin";
+            var existingUser = context.UserAccounts.FirstOrDefault(u => u.Username.ToLower() == targetUsername.ToLower());
+            if (existingUser == null)
             {
-                Username = "admin",
-                EmployeeId = adminEmployee.EmployeeId,
-                RoleId = adminRole?.RoleId ?? 1,
-                AccountStatus = "Active",
-                FailedLoginAttempts = 0
-            };
+                var adminUser = new UserAccount
+                {
+                    Username = targetUsername,
+                    EmployeeId = adminEmployee.EmployeeId,
+                    RoleId = adminRole.RoleId,
+                    AccountStatus = "Active",
+                    FailedLoginAttempts = 0
+                };
 
-            var devPassword = Environment.GetEnvironmentVariable("DEV_ADMIN_INITIAL_PASSWORD") ?? "Admin123!";
-            var hasher = new PasswordHasher<UserAccount>();
-            adminUser.PasswordHash = hasher.HashPassword(adminUser, devPassword);
+                var finalPassword = initialPassword ?? Environment.GetEnvironmentVariable("DEV_ADMIN_INITIAL_PASSWORD") ?? "Admin123!";
+                var hasher = new PasswordHasher<UserAccount>();
+                adminUser.PasswordHash = hasher.HashPassword(adminUser, finalPassword);
 
-            context.UserAccounts.Add(adminUser);
-            await context.SaveChangesAsync();
+                context.UserAccounts.Add(adminUser);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }
