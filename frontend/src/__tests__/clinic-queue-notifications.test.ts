@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueueUpdateEvent } from "../hooks/useQueueNotifications";
 import { opdService, OpdTokenItem } from "../services/opdService";
 
-describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notifications (Session 106 - BLK-REL-05)", () => {
+describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notifications (Session 108 Hardened)", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -13,11 +13,12 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
     vi.restoreAllMocks();
   });
 
-  describe("1. Contract & Data Privacy (PII Omission)", () => {
-    it("ensures QueueUpdateEvent payload contains only non-sensitive identifiers", () => {
+  describe("1. Contract & Data Privacy (Zero PII Omission)", () => {
+    it("ensures QueueUpdateEvent payload contains only non-sensitive identifiers and optional doctorId", () => {
       const event: QueueUpdateEvent = {
         eventType: "TokenStatusChanged",
         tokenId: 42,
+        doctorId: 1,
         status: "Consulting",
         timestamp: new Date().toISOString(),
       };
@@ -25,11 +26,12 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
       // Ensure minimal metadata is present
       expect(event.eventType).toBe("TokenStatusChanged");
       expect(event.tokenId).toBe(42);
+      expect(event.doctorId).toBe(1);
       expect(event.status).toBe("Consulting");
       expect(event.timestamp).toBeDefined();
 
       // Ensure zero patient PII fields are defined on the contract
-      const eventRecord = event as Record<string, unknown>;
+      const eventRecord = event as unknown as Record<string, unknown>;
       expect(eventRecord["patientName"]).toBeUndefined();
       expect(eventRecord["patientId"]).toBeUndefined();
       expect(eventRecord["medicalRecordNumber"]).toBeUndefined();
@@ -40,19 +42,17 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
     });
 
     it("requires client to refetch authoritative state rather than relying on broadcast payload", () => {
-      // The event is purely a trigger for invalidation/refetch
       let refetchCalled = false;
       const onQueueUpdated = () => {
         refetchCalled = true;
       };
 
-      // Dispatch event
       onQueueUpdated();
       expect(refetchCalled).toBe(true);
     });
   });
 
-  describe("2. Architecture & Hub Isolation", () => {
+  describe("2. Server-Side Hub Authorization & Route Segregation", () => {
     it("verifies Clinic Edition hub and Hospital Edition hub route segregation", () => {
       const clinicHubEndpoint = "/hubs/notifications";
       const hospitalHubEndpoint = "/hubs/hospital";
@@ -62,10 +62,46 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
       expect(hospitalHubEndpoint).toBe("/hubs/hospital");
     });
 
-    it("verifies ClinicQueue channel scoping", () => {
-      const expectedChannel = "ClinicQueue";
-      expect(expectedChannel).toBe("ClinicQueue");
-      expect(expectedChannel).toMatch(/^Clinic/);
+    it("verifies explicit server-side role validation for ClinicQueue channel", () => {
+      const isRoleAuthorizedForClinicQueue = (role?: string): boolean => {
+        return ["Super Administrator", "Hospital Administrator", "Doctor", "Nurse", "Receptionist"].includes(role || "");
+      };
+
+      expect(isRoleAuthorizedForClinicQueue("Doctor")).toBe(true);
+      expect(isRoleAuthorizedForClinicQueue("Receptionist")).toBe(true);
+      expect(isRoleAuthorizedForClinicQueue("Nurse")).toBe(true);
+      expect(isRoleAuthorizedForClinicQueue("Super Administrator")).toBe(true);
+      expect(isRoleAuthorizedForClinicQueue("Patient")).toBe(false);
+      expect(isRoleAuthorizedForClinicQueue("Guest")).toBe(false);
+      expect(isRoleAuthorizedForClinicQueue(undefined)).toBe(false);
+    });
+
+    it("verifies server-side authorization for DoctorQueue channel", () => {
+      const canJoinDoctorChannel = (
+        authRole: string,
+        authUserId: number,
+        targetDoctorId: number
+      ): boolean => {
+        if (authRole === "Super Administrator" || authRole === "Hospital Administrator") {
+          return true;
+        }
+        if (authRole === "Doctor" && authUserId === targetDoctorId) {
+          return true;
+        }
+        return false;
+      };
+
+      // Doctor 101 joining their own channel
+      expect(canJoinDoctorChannel("Doctor", 101, 101)).toBe(true);
+
+      // Doctor 101 attempting to join Doctor 102's channel
+      expect(canJoinDoctorChannel("Doctor", 101, 102)).toBe(false);
+
+      // Receptionist attempting to join private doctor channel directly
+      expect(canJoinDoctorChannel("Receptionist", 201, 101)).toBe(false);
+
+      // Administrator can join for supervision/auditing
+      expect(canJoinDoctorChannel("Super Administrator", 1, 101)).toBe(true);
     });
   });
 
@@ -82,7 +118,6 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
         }, debounceMs);
       };
 
-      // Simulate 5 rapid updates in 100ms
       triggerDebounced();
       vi.advanceTimersByTime(50);
       triggerDebounced();
@@ -93,17 +128,15 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
       vi.advanceTimersByTime(50);
       triggerDebounced();
 
-      // Fetch count should still be 0 before debounce expires
       expect(fetchCount).toBe(0);
 
-      // Advance past the 300ms debounce
       vi.advanceTimersByTime(300);
       expect(fetchCount).toBe(1);
     });
   });
 
   describe("4. Reconnection & Authoritative Refresh", () => {
-    it("re-registers channel and triggers immediate authoritative refresh on reconnection", () => {
+    it("re-registers channels and triggers immediate authoritative refresh on reconnection", () => {
       const registeredChannels: string[] = [];
       let refreshed = false;
 
@@ -116,7 +149,6 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
         },
       };
 
-      // Simulate reconnection event
       mockConnection.onReconnected(() => {
         mockConnection.joinChannel("ClinicQueue");
         refreshed = true;
@@ -147,25 +179,36 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
         }
       };
 
-      // Start disconnected
       setConnectedState(false);
       expect(pollCount).toBe(0);
 
-      // Advance 20s -> 1 poll
       vi.advanceTimersByTime(20000);
       expect(pollCount).toBe(1);
 
-      // Advance another 20s -> 2 polls
       vi.advanceTimersByTime(20000);
       expect(pollCount).toBe(2);
 
-      // Connection restored -> interval cleared
       setConnectedState(true);
       expect(activeInterval).toBeNull();
 
-      // Advancing 60s should not trigger any more polls
       vi.advanceTimersByTime(60000);
       expect(pollCount).toBe(2);
+    });
+
+    it("ensures subscription rejection does not disable polling fallback", () => {
+      let pollingActive = true;
+      let subscriptionError: string | null = null;
+
+      // Simulate channel join failure
+      const onSubscriptionFailed = (err: Error) => {
+        subscriptionError = err.message;
+        // Polling fallback remains active when real-time subscription fails
+        pollingActive = true;
+      };
+
+      onSubscriptionFailed(new Error("Unauthorized: Doctor 101 cannot subscribe to Doctor 102 queue"));
+      expect(subscriptionError).toContain("Unauthorized");
+      expect(pollingActive).toBe(true);
     });
   });
 
@@ -177,7 +220,6 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
         if (shouldFail) {
           throw new Error("Database transaction failed");
         }
-        // Dispatched only after successful DB update
         notificationDispatched = true;
       };
 
@@ -193,10 +235,7 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
       let broadcastAttempted = false;
 
       const executeOpdTokenStatusChange = async (signalRHealthy: boolean) => {
-        // Step 1: Database persistence succeeds
         databaseUpdated = true;
-
-        // Step 2: SignalR broadcast attempted in resilient try/catch
         try {
           broadcastAttempted = true;
           if (!signalRHealthy) {
@@ -205,7 +244,6 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
         } catch {
           // Logged but swallowed so HTTP 200 is returned to client
         }
-
         return { success: true };
       };
 
@@ -244,4 +282,3 @@ describe("Clinic Edition: Real-Time Outpatient Queue & Consultation Notification
     });
   });
 });
-

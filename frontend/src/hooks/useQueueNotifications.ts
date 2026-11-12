@@ -5,6 +5,7 @@ import { useAuthStore } from "../stores/authStore";
 export interface QueueUpdateEvent {
   eventType: string;
   tokenId?: number;
+  doctorId?: number;
   status?: string;
   timestamp: string;
 }
@@ -15,6 +16,7 @@ export interface UseQueueNotificationsOptions {
   fallbackPollingIntervalMs?: number;
   debounceMs?: number;
   hubUrl?: string;
+  doctorId?: number;
 }
 
 export interface UseQueueNotificationsResult {
@@ -38,8 +40,8 @@ const resolveNotificationsHubUrl = (customUrl?: string): string => {
  * useQueueNotifications
  *
  * Subscribes to real-time Clinic Edition outpatient queue and token updates via SignalR.
- * Implements authoritative refetch notifications, automatic reconnection, debounced request
- * storm protection, and automatic fallback polling when disconnected.
+ * Supports clinic-wide queue channel ("JoinClinicQueueChannel") and doctor-specific queue channels
+ * ("JoinDoctorQueueChannel") with server-side authorization validation.
  */
 export function useQueueNotifications({
   onQueueUpdated,
@@ -47,6 +49,7 @@ export function useQueueNotifications({
   fallbackPollingIntervalMs = 20000,
   debounceMs = 300,
   hubUrl,
+  doctorId,
 }: UseQueueNotificationsOptions): UseQueueNotificationsResult {
   const [isConnected, setIsConnected] = useState(false);
   const [isReconnecting, setIsReconnecting] = useState(false);
@@ -77,6 +80,19 @@ export function useQueueNotifications({
     }
     onQueueUpdatedRef.current();
   }, []);
+
+  const subscribeToChannels = useCallback(async (connection: signalR.HubConnection) => {
+    try {
+      if (doctorId && doctorId > 0) {
+        await connection.invoke("JoinDoctorQueueChannel", doctorId);
+      } else {
+        await connection.invoke("JoinClinicQueueChannel");
+      }
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "Failed to join authorized queue channel";
+      setConnectionError(errorMsg);
+    }
+  }, [doctorId]);
 
   useEffect(() => {
     if (!enabled) {
@@ -114,10 +130,8 @@ export function useQueueNotifications({
       setIsConnected(true);
       setIsReconnecting(false);
       setConnectionError(null);
-      // Re-join channel and trigger immediate authoritative refresh
-      connection
-        .invoke("JoinQueueChannel", "ClinicQueue")
-        .catch(() => {});
+      // Re-subscribe to channel and trigger immediate authoritative refresh
+      subscribeToChannels(connection).catch(() => {});
       triggerDebouncedRefresh();
     });
 
@@ -131,11 +145,11 @@ export function useQueueNotifications({
 
     connection
       .start()
-      .then(() => {
+      .then(async () => {
         setIsConnected(true);
         setIsReconnecting(false);
         setConnectionError(null);
-        return connection.invoke("JoinQueueChannel", "ClinicQueue");
+        await subscribeToChannels(connection);
       })
       .catch((err) => {
         setIsConnected(false);
@@ -152,7 +166,7 @@ export function useQueueNotifications({
       connection.stop().catch(() => {});
       connectionRef.current = null;
     };
-  }, [enabled, hubUrl, triggerDebouncedRefresh]);
+  }, [enabled, hubUrl, subscribeToChannels, triggerDebouncedRefresh]);
 
   // Fallback polling: runs when not connected or when connection is severed
   useEffect(() => {
@@ -182,4 +196,3 @@ export function useQueueNotifications({
     refreshNow,
   };
 }
-

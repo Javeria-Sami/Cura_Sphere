@@ -47,13 +47,23 @@ public class OpdController : ControllerBase
         // Best-effort SignalR dispatch: notify clients to refresh queue
         try
         {
-            await _hubContext.Clients.Group("ClinicQueue").SendAsync("QueueUpdated", new
+            var payload = new
             {
                 EventType = "TokenIssued",
                 TokenId = created.OpdTokenId,
+                DoctorId = created.DoctorId,
                 Status = created.Status,
                 Timestamp = DateTime.UtcNow
-            });
+            };
+
+            // Notify clinic-wide channel
+            await _hubContext.Clients.Group(NotificationHub.ClinicQueueGroup).SendAsync("QueueUpdated", payload);
+
+            // Notify doctor-specific channel if doctor is assigned
+            if (created.DoctorId > 0)
+            {
+                await _hubContext.Clients.Group(NotificationHub.DoctorQueueGroup(created.DoctorId)).SendAsync("QueueUpdated", payload);
+            }
         }
         catch (Exception ex)
         {
@@ -76,13 +86,15 @@ public class OpdController : ControllerBase
         // Best-effort SignalR dispatch: notify clients to refresh queue
         try
         {
-            await _hubContext.Clients.Group("ClinicQueue").SendAsync("QueueUpdated", new
+            var payload = new
             {
                 EventType = "TokenStatusChanged",
                 TokenId = id,
                 Status = dto.Status,
                 Timestamp = DateTime.UtcNow
-            });
+            };
+
+            await _hubContext.Clients.Group(NotificationHub.ClinicQueueGroup).SendAsync("QueueUpdated", payload);
         }
         catch (Exception ex)
         {

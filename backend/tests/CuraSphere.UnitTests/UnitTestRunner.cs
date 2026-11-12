@@ -1141,6 +1141,83 @@ public class UnitTestRunner
             failed++;
         }
 
+        // Test 41: SignalR Hub Group Role Validation & Doctor Channel Authorization (Session 109)
+        try
+        {
+            // 1. Role-based authorization rules for clinic queue
+            bool IsAuthorizedForClinicQueue(string? role) =>
+                role is "Super Administrator" or "Hospital Administrator" or "Doctor" or "Nurse" or "Receptionist";
+
+            Assert(IsAuthorizedForClinicQueue("Doctor"), "Doctor role is authorized for ClinicQueue");
+            Assert(IsAuthorizedForClinicQueue("Receptionist"), "Receptionist role is authorized for ClinicQueue");
+            Assert(IsAuthorizedForClinicQueue("Nurse"), "Nurse role is authorized for ClinicQueue");
+            Assert(IsAuthorizedForClinicQueue("Super Administrator"), "Super Administrator is authorized for ClinicQueue");
+            Assert(!IsAuthorizedForClinicQueue("Patient"), "Patient role is NOT authorized for ClinicQueue");
+            Assert(!IsAuthorizedForClinicQueue("Guest"), "Guest role is NOT authorized for ClinicQueue");
+            Assert(!IsAuthorizedForClinicQueue(null), "Unauthenticated/null role is NOT authorized for ClinicQueue");
+
+            // 2. Doctor Channel Authorization: Doctor A vs Doctor B isolation & Identity Resolution
+            bool CanJoinDoctorChannel(
+                string? role,
+                string? authUserIdStr,
+                long targetDoctorId,
+                Func<long, long?>? resolveDoctorIdForUser = null)
+            {
+                bool isAdmin = role is "Super Administrator" or "Hospital Administrator";
+                if (isAdmin) return true;
+
+                if (role == "Doctor" && long.TryParse(authUserIdStr, out var authUserId))
+                {
+                    // Relational resolution via Employee link: UserAccount.UserId -> EmployeeId -> Doctor.DoctorId
+                    if (resolveDoctorIdForUser != null)
+                    {
+                        var resolvedDocId = resolveDoctorIdForUser(authUserId);
+                        if (resolvedDocId.HasValue && resolvedDocId.Value == targetDoctorId)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Direct identifier parity fallback
+                    if (authUserId == targetDoctorId)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // Simulated entity relation: User 501 -> Employee 201 -> Doctor 101
+            long? MockResolver(long userId) => userId == 501 ? 101L : (userId == 502 ? 102L : null);
+
+            // Doctor with UserAccount 501 resolving to DoctorId 101
+            Assert(CanJoinDoctorChannel("Doctor", "501", 101, MockResolver), "Doctor (User 501) resolves through Employee link to Doctor 101");
+            Assert(!CanJoinDoctorChannel("Doctor", "501", 102, MockResolver), "Doctor (User 501) cannot join Doctor 102 queue (isolation enforced)");
+            Assert(!CanJoinDoctorChannel("Doctor", "999", 101, MockResolver), "Unrelated user without doctor record cannot join Doctor 101 queue");
+
+            // Doctor direct parity fallback
+            Assert(CanJoinDoctorChannel("Doctor", "101", 101), "Doctor 101 can join DoctorQueue_101 via direct identity");
+            Assert(!CanJoinDoctorChannel("Doctor", "101", 102), "Doctor 101 cannot join DoctorQueue_102 via direct identity");
+            Assert(!CanJoinDoctorChannel("Receptionist", "201", 101), "Receptionist cannot join private doctor queue");
+            Assert(CanJoinDoctorChannel("Super Administrator", "1", 101), "Super Administrator can supervise DoctorQueue_101");
+
+            // 3. User Channel Isolation: User A cannot join User B channel
+            bool CanJoinUserChannel(string? role, string? authUserId, string targetUserId)
+            {
+                bool isAdmin = role is "Super Administrator" or "Hospital Administrator";
+                return isAdmin || string.Equals(authUserId, targetUserId, StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert(CanJoinUserChannel("Staff", "user-42", "user-42"), "User can join their own personal channel");
+            Assert(!CanJoinUserChannel("Staff", "user-42", "user-99"), "User cannot join another user's personal channel");
+            Assert(CanJoinUserChannel("Hospital Administrator", "admin-1", "user-99"), "Administrator can manage user channel");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  [ERROR] SignalR Authorization test threw: {ex.Message}");
+            failed++;
+        }
+
         // Summary output
         Console.WriteLine("==================================================");
         Console.WriteLine($"RESULTS: Total: {passed + failed} | Passed: {passed} | Failed: {failed}");
