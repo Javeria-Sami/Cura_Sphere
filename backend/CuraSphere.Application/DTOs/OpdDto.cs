@@ -26,3 +26,8 @@ public class CreateOpdTokenDto
     public long DepartmentId { get; set; }
     public string? ChiefComplaint { get; set; }
 }
+
+public class UpdateOpdTokenStatusDto
+{
+    public string Status { get; set; } = string.Empty;
+}

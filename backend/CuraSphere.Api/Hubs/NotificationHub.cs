@@ -11,6 +11,18 @@ public class NotificationHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, $"User_{userId}");
     }
 
+    public async Task JoinQueueChannel(string channel = "ClinicQueue")
+    {
+        var sanitizedChannel = string.IsNullOrWhiteSpace(channel) ? "ClinicQueue" : channel.Trim();
+        await Groups.AddToGroupAsync(Context.ConnectionId, sanitizedChannel);
+    }
+
+    public async Task LeaveQueueChannel(string channel = "ClinicQueue")
+    {
+        var sanitizedChannel = string.IsNullOrWhiteSpace(channel) ? "ClinicQueue" : channel.Trim();
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, sanitizedChannel);
+    }
+
     public async Task BroadcastNotification(string title, string message, string severity)
     {
         await Clients.All.SendAsync("ReceiveNotification", new
@@ -18,6 +30,17 @@ public class NotificationHub : Hub
             Title = title,
             Message = message,
             Severity = severity,
+            Timestamp = DateTime.UtcNow
+        });
+    }
+
+    public async Task BroadcastQueueUpdate(string eventType, long tokenId, string? status = null)
+    {
+        await Clients.Group("ClinicQueue").SendAsync("QueueUpdated", new
+        {
+            EventType = eventType,
+            TokenId = tokenId,
+            Status = status,
             Timestamp = DateTime.UtcNow
         });
     }

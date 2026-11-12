@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Stethoscope, Plus, Search, Filter, Download, RefreshCw, Users, Clock, CheckCircle2 } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Badge } from "../../../components/ui/Badge";
@@ -9,6 +9,7 @@ import { Select } from "../../../components/ui/Select";
 import { Input } from "../../../components/ui/Input";
 import PageHeader from "../../../components/layout/PageHeader";
 import { opdService, OpdTokenItem } from "../../../services/opdService";
+import { useQueueNotifications } from "../../../hooks/useQueueNotifications";
 
 const initialSampleTokens: OpdTokenItem[] = [
   { opdTokenId: 1, tokenNumber: "T-012", patientId: 101, patientName: "Muhammad Ali", medicalRecordNumber: "MRN-00521", age: 34, doctorId: 1, doctorName: "Dr. Sana Qureshi", departmentName: "General Medicine", queuePosition: 12, status: "Waiting", vitals: "Normal", chiefComplaint: "Fever and headaches" },
@@ -30,7 +31,7 @@ export default function OPDPage() {
   const [complaint, setComplaint] = useState("");
   const [issuing, setIssuing] = useState(false);
 
-  const fetchQueue = async () => {
+  const fetchQueue = useCallback(async () => {
     setLoading(true);
     try {
       const data = await opdService.getQueue(search);
@@ -42,11 +43,15 @@ export default function OPDPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search]);
 
   useEffect(() => {
     fetchQueue();
-  }, [search]);
+  }, [fetchQueue]);
+
+  const { isConnected: isRealtimeConnected, refreshNow } = useQueueNotifications({
+    onQueueUpdated: fetchQueue,
+  });
 
   const handleIssueToken = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,8 +122,25 @@ export default function OPDPage() {
               className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-slate-50"
             />
           </div>
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
+                isRealtimeConnected
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200"
+              }`}
+              title={isRealtimeConnected ? "Real-time SignalR active" : "Fallback polling active (20s)"}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isRealtimeConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                }`}
+              />
+              {isRealtimeConnected ? "Live Queue" : "Polling Fallback"}
+            </span>
+          </div>
           <Button size="sm" variant="outline" leftIcon={<Filter size={14} />}>Filter</Button>
-          <Button size="sm" variant="ghost" leftIcon={<RefreshCw size={14} />} onClick={fetchQueue}>Refresh</Button>
+          <Button size="sm" variant="ghost" leftIcon={<RefreshCw size={14} />} onClick={refreshNow}>Refresh</Button>
         </div>
         <Table
           keyField="opdTokenId"
@@ -130,7 +152,7 @@ export default function OPDPage() {
             { key: "doctorName", header: "Doctor", render: (r) => <div><p className="text-sm text-slate-700">{r.doctorName}</p><p className="text-xs text-slate-400">{r.departmentName}</p></div> },
             { key: "vitals", header: "Vitals", render: (r) => <Badge variant={r.vitals === "Normal" ? "success" : "warning"}>{r.vitals}</Badge> },
             { key: "status", header: "Status", render: (r) => <Badge variant={r.status === "Completed" ? "success" : r.status === "Consulting" ? "info" : "secondary"}>{r.status}</Badge> },
-            { key: "actions", header: "", align: "right", render: (r) => <Button size="sm" variant="ghost" onClick={() => opdService.updateStatus(r.opdTokenId, "Consulting")}>Consult</Button> },
+            { key: "actions", header: "", align: "right", render: (r) => <Button size="sm" variant="ghost" onClick={async () => { await opdService.updateStatus(r.opdTokenId, "Consulting"); fetchQueue(); }}>Consult</Button> },
           ]}
         />
       </div>
