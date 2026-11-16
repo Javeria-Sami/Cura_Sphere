@@ -93,16 +93,26 @@ public static class SignalRRealTransportTests
 
                     builder.ConfigureServices(services =>
                     {
-                        var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<CuraSphereDbContext>));
-                        if (descriptor != null)
+                        var descriptors = services.Where(d =>
+                            d.ServiceType == typeof(DbContextOptions<CuraSphereDbContext>) ||
+                            d.ServiceType == typeof(DbContextOptions) ||
+                            d.ServiceType == typeof(CuraSphereDbContext)).ToList();
+                        foreach (var d in descriptors)
                         {
-                            services.Remove(descriptor);
+                            services.Remove(d);
                         }
 
                         services.AddDbContext<CuraSphereDbContext>(options =>
                         {
                             options.UseInMemoryDatabase(dbName);
                         });
+
+                        services.PostConfigure<Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerOptions>(
+                            Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+                            options =>
+                            {
+                                options.RequireHttpsMetadata = false;
+                            });
                     });
                 });
 
@@ -258,8 +268,8 @@ public static class SignalRRealTransportTests
 
             var hubUri = new Uri(factory.Server.BaseAddress, "/hubs/notifications");
 
-            // Helper to build HubConnection wired to TestServer
-            HubConnection CreateClient(string? token, HttpTransportType transports = HttpTransportType.LongPolling | HttpTransportType.ServerSentEvents)
+            // Helper to build HubConnection wired to TestServer (LongPolling required for in-memory TestServer)
+            HubConnection CreateClient(string? token, HttpTransportType transports = HttpTransportType.LongPolling)
             {
                 var builder = new HubConnectionBuilder()
                     .WithUrl(hubUri, options =>
@@ -375,8 +385,23 @@ public static class SignalRRealTransportTests
             var clientA = CreateClient(doctorAToken);
             var clientB = CreateClient(doctorBToken);
 
-            await clientA.StartAsync();
-            await clientB.StartAsync();
+            try
+            {
+                await clientA.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  [DIAGNOSTIC] clientA.StartAsync failed: {ex}");
+            }
+
+            try
+            {
+                await clientB.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  [DIAGNOSTIC] clientB.StartAsync failed: {ex}");
+            }
 
             LocalAssert(clientA.State == HubConnectionState.Connected,
                 "Connection Negotiation: Doctor A (User 501) successfully establishes authenticated SignalR session");
@@ -509,7 +534,14 @@ public static class SignalRRealTransportTests
                 "Authorization Policy: Non-administrative Doctor client strictly rejected from broadcasting system notifications");
 
             var adminClient = CreateClient(adminToken);
-            await adminClient.StartAsync();
+            try
+            {
+                await adminClient.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  [DIAGNOSTIC] adminClient.StartAsync failed: {ex}");
+            }
 
             var tcsAdminRecvA = new TaskCompletionSource<JsonElement>(TaskCreationOptions.RunContinuationsAsynchronously);
             var tcsAdminRecvB = new TaskCompletionSource<JsonElement>(TaskCreationOptions.RunContinuationsAsynchronously);

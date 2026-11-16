@@ -105,7 +105,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+    options.RequireHttpsMetadata = !builder.Environment.IsDevelopment() && !builder.Environment.IsEnvironment("Testing");
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -271,7 +271,10 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseHttpsRedirection();
+}
 
 // 9. Apply CORS Policy before Auth
 app.UseCors("CuraSphereCorsPolicy");
