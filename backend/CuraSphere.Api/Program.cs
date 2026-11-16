@@ -196,7 +196,9 @@ app.MapHub<CuraSphere.Api.Hubs.NotificationHub>("/hubs/notifications").RequireCo
 app.MapHub<CuraSphere.Api.Hubs.TelemetryHub>("/hubs/telemetry").RequireCors("CuraSphereCorsPolicy");
 
 // 7. Database Initialization and Controlled Seeding
-var skipStartupInit = string.Equals(builder.Configuration["Database:SkipStartupInitialization"], "true", StringComparison.OrdinalIgnoreCase);
+var skipStartupInit = app.Environment.IsEnvironment("Testing") ||
+    string.Equals(builder.Configuration["Database:SkipStartupInitialization"], "true", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(app.Configuration["Database:SkipStartupInitialization"], "true", StringComparison.OrdinalIgnoreCase);
 
 if (!skipStartupInit)
 {

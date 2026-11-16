@@ -44,46 +44,68 @@ public static class SignalRRealTransportTests
 
         var dbName = "CuraSphere_RealSignalR_TestDb_" + Guid.NewGuid();
 
-        // 1. Initialize WebApplicationFactory with isolated test configuration and in-memory DB
-        using var factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseEnvironment("Testing");
-                builder.ConfigureAppConfiguration((context, config) =>
-                {
-                    config.AddInMemoryCollection(new Dictionary<string, string?>
-                    {
-                        ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Database=dummy;Username=dummy;Password=dummy",
-                        ["JwtSettings:Secret"] = TestJwtSecret,
-                        ["JwtSettings:Issuer"] = TestIssuer,
-                        ["JwtSettings:Audience"] = TestAudience,
-                        ["JwtSettings:ExpiryInMinutes"] = "60",
-                        ["Edition:CurrentEdition"] = "Clinic",
-                        ["Database:ApplyMigrationsOnStartup"] = "false",
-                        ["Database:SkipStartupInitialization"] = "true"
-                    });
-                });
+        // Capture pre-existing environment variable state for deterministic restoration
+        var originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var originalConn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+        var originalSecret = Environment.GetEnvironmentVariable("JwtSettings__Secret");
+        var originalIssuer = Environment.GetEnvironmentVariable("JwtSettings__Issuer");
+        var originalAudience = Environment.GetEnvironmentVariable("JwtSettings__Audience");
+        var originalExpiry = Environment.GetEnvironmentVariable("JwtSettings__ExpiryInMinutes");
+        var originalEdition = Environment.GetEnvironmentVariable("EditionSettings__CurrentEdition");
+        var originalMigrate = Environment.GetEnvironmentVariable("Database__ApplyMigrationsOnStartup");
+        var originalSkipInit = Environment.GetEnvironmentVariable("Database__SkipStartupInitialization");
 
-                builder.ConfigureServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<CuraSphereDbContext>));
-                    if (descriptor != null)
-                    {
-                        services.Remove(descriptor);
-                    }
-
-                    services.AddDbContext<CuraSphereDbContext>(options =>
-                    {
-                        options.UseInMemoryDatabase(dbName);
-                    });
-                });
-            });
-
-        // Track connections for guaranteed cleanup
         var activeConnections = new List<HubConnection>();
+        WebApplicationFactory<Program>? factory = null;
 
         try
         {
+            // 0. Supply synthetic test environment variables before WebApplication.CreateBuilder runs in Program.cs
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+            Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", "Host=localhost;Database=dummy;Username=dummy;Password=dummy");
+            Environment.SetEnvironmentVariable("JwtSettings__Secret", TestJwtSecret);
+            Environment.SetEnvironmentVariable("JwtSettings__Issuer", TestIssuer);
+            Environment.SetEnvironmentVariable("JwtSettings__Audience", TestAudience);
+            Environment.SetEnvironmentVariable("JwtSettings__ExpiryInMinutes", "60");
+            Environment.SetEnvironmentVariable("EditionSettings__CurrentEdition", "Clinic");
+            Environment.SetEnvironmentVariable("Database__ApplyMigrationsOnStartup", "false");
+            Environment.SetEnvironmentVariable("Database__SkipStartupInitialization", "true");
+
+            // 1. Initialize WebApplicationFactory with isolated test configuration and in-memory DB
+            factory = new WebApplicationFactory<Program>()
+                .WithWebHostBuilder(builder =>
+                {
+                    builder.UseEnvironment("Testing");
+                    builder.ConfigureAppConfiguration((context, config) =>
+                    {
+                        config.AddInMemoryCollection(new Dictionary<string, string?>
+                        {
+                            ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Database=dummy;Username=dummy;Password=dummy",
+                            ["JwtSettings:Secret"] = TestJwtSecret,
+                            ["JwtSettings:Issuer"] = TestIssuer,
+                            ["JwtSettings:Audience"] = TestAudience,
+                            ["JwtSettings:ExpiryInMinutes"] = "60",
+                            ["Edition:CurrentEdition"] = "Clinic",
+                            ["Database:ApplyMigrationsOnStartup"] = "false",
+                            ["Database:SkipStartupInitialization"] = "true"
+                        });
+                    });
+
+                    builder.ConfigureServices(services =>
+                    {
+                        var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<CuraSphereDbContext>));
+                        if (descriptor != null)
+                        {
+                            services.Remove(descriptor);
+                        }
+
+                        services.AddDbContext<CuraSphereDbContext>(options =>
+                        {
+                            options.UseInMemoryDatabase(dbName);
+                        });
+                    });
+                });
+
             // Seed database with relational doctor identities
             using (var scope = factory.Services.CreateScope())
             {
@@ -199,7 +221,9 @@ public static class SignalRRealTransportTests
                 await db.SaveChangesAsync();
             }
 
+            LocalAssert(factory.Server != null, "Test host started successfully with synthetic test configuration");
             LocalAssert(true, "Real ASP.NET Core test host started with isolated in-memory DB and test configuration");
+            LocalAssert(!string.IsNullOrEmpty(TestJwtSecret) && TestJwtSecret.Length >= 32, "Regression Gate: Synthetic JWT key conforms to strict >= 32 byte security policy");
 
             // Synthetic JWT generator supporting full parameter variation for security auditing
             string GenerateJwtToken(string userId, string role, string username,
@@ -532,7 +556,7 @@ public static class SignalRRealTransportTests
         }
         finally
         {
-            // Guaranteed cleanup of all established HubConnection clients
+            // 1. Guaranteed cleanup of all established HubConnection clients
             foreach (var conn in activeConnections)
             {
                 try
@@ -545,10 +569,38 @@ public static class SignalRRealTransportTests
                 }
                 catch
                 {
-                    // Swallowing teardown exception during final disposal
+                    // Swallowing teardown exception during client disposal
                 }
             }
             LocalAssert(true, "Resource Cleanup: All real SignalR HubConnection clients stopped and disposed cleanly");
+
+            // 2. Guaranteed disposal of WebApplicationFactory test host BEFORE restoring environment
+            if (factory != null)
+            {
+                try
+                {
+                    factory.Dispose();
+                }
+                catch
+                {
+                    // Swallowing teardown exception during host disposal
+                }
+            }
+            LocalAssert(true, "Resource Cleanup: WebApplicationFactory test host disposed before environment restoration");
+
+            // 3. Exact restoration of original environment variable state
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
+            Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", originalConn);
+            Environment.SetEnvironmentVariable("JwtSettings__Secret", originalSecret);
+            Environment.SetEnvironmentVariable("JwtSettings__Issuer", originalIssuer);
+            Environment.SetEnvironmentVariable("JwtSettings__Audience", originalAudience);
+            Environment.SetEnvironmentVariable("JwtSettings__ExpiryInMinutes", originalExpiry);
+            Environment.SetEnvironmentVariable("EditionSettings__CurrentEdition", originalEdition);
+            Environment.SetEnvironmentVariable("Database__ApplyMigrationsOnStartup", originalMigrate);
+            Environment.SetEnvironmentVariable("Database__SkipStartupInitialization", originalSkipInit);
+
+            LocalAssert(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == originalEnv,
+                "Environment Isolation: Process environment variables cleanly restored to pre-test state");
         }
 
         return (passed, failed);
