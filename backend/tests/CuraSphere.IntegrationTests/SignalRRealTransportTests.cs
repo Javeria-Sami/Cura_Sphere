@@ -59,7 +59,8 @@ public static class SignalRRealTransportTests
                         ["JwtSettings:Audience"] = TestAudience,
                         ["JwtSettings:ExpiryInMinutes"] = "60",
                         ["Edition:CurrentEdition"] = "Clinic",
-                        ["Database:ApplyMigrationsOnStartup"] = "false"
+                        ["Database:ApplyMigrationsOnStartup"] = "false",
+                        ["Database:SkipStartupInitialization"] = "true"
                     });
                 });
 

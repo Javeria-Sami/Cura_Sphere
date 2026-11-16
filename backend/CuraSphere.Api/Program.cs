@@ -196,43 +196,48 @@ app.MapHub<CuraSphere.Api.Hubs.NotificationHub>("/hubs/notifications").RequireCo
 app.MapHub<CuraSphere.Api.Hubs.TelemetryHub>("/hubs/telemetry").RequireCors("CuraSphereCorsPolicy");
 
 // 7. Database Initialization and Controlled Seeding
-using (var scope = app.Services.CreateScope())
+var skipStartupInit = string.Equals(builder.Configuration["Database:SkipStartupInitialization"], "true", StringComparison.OrdinalIgnoreCase);
+
+if (!skipStartupInit)
 {
-    var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    var context = services.GetRequiredService<CuraSphereDbContext>();
-
-    try
+    using (var scope = app.Services.CreateScope())
     {
-        var canConnect = await context.Database.CanConnectAsync();
-        if (!canConnect)
-        {
-            logger.LogWarning("Unable to connect to PostgreSQL database during startup check. Connection will be retried on incoming requests.");
-        }
-        else
-        {
-            // In Development or when explicit environment flag is set, apply EF migrations
-            var autoMigrate = app.Environment.IsDevelopment() ||
-                string.Equals(builder.Configuration["Database:ApplyMigrationsOnStartup"], "true", StringComparison.OrdinalIgnoreCase);
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        var context = services.GetRequiredService<CuraSphereDbContext>();
 
-            if (autoMigrate)
+        try
+        {
+            var canConnect = await context.Database.CanConnectAsync();
+            if (!canConnect)
             {
-                logger.LogInformation("Applying database migrations...");
-                await context.Database.MigrateAsync();
+                logger.LogWarning("Unable to connect to PostgreSQL database during startup check. Connection will be retried on incoming requests.");
             }
+            else
+            {
+                // In Development or when explicit environment flag is set, apply EF migrations
+                var autoMigrate = app.Environment.IsDevelopment() ||
+                    string.Equals(builder.Configuration["Database:ApplyMigrationsOnStartup"], "true", StringComparison.OrdinalIgnoreCase);
 
-            // Seed lookup tables; only seed dev admin if running in Development
-            logger.LogInformation("Seeding database lookups...");
-            await DbContextSeed.SeedAsync(context, isDevelopment: app.Environment.IsDevelopment());
-            logger.LogInformation("Database initialization completed successfully.");
+                if (autoMigrate)
+                {
+                    logger.LogInformation("Applying database migrations...");
+                    await context.Database.MigrateAsync();
+                }
+
+                // Seed lookup tables; only seed dev admin if running in Development
+                logger.LogInformation("Seeding database lookups...");
+                await DbContextSeed.SeedAsync(context, isDevelopment: app.Environment.IsDevelopment());
+                logger.LogInformation("Database initialization completed successfully.");
+            }
         }
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "An error occurred during database migration or seed startup check.");
-        if (!app.Environment.IsDevelopment())
+        catch (Exception ex)
         {
-            throw;
+            logger.LogError(ex, "An error occurred during database migration or seed startup check.");
+            if (!app.Environment.IsDevelopment())
+            {
+                throw;
+            }
         }
     }
 }
